@@ -1,0 +1,12 @@
+name = "pgshims"
+main = "dist.js"
+compatibility_date = "2022-10-19"
+node_compat = false
+
+[build]
+command = "npx esbuild index.ts --external:pg-native --inject:shims/process.js --inject:shims/buffer.js --bundle --format=esm --outfile=dist.js"
+
+[vars]
+# DATABASE_URL
+# Run `wrangler secret put DATABASE_URL` and enter the connection string when prompted.
+# And/or for `wrangler dev --local`: create `.dev.vars` containing `DATABASE_URL=mysecretconnstr`.
