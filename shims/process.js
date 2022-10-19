@@ -1,1 +1,0 @@
-globalThis.process = { env: {} };

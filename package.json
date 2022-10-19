@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@types/pg": "^8.6.5",
-    "pg": "^8.8.0",
     "buffer": "^6.0.3",
     "events": "^3.3.0",
+    "pg": "^8.8.0",
     "assert": "file:shims/assert",
     "crypto": "file:shims/crypto",
     "dns": "file:shims/dns",

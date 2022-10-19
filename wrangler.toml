@@ -4,7 +4,8 @@ compatibility_date = "2022-10-19"
 node_compat = false
 
 [build]
-command = "npx esbuild index.ts --external:pg-native --inject:shims/process.js --inject:shims/buffer.js --bundle --format=esm --outfile=dist.js"
+command = "npx esbuild index.ts --external:pg-native --inject:shims/shims.js --bundle --format=esm --outfile=dist.js"
+watch_dir = "."
 
 [vars]
 # DATABASE_URL
