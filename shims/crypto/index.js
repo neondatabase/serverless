@@ -1,5 +1,9 @@
 import { sha256 } from './sha256';
 
+export function randomBytes(length) {
+  return crypto.getRandomValues(Buffer.alloc(length));
+}
+
 // (1) we can't use crypto.subtle here because the returns must be synchronous
 // (2) note that these are very limited implementations: SHA-256 only, and you can only call `update` once!
 

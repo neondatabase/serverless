@@ -2473,11 +2473,6 @@ function sha256(data) {
     reply[29] = h7 >>> 16 & 255;
     reply[30] = h7 >>> 8 & 255;
     reply[31] = h7 & 255;
-    reply.hex = () => {
-      let res = "";
-      reply.forEach((x) => res += ("0" + x.toString(16)).slice(-2));
-      return res;
-    };
     return reply;
   };
   if (data === void 0)
@@ -2496,8 +2491,12 @@ var init_sha256 = __esm({
 var crypto_exports = {};
 __export(crypto_exports, {
   createHash: () => createHash,
-  createHmac: () => createHmac
+  createHmac: () => createHmac,
+  randomBytes: () => randomBytes
 });
+function randomBytes(length) {
+  return crypto.getRandomValues(Buffer.alloc(length));
+}
 function createHash(type) {
   if (type !== "sha256")
     throw new Error("Only sha256 is supported");
@@ -2529,7 +2528,6 @@ function createHmac(type, key) {
             const tmp = new Uint8Array(64);
             tmp.set(key);
             key = tmp;
-          } else {
           }
           const innerKey = new Uint8Array(64);
           const outerKey = new Uint8Array(64);
@@ -3558,7 +3556,7 @@ var require_utils = __commonJS({
   "node_modules/pg/lib/utils.js"(exports, module) {
     "use strict";
     init_shims();
-    var crypto = (init_crypto(), __toCommonJS(crypto_exports));
+    var crypto2 = (init_crypto(), __toCommonJS(crypto_exports));
     var defaults = require_defaults();
     function escapeElement(elementRepresentation) {
       var escaped = elementRepresentation.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
@@ -3674,7 +3672,7 @@ var require_utils = __commonJS({
       return config;
     }
     var md5 = function(string) {
-      return crypto.createHash("md5").update(string, "utf-8").digest("hex");
+      return crypto2.createHash("md5").update(string, "utf-8").digest("hex");
     };
     var postgresMd5PasswordHash = function(user, password, salt) {
       var inner = md5(password + user);
@@ -3697,12 +3695,12 @@ var require_sasl = __commonJS({
   "node_modules/pg/lib/sasl.js"(exports, module) {
     "use strict";
     init_shims();
-    var crypto = (init_crypto(), __toCommonJS(crypto_exports));
+    var crypto2 = (init_crypto(), __toCommonJS(crypto_exports));
     function startSession(mechanisms) {
       if (mechanisms.indexOf("SCRAM-SHA-256") === -1) {
         throw new Error("SASL: Only mechanism SCRAM-SHA-256 is currently supported");
       }
-      const clientNonce = crypto.randomBytes(18).toString("base64");
+      const clientNonce = crypto2.randomBytes(18).toString("base64");
       return {
         mechanism: "SCRAM-SHA-256",
         clientNonce,
@@ -3834,10 +3832,10 @@ var require_sasl = __commonJS({
       return Buffer.from(a.map((_, i) => a[i] ^ b[i]));
     }
     function sha2562(text) {
-      return crypto.createHash("sha256").update(text).digest();
+      return crypto2.createHash("sha256").update(text).digest();
     }
     function hmacSha256(key, msg) {
-      return crypto.createHmac("sha256", key).update(msg).digest();
+      return crypto2.createHmac("sha256", key).update(msg).digest();
     }
     function Hi(password, saltBytes, iterations) {
       var ui1 = hmacSha256(password, Buffer.concat([saltBytes, Buffer.from([0, 0, 0, 1])]));
@@ -7163,7 +7161,7 @@ var import_pg = __toESM(require_lib2());
 init_crypto();
 var pgshims_default = {
   async fetch(request, env, ctx) {
-    console.log(createHmac("sha256", "a102e31ad0e1db9e558398b1e1f8d5cc7bc53aaed337280945c6d0fc49c5f091a102e31ad0e1db9e558398b1e1f8d5cc7bc53aaed337280945c6d0fc49c5f091").update("abc").digest().reduce((memo, x) => memo + x.toString(16).padStart(2, "0"), ""));
+    console.log(randomBytes(18).toString("base64"));
     const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
     const result = await client.query("SELECT now()");
     return new Response("x");
