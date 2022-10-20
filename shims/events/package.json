@@ -1,9 +1,0 @@
-{
-  "name": "events",
-  "version": "0.1.0",
-  "description": "",
-  "type": "module",
-  "main": "index.js",
-  "author": "George MacKerron",
-  "license": "ISC"
-}

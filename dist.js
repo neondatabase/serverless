@@ -1955,22 +1955,22 @@ var require_events = __commonJS({
     var NumberIsNaN = Number.isNaN || function NumberIsNaN2(value) {
       return value !== value;
     };
-    function EventEmitter() {
-      EventEmitter.init.call(this);
+    function EventEmitter2() {
+      EventEmitter2.init.call(this);
     }
-    module.exports = EventEmitter;
+    module.exports = EventEmitter2;
     module.exports.once = once;
-    EventEmitter.EventEmitter = EventEmitter;
-    EventEmitter.prototype._events = void 0;
-    EventEmitter.prototype._eventsCount = 0;
-    EventEmitter.prototype._maxListeners = void 0;
+    EventEmitter2.EventEmitter = EventEmitter2;
+    EventEmitter2.prototype._events = void 0;
+    EventEmitter2.prototype._eventsCount = 0;
+    EventEmitter2.prototype._maxListeners = void 0;
     var defaultMaxListeners = 10;
     function checkListener(listener) {
       if (typeof listener !== "function") {
         throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
       }
     }
-    Object.defineProperty(EventEmitter, "defaultMaxListeners", {
+    Object.defineProperty(EventEmitter2, "defaultMaxListeners", {
       enumerable: true,
       get: function() {
         return defaultMaxListeners;
@@ -1982,14 +1982,14 @@ var require_events = __commonJS({
         defaultMaxListeners = arg;
       }
     });
-    EventEmitter.init = function() {
+    EventEmitter2.init = function() {
       if (this._events === void 0 || this._events === Object.getPrototypeOf(this)._events) {
         this._events = /* @__PURE__ */ Object.create(null);
         this._eventsCount = 0;
       }
       this._maxListeners = this._maxListeners || void 0;
     };
-    EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+    EventEmitter2.prototype.setMaxListeners = function setMaxListeners(n) {
       if (typeof n !== "number" || n < 0 || NumberIsNaN(n)) {
         throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + ".");
       }
@@ -1998,13 +1998,13 @@ var require_events = __commonJS({
     };
     function _getMaxListeners(that) {
       if (that._maxListeners === void 0)
-        return EventEmitter.defaultMaxListeners;
+        return EventEmitter2.defaultMaxListeners;
       return that._maxListeners;
     }
-    EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+    EventEmitter2.prototype.getMaxListeners = function getMaxListeners() {
       return _getMaxListeners(this);
     };
-    EventEmitter.prototype.emit = function emit(type) {
+    EventEmitter2.prototype.emit = function emit(type) {
       var args = [];
       for (var i = 1; i < arguments.length; i++)
         args.push(arguments[i]);
@@ -2082,11 +2082,11 @@ var require_events = __commonJS({
       }
       return target;
     }
-    EventEmitter.prototype.addListener = function addListener(type, listener) {
+    EventEmitter2.prototype.addListener = function addListener(type, listener) {
       return _addListener(this, type, listener, false);
     };
-    EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-    EventEmitter.prototype.prependListener = function prependListener(type, listener) {
+    EventEmitter2.prototype.on = EventEmitter2.prototype.addListener;
+    EventEmitter2.prototype.prependListener = function prependListener(type, listener) {
       return _addListener(this, type, listener, true);
     };
     function onceWrapper() {
@@ -2105,17 +2105,17 @@ var require_events = __commonJS({
       state.wrapFn = wrapped;
       return wrapped;
     }
-    EventEmitter.prototype.once = function once2(type, listener) {
+    EventEmitter2.prototype.once = function once2(type, listener) {
       checkListener(listener);
       this.on(type, _onceWrap(this, type, listener));
       return this;
     };
-    EventEmitter.prototype.prependOnceListener = function prependOnceListener(type, listener) {
+    EventEmitter2.prototype.prependOnceListener = function prependOnceListener(type, listener) {
       checkListener(listener);
       this.prependListener(type, _onceWrap(this, type, listener));
       return this;
     };
-    EventEmitter.prototype.removeListener = function removeListener(type, listener) {
+    EventEmitter2.prototype.removeListener = function removeListener(type, listener) {
       var list, events, position, i, originalListener;
       checkListener(listener);
       events = this._events;
@@ -2155,8 +2155,8 @@ var require_events = __commonJS({
       }
       return this;
     };
-    EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-    EventEmitter.prototype.removeAllListeners = function removeAllListeners(type) {
+    EventEmitter2.prototype.off = EventEmitter2.prototype.removeListener;
+    EventEmitter2.prototype.removeAllListeners = function removeAllListeners(type) {
       var listeners, events, i;
       events = this._events;
       if (events === void 0)
@@ -2208,20 +2208,20 @@ var require_events = __commonJS({
         return unwrap ? [evlistener.listener || evlistener] : [evlistener];
       return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
     }
-    EventEmitter.prototype.listeners = function listeners(type) {
+    EventEmitter2.prototype.listeners = function listeners(type) {
       return _listeners(this, type, true);
     };
-    EventEmitter.prototype.rawListeners = function rawListeners(type) {
+    EventEmitter2.prototype.rawListeners = function rawListeners(type) {
       return _listeners(this, type, false);
     };
-    EventEmitter.listenerCount = function(emitter, type) {
+    EventEmitter2.listenerCount = function(emitter, type) {
       if (typeof emitter.listenerCount === "function") {
         return emitter.listenerCount(type);
       } else {
         return listenerCount.call(emitter, type);
       }
     };
-    EventEmitter.prototype.listenerCount = listenerCount;
+    EventEmitter2.prototype.listenerCount = listenerCount;
     function listenerCount(type) {
       var events = this._events;
       if (events !== void 0) {
@@ -2234,7 +2234,7 @@ var require_events = __commonJS({
       }
       return 0;
     }
-    EventEmitter.prototype.eventNames = function eventNames() {
+    EventEmitter2.prototype.eventNames = function eventNames() {
       return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
     };
     function arrayClone(arr, n) {
@@ -3904,13 +3904,24 @@ var init_stream = __esm({
 // shims/string_decoder/index.js
 var string_decoder_exports = {};
 __export(string_decoder_exports, {
-  default: () => string_decoder_default
+  StringDecoder: () => StringDecoder
 });
-var string_decoder_default;
+var StringDecoder;
 var init_string_decoder = __esm({
   "shims/string_decoder/index.js"() {
     init_shims();
-    string_decoder_default = {};
+    StringDecoder = class {
+      td = null;
+      constructor(encoding) {
+        this.td = new TextDecoder(encoding);
+      }
+      write(data) {
+        return this.td.decode(data, { stream: true });
+      }
+      end(data) {
+        return this.td.decode(data);
+      }
+    };
   }
 });
 
@@ -3920,7 +3931,7 @@ var require_split2 = __commonJS({
     "use strict";
     init_shims();
     var { Transform } = (init_stream(), __toCommonJS(stream_exports));
-    var { StringDecoder } = (init_string_decoder(), __toCommonJS(string_decoder_exports));
+    var { StringDecoder: StringDecoder2 } = (init_string_decoder(), __toCommonJS(string_decoder_exports));
     var kLast = Symbol("last");
     var kDecoder = Symbol("decoder");
     function transform(chunk, enc, cb) {
@@ -4001,7 +4012,7 @@ var require_split2 = __commonJS({
       options.readableObjectMode = true;
       const stream = new Transform(options);
       stream[kLast] = "";
-      stream[kDecoder] = new StringDecoder("utf8");
+      stream[kDecoder] = new StringDecoder2("utf8");
       stream.matcher = matcher;
       stream.mapper = mapper;
       stream.maxLength = options.maxLength;
@@ -4591,10 +4602,10 @@ var require_query = __commonJS({
   "node_modules/pg/lib/query.js"(exports, module) {
     "use strict";
     init_shims();
-    var { EventEmitter } = require_events();
+    var { EventEmitter: EventEmitter2 } = require_events();
     var Result = require_result();
     var utils = require_utils();
-    var Query = class extends EventEmitter {
+    var Query = class extends EventEmitter2 {
       constructor(config, values, callback) {
         super();
         config = utils.normalizeQueryConfig(config, values, callback);
@@ -4775,13 +4786,31 @@ var net_exports = {};
 __export(net_exports, {
   Socket: () => Socket
 });
-var Socket;
+var import_events, Socket;
 var init_net = __esm({
   "shims/net/index.js"() {
     init_shims();
-    Socket = class {
+    import_events = __toESM(require_events(), 1);
+    Socket = class extends import_events.EventEmitter {
+      writable = true;
       constructor() {
+        super();
         console.log("socket constructed");
+      }
+      setNoDelay() {
+      }
+      setKeepAlive() {
+      }
+      ref() {
+      }
+      unref() {
+      }
+      connect(port, host) {
+        setTimeout(() => this.emit("connect"), 10);
+      }
+      write(data) {
+      }
+      end() {
       }
     };
   }
@@ -5610,12 +5639,12 @@ var require_connection = __commonJS({
     "use strict";
     init_shims();
     var net = (init_net(), __toCommonJS(net_exports));
-    var EventEmitter = require_events().EventEmitter;
+    var EventEmitter2 = require_events().EventEmitter;
     var { parse: parse2, serialize } = require_dist();
     var flushBuffer = serialize.flush();
     var syncBuffer = serialize.sync();
     var endBuffer = serialize.end();
-    var Connection = class extends EventEmitter {
+    var Connection = class extends EventEmitter2 {
       constructor(config) {
         super();
         config = config || {};
@@ -5792,7 +5821,7 @@ var require_client = __commonJS({
   "node_modules/pg/lib/client.js"(exports, module) {
     "use strict";
     init_shims();
-    var EventEmitter = require_events().EventEmitter;
+    var EventEmitter2 = require_events().EventEmitter;
     var util = (init_util(), __toCommonJS(util_exports));
     var utils = require_utils();
     var sasl = require_sasl();
@@ -5802,7 +5831,7 @@ var require_client = __commonJS({
     var Query = require_query();
     var defaults = require_defaults();
     var Connection = require_connection();
-    var Client2 = class extends EventEmitter {
+    var Client2 = class extends EventEmitter2 {
       constructor(config) {
         super();
         this.connectionParameters = new ConnectionParameters(config);
@@ -6283,7 +6312,7 @@ var require_pg_pool = __commonJS({
   "node_modules/pg-pool/index.js"(exports, module) {
     "use strict";
     init_shims();
-    var EventEmitter = require_events().EventEmitter;
+    var EventEmitter2 = require_events().EventEmitter;
     var NOOP = function() {
     };
     var removeWhere = (list, predicate) => {
@@ -6331,7 +6360,7 @@ var require_pg_pool = __commonJS({
         pool.emit("error", err, client);
       };
     }
-    var Pool = class extends EventEmitter {
+    var Pool = class extends EventEmitter2 {
       constructor(options, Client2) {
         super();
         this.options = Object.assign({}, options);
@@ -6722,11 +6751,11 @@ var require_query2 = __commonJS({
   "node_modules/pg/lib/native/query.js"(exports, module) {
     "use strict";
     init_shims();
-    var EventEmitter = require_events().EventEmitter;
+    var EventEmitter2 = require_events().EventEmitter;
     var util = (init_util(), __toCommonJS(util_exports));
     var utils = require_utils();
     var NativeQuery = module.exports = function(config, values, callback) {
-      EventEmitter.call(this);
+      EventEmitter2.call(this);
       config = utils.normalizeQueryConfig(config, values, callback);
       this.text = config.text;
       this.values = config.values;
@@ -6743,7 +6772,7 @@ var require_query2 = __commonJS({
         }.bind(this)
       );
     };
-    util.inherits(NativeQuery, EventEmitter);
+    util.inherits(NativeQuery, EventEmitter2);
     var errorFieldMap = {
       sqlState: "code",
       statementPosition: "position",
@@ -6867,12 +6896,12 @@ var require_client2 = __commonJS({
     var Native = __require("pg-native");
     var TypeOverrides = require_type_overrides();
     var pkg = require_package();
-    var EventEmitter = require_events().EventEmitter;
+    var EventEmitter2 = require_events().EventEmitter;
     var util = (init_util(), __toCommonJS(util_exports));
     var ConnectionParameters = require_connection_parameters();
     var NativeQuery = require_query2();
     var Client2 = module.exports = function(config) {
-      EventEmitter.call(this);
+      EventEmitter2.call(this);
       config = config || {};
       this._Promise = config.Promise || global.Promise;
       this._types = new TypeOverrides(config.types);
@@ -6898,7 +6927,7 @@ var require_client2 = __commonJS({
       this.namedQueries = {};
     };
     Client2.Query = NativeQuery;
-    util.inherits(Client2, EventEmitter);
+    util.inherits(Client2, EventEmitter2);
     Client2.prototype._errorAllQueries = function(err) {
       const enqueueError = (query) => {
         process.nextTick(() => {
@@ -7158,11 +7187,16 @@ var require_lib2 = __commonJS({
 // index.ts
 init_shims();
 var import_pg = __toESM(require_lib2());
-init_crypto();
+init_string_decoder();
 var pgshims_default = {
   async fetch(request, env, ctx) {
-    console.log(randomBytes(18).toString("base64"));
+    const sd = new StringDecoder("utf8");
+    console.log(sd.write(Buffer.from([226, 130])));
+    console.log(sd.end(Buffer.from([172])));
+    console.log(sd.write(Buffer.from([226, 130])));
+    console.log(sd.end(Buffer.from([173])));
     const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
+    await client.connect();
     const result = await client.query("SELECT now()");
     return new Response("x");
   }

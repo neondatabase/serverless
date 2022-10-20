@@ -4,8 +4,9 @@ export function randomBytes(length) {
   return crypto.getRandomValues(Buffer.alloc(length));
 }
 
+// hash/hmac notes:
 // (1) we can't use crypto.subtle here because the returns must be synchronous
-// (2) note that these are very limited implementations: SHA-256 only, and you can only call `update` once!
+// (2) these are very limited implementations: SHA-256 only, and you can only call `update` once!
 
 export function createHash(type /* 'sha256' or 'md5' */) {
   if (type !== 'sha256') throw new Error('Only sha256 is supported');
