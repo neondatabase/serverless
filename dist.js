@@ -2313,16 +2313,246 @@ var init_util = __esm({
   }
 });
 
+// shims/crypto/sha256.js
+function sha256(data) {
+  let h0 = 1779033703, h1 = 3144134277, h2 = 1013904242, h3 = 2773480762, h4 = 1359893119, h5 = 2600822924, h6 = 528734635, h7 = 1541459225, tsz = 0, bp = 0;
+  const k = [
+    1116352408,
+    1899447441,
+    3049323471,
+    3921009573,
+    961987163,
+    1508970993,
+    2453635748,
+    2870763221,
+    3624381080,
+    310598401,
+    607225278,
+    1426881987,
+    1925078388,
+    2162078206,
+    2614888103,
+    3248222580,
+    3835390401,
+    4022224774,
+    264347078,
+    604807628,
+    770255983,
+    1249150122,
+    1555081692,
+    1996064986,
+    2554220882,
+    2821834349,
+    2952996808,
+    3210313671,
+    3336571891,
+    3584528711,
+    113926993,
+    338241895,
+    666307205,
+    773529912,
+    1294757372,
+    1396182291,
+    1695183700,
+    1986661051,
+    2177026350,
+    2456956037,
+    2730485921,
+    2820302411,
+    3259730800,
+    3345764771,
+    3516065817,
+    3600352804,
+    4094571909,
+    275423344,
+    430227734,
+    506948616,
+    659060556,
+    883997877,
+    958139571,
+    1322822218,
+    1537002063,
+    1747873779,
+    1955562222,
+    2024104815,
+    2227730452,
+    2361852424,
+    2428436474,
+    2756734187,
+    3204031479,
+    3329325298
+  ], rrot = (x, n) => x >>> n | x << 32 - n, w = new Uint32Array(64), buf = new Uint8Array(64), process2 = () => {
+    for (let j = 0, r = 0; j < 16; j++, r += 4) {
+      w[j] = buf[r] << 24 | buf[r + 1] << 16 | buf[r + 2] << 8 | buf[r + 3];
+    }
+    for (let j = 16; j < 64; j++) {
+      let s0 = rrot(w[j - 15], 7) ^ rrot(w[j - 15], 18) ^ w[j - 15] >>> 3;
+      let s1 = rrot(w[j - 2], 17) ^ rrot(w[j - 2], 19) ^ w[j - 2] >>> 10;
+      w[j] = w[j - 16] + s0 + w[j - 7] + s1 | 0;
+    }
+    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+    for (let j = 0; j < 64; j++) {
+      let S1 = rrot(e, 6) ^ rrot(e, 11) ^ rrot(e, 25), ch = e & f ^ ~e & g, t1 = h + S1 + ch + k[j] + w[j] | 0, S0 = rrot(a, 2) ^ rrot(a, 13) ^ rrot(a, 22), maj = a & b ^ a & c ^ b & c, t2 = S0 + maj | 0;
+      h = g;
+      g = f;
+      f = e;
+      e = d + t1 | 0;
+      d = c;
+      c = b;
+      b = a;
+      a = t1 + t2 | 0;
+    }
+    h0 = h0 + a | 0;
+    h1 = h1 + b | 0;
+    h2 = h2 + c | 0;
+    h3 = h3 + d | 0;
+    h4 = h4 + e | 0;
+    h5 = h5 + f | 0;
+    h6 = h6 + g | 0;
+    h7 = h7 + h | 0;
+    bp = 0;
+  }, add = (data2) => {
+    if (typeof data2 === "string") {
+      data2 = new TextEncoder().encode(data2);
+    }
+    for (let i = 0; i < data2.length; i++) {
+      buf[bp++] = data2[i];
+      if (bp === 64)
+        process2();
+    }
+    tsz += data2.length;
+  }, digest = () => {
+    buf[bp++] = 128;
+    if (bp == 64)
+      process2();
+    if (bp + 8 > 64) {
+      while (bp < 64)
+        buf[bp++] = 0;
+      process2();
+    }
+    while (bp < 58)
+      buf[bp++] = 0;
+    let L = tsz * 8;
+    buf[bp++] = L / 1099511627776 & 255;
+    buf[bp++] = L / 4294967296 & 255;
+    buf[bp++] = L >>> 24;
+    buf[bp++] = L >>> 16 & 255;
+    buf[bp++] = L >>> 8 & 255;
+    buf[bp++] = L & 255;
+    process2();
+    let reply = new Uint8Array(32);
+    reply[0] = h0 >>> 24;
+    reply[1] = h0 >>> 16 & 255;
+    reply[2] = h0 >>> 8 & 255;
+    reply[3] = h0 & 255;
+    reply[4] = h1 >>> 24;
+    reply[5] = h1 >>> 16 & 255;
+    reply[6] = h1 >>> 8 & 255;
+    reply[7] = h1 & 255;
+    reply[8] = h2 >>> 24;
+    reply[9] = h2 >>> 16 & 255;
+    reply[10] = h2 >>> 8 & 255;
+    reply[11] = h2 & 255;
+    reply[12] = h3 >>> 24;
+    reply[13] = h3 >>> 16 & 255;
+    reply[14] = h3 >>> 8 & 255;
+    reply[15] = h3 & 255;
+    reply[16] = h4 >>> 24;
+    reply[17] = h4 >>> 16 & 255;
+    reply[18] = h4 >>> 8 & 255;
+    reply[19] = h4 & 255;
+    reply[20] = h5 >>> 24;
+    reply[21] = h5 >>> 16 & 255;
+    reply[22] = h5 >>> 8 & 255;
+    reply[23] = h5 & 255;
+    reply[24] = h6 >>> 24;
+    reply[25] = h6 >>> 16 & 255;
+    reply[26] = h6 >>> 8 & 255;
+    reply[27] = h6 & 255;
+    reply[28] = h7 >>> 24;
+    reply[29] = h7 >>> 16 & 255;
+    reply[30] = h7 >>> 8 & 255;
+    reply[31] = h7 & 255;
+    reply.hex = () => {
+      let res = "";
+      reply.forEach((x) => res += ("0" + x.toString(16)).slice(-2));
+      return res;
+    };
+    return reply;
+  };
+  if (data === void 0)
+    return { add, digest };
+  add(data);
+  return digest();
+}
+var init_sha256 = __esm({
+  "shims/crypto/sha256.js"() {
+    "use strict";
+    init_shims();
+  }
+});
+
 // shims/crypto/index.js
 var crypto_exports = {};
 __export(crypto_exports, {
-  default: () => crypto_default
+  createHash: () => createHash,
+  createHmac: () => createHmac
 });
-var crypto_default;
+function createHash(type) {
+  if (type !== "sha256")
+    throw new Error("Only sha256 is supported");
+  return {
+    update: function(data) {
+      return {
+        digest: function() {
+          return Buffer.from(sha256(data));
+        }
+      };
+    }
+  };
+}
+function createHmac(type, key) {
+  if (type !== "sha256")
+    throw new Error("Only sha256 is supported");
+  return {
+    update: function(data) {
+      return {
+        digest: function() {
+          if (typeof key === "string")
+            key = new TextEncoder().encode(key);
+          if (typeof data === "string")
+            data = new TextEncoder().encode(data);
+          const keyLen = key.length;
+          if (keyLen > 64) {
+            key = sha256(key);
+          } else if (keyLen < 64) {
+            const tmp = new Uint8Array(64);
+            tmp.set(key);
+            key = tmp;
+          } else {
+          }
+          const innerKey = new Uint8Array(64);
+          const outerKey = new Uint8Array(64);
+          for (let i = 0; i < 64; i++) {
+            innerKey[i] = 54 ^ key[i];
+            outerKey[i] = 92 ^ key[i];
+          }
+          const msg = new Uint8Array(data.length + 64);
+          msg.set(innerKey, 0);
+          msg.set(data, 64);
+          const result = new Uint8Array(64 + 32);
+          result.set(outerKey, 0);
+          result.set(sha256(msg), 64);
+          return Buffer.from(sha256(result));
+        }
+      };
+    }
+  };
+}
 var init_crypto = __esm({
   "shims/crypto/index.js"() {
     init_shims();
-    crypto_default = {};
+    init_sha256();
   }
 });
 
@@ -3499,7 +3729,7 @@ var require_sasl = __commonJS({
       var saltBytes = Buffer.from(sv.salt, "base64");
       var saltedPassword = Hi(password, saltBytes, sv.iteration);
       var clientKey = hmacSha256(saltedPassword, "Client Key");
-      var storedKey = sha256(clientKey);
+      var storedKey = sha2562(clientKey);
       var clientFirstMessageBare = "n=*,r=" + session.clientNonce;
       var serverFirstMessage = "r=" + sv.nonce + ",s=" + sv.salt + ",i=" + sv.iteration;
       var clientFinalMessageWithoutProof = "c=biws,r=" + sv.nonce;
@@ -3603,7 +3833,7 @@ var require_sasl = __commonJS({
       }
       return Buffer.from(a.map((_, i) => a[i] ^ b[i]));
     }
-    function sha256(text) {
+    function sha2562(text) {
       return crypto.createHash("sha256").update(text).digest();
     }
     function hmacSha256(key, msg) {
@@ -6930,8 +7160,10 @@ var require_lib2 = __commonJS({
 // index.ts
 init_shims();
 var import_pg = __toESM(require_lib2());
+init_crypto();
 var pgshims_default = {
   async fetch(request, env, ctx) {
+    console.log(createHmac("sha256", "a102e31ad0e1db9e558398b1e1f8d5cc7bc53aaed337280945c6d0fc49c5f091a102e31ad0e1db9e558398b1e1f8d5cc7bc53aaed337280945c6d0fc49c5f091").update("abc").digest().reduce((memo, x) => memo + x.toString(16).padStart(2, "0"), ""));
     const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
     const result = await client.query("SELECT now()");
     return new Response("x");
