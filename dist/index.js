@@ -1930,7 +1930,7 @@ var init_shims = __esm({
 
 // node_modules/events/events.js
 var require_events = __commonJS({
-  "node_modules/events/events.js"(exports, module2) {
+  "node_modules/events/events.js"(exports, module) {
     "use strict";
     init_shims();
     var R = typeof Reflect === "object" ? Reflect : null;
@@ -1959,8 +1959,8 @@ var require_events = __commonJS({
     function EventEmitter2() {
       EventEmitter2.init.call(this);
     }
-    module2.exports = EventEmitter2;
-    module2.exports.once = once;
+    module.exports = EventEmitter2;
+    module.exports.once = once;
     EventEmitter2.EventEmitter = EventEmitter2;
     EventEmitter2.prototype._events = void 0;
     EventEmitter2.prototype._eventsCount = 0;
@@ -2656,10 +2656,10 @@ var require_postgres_array = __commonJS({
 
 // node_modules/pg-types/lib/arrayParser.js
 var require_arrayParser = __commonJS({
-  "node_modules/pg-types/lib/arrayParser.js"(exports, module2) {
+  "node_modules/pg-types/lib/arrayParser.js"(exports, module) {
     init_shims();
     var array = require_postgres_array();
-    module2.exports = {
+    module.exports = {
       create: function(source, transform) {
         return {
           parse: function() {
@@ -2673,14 +2673,14 @@ var require_arrayParser = __commonJS({
 
 // node_modules/postgres-date/index.js
 var require_postgres_date = __commonJS({
-  "node_modules/postgres-date/index.js"(exports, module2) {
+  "node_modules/postgres-date/index.js"(exports, module) {
     "use strict";
     init_shims();
     var DATE_TIME = /(\d{1,})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d{1,})?.*?( BC)?$/;
     var DATE = /^(\d{1,})-(\d{2})-(\d{2})( BC)?$/;
     var TIME_ZONE = /([Z+-])(\d{2})?:?(\d{2})?:?(\d{2})?/;
     var INFINITY = /^-?infinity$/;
-    module2.exports = function parseDate(isoDate) {
+    module.exports = function parseDate(isoDate) {
       if (INFINITY.test(isoDate)) {
         return Number(isoDate.replace("i", "I"));
       }
@@ -2762,9 +2762,9 @@ var require_postgres_date = __commonJS({
 
 // node_modules/xtend/mutable.js
 var require_mutable = __commonJS({
-  "node_modules/xtend/mutable.js"(exports, module2) {
+  "node_modules/xtend/mutable.js"(exports, module) {
     init_shims();
-    module2.exports = extend;
+    module.exports = extend;
     var hasOwnProperty = Object.prototype.hasOwnProperty;
     function extend(target) {
       for (var i = 1; i < arguments.length; i++) {
@@ -2782,11 +2782,11 @@ var require_mutable = __commonJS({
 
 // node_modules/postgres-interval/index.js
 var require_postgres_interval = __commonJS({
-  "node_modules/postgres-interval/index.js"(exports, module2) {
+  "node_modules/postgres-interval/index.js"(exports, module) {
     "use strict";
     init_shims();
     var extend = require_mutable();
-    module2.exports = PostgresInterval;
+    module.exports = PostgresInterval;
     function PostgresInterval(raw) {
       if (!(this instanceof PostgresInterval)) {
         return new PostgresInterval(raw);
@@ -2878,10 +2878,10 @@ var require_postgres_interval = __commonJS({
 
 // node_modules/postgres-bytea/index.js
 var require_postgres_bytea = __commonJS({
-  "node_modules/postgres-bytea/index.js"(exports, module2) {
+  "node_modules/postgres-bytea/index.js"(exports, module) {
     "use strict";
     init_shims();
-    module2.exports = function parseBytea(input) {
+    module.exports = function parseBytea(input) {
       if (/^\\x/.test(input)) {
         return new Buffer(input.substr(2), "hex");
       }
@@ -2914,7 +2914,7 @@ var require_postgres_bytea = __commonJS({
 
 // node_modules/pg-types/lib/textParsers.js
 var require_textParsers = __commonJS({
-  "node_modules/pg-types/lib/textParsers.js"(exports, module2) {
+  "node_modules/pg-types/lib/textParsers.js"(exports, module) {
     init_shims();
     var array = require_postgres_array();
     var arrayParser = require_arrayParser();
@@ -3112,7 +3112,7 @@ var require_textParsers = __commonJS({
       register(1183, parseStringArray);
       register(1270, parseStringArray);
     };
-    module2.exports = {
+    module.exports = {
       init
     };
   }
@@ -3120,7 +3120,7 @@ var require_textParsers = __commonJS({
 
 // node_modules/pg-int8/index.js
 var require_pg_int8 = __commonJS({
-  "node_modules/pg-int8/index.js"(exports, module2) {
+  "node_modules/pg-int8/index.js"(exports, module) {
     "use strict";
     init_shims();
     var BASE = 1e6;
@@ -3195,13 +3195,13 @@ var require_pg_int8 = __commonJS({
         return sign + digits + result;
       }
     }
-    module2.exports = readInt8;
+    module.exports = readInt8;
   }
 });
 
 // node_modules/pg-types/lib/binaryParsers.js
 var require_binaryParsers = __commonJS({
-  "node_modules/pg-types/lib/binaryParsers.js"(exports, module2) {
+  "node_modules/pg-types/lib/binaryParsers.js"(exports, module) {
     init_shims();
     var parseInt64 = require_pg_int8();
     var parseBits = function(data, bits, offset, invert, callback) {
@@ -3395,7 +3395,7 @@ var require_binaryParsers = __commonJS({
       register(1009, parseArray);
       register(25, parseText);
     };
-    module2.exports = {
+    module.exports = {
       init
     };
   }
@@ -3403,9 +3403,9 @@ var require_binaryParsers = __commonJS({
 
 // node_modules/pg-types/lib/builtins.js
 var require_builtins = __commonJS({
-  "node_modules/pg-types/lib/builtins.js"(exports, module2) {
+  "node_modules/pg-types/lib/builtins.js"(exports, module) {
     init_shims();
-    module2.exports = {
+    module.exports = {
       BOOL: 16,
       BYTEA: 17,
       CHAR: 18,
@@ -3514,10 +3514,10 @@ var require_pg_types = __commonJS({
 
 // node_modules/pg/lib/defaults.js
 var require_defaults = __commonJS({
-  "node_modules/pg/lib/defaults.js"(exports, module2) {
+  "node_modules/pg/lib/defaults.js"(exports, module) {
     "use strict";
     init_shims();
-    module2.exports = {
+    module.exports = {
       host: "localhost",
       user: process.platform === "win32" ? process.env.USERNAME : process.env.USER,
       database: void 0,
@@ -3545,7 +3545,7 @@ var require_defaults = __commonJS({
     var pgTypes = require_pg_types();
     var parseBigInteger = pgTypes.getTypeParser(20, "text");
     var parseBigIntegerArray = pgTypes.getTypeParser(1016, "text");
-    module2.exports.__defineSetter__("parseInt8", function(val) {
+    module.exports.__defineSetter__("parseInt8", function(val) {
       pgTypes.setTypeParser(20, "text", val ? pgTypes.getTypeParser(23, "text") : parseBigInteger);
       pgTypes.setTypeParser(1016, "text", val ? pgTypes.getTypeParser(1007, "text") : parseBigIntegerArray);
     });
@@ -3554,7 +3554,7 @@ var require_defaults = __commonJS({
 
 // node_modules/pg/lib/utils.js
 var require_utils = __commonJS({
-  "node_modules/pg/lib/utils.js"(exports, module2) {
+  "node_modules/pg/lib/utils.js"(exports, module) {
     "use strict";
     init_shims();
     var crypto2 = (init_crypto(), __toCommonJS(crypto_exports));
@@ -3680,7 +3680,7 @@ var require_utils = __commonJS({
       var outer = md5(Buffer.concat([Buffer.from(inner), salt]));
       return "md5" + outer;
     };
-    module2.exports = {
+    module.exports = {
       prepareValue: function prepareValueWrapper(value) {
         return prepareValue(value);
       },
@@ -3693,7 +3693,7 @@ var require_utils = __commonJS({
 
 // node_modules/pg/lib/sasl.js
 var require_sasl = __commonJS({
-  "node_modules/pg/lib/sasl.js"(exports, module2) {
+  "node_modules/pg/lib/sasl.js"(exports, module) {
     "use strict";
     init_shims();
     var crypto2 = (init_crypto(), __toCommonJS(crypto_exports));
@@ -3847,7 +3847,7 @@ var require_sasl = __commonJS({
       }
       return ui;
     }
-    module2.exports = {
+    module.exports = {
       startSession,
       continueSession,
       finalizeSession
@@ -3928,7 +3928,7 @@ var init_string_decoder = __esm({
 
 // node_modules/split2/index.js
 var require_split2 = __commonJS({
-  "node_modules/split2/index.js"(exports, module2) {
+  "node_modules/split2/index.js"(exports, module) {
     "use strict";
     init_shims();
     var { Transform } = (init_stream(), __toCommonJS(stream_exports));
@@ -4025,13 +4025,13 @@ var require_split2 = __commonJS({
       };
       return stream;
     }
-    module2.exports = split;
+    module.exports = split;
   }
 });
 
 // node_modules/pgpass/lib/helper.js
 var require_helper = __commonJS({
-  "node_modules/pgpass/lib/helper.js"(exports, module2) {
+  "node_modules/pgpass/lib/helper.js"(exports, module) {
     "use strict";
     init_shims();
     var path = (init_path(), __toCommonJS(path_exports));
@@ -4058,7 +4058,7 @@ var require_helper = __commonJS({
         warnStream.write(util.format.apply(util, args));
       }
     }
-    Object.defineProperty(module2.exports, "isWin", {
+    Object.defineProperty(module.exports, "isWin", {
       get: function() {
         return isWin;
       },
@@ -4066,17 +4066,17 @@ var require_helper = __commonJS({
         isWin = val;
       }
     });
-    module2.exports.warnTo = function(stream) {
+    module.exports.warnTo = function(stream) {
       var old = warnStream;
       warnStream = stream;
       return old;
     };
-    module2.exports.getFileName = function(rawEnv) {
+    module.exports.getFileName = function(rawEnv) {
       var env = rawEnv || process.env;
       var file = env.PGPASSFILE || (isWin ? path.join(env.APPDATA || "./", "postgresql", "pgpass.conf") : path.join(env.HOME || "./", ".pgpass"));
       return file;
     };
-    module2.exports.usePgPass = function(stats, fname) {
+    module.exports.usePgPass = function(stats, fname) {
       if (Object.prototype.hasOwnProperty.call(process.env, "PGPASSWORD")) {
         return false;
       }
@@ -4094,7 +4094,7 @@ var require_helper = __commonJS({
       }
       return true;
     };
-    var matcher = module2.exports.match = function(connInfo, entry) {
+    var matcher = module.exports.match = function(connInfo, entry) {
       return fieldNames.slice(0, -1).reduce(function(prev, field, idx) {
         if (idx == 1) {
           if (Number(connInfo[field] || defaultPort) === Number(entry[field])) {
@@ -4104,7 +4104,7 @@ var require_helper = __commonJS({
         return prev && (entry[field] === "*" || entry[field] === connInfo[field]);
       }, true);
     };
-    module2.exports.getPassword = function(connInfo, stream, cb) {
+    module.exports.getPassword = function(connInfo, stream, cb) {
       var pass;
       var lineStream = stream.pipe(split());
       function onLine(line) {
@@ -4126,7 +4126,7 @@ var require_helper = __commonJS({
       stream.on("error", onErr);
       lineStream.on("data", onLine).on("end", onEnd).on("error", onErr);
     };
-    var parseLine = module2.exports.parseLine = function(line) {
+    var parseLine = module.exports.parseLine = function(line) {
       if (line.length < 11 || line.match(/^\s+#/)) {
         return null;
       }
@@ -4161,7 +4161,7 @@ var require_helper = __commonJS({
       obj = Object.keys(obj).length === nrOfFields ? obj : null;
       return obj;
     };
-    var isValidEntry = module2.exports.isValidEntry = function(entry) {
+    var isValidEntry = module.exports.isValidEntry = function(entry) {
       var rules = {
         0: function(x) {
           return x.length > 0;
@@ -4198,13 +4198,13 @@ var require_helper = __commonJS({
 
 // node_modules/pgpass/lib/index.js
 var require_lib = __commonJS({
-  "node_modules/pgpass/lib/index.js"(exports, module2) {
+  "node_modules/pgpass/lib/index.js"(exports, module) {
     "use strict";
     init_shims();
     var path = (init_path(), __toCommonJS(path_exports));
     var fs = (init_fs(), __toCommonJS(fs_exports));
     var helper = require_helper();
-    module2.exports = function(connInfo, cb) {
+    module.exports = function(connInfo, cb) {
       var file = helper.getFileName();
       fs.stat(file, function(err, stat) {
         if (err || !helper.usePgPass(stat, file)) {
@@ -4214,13 +4214,13 @@ var require_lib = __commonJS({
         helper.getPassword(connInfo, st, cb);
       });
     };
-    module2.exports.warnTo = helper.warnTo;
+    module.exports.warnTo = helper.warnTo;
   }
 });
 
 // node_modules/pg/lib/type-overrides.js
 var require_type_overrides = __commonJS({
-  "node_modules/pg/lib/type-overrides.js"(exports, module2) {
+  "node_modules/pg/lib/type-overrides.js"(exports, module) {
     "use strict";
     init_shims();
     var types = require_pg_types();
@@ -4250,7 +4250,7 @@ var require_type_overrides = __commonJS({
       format = format || "text";
       return this.getOverrides(format)[oid] || this._types.getTypeParser(oid, format);
     };
-    module2.exports = TypeOverrides;
+    module.exports = TypeOverrides;
   }
 });
 
@@ -4288,7 +4288,7 @@ var init_url = __esm({
 
 // node_modules/pg-connection-string/index.js
 var require_pg_connection_string = __commonJS({
-  "node_modules/pg-connection-string/index.js"(exports, module2) {
+  "node_modules/pg-connection-string/index.js"(exports, module) {
     "use strict";
     init_shims();
     var url = (init_url(), __toCommonJS(url_exports));
@@ -4367,14 +4367,14 @@ var require_pg_connection_string = __commonJS({
       }
       return config;
     }
-    module2.exports = parse2;
+    module.exports = parse2;
     parse2.parse = parse2;
   }
 });
 
 // node_modules/pg/lib/connection-parameters.js
 var require_connection_parameters = __commonJS({
-  "node_modules/pg/lib/connection-parameters.js"(exports, module2) {
+  "node_modules/pg/lib/connection-parameters.js"(exports, module) {
     "use strict";
     init_shims();
     var dns = (init_dns(), __toCommonJS(dns_exports));
@@ -4508,13 +4508,13 @@ var require_connection_parameters = __commonJS({
         });
       }
     };
-    module2.exports = ConnectionParameters;
+    module.exports = ConnectionParameters;
   }
 });
 
 // node_modules/pg/lib/result.js
 var require_result = __commonJS({
-  "node_modules/pg/lib/result.js"(exports, module2) {
+  "node_modules/pg/lib/result.js"(exports, module) {
     "use strict";
     init_shims();
     var types = require_pg_types();
@@ -4594,13 +4594,13 @@ var require_result = __commonJS({
         }
       }
     };
-    module2.exports = Result;
+    module.exports = Result;
   }
 });
 
 // node_modules/pg/lib/query.js
 var require_query = __commonJS({
-  "node_modules/pg/lib/query.js"(exports, module2) {
+  "node_modules/pg/lib/query.js"(exports, module) {
     "use strict";
     init_shims();
     var { EventEmitter: EventEmitter2 } = require_events();
@@ -4778,7 +4778,7 @@ var require_query = __commonJS({
       handleCopyData(msg, connection) {
       }
     };
-    module2.exports = Query;
+    module.exports = Query;
   }
 });
 
@@ -5117,7 +5117,7 @@ var init_tls = __esm({
         }
         function createWasm() {
           var info = { "a": asmLibraryArg };
-          function receiveInstance(instance, module2) {
+          function receiveInstance(instance, module) {
             var exports2 = instance.exports;
             exports2 = Asyncify.instrumentWasmExports(exports2);
             Module["asm"] = exports2;
@@ -5737,21 +5737,21 @@ var init_net = __esm({
     init_tls();
     Socket = class extends import_events.EventEmitter {
       writable = true;
+      authorized = false;
       wsProxy = "http://proxy.hahathon.monster/";
-      #ws = null;
-      #module = null;
-      #tlsStarted = false;
-      constructor() {
-        super();
-        log("socket constructed");
-      }
+      ws = null;
+      module = null;
       setNoDelay() {
+        log("setNoDelay");
       }
       setKeepAlive() {
+        log("setKeepAlive");
       }
       ref() {
+        log("ref");
       }
       unref() {
+        log("unref");
       }
       connect(port, host) {
         const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
@@ -5759,37 +5759,37 @@ var init_net = __esm({
         Promise.all([
           fetch(wsAddr, { headers: { Upgrade: "websocket" } }),
           tls_emscripten({
-            instantiateWasm(info, receive) {
+            instantiateWasm: (info, receive) => {
               log("loading wasm");
               let instance = new WebAssembly.Instance(tlswasm, info);
               receive(instance);
               return instance.exports;
             },
-            provideEncryptedFromNetwork(buf, maxBytes) {
+            provideEncryptedFromNetwork: (buf, maxBytes) => {
               log(`provideEncryptedFromNetwork: providing up to ${maxBytes} bytes`);
               return new Promise((resolve) => {
                 outstandingDataRequest = { container: buf, maxBytes, resolve };
                 dequeueIncomingData();
               });
             },
-            writeEncryptedToNetwork(buf, size) {
+            writeEncryptedToNetwork: (buf, size) => {
               log(`writeEncryptedToNetwork: writing ${size} bytes`);
-              const arr = module.HEAPU8.slice(buf, buf + size);
-              socket.send(arr);
+              const arr = this.module.HEAPU8.slice(buf, buf + size);
+              this.ws.send(arr);
               return size;
             }
           })
-        ]).then(([resp, module2]) => {
-          this.#module = module2;
-          this.#ws = resp.webSocket;
-          this.#ws.accept();
-          this.#ws.binaryType = "arraybuffer";
-          this.#ws.addEventListener("error", (err) => {
+        ]).then(([resp, module]) => {
+          this.module = module;
+          this.ws = resp.webSocket;
+          this.ws.accept();
+          this.ws.binaryType = "arraybuffer";
+          this.ws.addEventListener("error", (err) => {
             throw err;
           });
-          this.#ws.addEventListener("close", () => {
+          this.ws.addEventListener("close", () => {
           });
-          this.#ws.addEventListener("message", (msg) => {
+          this.ws.addEventListener("message", (msg) => {
             const data = Buffer.from(msg.data);
             log(`socket received ${data.length} byte(s)`);
             this.emit("data", data);
@@ -5801,12 +5801,16 @@ var init_net = __esm({
       }
       write(data) {
         log(`socket sending ${data.length} byte(s)`);
-        this.#ws.send(data);
+        this.ws.send(data);
       }
       end() {
       }
       startTls(host) {
         log(`starting TLS`);
+        this.module.ccall("initTls", "number", ["string"], [host], { async: true }).then(() => {
+          this.authorized = true;
+          this.emit("secureConnection", this);
+        });
       }
     };
   }
@@ -6622,8 +6626,9 @@ __export(tls_exports, {
   connect: () => connect
 });
 function connect(options) {
-  const { socket: socket2, servername } = options;
-  socket2.startTls(servername);
+  const { socket, servername } = options;
+  socket.startTls(servername);
+  return socket;
 }
 var init_tls2 = __esm({
   "shims/tls/index.js"() {
@@ -6633,7 +6638,7 @@ var init_tls2 = __esm({
 
 // node_modules/pg/lib/connection.js
 var require_connection = __commonJS({
-  "node_modules/pg/lib/connection.js"(exports, module2) {
+  "node_modules/pg/lib/connection.js"(exports, module) {
     "use strict";
     init_shims();
     var net = (init_net(), __toCommonJS(net_exports));
@@ -6810,13 +6815,13 @@ var require_connection = __commonJS({
         this._send(serialize.copyFail(msg));
       }
     };
-    module2.exports = Connection;
+    module.exports = Connection;
   }
 });
 
 // node_modules/pg/lib/client.js
 var require_client = __commonJS({
-  "node_modules/pg/lib/client.js"(exports, module2) {
+  "node_modules/pg/lib/client.js"(exports, module) {
     "use strict";
     init_shims();
     var EventEmitter2 = require_events().EventEmitter;
@@ -7301,13 +7306,13 @@ var require_client = __commonJS({
       }
     };
     Client2.Query = Query;
-    module2.exports = Client2;
+    module.exports = Client2;
   }
 });
 
 // node_modules/pg-pool/index.js
 var require_pg_pool = __commonJS({
-  "node_modules/pg-pool/index.js"(exports, module2) {
+  "node_modules/pg-pool/index.js"(exports, module) {
     "use strict";
     init_shims();
     var EventEmitter2 = require_events().EventEmitter;
@@ -7677,14 +7682,14 @@ var require_pg_pool = __commonJS({
         return this._clients.length;
       }
     };
-    module2.exports = Pool;
+    module.exports = Pool;
   }
 });
 
 // node_modules/pg/package.json
 var require_package = __commonJS({
-  "node_modules/pg/package.json"(exports, module2) {
-    module2.exports = {
+  "node_modules/pg/package.json"(exports, module) {
+    module.exports = {
       name: "pg",
       version: "8.8.0",
       description: "PostgreSQL client - pure javascript & libpq with the same API",
@@ -7746,13 +7751,13 @@ var require_package = __commonJS({
 
 // node_modules/pg/lib/native/query.js
 var require_query2 = __commonJS({
-  "node_modules/pg/lib/native/query.js"(exports, module2) {
+  "node_modules/pg/lib/native/query.js"(exports, module) {
     "use strict";
     init_shims();
     var EventEmitter2 = require_events().EventEmitter;
     var util = (init_util(), __toCommonJS(util_exports));
     var utils = require_utils();
-    var NativeQuery = module2.exports = function(config, values, callback) {
+    var NativeQuery = module.exports = function(config, values, callback) {
       EventEmitter2.call(this);
       config = utils.normalizeQueryConfig(config, values, callback);
       this.text = config.text;
@@ -7888,7 +7893,7 @@ var require_query2 = __commonJS({
 
 // node_modules/pg/lib/native/client.js
 var require_client2 = __commonJS({
-  "node_modules/pg/lib/native/client.js"(exports, module2) {
+  "node_modules/pg/lib/native/client.js"(exports, module) {
     "use strict";
     init_shims();
     var Native = __require("pg-native");
@@ -7898,7 +7903,7 @@ var require_client2 = __commonJS({
     var util = (init_util(), __toCommonJS(util_exports));
     var ConnectionParameters = require_connection_parameters();
     var NativeQuery = require_query2();
-    var Client2 = module2.exports = function(config) {
+    var Client2 = module.exports = function(config) {
       EventEmitter2.call(this);
       config = config || {};
       this._Promise = config.Promise || global.Promise;
@@ -8122,16 +8127,16 @@ var require_client2 = __commonJS({
 
 // node_modules/pg/lib/native/index.js
 var require_native = __commonJS({
-  "node_modules/pg/lib/native/index.js"(exports, module2) {
+  "node_modules/pg/lib/native/index.js"(exports, module) {
     "use strict";
     init_shims();
-    module2.exports = require_client2();
+    module.exports = require_client2();
   }
 });
 
 // node_modules/pg/lib/index.js
 var require_lib2 = __commonJS({
-  "node_modules/pg/lib/index.js"(exports, module2) {
+  "node_modules/pg/lib/index.js"(exports, module) {
     "use strict";
     init_shims();
     var Client2 = require_client();
@@ -8157,10 +8162,10 @@ var require_lib2 = __commonJS({
       this.DatabaseError = DatabaseError;
     };
     if (typeof process.env.NODE_PG_FORCE_NATIVE !== "undefined") {
-      module2.exports = new PG(require_native());
+      module.exports = new PG(require_native());
     } else {
-      module2.exports = new PG(Client2);
-      Object.defineProperty(module2.exports, "native", {
+      module.exports = new PG(Client2);
+      Object.defineProperty(module.exports, "native", {
         configurable: true,
         enumerable: false,
         get() {
@@ -8172,7 +8177,7 @@ var require_lib2 = __commonJS({
               throw err;
             }
           }
-          Object.defineProperty(module2.exports, "native", {
+          Object.defineProperty(module.exports, "native", {
             value: native
           });
           return native;

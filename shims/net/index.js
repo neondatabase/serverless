@@ -12,32 +12,17 @@ export function isIP(input) {
 
 export class Socket extends EventEmitter {
   writable = true;
+  authorized = false;
   wsProxy = 'http://proxy.hahathon.monster/';
 
-  #ws = null;
-  #module = null;
-  #tlsStarted = false;
+  // private
+  ws = null;
+  module = null;
 
-  constructor() {
-    super();
-    log('socket constructed');
-  }
-
-  setNoDelay() {
-    // no-op
-  }
-
-  setKeepAlive() {
-    // no-op
-  }
-
-  ref() {
-
-  }
-
-  unref() {
-
-  }
+  setNoDelay() { log('setNoDelay'); }
+  setKeepAlive() { log('setKeepAlive'); }
+  ref() { log('ref'); }
+  unref() { log('unref'); }
 
   connect(port, host) {
     const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
@@ -49,43 +34,43 @@ export class Socket extends EventEmitter {
 
       // init wasm module
       tls_emscripten({
-        instantiateWasm(info, receive) {
+        instantiateWasm: (info, receive) => {
           log('loading wasm');
           let instance = new WebAssembly.Instance(tlswasm, info);
           receive(instance);
           return instance.exports;
         },
-        provideEncryptedFromNetwork(buf /* number */, maxBytes /* number */) {
+        provideEncryptedFromNetwork: (buf /* number */, maxBytes /* number */) => {
           log(`provideEncryptedFromNetwork: providing up to ${maxBytes} bytes`);
           return new Promise(resolve => {
             outstandingDataRequest = { container: buf, maxBytes, resolve };
             dequeueIncomingData();
           });
         },
-        writeEncryptedToNetwork(buf /* number */, size /* number */) {
+        writeEncryptedToNetwork: (buf /* number */, size /* number */) => {
           log(`writeEncryptedToNetwork: writing ${size} bytes`);
-          const arr = module.HEAPU8.slice(buf, buf + size);
-          socket.send(arr);
+          const arr = this.module.HEAPU8.slice(buf, buf + size);
+          this.ws.send(arr);
           return size;
         },
       }),
 
     ]).then(([resp, module]) => {
-      this.#module = module;
+      this.module = module;
 
-      this.#ws = resp.webSocket;
-      this.#ws.accept();
-      this.#ws.binaryType = 'arraybuffer';
+      this.ws = resp.webSocket;
+      this.ws.accept();
+      this.ws.binaryType = 'arraybuffer';
 
-      this.#ws.addEventListener('error', (err) => {
+      this.ws.addEventListener('error', (err) => {
         throw err;
       });
 
-      this.#ws.addEventListener('close', () => {
+      this.ws.addEventListener('close', () => {
         // ?
       });
 
-      this.#ws.addEventListener('message', (msg) => {
+      this.ws.addEventListener('message', (msg) => {
         const data = Buffer.from(msg.data);
         log(`socket received ${data.length} byte(s)`);
         this.emit('data', data);
@@ -99,7 +84,7 @@ export class Socket extends EventEmitter {
 
   write(data) {
     log(`socket sending ${data.length} byte(s)`);
-    this.#ws.send(data);
+    this.ws.send(data);
   }
 
   end() {
@@ -108,5 +93,9 @@ export class Socket extends EventEmitter {
 
   startTls(host) {
     log(`starting TLS`);
+    this.module.ccall('initTls', 'number', ['string'], [host], { async: true }).then(() => {
+      this.authorized = true;
+      this.emit('secureConnection', this);
+    });
   }
 }
