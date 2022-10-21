@@ -1,3 +1,4 @@
+import tlswasm from '../shims/net/tls.wasm';
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -1929,7 +1930,7 @@ var init_shims = __esm({
 
 // node_modules/events/events.js
 var require_events = __commonJS({
-  "node_modules/events/events.js"(exports, module) {
+  "node_modules/events/events.js"(exports, module2) {
     "use strict";
     init_shims();
     var R = typeof Reflect === "object" ? Reflect : null;
@@ -1958,8 +1959,8 @@ var require_events = __commonJS({
     function EventEmitter2() {
       EventEmitter2.init.call(this);
     }
-    module.exports = EventEmitter2;
-    module.exports.once = once;
+    module2.exports = EventEmitter2;
+    module2.exports.once = once;
     EventEmitter2.EventEmitter = EventEmitter2;
     EventEmitter2.prototype._events = void 0;
     EventEmitter2.prototype._eventsCount = 0;
@@ -2655,10 +2656,10 @@ var require_postgres_array = __commonJS({
 
 // node_modules/pg-types/lib/arrayParser.js
 var require_arrayParser = __commonJS({
-  "node_modules/pg-types/lib/arrayParser.js"(exports, module) {
+  "node_modules/pg-types/lib/arrayParser.js"(exports, module2) {
     init_shims();
     var array = require_postgres_array();
-    module.exports = {
+    module2.exports = {
       create: function(source, transform) {
         return {
           parse: function() {
@@ -2672,14 +2673,14 @@ var require_arrayParser = __commonJS({
 
 // node_modules/postgres-date/index.js
 var require_postgres_date = __commonJS({
-  "node_modules/postgres-date/index.js"(exports, module) {
+  "node_modules/postgres-date/index.js"(exports, module2) {
     "use strict";
     init_shims();
     var DATE_TIME = /(\d{1,})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d{1,})?.*?( BC)?$/;
     var DATE = /^(\d{1,})-(\d{2})-(\d{2})( BC)?$/;
     var TIME_ZONE = /([Z+-])(\d{2})?:?(\d{2})?:?(\d{2})?/;
     var INFINITY = /^-?infinity$/;
-    module.exports = function parseDate(isoDate) {
+    module2.exports = function parseDate(isoDate) {
       if (INFINITY.test(isoDate)) {
         return Number(isoDate.replace("i", "I"));
       }
@@ -2761,9 +2762,9 @@ var require_postgres_date = __commonJS({
 
 // node_modules/xtend/mutable.js
 var require_mutable = __commonJS({
-  "node_modules/xtend/mutable.js"(exports, module) {
+  "node_modules/xtend/mutable.js"(exports, module2) {
     init_shims();
-    module.exports = extend;
+    module2.exports = extend;
     var hasOwnProperty = Object.prototype.hasOwnProperty;
     function extend(target) {
       for (var i = 1; i < arguments.length; i++) {
@@ -2781,11 +2782,11 @@ var require_mutable = __commonJS({
 
 // node_modules/postgres-interval/index.js
 var require_postgres_interval = __commonJS({
-  "node_modules/postgres-interval/index.js"(exports, module) {
+  "node_modules/postgres-interval/index.js"(exports, module2) {
     "use strict";
     init_shims();
     var extend = require_mutable();
-    module.exports = PostgresInterval;
+    module2.exports = PostgresInterval;
     function PostgresInterval(raw) {
       if (!(this instanceof PostgresInterval)) {
         return new PostgresInterval(raw);
@@ -2877,10 +2878,10 @@ var require_postgres_interval = __commonJS({
 
 // node_modules/postgres-bytea/index.js
 var require_postgres_bytea = __commonJS({
-  "node_modules/postgres-bytea/index.js"(exports, module) {
+  "node_modules/postgres-bytea/index.js"(exports, module2) {
     "use strict";
     init_shims();
-    module.exports = function parseBytea(input) {
+    module2.exports = function parseBytea(input) {
       if (/^\\x/.test(input)) {
         return new Buffer(input.substr(2), "hex");
       }
@@ -2913,7 +2914,7 @@ var require_postgres_bytea = __commonJS({
 
 // node_modules/pg-types/lib/textParsers.js
 var require_textParsers = __commonJS({
-  "node_modules/pg-types/lib/textParsers.js"(exports, module) {
+  "node_modules/pg-types/lib/textParsers.js"(exports, module2) {
     init_shims();
     var array = require_postgres_array();
     var arrayParser = require_arrayParser();
@@ -3111,7 +3112,7 @@ var require_textParsers = __commonJS({
       register(1183, parseStringArray);
       register(1270, parseStringArray);
     };
-    module.exports = {
+    module2.exports = {
       init
     };
   }
@@ -3119,7 +3120,7 @@ var require_textParsers = __commonJS({
 
 // node_modules/pg-int8/index.js
 var require_pg_int8 = __commonJS({
-  "node_modules/pg-int8/index.js"(exports, module) {
+  "node_modules/pg-int8/index.js"(exports, module2) {
     "use strict";
     init_shims();
     var BASE = 1e6;
@@ -3194,13 +3195,13 @@ var require_pg_int8 = __commonJS({
         return sign + digits + result;
       }
     }
-    module.exports = readInt8;
+    module2.exports = readInt8;
   }
 });
 
 // node_modules/pg-types/lib/binaryParsers.js
 var require_binaryParsers = __commonJS({
-  "node_modules/pg-types/lib/binaryParsers.js"(exports, module) {
+  "node_modules/pg-types/lib/binaryParsers.js"(exports, module2) {
     init_shims();
     var parseInt64 = require_pg_int8();
     var parseBits = function(data, bits, offset, invert, callback) {
@@ -3394,7 +3395,7 @@ var require_binaryParsers = __commonJS({
       register(1009, parseArray);
       register(25, parseText);
     };
-    module.exports = {
+    module2.exports = {
       init
     };
   }
@@ -3402,9 +3403,9 @@ var require_binaryParsers = __commonJS({
 
 // node_modules/pg-types/lib/builtins.js
 var require_builtins = __commonJS({
-  "node_modules/pg-types/lib/builtins.js"(exports, module) {
+  "node_modules/pg-types/lib/builtins.js"(exports, module2) {
     init_shims();
-    module.exports = {
+    module2.exports = {
       BOOL: 16,
       BYTEA: 17,
       CHAR: 18,
@@ -3513,10 +3514,10 @@ var require_pg_types = __commonJS({
 
 // node_modules/pg/lib/defaults.js
 var require_defaults = __commonJS({
-  "node_modules/pg/lib/defaults.js"(exports, module) {
+  "node_modules/pg/lib/defaults.js"(exports, module2) {
     "use strict";
     init_shims();
-    module.exports = {
+    module2.exports = {
       host: "localhost",
       user: process.platform === "win32" ? process.env.USERNAME : process.env.USER,
       database: void 0,
@@ -3544,7 +3545,7 @@ var require_defaults = __commonJS({
     var pgTypes = require_pg_types();
     var parseBigInteger = pgTypes.getTypeParser(20, "text");
     var parseBigIntegerArray = pgTypes.getTypeParser(1016, "text");
-    module.exports.__defineSetter__("parseInt8", function(val) {
+    module2.exports.__defineSetter__("parseInt8", function(val) {
       pgTypes.setTypeParser(20, "text", val ? pgTypes.getTypeParser(23, "text") : parseBigInteger);
       pgTypes.setTypeParser(1016, "text", val ? pgTypes.getTypeParser(1007, "text") : parseBigIntegerArray);
     });
@@ -3553,7 +3554,7 @@ var require_defaults = __commonJS({
 
 // node_modules/pg/lib/utils.js
 var require_utils = __commonJS({
-  "node_modules/pg/lib/utils.js"(exports, module) {
+  "node_modules/pg/lib/utils.js"(exports, module2) {
     "use strict";
     init_shims();
     var crypto2 = (init_crypto(), __toCommonJS(crypto_exports));
@@ -3679,7 +3680,7 @@ var require_utils = __commonJS({
       var outer = md5(Buffer.concat([Buffer.from(inner), salt]));
       return "md5" + outer;
     };
-    module.exports = {
+    module2.exports = {
       prepareValue: function prepareValueWrapper(value) {
         return prepareValue(value);
       },
@@ -3692,7 +3693,7 @@ var require_utils = __commonJS({
 
 // node_modules/pg/lib/sasl.js
 var require_sasl = __commonJS({
-  "node_modules/pg/lib/sasl.js"(exports, module) {
+  "node_modules/pg/lib/sasl.js"(exports, module2) {
     "use strict";
     init_shims();
     var crypto2 = (init_crypto(), __toCommonJS(crypto_exports));
@@ -3846,7 +3847,7 @@ var require_sasl = __commonJS({
       }
       return ui;
     }
-    module.exports = {
+    module2.exports = {
       startSession,
       continueSession,
       finalizeSession
@@ -3927,7 +3928,7 @@ var init_string_decoder = __esm({
 
 // node_modules/split2/index.js
 var require_split2 = __commonJS({
-  "node_modules/split2/index.js"(exports, module) {
+  "node_modules/split2/index.js"(exports, module2) {
     "use strict";
     init_shims();
     var { Transform } = (init_stream(), __toCommonJS(stream_exports));
@@ -3973,9 +3974,9 @@ var require_split2 = __commonJS({
       }
       cb();
     }
-    function push(self, val) {
+    function push(self2, val) {
       if (val !== void 0) {
-        self.push(val);
+        self2.push(val);
       }
     }
     function noop(incoming) {
@@ -4024,13 +4025,13 @@ var require_split2 = __commonJS({
       };
       return stream;
     }
-    module.exports = split;
+    module2.exports = split;
   }
 });
 
 // node_modules/pgpass/lib/helper.js
 var require_helper = __commonJS({
-  "node_modules/pgpass/lib/helper.js"(exports, module) {
+  "node_modules/pgpass/lib/helper.js"(exports, module2) {
     "use strict";
     init_shims();
     var path = (init_path(), __toCommonJS(path_exports));
@@ -4057,7 +4058,7 @@ var require_helper = __commonJS({
         warnStream.write(util.format.apply(util, args));
       }
     }
-    Object.defineProperty(module.exports, "isWin", {
+    Object.defineProperty(module2.exports, "isWin", {
       get: function() {
         return isWin;
       },
@@ -4065,17 +4066,17 @@ var require_helper = __commonJS({
         isWin = val;
       }
     });
-    module.exports.warnTo = function(stream) {
+    module2.exports.warnTo = function(stream) {
       var old = warnStream;
       warnStream = stream;
       return old;
     };
-    module.exports.getFileName = function(rawEnv) {
+    module2.exports.getFileName = function(rawEnv) {
       var env = rawEnv || process.env;
       var file = env.PGPASSFILE || (isWin ? path.join(env.APPDATA || "./", "postgresql", "pgpass.conf") : path.join(env.HOME || "./", ".pgpass"));
       return file;
     };
-    module.exports.usePgPass = function(stats, fname) {
+    module2.exports.usePgPass = function(stats, fname) {
       if (Object.prototype.hasOwnProperty.call(process.env, "PGPASSWORD")) {
         return false;
       }
@@ -4093,7 +4094,7 @@ var require_helper = __commonJS({
       }
       return true;
     };
-    var matcher = module.exports.match = function(connInfo, entry) {
+    var matcher = module2.exports.match = function(connInfo, entry) {
       return fieldNames.slice(0, -1).reduce(function(prev, field, idx) {
         if (idx == 1) {
           if (Number(connInfo[field] || defaultPort) === Number(entry[field])) {
@@ -4103,7 +4104,7 @@ var require_helper = __commonJS({
         return prev && (entry[field] === "*" || entry[field] === connInfo[field]);
       }, true);
     };
-    module.exports.getPassword = function(connInfo, stream, cb) {
+    module2.exports.getPassword = function(connInfo, stream, cb) {
       var pass;
       var lineStream = stream.pipe(split());
       function onLine(line) {
@@ -4125,7 +4126,7 @@ var require_helper = __commonJS({
       stream.on("error", onErr);
       lineStream.on("data", onLine).on("end", onEnd).on("error", onErr);
     };
-    var parseLine = module.exports.parseLine = function(line) {
+    var parseLine = module2.exports.parseLine = function(line) {
       if (line.length < 11 || line.match(/^\s+#/)) {
         return null;
       }
@@ -4160,7 +4161,7 @@ var require_helper = __commonJS({
       obj = Object.keys(obj).length === nrOfFields ? obj : null;
       return obj;
     };
-    var isValidEntry = module.exports.isValidEntry = function(entry) {
+    var isValidEntry = module2.exports.isValidEntry = function(entry) {
       var rules = {
         0: function(x) {
           return x.length > 0;
@@ -4197,13 +4198,13 @@ var require_helper = __commonJS({
 
 // node_modules/pgpass/lib/index.js
 var require_lib = __commonJS({
-  "node_modules/pgpass/lib/index.js"(exports, module) {
+  "node_modules/pgpass/lib/index.js"(exports, module2) {
     "use strict";
     init_shims();
     var path = (init_path(), __toCommonJS(path_exports));
     var fs = (init_fs(), __toCommonJS(fs_exports));
     var helper = require_helper();
-    module.exports = function(connInfo, cb) {
+    module2.exports = function(connInfo, cb) {
       var file = helper.getFileName();
       fs.stat(file, function(err, stat) {
         if (err || !helper.usePgPass(stat, file)) {
@@ -4213,13 +4214,13 @@ var require_lib = __commonJS({
         helper.getPassword(connInfo, st, cb);
       });
     };
-    module.exports.warnTo = helper.warnTo;
+    module2.exports.warnTo = helper.warnTo;
   }
 });
 
 // node_modules/pg/lib/type-overrides.js
 var require_type_overrides = __commonJS({
-  "node_modules/pg/lib/type-overrides.js"(exports, module) {
+  "node_modules/pg/lib/type-overrides.js"(exports, module2) {
     "use strict";
     init_shims();
     var types = require_pg_types();
@@ -4249,7 +4250,7 @@ var require_type_overrides = __commonJS({
       format = format || "text";
       return this.getOverrides(format)[oid] || this._types.getTypeParser(oid, format);
     };
-    module.exports = TypeOverrides;
+    module2.exports = TypeOverrides;
   }
 });
 
@@ -4287,7 +4288,7 @@ var init_url = __esm({
 
 // node_modules/pg-connection-string/index.js
 var require_pg_connection_string = __commonJS({
-  "node_modules/pg-connection-string/index.js"(exports, module) {
+  "node_modules/pg-connection-string/index.js"(exports, module2) {
     "use strict";
     init_shims();
     var url = (init_url(), __toCommonJS(url_exports));
@@ -4366,14 +4367,14 @@ var require_pg_connection_string = __commonJS({
       }
       return config;
     }
-    module.exports = parse2;
+    module2.exports = parse2;
     parse2.parse = parse2;
   }
 });
 
 // node_modules/pg/lib/connection-parameters.js
 var require_connection_parameters = __commonJS({
-  "node_modules/pg/lib/connection-parameters.js"(exports, module) {
+  "node_modules/pg/lib/connection-parameters.js"(exports, module2) {
     "use strict";
     init_shims();
     var dns = (init_dns(), __toCommonJS(dns_exports));
@@ -4507,13 +4508,13 @@ var require_connection_parameters = __commonJS({
         });
       }
     };
-    module.exports = ConnectionParameters;
+    module2.exports = ConnectionParameters;
   }
 });
 
 // node_modules/pg/lib/result.js
 var require_result = __commonJS({
-  "node_modules/pg/lib/result.js"(exports, module) {
+  "node_modules/pg/lib/result.js"(exports, module2) {
     "use strict";
     init_shims();
     var types = require_pg_types();
@@ -4593,13 +4594,13 @@ var require_result = __commonJS({
         }
       }
     };
-    module.exports = Result;
+    module2.exports = Result;
   }
 });
 
 // node_modules/pg/lib/query.js
 var require_query = __commonJS({
-  "node_modules/pg/lib/query.js"(exports, module) {
+  "node_modules/pg/lib/query.js"(exports, module2) {
     "use strict";
     init_shims();
     var { EventEmitter: EventEmitter2 } = require_events();
@@ -4777,25 +4778,972 @@ var require_query = __commonJS({
       handleCopyData(msg, connection) {
       }
     };
-    module.exports = Query;
+    module2.exports = Query;
+  }
+});
+
+// shims/net/tls.js
+var tls_emscripten;
+var init_tls = __esm({
+  "shims/net/tls.js"() {
+    "use strict";
+    init_shims();
+    tls_emscripten = (() => {
+      var _scriptDir = typeof document !== "undefined" && document.currentScript ? document.currentScript.src : void 0;
+      return function(tls_emscripten2) {
+        tls_emscripten2 = tls_emscripten2 || {};
+        var Module = typeof tls_emscripten2 != "undefined" ? tls_emscripten2 : {};
+        var readyPromiseResolve, readyPromiseReject;
+        Module["ready"] = new Promise(function(resolve, reject) {
+          readyPromiseResolve = resolve;
+          readyPromiseReject = reject;
+        });
+        var moduleOverrides = Object.assign({}, Module);
+        var arguments_ = [];
+        var thisProgram = "./this.program";
+        var quit_ = (status, toThrow) => {
+          throw toThrow;
+        };
+        var ENVIRONMENT_IS_WEB = true;
+        var ENVIRONMENT_IS_WORKER = false;
+        var scriptDirectory = "";
+        function locateFile(path) {
+          if (Module["locateFile"]) {
+            return Module["locateFile"](path, scriptDirectory);
+          }
+          return scriptDirectory + path;
+        }
+        var read_, readAsync, readBinary, setWindowTitle;
+        if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
+          if (ENVIRONMENT_IS_WORKER) {
+            scriptDirectory = self.location.href;
+          } else if (typeof document != "undefined" && document.currentScript) {
+            scriptDirectory = document.currentScript.src;
+          }
+          if (_scriptDir) {
+            scriptDirectory = _scriptDir;
+          }
+          if (scriptDirectory.indexOf("blob:") !== 0) {
+            scriptDirectory = scriptDirectory.substr(0, scriptDirectory.replace(/[?#].*/, "").lastIndexOf("/") + 1);
+          } else {
+            scriptDirectory = "";
+          }
+          {
+            read_ = (url) => {
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", url, false);
+              xhr.send(null);
+              return xhr.responseText;
+            };
+            if (ENVIRONMENT_IS_WORKER) {
+              readBinary = (url) => {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", url, false);
+                xhr.responseType = "arraybuffer";
+                xhr.send(null);
+                return new Uint8Array(xhr.response);
+              };
+            }
+            readAsync = (url, onload, onerror) => {
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", url, true);
+              xhr.responseType = "arraybuffer";
+              xhr.onload = () => {
+                if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
+                  onload(xhr.response);
+                  return;
+                }
+                onerror();
+              };
+              xhr.onerror = onerror;
+              xhr.send(null);
+            };
+          }
+          setWindowTitle = (title) => document.title = title;
+        } else {
+        }
+        var out = Module["print"] || console.log.bind(console);
+        var err = Module["printErr"] || console.warn.bind(console);
+        Object.assign(Module, moduleOverrides);
+        moduleOverrides = null;
+        if (Module["arguments"])
+          arguments_ = Module["arguments"];
+        if (Module["thisProgram"])
+          thisProgram = Module["thisProgram"];
+        if (Module["quit"])
+          quit_ = Module["quit"];
+        var wasmBinary;
+        if (Module["wasmBinary"])
+          wasmBinary = Module["wasmBinary"];
+        var noExitRuntime = Module["noExitRuntime"] || true;
+        if (typeof WebAssembly != "object") {
+          abort("no native wasm support detected");
+        }
+        var wasmMemory;
+        var ABORT = false;
+        var EXITSTATUS;
+        function assert(condition, text) {
+          if (!condition) {
+            abort(text);
+          }
+        }
+        var UTF8Decoder = typeof TextDecoder != "undefined" ? new TextDecoder("utf8") : void 0;
+        function UTF8ArrayToString(heapOrArray, idx, maxBytesToRead) {
+          var endIdx = idx + maxBytesToRead;
+          var endPtr = idx;
+          while (heapOrArray[endPtr] && !(endPtr >= endIdx))
+            ++endPtr;
+          if (endPtr - idx > 16 && heapOrArray.buffer && UTF8Decoder) {
+            return UTF8Decoder.decode(heapOrArray.subarray(idx, endPtr));
+          }
+          var str = "";
+          while (idx < endPtr) {
+            var u0 = heapOrArray[idx++];
+            if (!(u0 & 128)) {
+              str += String.fromCharCode(u0);
+              continue;
+            }
+            var u1 = heapOrArray[idx++] & 63;
+            if ((u0 & 224) == 192) {
+              str += String.fromCharCode((u0 & 31) << 6 | u1);
+              continue;
+            }
+            var u2 = heapOrArray[idx++] & 63;
+            if ((u0 & 240) == 224) {
+              u0 = (u0 & 15) << 12 | u1 << 6 | u2;
+            } else {
+              u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | heapOrArray[idx++] & 63;
+            }
+            if (u0 < 65536) {
+              str += String.fromCharCode(u0);
+            } else {
+              var ch = u0 - 65536;
+              str += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
+            }
+          }
+          return str;
+        }
+        function UTF8ToString(ptr, maxBytesToRead) {
+          return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : "";
+        }
+        function stringToUTF8Array(str, heap, outIdx, maxBytesToWrite) {
+          if (!(maxBytesToWrite > 0))
+            return 0;
+          var startIdx = outIdx;
+          var endIdx = outIdx + maxBytesToWrite - 1;
+          for (var i = 0; i < str.length; ++i) {
+            var u = str.charCodeAt(i);
+            if (u >= 55296 && u <= 57343) {
+              var u1 = str.charCodeAt(++i);
+              u = 65536 + ((u & 1023) << 10) | u1 & 1023;
+            }
+            if (u <= 127) {
+              if (outIdx >= endIdx)
+                break;
+              heap[outIdx++] = u;
+            } else if (u <= 2047) {
+              if (outIdx + 1 >= endIdx)
+                break;
+              heap[outIdx++] = 192 | u >> 6;
+              heap[outIdx++] = 128 | u & 63;
+            } else if (u <= 65535) {
+              if (outIdx + 2 >= endIdx)
+                break;
+              heap[outIdx++] = 224 | u >> 12;
+              heap[outIdx++] = 128 | u >> 6 & 63;
+              heap[outIdx++] = 128 | u & 63;
+            } else {
+              if (outIdx + 3 >= endIdx)
+                break;
+              heap[outIdx++] = 240 | u >> 18;
+              heap[outIdx++] = 128 | u >> 12 & 63;
+              heap[outIdx++] = 128 | u >> 6 & 63;
+              heap[outIdx++] = 128 | u & 63;
+            }
+          }
+          heap[outIdx] = 0;
+          return outIdx - startIdx;
+        }
+        function stringToUTF8(str, outPtr, maxBytesToWrite) {
+          return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
+        }
+        function lengthBytesUTF8(str) {
+          var len = 0;
+          for (var i = 0; i < str.length; ++i) {
+            var c = str.charCodeAt(i);
+            if (c <= 127) {
+              len++;
+            } else if (c <= 2047) {
+              len += 2;
+            } else if (c >= 55296 && c <= 57343) {
+              len += 4;
+              ++i;
+            } else {
+              len += 3;
+            }
+          }
+          return len;
+        }
+        var buffer, HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
+        function updateGlobalBufferAndViews(buf) {
+          buffer = buf;
+          Module["HEAP8"] = HEAP8 = new Int8Array(buf);
+          Module["HEAP16"] = HEAP16 = new Int16Array(buf);
+          Module["HEAP32"] = HEAP32 = new Int32Array(buf);
+          Module["HEAPU8"] = HEAPU8 = new Uint8Array(buf);
+          Module["HEAPU16"] = HEAPU16 = new Uint16Array(buf);
+          Module["HEAPU32"] = HEAPU32 = new Uint32Array(buf);
+          Module["HEAPF32"] = HEAPF32 = new Float32Array(buf);
+          Module["HEAPF64"] = HEAPF64 = new Float64Array(buf);
+        }
+        var INITIAL_MEMORY = Module["INITIAL_MEMORY"] || 16777216;
+        var wasmTable;
+        var __ATPRERUN__ = [];
+        var __ATINIT__ = [];
+        var __ATPOSTRUN__ = [];
+        var runtimeInitialized = false;
+        function preRun() {
+          if (Module["preRun"]) {
+            if (typeof Module["preRun"] == "function")
+              Module["preRun"] = [Module["preRun"]];
+            while (Module["preRun"].length) {
+              addOnPreRun(Module["preRun"].shift());
+            }
+          }
+          callRuntimeCallbacks(__ATPRERUN__);
+        }
+        function initRuntime() {
+          runtimeInitialized = true;
+          callRuntimeCallbacks(__ATINIT__);
+        }
+        function postRun() {
+          if (Module["postRun"]) {
+            if (typeof Module["postRun"] == "function")
+              Module["postRun"] = [Module["postRun"]];
+            while (Module["postRun"].length) {
+              addOnPostRun(Module["postRun"].shift());
+            }
+          }
+          callRuntimeCallbacks(__ATPOSTRUN__);
+        }
+        function addOnPreRun(cb) {
+          __ATPRERUN__.unshift(cb);
+        }
+        function addOnInit(cb) {
+          __ATINIT__.unshift(cb);
+        }
+        function addOnPostRun(cb) {
+          __ATPOSTRUN__.unshift(cb);
+        }
+        var runDependencies = 0;
+        var runDependencyWatcher = null;
+        var dependenciesFulfilled = null;
+        function addRunDependency(id) {
+          runDependencies++;
+          if (Module["monitorRunDependencies"]) {
+            Module["monitorRunDependencies"](runDependencies);
+          }
+        }
+        function removeRunDependency(id) {
+          runDependencies--;
+          if (Module["monitorRunDependencies"]) {
+            Module["monitorRunDependencies"](runDependencies);
+          }
+          if (runDependencies == 0) {
+            if (runDependencyWatcher !== null) {
+              clearInterval(runDependencyWatcher);
+              runDependencyWatcher = null;
+            }
+            if (dependenciesFulfilled) {
+              var callback = dependenciesFulfilled;
+              dependenciesFulfilled = null;
+              callback();
+            }
+          }
+        }
+        function abort(what) {
+          {
+            if (Module["onAbort"]) {
+              Module["onAbort"](what);
+            }
+          }
+          what = "Aborted(" + what + ")";
+          err(what);
+          ABORT = true;
+          EXITSTATUS = 1;
+          what += ". Build with -sASSERTIONS for more info.";
+          var e = new WebAssembly.RuntimeError(what);
+          readyPromiseReject(e);
+          throw e;
+        }
+        var dataURIPrefix = "data:application/octet-stream;base64,";
+        function isDataURI(filename) {
+          return filename.startsWith(dataURIPrefix);
+        }
+        var wasmBinaryFile;
+        wasmBinaryFile = "tls.wasm";
+        if (!isDataURI(wasmBinaryFile)) {
+          wasmBinaryFile = locateFile(wasmBinaryFile);
+        }
+        function getBinary(file) {
+          try {
+            if (file == wasmBinaryFile && wasmBinary) {
+              return new Uint8Array(wasmBinary);
+            }
+            if (readBinary) {
+              return readBinary(file);
+            }
+            throw "both async and sync fetching of the wasm failed";
+          } catch (err2) {
+            abort(err2);
+          }
+        }
+        function getBinaryPromise() {
+          if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER)) {
+            if (typeof fetch == "function") {
+              return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
+                if (!response["ok"]) {
+                  throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
+                }
+                return response["arrayBuffer"]();
+              }).catch(function() {
+                return getBinary(wasmBinaryFile);
+              });
+            }
+          }
+          return Promise.resolve().then(function() {
+            return getBinary(wasmBinaryFile);
+          });
+        }
+        function createWasm() {
+          var info = { "a": asmLibraryArg };
+          function receiveInstance(instance, module2) {
+            var exports2 = instance.exports;
+            exports2 = Asyncify.instrumentWasmExports(exports2);
+            Module["asm"] = exports2;
+            wasmMemory = Module["asm"]["n"];
+            updateGlobalBufferAndViews(wasmMemory.buffer);
+            wasmTable = Module["asm"]["s"];
+            addOnInit(Module["asm"]["o"]);
+            removeRunDependency("wasm-instantiate");
+          }
+          addRunDependency("wasm-instantiate");
+          function receiveInstantiationResult(result) {
+            receiveInstance(result["instance"]);
+          }
+          function instantiateArrayBuffer(receiver) {
+            return getBinaryPromise().then(function(binary) {
+              return WebAssembly.instantiate(binary, info);
+            }).then(function(instance) {
+              return instance;
+            }).then(receiver, function(reason) {
+              err("failed to asynchronously prepare wasm: " + reason);
+              abort(reason);
+            });
+          }
+          function instantiateAsync() {
+            if (!wasmBinary && typeof WebAssembly.instantiateStreaming == "function" && !isDataURI(wasmBinaryFile) && typeof fetch == "function") {
+              return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
+                var result = WebAssembly.instantiateStreaming(response, info);
+                return result.then(receiveInstantiationResult, function(reason) {
+                  err("wasm streaming compile failed: " + reason);
+                  err("falling back to ArrayBuffer instantiation");
+                  return instantiateArrayBuffer(receiveInstantiationResult);
+                });
+              });
+            } else {
+              return instantiateArrayBuffer(receiveInstantiationResult);
+            }
+          }
+          if (Module["instantiateWasm"]) {
+            try {
+              var exports = Module["instantiateWasm"](info, receiveInstance);
+              exports = Asyncify.instrumentWasmExports(exports);
+              return exports;
+            } catch (e) {
+              err("Module.instantiateWasm callback failed with error: " + e);
+              readyPromiseReject(e);
+            }
+          }
+          instantiateAsync().catch(readyPromiseReject);
+          return {};
+        }
+        function __asyncjs__jsProvideEncryptedFromNetwork(buff, sz) {
+          return Asyncify.handleAsync(async () => {
+            const bytesRead = await Module.provideEncryptedFromNetwork(buff, sz);
+            return bytesRead;
+          });
+        }
+        function jsWriteEncryptedToNetwork(buff, sz) {
+          const bytesWritten = Module.writeEncryptedToNetwork(buff, sz);
+          return bytesWritten;
+        }
+        function __asyncjs__jsSha(shaVersion, buffDataIn, sz, buffDigest) {
+          return Asyncify.handleAsync(async () => {
+            if (buffDataIn !== 0) {
+              if (Module._digestStream == null) {
+                const stream = new crypto.DigestStream(`SHA-${shaVersion}`);
+                const writer = stream.getWriter();
+                Module._digestStream = { stream, writer };
+              }
+              const arrDataIn = Module.HEAPU8.subarray(buffDataIn, buffDataIn + sz);
+              await Module._digestStream.writer.write(arrDataIn);
+            } else {
+              const { stream, writer } = Module._digestStream;
+              await writer.close();
+              const digest = await stream.digest;
+              const arrDigest = new Uint8Array(digest);
+              Module.HEAPU8.set(arrDigest, buffDigest);
+              Module._digestStream = null;
+            }
+          });
+        }
+        function __asyncjs__jsAesGcmEncrypt(dataBuff, dataSz, keyBuff, keySize, ivBuff, ivSz, authInBuff, authInSz, authTagBuff, authTagSz, outBuff) {
+          return Asyncify.handleAsync(async () => {
+            const iv = Module.HEAPU8.subarray(ivBuff, ivBuff + ivSz);
+            const tagLength = authTagSz << 3;
+            const additionalData = Module.HEAPU8.subarray(authInBuff, authInBuff + authInSz);
+            const algorithm = { name: "AES-GCM", iv, tagLength, additionalData };
+            const keyData = Module.HEAPU8.subarray(keyBuff, keyBuff + keySize);
+            const key = await crypto.subtle.importKey("raw", keyData, { name: "AES-GCM" }, false, ["encrypt"]);
+            const data = Module.HEAPU8.subarray(dataBuff, dataBuff + dataSz);
+            const resultArrBuff = await crypto.subtle.encrypt(algorithm, key, data);
+            const result = new Uint8Array(resultArrBuff);
+            const cipherText = result.subarray(0, dataSz);
+            const authTag = result.subarray(dataSz);
+            Module.HEAPU8.set(cipherText, outBuff);
+            Module.HEAPU8.set(authTag, authTagBuff);
+          });
+        }
+        function __asyncjs__jsAesGcmDecrypt(dataBuff, dataSz, keyBuff, keySize, ivBuff, ivSz, authInBuff, authInSz, authTagBuff, authTagSz, outBuff) {
+          return Asyncify.handleAsync(async () => {
+            const iv = Module.HEAPU8.subarray(ivBuff, ivBuff + ivSz);
+            const tagLength = authTagSz << 3;
+            const additionalData = Module.HEAPU8.subarray(authInBuff, authInBuff + authInSz);
+            const algorithm = { name: "AES-GCM", iv, tagLength, additionalData };
+            const keyData = Module.HEAPU8.subarray(keyBuff, keyBuff + keySize);
+            const key = await crypto.subtle.importKey("raw", keyData, { name: "AES-GCM" }, false, ["decrypt"]);
+            const data = Module.HEAPU8.subarray(dataBuff, dataBuff + dataSz);
+            const authTag = Module.HEAPU8.subarray(authTagBuff, authTagBuff + authTagSz);
+            const taggedData = new Uint8Array(dataSz + authTagSz);
+            taggedData.set(data);
+            taggedData.set(authTag, dataSz);
+            try {
+              const resultArrBuff = await crypto.subtle.decrypt(algorithm, key, taggedData);
+              const plainText = new Uint8Array(resultArrBuff);
+              Module.HEAPU8.set(plainText, outBuff);
+              return 0;
+            } catch (err2) {
+              console.log("decrypt error:", err2.message);
+              return -1;
+            }
+          });
+        }
+        function wc_GenerateSeed(os, output, sz) {
+          const entropy = Module.HEAPU8.subarray(output, output + sz);
+          crypto.getRandomValues(entropy);
+          return 0;
+        }
+        function ExitStatus(status) {
+          this.name = "ExitStatus";
+          this.message = "Program terminated with exit(" + status + ")";
+          this.status = status;
+        }
+        function callRuntimeCallbacks(callbacks) {
+          while (callbacks.length > 0) {
+            callbacks.shift()(Module);
+          }
+        }
+        function handleException(e) {
+          if (e instanceof ExitStatus || e == "unwind") {
+            return EXITSTATUS;
+          }
+          quit_(1, e);
+        }
+        function writeArrayToMemory(array, buffer2) {
+          HEAP8.set(array, buffer2);
+        }
+        function readI53FromI64(ptr) {
+          return HEAPU32[ptr >> 2] + HEAP32[ptr + 4 >> 2] * 4294967296;
+        }
+        function __gmtime_js(time, tmPtr) {
+          var date = new Date(readI53FromI64(time) * 1e3);
+          HEAP32[tmPtr >> 2] = date.getUTCSeconds();
+          HEAP32[tmPtr + 4 >> 2] = date.getUTCMinutes();
+          HEAP32[tmPtr + 8 >> 2] = date.getUTCHours();
+          HEAP32[tmPtr + 12 >> 2] = date.getUTCDate();
+          HEAP32[tmPtr + 16 >> 2] = date.getUTCMonth();
+          HEAP32[tmPtr + 20 >> 2] = date.getUTCFullYear() - 1900;
+          HEAP32[tmPtr + 24 >> 2] = date.getUTCDay();
+          var start = Date.UTC(date.getUTCFullYear(), 0, 1, 0, 0, 0, 0);
+          var yday = (date.getTime() - start) / (1e3 * 60 * 60 * 24) | 0;
+          HEAP32[tmPtr + 28 >> 2] = yday;
+        }
+        function allocateUTF8(str) {
+          var size = lengthBytesUTF8(str) + 1;
+          var ret = _malloc(size);
+          if (ret)
+            stringToUTF8Array(str, HEAP8, ret, size);
+          return ret;
+        }
+        function _tzset_impl(timezone, daylight, tzname) {
+          var currentYear = new Date().getFullYear();
+          var winter = new Date(currentYear, 0, 1);
+          var summer = new Date(currentYear, 6, 1);
+          var winterOffset = winter.getTimezoneOffset();
+          var summerOffset = summer.getTimezoneOffset();
+          var stdTimezoneOffset = Math.max(winterOffset, summerOffset);
+          HEAP32[timezone >> 2] = stdTimezoneOffset * 60;
+          HEAP32[daylight >> 2] = Number(winterOffset != summerOffset);
+          function extractZone(date) {
+            var match = date.toTimeString().match(/\(([A-Za-z ]+)\)$/);
+            return match ? match[1] : "GMT";
+          }
+          var winterName = extractZone(winter);
+          var summerName = extractZone(summer);
+          var winterNamePtr = allocateUTF8(winterName);
+          var summerNamePtr = allocateUTF8(summerName);
+          if (summerOffset < winterOffset) {
+            HEAPU32[tzname >> 2] = winterNamePtr;
+            HEAPU32[tzname + 4 >> 2] = summerNamePtr;
+          } else {
+            HEAPU32[tzname >> 2] = summerNamePtr;
+            HEAPU32[tzname + 4 >> 2] = winterNamePtr;
+          }
+        }
+        function __tzset_js(timezone, daylight, tzname) {
+          if (__tzset_js.called)
+            return;
+          __tzset_js.called = true;
+          _tzset_impl(timezone, daylight, tzname);
+        }
+        function _emscripten_date_now() {
+          return Date.now();
+        }
+        function getHeapMax() {
+          return 2147483648;
+        }
+        function emscripten_realloc_buffer(size) {
+          try {
+            wasmMemory.grow(size - buffer.byteLength + 65535 >>> 16);
+            updateGlobalBufferAndViews(wasmMemory.buffer);
+            return 1;
+          } catch (e) {
+          }
+        }
+        function _emscripten_resize_heap(requestedSize) {
+          var oldSize = HEAPU8.length;
+          requestedSize = requestedSize >>> 0;
+          var maxHeapSize = getHeapMax();
+          if (requestedSize > maxHeapSize) {
+            return false;
+          }
+          let alignUp = (x, multiple) => x + (multiple - x % multiple) % multiple;
+          for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
+            var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown);
+            overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296);
+            var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
+            var replacement = emscripten_realloc_buffer(newSize);
+            if (replacement) {
+              return true;
+            }
+          }
+          return false;
+        }
+        var SYSCALLS = { varargs: void 0, get: function() {
+          SYSCALLS.varargs += 4;
+          var ret = HEAP32[SYSCALLS.varargs - 4 >> 2];
+          return ret;
+        }, getStr: function(ptr) {
+          var ret = UTF8ToString(ptr);
+          return ret;
+        } };
+        function _fd_close(fd) {
+          return 52;
+        }
+        function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
+          return 70;
+        }
+        var printCharBuffers = [null, [], []];
+        function printChar(stream, curr) {
+          var buffer2 = printCharBuffers[stream];
+          if (curr === 0 || curr === 10) {
+            (stream === 1 ? out : err)(UTF8ArrayToString(buffer2, 0));
+            buffer2.length = 0;
+          } else {
+            buffer2.push(curr);
+          }
+        }
+        function _fd_write(fd, iov, iovcnt, pnum) {
+          var num = 0;
+          for (var i = 0; i < iovcnt; i++) {
+            var ptr = HEAPU32[iov >> 2];
+            var len = HEAPU32[iov + 4 >> 2];
+            iov += 8;
+            for (var j = 0; j < len; j++) {
+              printChar(fd, HEAPU8[ptr + j]);
+            }
+            num += len;
+          }
+          HEAPU32[pnum >> 2] = num;
+          return 0;
+        }
+        function runAndAbortIfError(func) {
+          try {
+            return func();
+          } catch (e) {
+            abort(e);
+          }
+        }
+        function callUserCallback(func) {
+          if (ABORT) {
+            return;
+          }
+          try {
+            func();
+          } catch (e) {
+            handleException(e);
+          }
+        }
+        function runtimeKeepalivePush() {
+        }
+        function runtimeKeepalivePop() {
+        }
+        var Asyncify = { State: { Normal: 0, Unwinding: 1, Rewinding: 2, Disabled: 3 }, state: 0, StackSize: 4096, currData: null, handleSleepReturnValue: 0, exportCallStack: [], callStackNameToId: {}, callStackIdToName: {}, callStackId: 0, asyncPromiseHandlers: null, sleepCallbacks: [], getCallStackId: function(funcName) {
+          var id = Asyncify.callStackNameToId[funcName];
+          if (id === void 0) {
+            id = Asyncify.callStackId++;
+            Asyncify.callStackNameToId[funcName] = id;
+            Asyncify.callStackIdToName[id] = funcName;
+          }
+          return id;
+        }, instrumentWasmImports: function(imports) {
+          var ASYNCIFY_IMPORTS = ["env.invoke_*", "env.emscripten_sleep", "env.emscripten_wget", "env.emscripten_wget_data", "env.emscripten_idb_load", "env.emscripten_idb_store", "env.emscripten_idb_delete", "env.emscripten_idb_exists", "env.emscripten_idb_load_blob", "env.emscripten_idb_store_blob", "env.SDL_Delay", "env.emscripten_scan_registers", "env.emscripten_lazy_load_code", "env.emscripten_fiber_swap", "wasi_snapshot_preview1.fd_sync", "env.__wasi_fd_sync", "env._emval_await", "env._dlopen_js", "env.__asyncjs__*"].map((x2) => x2.split(".")[1]);
+          for (var x in imports) {
+            (function(x2) {
+              var original = imports[x2];
+              var sig = original.sig;
+              if (typeof original == "function") {
+                var isAsyncifyImport = ASYNCIFY_IMPORTS.indexOf(x2) >= 0 || x2.startsWith("__asyncjs__");
+              }
+            })(x);
+          }
+        }, instrumentWasmExports: function(exports) {
+          var ret = {};
+          for (var x in exports) {
+            (function(x2) {
+              var original = exports[x2];
+              if (typeof original == "function") {
+                ret[x2] = function() {
+                  Asyncify.exportCallStack.push(x2);
+                  try {
+                    return original.apply(null, arguments);
+                  } finally {
+                    if (!ABORT) {
+                      var y = Asyncify.exportCallStack.pop();
+                      assert(y === x2);
+                      Asyncify.maybeStopUnwind();
+                    }
+                  }
+                };
+              } else {
+                ret[x2] = original;
+              }
+            })(x);
+          }
+          return ret;
+        }, maybeStopUnwind: function() {
+          if (Asyncify.currData && Asyncify.state === Asyncify.State.Unwinding && Asyncify.exportCallStack.length === 0) {
+            Asyncify.state = Asyncify.State.Normal;
+            runAndAbortIfError(_asyncify_stop_unwind);
+            if (typeof Fibers != "undefined") {
+              Fibers.trampoline();
+            }
+          }
+        }, whenDone: function() {
+          return new Promise((resolve, reject) => {
+            Asyncify.asyncPromiseHandlers = { resolve, reject };
+          });
+        }, allocateData: function() {
+          var ptr = _malloc(12 + Asyncify.StackSize);
+          Asyncify.setDataHeader(ptr, ptr + 12, Asyncify.StackSize);
+          Asyncify.setDataRewindFunc(ptr);
+          return ptr;
+        }, setDataHeader: function(ptr, stack, stackSize) {
+          HEAP32[ptr >> 2] = stack;
+          HEAP32[ptr + 4 >> 2] = stack + stackSize;
+        }, setDataRewindFunc: function(ptr) {
+          var bottomOfCallStack = Asyncify.exportCallStack[0];
+          var rewindId = Asyncify.getCallStackId(bottomOfCallStack);
+          HEAP32[ptr + 8 >> 2] = rewindId;
+        }, getDataRewindFunc: function(ptr) {
+          var id = HEAP32[ptr + 8 >> 2];
+          var name = Asyncify.callStackIdToName[id];
+          var func = Module["asm"][name];
+          return func;
+        }, doRewind: function(ptr) {
+          var start = Asyncify.getDataRewindFunc(ptr);
+          return start();
+        }, handleSleep: function(startAsync) {
+          if (ABORT)
+            return;
+          if (Asyncify.state === Asyncify.State.Normal) {
+            var reachedCallback = false;
+            var reachedAfterCallback = false;
+            startAsync((handleSleepReturnValue) => {
+              if (ABORT)
+                return;
+              Asyncify.handleSleepReturnValue = handleSleepReturnValue || 0;
+              reachedCallback = true;
+              if (!reachedAfterCallback) {
+                return;
+              }
+              Asyncify.state = Asyncify.State.Rewinding;
+              runAndAbortIfError(() => _asyncify_start_rewind(Asyncify.currData));
+              if (typeof Browser != "undefined" && Browser.mainLoop.func) {
+                Browser.mainLoop.resume();
+              }
+              var asyncWasmReturnValue, isError = false;
+              try {
+                asyncWasmReturnValue = Asyncify.doRewind(Asyncify.currData);
+              } catch (err2) {
+                asyncWasmReturnValue = err2;
+                isError = true;
+              }
+              var handled = false;
+              if (!Asyncify.currData) {
+                var asyncPromiseHandlers = Asyncify.asyncPromiseHandlers;
+                if (asyncPromiseHandlers) {
+                  Asyncify.asyncPromiseHandlers = null;
+                  (isError ? asyncPromiseHandlers.reject : asyncPromiseHandlers.resolve)(asyncWasmReturnValue);
+                  handled = true;
+                }
+              }
+              if (isError && !handled) {
+                throw asyncWasmReturnValue;
+              }
+            });
+            reachedAfterCallback = true;
+            if (!reachedCallback) {
+              Asyncify.state = Asyncify.State.Unwinding;
+              Asyncify.currData = Asyncify.allocateData();
+              if (typeof Browser != "undefined" && Browser.mainLoop.func) {
+                Browser.mainLoop.pause();
+              }
+              runAndAbortIfError(() => _asyncify_start_unwind(Asyncify.currData));
+            }
+          } else if (Asyncify.state === Asyncify.State.Rewinding) {
+            Asyncify.state = Asyncify.State.Normal;
+            runAndAbortIfError(_asyncify_stop_rewind);
+            _free(Asyncify.currData);
+            Asyncify.currData = null;
+            Asyncify.sleepCallbacks.forEach((func) => callUserCallback(func));
+          } else {
+            abort("invalid state: " + Asyncify.state);
+          }
+          return Asyncify.handleSleepReturnValue;
+        }, handleAsync: function(startAsync) {
+          return Asyncify.handleSleep((wakeUp) => {
+            startAsync().then(wakeUp);
+          });
+        } };
+        function getCFunc(ident) {
+          var func = Module["_" + ident];
+          return func;
+        }
+        function ccall(ident, returnType, argTypes, args, opts) {
+          var toC = { "string": (str) => {
+            var ret2 = 0;
+            if (str !== null && str !== void 0 && str !== 0) {
+              var len = (str.length << 2) + 1;
+              ret2 = stackAlloc(len);
+              stringToUTF8(str, ret2, len);
+            }
+            return ret2;
+          }, "array": (arr) => {
+            var ret2 = stackAlloc(arr.length);
+            writeArrayToMemory(arr, ret2);
+            return ret2;
+          } };
+          function convertReturnValue(ret2) {
+            if (returnType === "string") {
+              return UTF8ToString(ret2);
+            }
+            if (returnType === "boolean")
+              return Boolean(ret2);
+            return ret2;
+          }
+          var func = getCFunc(ident);
+          var cArgs = [];
+          var stack = 0;
+          if (args) {
+            for (var i = 0; i < args.length; i++) {
+              var converter = toC[argTypes[i]];
+              if (converter) {
+                if (stack === 0)
+                  stack = stackSave();
+                cArgs[i] = converter(args[i]);
+              } else {
+                cArgs[i] = args[i];
+              }
+            }
+          }
+          var previousAsync = Asyncify.currData;
+          var ret = func.apply(null, cArgs);
+          function onDone(ret2) {
+            runtimeKeepalivePop();
+            if (stack !== 0)
+              stackRestore(stack);
+            return convertReturnValue(ret2);
+          }
+          runtimeKeepalivePush();
+          var asyncMode = opts && opts.async;
+          if (Asyncify.currData != previousAsync) {
+            return Asyncify.whenDone().then(onDone);
+          }
+          ret = onDone(ret);
+          if (asyncMode)
+            return Promise.resolve(ret);
+          return ret;
+        }
+        function cwrap(ident, returnType, argTypes, opts) {
+          argTypes = argTypes || [];
+          var numericArgs = argTypes.every((type) => type === "number" || type === "boolean");
+          var numericRet = returnType !== "string";
+          if (numericRet && numericArgs && !opts) {
+            return getCFunc(ident);
+          }
+          return function() {
+            return ccall(ident, returnType, argTypes, arguments, opts);
+          };
+        }
+        var asmLibraryArg = { "g": __asyncjs__jsAesGcmDecrypt, "h": __asyncjs__jsAesGcmEncrypt, "m": __asyncjs__jsProvideEncryptedFromNetwork, "f": __asyncjs__jsSha, "d": __gmtime_js, "e": __tzset_js, "c": _emscripten_date_now, "j": _emscripten_resize_heap, "b": _fd_close, "i": _fd_seek, "k": _fd_write, "l": jsWriteEncryptedToNetwork, "a": wc_GenerateSeed };
+        var asm = createWasm();
+        var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
+          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["o"]).apply(null, arguments);
+        };
+        var _initTls = Module["_initTls"] = function() {
+          return (_initTls = Module["_initTls"] = Module["asm"]["p"]).apply(null, arguments);
+        };
+        var _readData = Module["_readData"] = function() {
+          return (_readData = Module["_readData"] = Module["asm"]["q"]).apply(null, arguments);
+        };
+        var _writeData = Module["_writeData"] = function() {
+          return (_writeData = Module["_writeData"] = Module["asm"]["r"]).apply(null, arguments);
+        };
+        var _malloc = Module["_malloc"] = function() {
+          return (_malloc = Module["_malloc"] = Module["asm"]["t"]).apply(null, arguments);
+        };
+        var _free = Module["_free"] = function() {
+          return (_free = Module["_free"] = Module["asm"]["u"]).apply(null, arguments);
+        };
+        var stackSave = Module["stackSave"] = function() {
+          return (stackSave = Module["stackSave"] = Module["asm"]["v"]).apply(null, arguments);
+        };
+        var stackRestore = Module["stackRestore"] = function() {
+          return (stackRestore = Module["stackRestore"] = Module["asm"]["w"]).apply(null, arguments);
+        };
+        var stackAlloc = Module["stackAlloc"] = function() {
+          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["x"]).apply(null, arguments);
+        };
+        var _asyncify_start_unwind = Module["_asyncify_start_unwind"] = function() {
+          return (_asyncify_start_unwind = Module["_asyncify_start_unwind"] = Module["asm"]["y"]).apply(null, arguments);
+        };
+        var _asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = function() {
+          return (_asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = Module["asm"]["z"]).apply(null, arguments);
+        };
+        var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = function() {
+          return (_asyncify_start_rewind = Module["_asyncify_start_rewind"] = Module["asm"]["A"]).apply(null, arguments);
+        };
+        var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = function() {
+          return (_asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = Module["asm"]["B"]).apply(null, arguments);
+        };
+        var ___start_em_js = Module["___start_em_js"] = 19392;
+        var ___stop_em_js = Module["___stop_em_js"] = 22666;
+        Module["ccall"] = ccall;
+        Module["cwrap"] = cwrap;
+        var calledRun;
+        dependenciesFulfilled = function runCaller() {
+          if (!calledRun)
+            run();
+          if (!calledRun)
+            dependenciesFulfilled = runCaller;
+        };
+        function run(args) {
+          args = args || arguments_;
+          if (runDependencies > 0) {
+            return;
+          }
+          preRun();
+          if (runDependencies > 0) {
+            return;
+          }
+          function doRun() {
+            if (calledRun)
+              return;
+            calledRun = true;
+            Module["calledRun"] = true;
+            if (ABORT)
+              return;
+            initRuntime();
+            readyPromiseResolve(Module);
+            if (Module["onRuntimeInitialized"])
+              Module["onRuntimeInitialized"]();
+            postRun();
+          }
+          if (Module["setStatus"]) {
+            Module["setStatus"]("Running...");
+            setTimeout(function() {
+              setTimeout(function() {
+                Module["setStatus"]("");
+              }, 1);
+              doRun();
+            }, 1);
+          } else {
+            doRun();
+          }
+        }
+        if (Module["preInit"]) {
+          if (typeof Module["preInit"] == "function")
+            Module["preInit"] = [Module["preInit"]];
+          while (Module["preInit"].length > 0) {
+            Module["preInit"].pop()();
+          }
+        }
+        run();
+        return tls_emscripten2.ready;
+      };
+    })();
   }
 });
 
 // shims/net/index.js
 var net_exports = {};
 __export(net_exports, {
-  Socket: () => Socket
+  Socket: () => Socket,
+  isIP: () => isIP
 });
+function log(...args) {
+  console.log(...args);
+}
+function isIP(input) {
+  return 0;
+}
 var import_events, Socket;
 var init_net = __esm({
   "shims/net/index.js"() {
     init_shims();
     import_events = __toESM(require_events(), 1);
+    init_tls();
     Socket = class extends import_events.EventEmitter {
       writable = true;
+      wsProxy = "http://proxy.hahathon.monster/";
+      #ws = null;
+      #module = null;
+      #tlsStarted = false;
       constructor() {
         super();
-        console.log("socket constructed");
+        log("socket constructed");
       }
       setNoDelay() {
       }
@@ -4806,11 +5754,59 @@ var init_net = __esm({
       unref() {
       }
       connect(port, host) {
-        setTimeout(() => this.emit("connect"), 10);
+        const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
+        log(`socket connecting to ${wsAddr}`);
+        Promise.all([
+          fetch(wsAddr, { headers: { Upgrade: "websocket" } }),
+          tls_emscripten({
+            instantiateWasm(info, receive) {
+              log("loading wasm");
+              let instance = new WebAssembly.Instance(tlswasm, info);
+              receive(instance);
+              return instance.exports;
+            },
+            provideEncryptedFromNetwork(buf, maxBytes) {
+              log(`provideEncryptedFromNetwork: providing up to ${maxBytes} bytes`);
+              return new Promise((resolve) => {
+                outstandingDataRequest = { container: buf, maxBytes, resolve };
+                dequeueIncomingData();
+              });
+            },
+            writeEncryptedToNetwork(buf, size) {
+              log(`writeEncryptedToNetwork: writing ${size} bytes`);
+              const arr = module.HEAPU8.slice(buf, buf + size);
+              socket.send(arr);
+              return size;
+            }
+          })
+        ]).then(([resp, module2]) => {
+          this.#module = module2;
+          this.#ws = resp.webSocket;
+          this.#ws.accept();
+          this.#ws.binaryType = "arraybuffer";
+          this.#ws.addEventListener("error", (err) => {
+            throw err;
+          });
+          this.#ws.addEventListener("close", () => {
+          });
+          this.#ws.addEventListener("message", (msg) => {
+            const data = Buffer.from(msg.data);
+            log(`socket received ${data.length} byte(s)`);
+            this.emit("data", data);
+          });
+          log("socket connected, ready");
+          this.emit("connect");
+          this.emit("ready");
+        });
       }
       write(data) {
+        log(`socket sending ${data.length} byte(s)`);
+        this.#ws.send(data);
       }
       end() {
+      }
+      startTls(host) {
+        log(`starting TLS`);
       }
     };
   }
@@ -5623,19 +6619,21 @@ var require_dist = __commonJS({
 // shims/tls/index.js
 var tls_exports = {};
 __export(tls_exports, {
-  default: () => tls_default
+  connect: () => connect
 });
-var tls_default;
-var init_tls = __esm({
+function connect(options) {
+  const { socket: socket2, servername } = options;
+  socket2.startTls(servername);
+}
+var init_tls2 = __esm({
   "shims/tls/index.js"() {
     init_shims();
-    tls_default = {};
   }
 });
 
 // node_modules/pg/lib/connection.js
 var require_connection = __commonJS({
-  "node_modules/pg/lib/connection.js"(exports, module) {
+  "node_modules/pg/lib/connection.js"(exports, module2) {
     "use strict";
     init_shims();
     var net = (init_net(), __toCommonJS(net_exports));
@@ -5656,33 +6654,33 @@ var require_connection = __commonJS({
         this.ssl = config.ssl || false;
         this._ending = false;
         this._emitMessage = false;
-        var self = this;
+        var self2 = this;
         this.on("newListener", function(eventName) {
           if (eventName === "message") {
-            self._emitMessage = true;
+            self2._emitMessage = true;
           }
         });
       }
       connect(port, host) {
-        var self = this;
+        var self2 = this;
         this._connecting = true;
         this.stream.setNoDelay(true);
         this.stream.connect(port, host);
         this.stream.once("connect", function() {
-          if (self._keepAlive) {
-            self.stream.setKeepAlive(true, self._keepAliveInitialDelayMillis);
+          if (self2._keepAlive) {
+            self2.stream.setKeepAlive(true, self2._keepAliveInitialDelayMillis);
           }
-          self.emit("connect");
+          self2.emit("connect");
         });
         const reportStreamError = function(error) {
-          if (self._ending && (error.code === "ECONNRESET" || error.code === "EPIPE")) {
+          if (self2._ending && (error.code === "ECONNRESET" || error.code === "EPIPE")) {
             return;
           }
-          self.emit("error", error);
+          self2.emit("error", error);
         };
         this.stream.on("error", reportStreamError);
         this.stream.on("close", function() {
-          self.emit("end");
+          self2.emit("end");
         });
         if (!this.ssl) {
           return this.attachListeners(this.stream);
@@ -5693,33 +6691,33 @@ var require_connection = __commonJS({
             case "S":
               break;
             case "N":
-              self.stream.end();
-              return self.emit("error", new Error("The server does not support SSL connections"));
+              self2.stream.end();
+              return self2.emit("error", new Error("The server does not support SSL connections"));
             default:
-              self.stream.end();
-              return self.emit("error", new Error("There was an error establishing an SSL connection"));
+              self2.stream.end();
+              return self2.emit("error", new Error("There was an error establishing an SSL connection"));
           }
-          var tls = (init_tls(), __toCommonJS(tls_exports));
+          var tls = (init_tls2(), __toCommonJS(tls_exports));
           const options = {
-            socket: self.stream
+            socket: self2.stream
           };
-          if (self.ssl !== true) {
-            Object.assign(options, self.ssl);
-            if ("key" in self.ssl) {
-              options.key = self.ssl.key;
+          if (self2.ssl !== true) {
+            Object.assign(options, self2.ssl);
+            if ("key" in self2.ssl) {
+              options.key = self2.ssl.key;
             }
           }
           if (net.isIP(host) === 0) {
             options.servername = host;
           }
           try {
-            self.stream = tls.connect(options);
+            self2.stream = tls.connect(options);
           } catch (err) {
-            return self.emit("error", err);
+            return self2.emit("error", err);
           }
-          self.attachListeners(self.stream);
-          self.stream.on("error", reportStreamError);
-          self.emit("sslconnect");
+          self2.attachListeners(self2.stream);
+          self2.stream.on("error", reportStreamError);
+          self2.emit("sslconnect");
         });
       }
       attachListeners(stream) {
@@ -5812,13 +6810,13 @@ var require_connection = __commonJS({
         this._send(serialize.copyFail(msg));
       }
     };
-    module.exports = Connection;
+    module2.exports = Connection;
   }
 });
 
 // node_modules/pg/lib/client.js
 var require_client = __commonJS({
-  "node_modules/pg/lib/client.js"(exports, module) {
+  "node_modules/pg/lib/client.js"(exports, module2) {
     "use strict";
     init_shims();
     var EventEmitter2 = require_events().EventEmitter;
@@ -5887,7 +6885,7 @@ var require_client = __commonJS({
         this.queryQueue.length = 0;
       }
       _connect(callback) {
-        var self = this;
+        var self2 = this;
         var con = this.connection;
         this._connectionCallback = callback;
         if (this._connecting || this._connected) {
@@ -5911,14 +6909,14 @@ var require_client = __commonJS({
           con.connect(this.port, this.host);
         }
         con.on("connect", function() {
-          if (self.ssl) {
+          if (self2.ssl) {
             con.requestSsl();
           } else {
-            con.startup(self.getStartupConf());
+            con.startup(self2.getStartupConf());
           }
         });
         con.on("sslconnect", function() {
-          con.startup(self.getStartupConf());
+          con.startup(self2.getStartupConf());
         });
         this._attachListeners(con);
         con.once("end", () => {
@@ -6303,13 +7301,13 @@ var require_client = __commonJS({
       }
     };
     Client2.Query = Query;
-    module.exports = Client2;
+    module2.exports = Client2;
   }
 });
 
 // node_modules/pg-pool/index.js
 var require_pg_pool = __commonJS({
-  "node_modules/pg-pool/index.js"(exports, module) {
+  "node_modules/pg-pool/index.js"(exports, module2) {
     "use strict";
     init_shims();
     var EventEmitter2 = require_events().EventEmitter;
@@ -6679,14 +7677,14 @@ var require_pg_pool = __commonJS({
         return this._clients.length;
       }
     };
-    module.exports = Pool;
+    module2.exports = Pool;
   }
 });
 
 // node_modules/pg/package.json
 var require_package = __commonJS({
-  "node_modules/pg/package.json"(exports, module) {
-    module.exports = {
+  "node_modules/pg/package.json"(exports, module2) {
+    module2.exports = {
       name: "pg",
       version: "8.8.0",
       description: "PostgreSQL client - pure javascript & libpq with the same API",
@@ -6748,13 +7746,13 @@ var require_package = __commonJS({
 
 // node_modules/pg/lib/native/query.js
 var require_query2 = __commonJS({
-  "node_modules/pg/lib/native/query.js"(exports, module) {
+  "node_modules/pg/lib/native/query.js"(exports, module2) {
     "use strict";
     init_shims();
     var EventEmitter2 = require_events().EventEmitter;
     var util = (init_util(), __toCommonJS(util_exports));
     var utils = require_utils();
-    var NativeQuery = module.exports = function(config, values, callback) {
+    var NativeQuery = module2.exports = function(config, values, callback) {
       EventEmitter2.call(this);
       config = utils.normalizeQueryConfig(config, values, callback);
       this.text = config.text;
@@ -6821,34 +7819,34 @@ var require_query2 = __commonJS({
     };
     NativeQuery.prototype.submit = function(client) {
       this.state = "running";
-      var self = this;
+      var self2 = this;
       this.native = client.native;
       client.native.arrayMode = this._arrayMode;
       var after = function(err, rows, results) {
         client.native.arrayMode = false;
         setImmediate(function() {
-          self.emit("_done");
+          self2.emit("_done");
         });
         if (err) {
-          return self.handleError(err);
+          return self2.handleError(err);
         }
-        if (self._emitRowEvents) {
+        if (self2._emitRowEvents) {
           if (results.length > 1) {
             rows.forEach((rowOfRows, i) => {
               rowOfRows.forEach((row) => {
-                self.emit("row", row, results[i]);
+                self2.emit("row", row, results[i]);
               });
             });
           } else {
             rows.forEach(function(row) {
-              self.emit("row", row, results);
+              self2.emit("row", row, results);
             });
           }
         }
-        self.state = "end";
-        self.emit("end", results);
-        if (self.callback) {
-          self.callback(null, results);
+        self2.state = "end";
+        self2.emit("end", results);
+        if (self2.callback) {
+          self2.callback(null, results);
         }
       };
       if (process.domain) {
@@ -6871,8 +7869,8 @@ var require_query2 = __commonJS({
         return client.native.prepare(this.name, this.text, values.length, function(err) {
           if (err)
             return after(err);
-          client.namedQueries[self.name] = self.text;
-          return self.native.execute(self.name, values, after);
+          client.namedQueries[self2.name] = self2.text;
+          return self2.native.execute(self2.name, values, after);
         });
       } else if (this.values) {
         if (!Array.isArray(this.values)) {
@@ -6890,7 +7888,7 @@ var require_query2 = __commonJS({
 
 // node_modules/pg/lib/native/client.js
 var require_client2 = __commonJS({
-  "node_modules/pg/lib/native/client.js"(exports, module) {
+  "node_modules/pg/lib/native/client.js"(exports, module2) {
     "use strict";
     init_shims();
     var Native = __require("pg-native");
@@ -6900,7 +7898,7 @@ var require_client2 = __commonJS({
     var util = (init_util(), __toCommonJS(util_exports));
     var ConnectionParameters = require_connection_parameters();
     var NativeQuery = require_query2();
-    var Client2 = module.exports = function(config) {
+    var Client2 = module2.exports = function(config) {
       EventEmitter2.call(this);
       config = config || {};
       this._Promise = config.Promise || global.Promise;
@@ -6943,7 +7941,7 @@ var require_client2 = __commonJS({
       this._queryQueue.length = 0;
     };
     Client2.prototype._connect = function(cb) {
-      var self = this;
+      var self2 = this;
       if (this._connecting) {
         process.nextTick(() => cb(new Error("Client has already been connected. You cannot reuse a client.")));
         return;
@@ -6952,25 +7950,25 @@ var require_client2 = __commonJS({
       this.connectionParameters.getLibpqConnectionString(function(err, conString) {
         if (err)
           return cb(err);
-        self.native.connect(conString, function(err2) {
+        self2.native.connect(conString, function(err2) {
           if (err2) {
-            self.native.end();
+            self2.native.end();
             return cb(err2);
           }
-          self._connected = true;
-          self.native.on("error", function(err3) {
-            self._queryable = false;
-            self._errorAllQueries(err3);
-            self.emit("error", err3);
+          self2._connected = true;
+          self2.native.on("error", function(err3) {
+            self2._queryable = false;
+            self2._errorAllQueries(err3);
+            self2.emit("error", err3);
           });
-          self.native.on("notification", function(msg) {
-            self.emit("notification", {
+          self2.native.on("notification", function(msg) {
+            self2.emit("notification", {
               channel: msg.relname,
               payload: msg.extra
             });
           });
-          self.emit("connect");
-          self._pulseQueryQueue(true);
+          self2.emit("connect");
+          self2._pulseQueryQueue(true);
           cb();
         });
       });
@@ -7056,7 +8054,7 @@ var require_client2 = __commonJS({
       return result;
     };
     Client2.prototype.end = function(cb) {
-      var self = this;
+      var self2 = this;
       this._ending = true;
       if (!this._connected) {
         this.once("connect", this.end.bind(this, cb));
@@ -7068,9 +8066,9 @@ var require_client2 = __commonJS({
         });
       }
       this.native.end(function() {
-        self._errorAllQueries(new Error("Connection terminated"));
+        self2._errorAllQueries(new Error("Connection terminated"));
         process.nextTick(() => {
-          self.emit("end");
+          self2.emit("end");
           if (cb)
             cb();
         });
@@ -7096,9 +8094,9 @@ var require_client2 = __commonJS({
       }
       this._activeQuery = query;
       query.submit(this);
-      var self = this;
+      var self2 = this;
       query.once("_done", function() {
-        self._pulseQueryQueue();
+        self2._pulseQueryQueue();
       });
     };
     Client2.prototype.cancel = function(query) {
@@ -7124,16 +8122,16 @@ var require_client2 = __commonJS({
 
 // node_modules/pg/lib/native/index.js
 var require_native = __commonJS({
-  "node_modules/pg/lib/native/index.js"(exports, module) {
+  "node_modules/pg/lib/native/index.js"(exports, module2) {
     "use strict";
     init_shims();
-    module.exports = require_client2();
+    module2.exports = require_client2();
   }
 });
 
 // node_modules/pg/lib/index.js
 var require_lib2 = __commonJS({
-  "node_modules/pg/lib/index.js"(exports, module) {
+  "node_modules/pg/lib/index.js"(exports, module2) {
     "use strict";
     init_shims();
     var Client2 = require_client();
@@ -7159,10 +8157,10 @@ var require_lib2 = __commonJS({
       this.DatabaseError = DatabaseError;
     };
     if (typeof process.env.NODE_PG_FORCE_NATIVE !== "undefined") {
-      module.exports = new PG(require_native());
+      module2.exports = new PG(require_native());
     } else {
-      module.exports = new PG(Client2);
-      Object.defineProperty(module.exports, "native", {
+      module2.exports = new PG(Client2);
+      Object.defineProperty(module2.exports, "native", {
         configurable: true,
         enumerable: false,
         get() {
@@ -7174,7 +8172,7 @@ var require_lib2 = __commonJS({
               throw err;
             }
           }
-          Object.defineProperty(module.exports, "native", {
+          Object.defineProperty(module2.exports, "native", {
             value: native
           });
           return native;
@@ -7187,14 +8185,8 @@ var require_lib2 = __commonJS({
 // index.ts
 init_shims();
 var import_pg = __toESM(require_lib2());
-init_string_decoder();
 var pgshims_default = {
   async fetch(request, env, ctx) {
-    const sd = new StringDecoder("utf8");
-    console.log(sd.write(Buffer.from([226, 130])));
-    console.log(sd.end(Buffer.from([172])));
-    console.log(sd.write(Buffer.from([226, 130])));
-    console.log(sd.end(Buffer.from([173])));
     const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
     await client.connect();
     const result = await client.query("SELECT now()");

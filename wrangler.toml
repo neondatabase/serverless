@@ -1,11 +1,11 @@
 name = "pgshims"
-main = "dist.js"
+main = "dist/index.js"
 compatibility_date = "2022-10-19"
 node_compat = false
 
 [build]
-command = "npx esbuild index.ts --external:pg-native --inject:shims/shims.js --bundle --format=esm --outfile=dist.js"
-watch_dir = "."
+command = "(echo \"import tlswasm from '../shims/net/tls.wasm';\" && npx esbuild index.ts --external:pg-native --inject:shims/shims.js --bundle --format=esm) > dist/index.js"
+watch_dir = "shims"
 
 [vars]
 # DATABASE_URL
