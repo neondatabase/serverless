@@ -1,4 +1,14 @@
 <script type="module">
-  import main from './dist.js';
-  main.fetch(null, { DATABASE_URL: 'postgresql://jawj:password@frosty-bird-713157.cloud.neon.tech:5432/main' }, null);
+  import main from './dist-browser/index.js';
+  const resp = await fetch('.dev.vars');
+  const text = await resp.text();
+  const env = text.split('\n').reduce((memo, line) => {
+    const eqIndex = line.indexOf('=')
+    if (!line.match(/^\s*#/) && eqIndex > 0) {
+      memo[line.substring(0, eqIndex)] = line.substring(eqIndex + 1);
+    }
+    return memo;
+  }, {});
+
+  main.fetch(null, env, null);
 </script>

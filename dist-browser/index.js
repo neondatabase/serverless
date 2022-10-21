@@ -1,4 +1,4 @@
-import tlswasm from '../shims/net/tls.wasm';
+const tlsWasm = "./shims/net/tls.wasm";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -6,7 +6,7 @@ var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
-  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
+  get: (a, b2) => (typeof require !== "undefined" ? require : a)[b2]
 }) : x)(function(x) {
   if (typeof require !== "undefined")
     return require.apply(this, arguments);
@@ -318,9 +318,9 @@ var require_buffer = __commonJS({
       if (valueOf != null && valueOf !== value) {
         return Buffer2.from(valueOf, encodingOrOffset, length);
       }
-      const b = fromObject(value);
-      if (b)
-        return b;
+      const b2 = fromObject(value);
+      if (b2)
+        return b2;
       if (typeof Symbol !== "undefined" && Symbol.toPrimitive != null && typeof value[Symbol.toPrimitive] === "function") {
         return Buffer2.from(value[Symbol.toPrimitive]("string"), encodingOrOffset, length);
       }
@@ -443,27 +443,27 @@ var require_buffer = __commonJS({
       }
       return Buffer2.alloc(+length);
     }
-    Buffer2.isBuffer = function isBuffer(b) {
-      return b != null && b._isBuffer === true && b !== Buffer2.prototype;
+    Buffer2.isBuffer = function isBuffer(b2) {
+      return b2 != null && b2._isBuffer === true && b2 !== Buffer2.prototype;
     };
-    Buffer2.compare = function compare(a, b) {
+    Buffer2.compare = function compare(a, b2) {
       if (isInstance(a, Uint8Array))
         a = Buffer2.from(a, a.offset, a.byteLength);
-      if (isInstance(b, Uint8Array))
-        b = Buffer2.from(b, b.offset, b.byteLength);
-      if (!Buffer2.isBuffer(a) || !Buffer2.isBuffer(b)) {
+      if (isInstance(b2, Uint8Array))
+        b2 = Buffer2.from(b2, b2.offset, b2.byteLength);
+      if (!Buffer2.isBuffer(a) || !Buffer2.isBuffer(b2)) {
         throw new TypeError(
           'The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array'
         );
       }
-      if (a === b)
+      if (a === b2)
         return 0;
       let x = a.length;
-      let y = b.length;
+      let y = b2.length;
       for (let i = 0, len = Math.min(x, y); i < len; ++i) {
-        if (a[i] !== b[i]) {
+        if (a[i] !== b2[i]) {
           x = a[i];
-          y = b[i];
+          y = b2[i];
           break;
         }
       }
@@ -624,10 +624,10 @@ var require_buffer = __commonJS({
       }
     }
     Buffer2.prototype._isBuffer = true;
-    function swap(b, n, m) {
-      const i = b[n];
-      b[n] = b[m];
-      b[m] = i;
+    function swap(b2, n, m) {
+      const i = b2[n];
+      b2[n] = b2[m];
+      b2[m] = i;
     }
     Buffer2.prototype.swap16 = function swap16() {
       const len = this.length;
@@ -672,12 +672,12 @@ var require_buffer = __commonJS({
       return slowToString.apply(this, arguments);
     };
     Buffer2.prototype.toLocaleString = Buffer2.prototype.toString;
-    Buffer2.prototype.equals = function equals(b) {
-      if (!Buffer2.isBuffer(b))
+    Buffer2.prototype.equals = function equals(b2) {
+      if (!Buffer2.isBuffer(b2))
         throw new TypeError("Argument must be a Buffer");
-      if (this === b)
+      if (this === b2)
         return true;
-      return Buffer2.compare(this, b) === 0;
+      return Buffer2.compare(this, b2) === 0;
     };
     Buffer2.prototype.inspect = function inspect() {
       let str = "";
@@ -2391,20 +2391,20 @@ function sha256(data) {
       let s1 = rrot(w[j - 2], 17) ^ rrot(w[j - 2], 19) ^ w[j - 2] >>> 10;
       w[j] = w[j - 16] + s0 + w[j - 7] + s1 | 0;
     }
-    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+    let a = h0, b2 = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
     for (let j = 0; j < 64; j++) {
-      let S1 = rrot(e, 6) ^ rrot(e, 11) ^ rrot(e, 25), ch = e & f ^ ~e & g, t1 = h + S1 + ch + k[j] + w[j] | 0, S0 = rrot(a, 2) ^ rrot(a, 13) ^ rrot(a, 22), maj = a & b ^ a & c ^ b & c, t2 = S0 + maj | 0;
+      let S1 = rrot(e, 6) ^ rrot(e, 11) ^ rrot(e, 25), ch = e & f ^ ~e & g, t1 = h + S1 + ch + k[j] + w[j] | 0, S0 = rrot(a, 2) ^ rrot(a, 13) ^ rrot(a, 22), maj = a & b2 ^ a & c ^ b2 & c, t2 = S0 + maj | 0;
       h = g;
       g = f;
       f = e;
       e = d + t1 | 0;
       d = c;
-      c = b;
-      b = a;
+      c = b2;
+      b2 = a;
       a = t1 + t2 | 0;
     }
     h0 = h0 + a | 0;
-    h1 = h1 + b | 0;
+    h1 = h1 + b2 | 0;
     h2 = h2 + c | 0;
     h3 = h3 + d | 0;
     h4 = h4 + e | 0;
@@ -3743,6 +3743,7 @@ var require_sasl = __commonJS({
       session.response = clientFinalMessageWithoutProof + ",p=" + clientProof;
     }
     function finalizeSession(session, serverData) {
+      console.log("finalizing!");
       if (session.message !== "SASLResponse") {
         throw new Error("SASL: Last message was not SASLResponse");
       }
@@ -3817,20 +3818,20 @@ var require_sasl = __commonJS({
         serverSignature
       };
     }
-    function xorBuffers(a, b) {
+    function xorBuffers(a, b2) {
       if (!Buffer.isBuffer(a)) {
         throw new TypeError("first argument must be a Buffer");
       }
-      if (!Buffer.isBuffer(b)) {
+      if (!Buffer.isBuffer(b2)) {
         throw new TypeError("second argument must be a Buffer");
       }
-      if (a.length !== b.length) {
+      if (a.length !== b2.length) {
         throw new Error("Buffer lengths must match");
       }
       if (a.length === 0) {
         throw new Error("Buffers cannot be empty");
       }
-      return Buffer.from(a.map((_, i) => a[i] ^ b[i]));
+      return Buffer.from(a.map((_, i) => a[i] ^ b2[i]));
     }
     function sha2562(text) {
       return crypto2.createHash("sha256").update(text).digest();
@@ -4275,10 +4276,10 @@ __export(url_exports, {
 function parse(url, parseQueryString = false) {
   const { protocol } = new URL(url);
   const httpUrl = "http:" + url.substring(protocol.length);
-  const { username, password, hostname, port, search, searchParams, hash } = new URL(httpUrl);
+  const { username, password, hostname, port, pathname, search, searchParams, hash } = new URL(httpUrl);
   const auth = username + ":" + password;
   const query = parseQueryString ? Object.fromEntries(searchParams.entries()) : search;
-  return { href: url, protocol, auth, username, password, hostname, port, search, query, hash };
+  return { href: url, protocol, auth, username, password, hostname, port, pathname, search, query, hash };
 }
 var init_url = __esm({
   "shims/url/index.js"() {
@@ -5121,10 +5122,10 @@ var init_tls = __esm({
             var exports2 = instance.exports;
             exports2 = Asyncify.instrumentWasmExports(exports2);
             Module["asm"] = exports2;
-            wasmMemory = Module["asm"]["n"];
+            wasmMemory = Module["asm"]["k"];
             updateGlobalBufferAndViews(wasmMemory.buffer);
-            wasmTable = Module["asm"]["s"];
-            addOnInit(Module["asm"]["o"]);
+            wasmTable = Module["asm"]["p"];
+            addOnInit(Module["asm"]["l"]);
             removeRunDependency("wasm-instantiate");
           }
           addRunDependency("wasm-instantiate");
@@ -5617,49 +5618,49 @@ var init_tls = __esm({
             return ccall(ident, returnType, argTypes, arguments, opts);
           };
         }
-        var asmLibraryArg = { "g": __asyncjs__jsAesGcmDecrypt, "h": __asyncjs__jsAesGcmEncrypt, "m": __asyncjs__jsProvideEncryptedFromNetwork, "f": __asyncjs__jsSha, "d": __gmtime_js, "e": __tzset_js, "c": _emscripten_date_now, "j": _emscripten_resize_heap, "b": _fd_close, "i": _fd_seek, "k": _fd_write, "l": jsWriteEncryptedToNetwork, "a": wc_GenerateSeed };
+        var asmLibraryArg = { "__asyncjs__jsAesGcmDecrypt": __asyncjs__jsAesGcmDecrypt, "__asyncjs__jsAesGcmEncrypt": __asyncjs__jsAesGcmEncrypt, "j": __asyncjs__jsProvideEncryptedFromNetwork, "__asyncjs__jsSha": __asyncjs__jsSha, "g": __gmtime_js, "h": __tzset_js, "f": _emscripten_date_now, "c": _emscripten_resize_heap, "e": _fd_close, "b": _fd_seek, "d": _fd_write, "i": jsWriteEncryptedToNetwork, "a": wc_GenerateSeed };
         var asm = createWasm();
         var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
-          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["o"]).apply(null, arguments);
+          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["l"]).apply(null, arguments);
         };
         var _initTls = Module["_initTls"] = function() {
-          return (_initTls = Module["_initTls"] = Module["asm"]["p"]).apply(null, arguments);
+          return (_initTls = Module["_initTls"] = Module["asm"]["m"]).apply(null, arguments);
         };
         var _readData = Module["_readData"] = function() {
-          return (_readData = Module["_readData"] = Module["asm"]["q"]).apply(null, arguments);
+          return (_readData = Module["_readData"] = Module["asm"]["n"]).apply(null, arguments);
         };
         var _writeData = Module["_writeData"] = function() {
-          return (_writeData = Module["_writeData"] = Module["asm"]["r"]).apply(null, arguments);
+          return (_writeData = Module["_writeData"] = Module["asm"]["o"]).apply(null, arguments);
         };
         var _malloc = Module["_malloc"] = function() {
-          return (_malloc = Module["_malloc"] = Module["asm"]["t"]).apply(null, arguments);
+          return (_malloc = Module["_malloc"] = Module["asm"]["q"]).apply(null, arguments);
         };
         var _free = Module["_free"] = function() {
-          return (_free = Module["_free"] = Module["asm"]["u"]).apply(null, arguments);
+          return (_free = Module["_free"] = Module["asm"]["r"]).apply(null, arguments);
         };
         var stackSave = Module["stackSave"] = function() {
-          return (stackSave = Module["stackSave"] = Module["asm"]["v"]).apply(null, arguments);
+          return (stackSave = Module["stackSave"] = Module["asm"]["s"]).apply(null, arguments);
         };
         var stackRestore = Module["stackRestore"] = function() {
-          return (stackRestore = Module["stackRestore"] = Module["asm"]["w"]).apply(null, arguments);
+          return (stackRestore = Module["stackRestore"] = Module["asm"]["t"]).apply(null, arguments);
         };
         var stackAlloc = Module["stackAlloc"] = function() {
-          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["x"]).apply(null, arguments);
+          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["u"]).apply(null, arguments);
         };
         var _asyncify_start_unwind = Module["_asyncify_start_unwind"] = function() {
-          return (_asyncify_start_unwind = Module["_asyncify_start_unwind"] = Module["asm"]["y"]).apply(null, arguments);
+          return (_asyncify_start_unwind = Module["_asyncify_start_unwind"] = Module["asm"]["v"]).apply(null, arguments);
         };
         var _asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = function() {
-          return (_asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = Module["asm"]["z"]).apply(null, arguments);
+          return (_asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = Module["asm"]["w"]).apply(null, arguments);
         };
         var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = function() {
-          return (_asyncify_start_rewind = Module["_asyncify_start_rewind"] = Module["asm"]["A"]).apply(null, arguments);
+          return (_asyncify_start_rewind = Module["_asyncify_start_rewind"] = Module["asm"]["x"]).apply(null, arguments);
         };
         var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = function() {
-          return (_asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = Module["asm"]["B"]).apply(null, arguments);
+          return (_asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = Module["asm"]["y"]).apply(null, arguments);
         };
-        var ___start_em_js = Module["___start_em_js"] = 19392;
-        var ___stop_em_js = Module["___stop_em_js"] = 22666;
+        var ___start_em_js = Module["___start_em_js"] = 19200;
+        var ___stop_em_js = Module["___stop_em_js"] = 22474;
         Module["ccall"] = ccall;
         Module["cwrap"] = cwrap;
         var calledRun;
@@ -5726,6 +5727,9 @@ __export(net_exports, {
 function log(...args) {
   console.log(...args);
 }
+function b(data) {
+  return data.reduce((memo, byte) => memo + " " + byte.toString(16).padStart(2, "0"), "") + " / " + new TextDecoder().decode(data);
+}
 function isIP(input) {
   return 0;
 }
@@ -5738,9 +5742,13 @@ var init_net = __esm({
     Socket = class extends import_events.EventEmitter {
       writable = true;
       authorized = false;
-      wsProxy = "http://proxy.hahathon.monster/";
+      wsProxy = "proxy.hahathon.monster/";
       ws = null;
       module = null;
+      incomingDataQueue = [];
+      outstandingDataRequest = null;
+      tlsConnectionPromise = null;
+      latestWritePromise = Promise.resolve(0);
       setNoDelay() {
         log("setNoDelay");
       }
@@ -5755,34 +5763,53 @@ var init_net = __esm({
       }
       connect(port, host) {
         const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
-        log(`socket connecting to ${wsAddr}`);
+        const cf = typeof tlsWasm !== "string";
+        const wsPromise = cf ? fetch("http://" + wsAddr, { headers: { Upgrade: "websocket" } }).then((resp) => {
+          const ws = resp.webSocket;
+          ws.accept();
+          log("Cloudflare WebSocket opened");
+          return ws;
+        }) : new Promise((resolve) => {
+          const ws = new WebSocket("ws://" + wsAddr);
+          ws.addEventListener("open", () => {
+            log("native WebSocket opened");
+            resolve(ws);
+          });
+        });
         Promise.all([
-          fetch(wsAddr, { headers: { Upgrade: "websocket" } }),
+          wsPromise,
           tls_emscripten({
             instantiateWasm: (info, receive) => {
-              log("loading wasm");
-              let instance = new WebAssembly.Instance(tlswasm, info);
-              receive(instance);
-              return instance.exports;
+              if (cf) {
+                log("loading wasm");
+                const instance = new WebAssembly.Instance(tlsWasm, info);
+                receive(instance);
+                return instance.exports;
+              } else {
+                log("streaming wasm");
+                WebAssembly.instantiateStreaming(fetch(tlsWasm), info).then(({ instance, module }) => {
+                  receive(instance, module);
+                });
+                return {};
+              }
             },
             provideEncryptedFromNetwork: (buf, maxBytes) => {
               log(`provideEncryptedFromNetwork: providing up to ${maxBytes} bytes`);
               return new Promise((resolve) => {
-                outstandingDataRequest = { container: buf, maxBytes, resolve };
-                dequeueIncomingData();
+                this.outstandingDataRequest = { container: buf, maxBytes, resolve };
+                this.dequeueIncomingData();
               });
             },
             writeEncryptedToNetwork: (buf, size) => {
-              log(`writeEncryptedToNetwork: writing ${size} bytes`);
+              log(`writeEncryptedToNetwork: sending ${size} bytes`);
               const arr = this.module.HEAPU8.slice(buf, buf + size);
               this.ws.send(arr);
               return size;
             }
           })
-        ]).then(([resp, module]) => {
+        ]).then(([ws, module]) => {
           this.module = module;
-          this.ws = resp.webSocket;
-          this.ws.accept();
+          this.ws = ws;
           this.ws.binaryType = "arraybuffer";
           this.ws.addEventListener("error", (err) => {
             throw err;
@@ -5792,22 +5819,84 @@ var init_net = __esm({
           this.ws.addEventListener("message", (msg) => {
             const data = Buffer.from(msg.data);
             log(`socket received ${data.length} byte(s)`);
-            this.emit("data", data);
+            if (this.tlsConnectionPromise === null) {
+              log(`emitting received data direct`);
+              this.emit("data", data);
+            } else {
+              this.latestWritePromise.then(() => {
+                this.incomingDataQueue.push(data);
+                this.dequeueIncomingData();
+                if (this.authorized && this.incomingDataQueue.length > 0) {
+                  log("prompting decryption");
+                  const maxBytes = this.incomingDataQueue.reduce((memo, arr) => memo + arr.length, 0);
+                  const buf = this.module._malloc(maxBytes);
+                  this.module.ccall("readData", "number", ["number", "number"], [buf, maxBytes], { async: true }).then((bytesRead) => {
+                    const decryptData = new Uint8Array(bytesRead);
+                    decryptData.set(this.module.HEAPU8.subarray(buf, buf + bytesRead));
+                    this.module._free(buf);
+                    log(`emitting ${decryptData.length} bytes of decrypted data`, b(decryptData));
+                    this.emit("data", Buffer.from(decryptData));
+                    log("might get stuck here", this.incomingDataQueue);
+                  });
+                } else {
+                }
+              });
+            }
           });
           log("socket connected, ready");
           this.emit("connect");
           this.emit("ready");
         });
       }
-      write(data) {
-        log(`socket sending ${data.length} byte(s)`);
-        this.ws.send(data);
+      dequeueIncomingData() {
+        log("dequeue to wasm for decryption...");
+        if (this.incomingDataQueue.length === 0)
+          return log("no data available");
+        if (this.outstandingDataRequest === null)
+          return log("data available but not awaited");
+        let nextData = this.incomingDataQueue[0];
+        const { container, maxBytes, resolve } = this.outstandingDataRequest;
+        if (nextData.length > maxBytes) {
+          log("splitting next chunk");
+          this.incomingDataQueue[0] = nextData.subarray(maxBytes);
+          nextData = nextData.subarray(0, maxBytes);
+        } else {
+          log("returning next chunk whole");
+          this.incomingDataQueue.shift();
+        }
+        this.module.HEAPU8.set(nextData, container);
+        this.outstandingDataRequest = null;
+        const len = nextData.length;
+        log(`${len} bytes dequeued`);
+        resolve(len);
+      }
+      write(data, encoding = "utf8", callback = () => void 0) {
+        if (typeof data === "string")
+          data = new TextEncoder(encoding).encode(data);
+        if (this.tlsConnectionPromise === null) {
+          log(`sending ${data.length} byte(s):`, b(data));
+          this.ws.send(data);
+          callback();
+        } else {
+          log(`received ${data.length} byte(s) for encryption:`, b(data));
+          this.tlsConnectionPromise.then(() => {
+            log(`encrypting ${data.length} byte(s)`);
+            this.latestWritePromise = this.module.ccall("writeData", "number", ["array", "number"], [data, data.length], { async: true });
+            this.latestWritePromise.then(() => {
+              log("finished write");
+              callback();
+            });
+          });
+        }
+        return true;
       }
       end() {
       }
       startTls(host) {
         log(`starting TLS`);
-        this.module.ccall("initTls", "number", ["string"], [host], { async: true }).then(() => {
+        this.tlsConnectionPromise = this.module.ccall("initTls", "number", ["string"], [host], { async: true });
+        this.tlsConnectionPromise.then(() => {
+          log(`TLS connected`);
           this.authorized = true;
           this.emit("secureConnection", this);
         });
@@ -8194,8 +8283,9 @@ var pgshims_default = {
   async fetch(request, env, ctx) {
     const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
     await client.connect();
+    console.log("*** connected! ***");
     const result = await client.query("SELECT now()");
-    return new Response("x");
+    return new Response(JSON.stringify(result.rows));
   }
 };
 export {
