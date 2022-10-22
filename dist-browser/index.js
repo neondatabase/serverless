@@ -5748,7 +5748,7 @@ var init_net = __esm({
       incomingDataQueue = [];
       outstandingDataRequest = null;
       tlsConnectionPromise = null;
-      latestWritePromise = Promise.resolve(0);
+      latestIOPromise = Promise.resolve(0);
       setNoDelay() {
         log("setNoDelay");
       }
@@ -5823,14 +5823,15 @@ var init_net = __esm({
               log(`emitting received data direct`);
               this.emit("data", data);
             } else {
-              this.latestWritePromise.then(() => {
-                this.incomingDataQueue.push(data);
-                this.dequeueIncomingData();
+              this.incomingDataQueue.push(data);
+              this.dequeueIncomingData();
+              this.latestIOPromise.then(() => {
                 if (this.authorized && this.incomingDataQueue.length > 0) {
                   log("prompting decryption");
                   const maxBytes = this.incomingDataQueue.reduce((memo, arr) => memo + arr.length, 0);
                   const buf = this.module._malloc(maxBytes);
-                  this.module.ccall("readData", "number", ["number", "number"], [buf, maxBytes], { async: true }).then((bytesRead) => {
+                  this.latestIOPromise = this.module.ccall("readData", "number", ["number", "number"], [buf, maxBytes], { async: true });
+                  this.latestIOPromise.then((bytesRead) => {
                     const decryptData = new Uint8Array(bytesRead);
                     decryptData.set(this.module.HEAPU8.subarray(buf, buf + bytesRead));
                     this.module._free(buf);
@@ -5879,10 +5880,10 @@ var init_net = __esm({
           callback();
         } else {
           log(`received ${data.length} byte(s) for encryption:`, b(data));
-          this.tlsConnectionPromise.then(() => {
+          Promise.all([this.tlsConnectionPromise, this.latestIOPromise]).then(() => {
             log(`encrypting ${data.length} byte(s)`);
-            this.latestWritePromise = this.module.ccall("writeData", "number", ["array", "number"], [data, data.length], { async: true });
-            this.latestWritePromise.then(() => {
+            this.latestIOPromise = this.module.ccall("writeData", "number", ["array", "number"], [data, data.length], { async: true });
+            this.latestIOPromise.then(() => {
               log("finished write");
               callback();
             });
@@ -8283,8 +8284,7 @@ var pgshims_default = {
   async fetch(request, env, ctx) {
     const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
     await client.connect();
-    console.log("*** connected! ***");
-    const result = await client.query("SELECT now()");
+    const result = await client.query("SELECT * FROM generate_series(0, 5000)");
     return new Response(JSON.stringify(result.rows));
   }
 };

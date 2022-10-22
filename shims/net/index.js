@@ -1,3 +1,32 @@
+/**
+ * - This diagram represents data flow once the TLS handshake has completed.
+ * - Prior to the handshake, pg writes are passed straight to the network and
+ *   network data events lead directly to pg data events. 
+ * - During the handshake, the TLS engine spontaneously calls into JS to read
+ *   and write, and outgoing writes (which pg issues early) are queued.
+ * 
+ *                        ┌─────────────────┐
+ *                        │   TLS encrypt   │
+ *                        └───┬─────────▲───┘
+ *            call back to JS │         │ async write call
+ *                        ┌───┼─────────┼───┐
+ *                        │   │         │   │
+ * network write ◄────────┼───┘         │   │         │ pg write
+ *                        │  THIS FILE  │   │         │
+ *                        │ ┌───────────┴─┐ │  call   │
+ *               ┌────────► │             │ ◄─────────┘
+ *               │ event  │ │ data queue  │ │
+ *               │        │ └──┬──┬─┬─────┘ │
+ *               │        │    │  │ │       │  event
+ *  network data │        │    │callback┌───┼─────────► pg data
+ *                        │    │  │ │   │   │
+ *                        └────┼──┼─┼───┼───┘
+ *                  async call │  │ │   │ call back to JS
+ *                        ┌────▼──┴─▼───┴───┐
+ *                        │   TLS decrypt   │
+ *                        └─────────────────┘ 
+ */
+
 import { EventEmitter } from 'events';
 import { tls_emscripten } from './tls';
 // import tlsWasm from './tls.wasm';
@@ -32,7 +61,7 @@ export class Socket extends EventEmitter {
   incomingDataQueue /* Uint8Array[] */ = [];
   outstandingDataRequest /* DataRequest | null */ = null;
   tlsConnectionPromise = null;
-  latestWritePromise = Promise.resolve(0);
+  latestIOPromise = Promise.resolve(0);
 
   setNoDelay() { log('setNoDelay'); }
   setKeepAlive() { log('setKeepAlive'); }
@@ -86,7 +115,6 @@ export class Socket extends EventEmitter {
         writeEncryptedToNetwork: (buf /* number */, size /* number */) => {
           log(`writeEncryptedToNetwork: sending ${size} bytes`);
           const arr = this.module.HEAPU8.slice(buf, buf + size);
-          // log(b(arr));
           this.ws.send(arr);
           return size;
         },
@@ -115,27 +143,28 @@ export class Socket extends EventEmitter {
           this.emit('data', data);
 
         } else {
-          this.latestWritePromise.then(() => {
-            this.incomingDataQueue.push(data);
-            this.dequeueIncomingData();
+          this.incomingDataQueue.push(data);
+          this.dequeueIncomingData();
+
+          this.latestIOPromise.then(() => {
 
             if (this.authorized && this.incomingDataQueue.length > 0) {
               log('prompting decryption');
               const maxBytes = this.incomingDataQueue.reduce((memo, arr) => memo + arr.length, 0);
               const buf = this.module._malloc(maxBytes);
 
-              this.module.ccall('readData', 'number', ['number', 'number'], [buf, maxBytes], { async: true })
-                .then(bytesRead => {
-                  const decryptData = new Uint8Array(bytesRead);
-                  decryptData.set(this.module.HEAPU8.subarray(buf, buf + bytesRead));
-                  this.module._free(buf);
+              this.latestIOPromise = this.module.ccall('readData', 'number', ['number', 'number'], [buf, maxBytes], { async: true });
+              this.latestIOPromise.then(bytesRead => {
+                const decryptData = new Uint8Array(bytesRead);
+                decryptData.set(this.module.HEAPU8.subarray(buf, buf + bytesRead));
+                this.module._free(buf);
 
-                  log(`emitting ${decryptData.length} bytes of decrypted data`, b(decryptData));
-                  this.emit('data', Buffer.from(decryptData));
+                log(`emitting ${decryptData.length} bytes of decrypted data`, b(decryptData));
+                this.emit('data', Buffer.from(decryptData));
 
-                  // TODO: what if there's more to be read?
-                  log('might get stuck here', this.incomingDataQueue);
-                });
+                // TODO: what if there's more to be read?
+                log('might get stuck here', this.incomingDataQueue);
+              });
 
             } else {
               // TODO: nothing?
@@ -187,10 +216,10 @@ export class Socket extends EventEmitter {
 
     } else {
       log(`received ${data.length} byte(s) for encryption:`, b(data));
-      this.tlsConnectionPromise.then(() => {
+      Promise.all([this.tlsConnectionPromise, this.latestIOPromise]).then(() => {
         log(`encrypting ${data.length} byte(s)`);
-        this.latestWritePromise = this.module.ccall('writeData', 'number', ['array', 'number'], [data, data.length], { async: true });
-        this.latestWritePromise.then(() => {
+        this.latestIOPromise = this.module.ccall('writeData', 'number', ['array', 'number'], [data, data.length], { async: true });
+        this.latestIOPromise.then(() => {
           log('finished write');
           callback();
         });
