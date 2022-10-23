@@ -5899,14 +5899,15 @@ var init_net = __esm({
           return;
         }
         const undecryptedBytes = this.incomingDataQueue.reduce((memo, arr) => memo + arr.length, 0);
-        const pendingBytes = undecryptedBytes;
+        const unreadBytes = this.module.ccall("pending", "number", [], []);
+        const pendingBytes = undecryptedBytes + unreadBytes;
         if (pendingBytes > 0) {
           this.tlsWaitState = 1 /* WaitRead */;
           const receiveBuffer = this.module._malloc(pendingBytes);
-          log(`prompting decryption of up to ${pendingBytes} bytes`);
+          log(`reading up to ${pendingBytes} bytes (${undecryptedBytes} + ${unreadBytes})`);
           this.module.ccall("readData", "number", ["number", "number"], [receiveBuffer, pendingBytes], { async: true }).then((bytesRead) => {
             const decryptData = Buffer.alloc(bytesRead);
-            decryptData.set(this.module.HEAPU8.slice(receiveBuffer, receiveBuffer + bytesRead));
+            decryptData.set(this.module.HEAPU8.subarray(receiveBuffer, receiveBuffer + bytesRead));
             this.module._free(receiveBuffer);
             log(`emitting ${decryptData.length} bytes of decrypted data`, bindump(decryptData));
             this.emit("data", decryptData);
@@ -8335,7 +8336,6 @@ var pgshims_default = {
     const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
     await client.connect();
     const result = await client.query("SELECT * FROM generate_series(0, 10000)");
-    console.log(result);
     return new Response(JSON.stringify(result.rows));
   }
 };

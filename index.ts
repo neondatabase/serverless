@@ -9,7 +9,7 @@ export default {
     const client = new Client({ connectionString: env.DATABASE_URL });
     await client.connect();
     const result = await client.query('SELECT * FROM generate_series(0, 10000)');  // 'SELECT now()');
-    console.log(result);
+    // console.log(result);
     return new Response(JSON.stringify(result.rows));
   }
 }

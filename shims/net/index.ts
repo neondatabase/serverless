@@ -266,11 +266,11 @@ export class Socket extends EventEmitter {
       this.tlsWaitState = TlsWaitState.WaitRead;
       const receiveBuffer = this.module._malloc(pendingBytes);
 
-      log(`prompting decryption of up to ${pendingBytes} bytes`);
+      log(`reading up to ${pendingBytes} bytes (${undecryptedBytes} + ${unreadBytes})`);
       this.module.ccall('readData', 'number', ['number', 'number'], [receiveBuffer, pendingBytes], { async: true })
         .then((bytesRead: number) => {
           const decryptData = Buffer.alloc(bytesRead);
-          decryptData.set(this.module.HEAPU8.slice(receiveBuffer, receiveBuffer + bytesRead));
+          decryptData.set(this.module.HEAPU8.subarray(receiveBuffer, receiveBuffer + bytesRead));
           this.module._free(receiveBuffer);
 
           log(`emitting ${decryptData.length} bytes of decrypted data`, bindump(decryptData));
