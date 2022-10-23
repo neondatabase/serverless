@@ -6,7 +6,7 @@ var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
-  get: (a, b2) => (typeof require !== "undefined" ? require : a)[b2]
+  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
 }) : x)(function(x) {
   if (typeof require !== "undefined")
     return require.apply(this, arguments);
@@ -318,9 +318,9 @@ var require_buffer = __commonJS({
       if (valueOf != null && valueOf !== value) {
         return Buffer2.from(valueOf, encodingOrOffset, length);
       }
-      const b2 = fromObject(value);
-      if (b2)
-        return b2;
+      const b = fromObject(value);
+      if (b)
+        return b;
       if (typeof Symbol !== "undefined" && Symbol.toPrimitive != null && typeof value[Symbol.toPrimitive] === "function") {
         return Buffer2.from(value[Symbol.toPrimitive]("string"), encodingOrOffset, length);
       }
@@ -443,27 +443,27 @@ var require_buffer = __commonJS({
       }
       return Buffer2.alloc(+length);
     }
-    Buffer2.isBuffer = function isBuffer(b2) {
-      return b2 != null && b2._isBuffer === true && b2 !== Buffer2.prototype;
+    Buffer2.isBuffer = function isBuffer(b) {
+      return b != null && b._isBuffer === true && b !== Buffer2.prototype;
     };
-    Buffer2.compare = function compare(a, b2) {
+    Buffer2.compare = function compare(a, b) {
       if (isInstance(a, Uint8Array))
         a = Buffer2.from(a, a.offset, a.byteLength);
-      if (isInstance(b2, Uint8Array))
-        b2 = Buffer2.from(b2, b2.offset, b2.byteLength);
-      if (!Buffer2.isBuffer(a) || !Buffer2.isBuffer(b2)) {
+      if (isInstance(b, Uint8Array))
+        b = Buffer2.from(b, b.offset, b.byteLength);
+      if (!Buffer2.isBuffer(a) || !Buffer2.isBuffer(b)) {
         throw new TypeError(
           'The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array'
         );
       }
-      if (a === b2)
+      if (a === b)
         return 0;
       let x = a.length;
-      let y = b2.length;
+      let y = b.length;
       for (let i = 0, len = Math.min(x, y); i < len; ++i) {
-        if (a[i] !== b2[i]) {
+        if (a[i] !== b[i]) {
           x = a[i];
-          y = b2[i];
+          y = b[i];
           break;
         }
       }
@@ -624,10 +624,10 @@ var require_buffer = __commonJS({
       }
     }
     Buffer2.prototype._isBuffer = true;
-    function swap(b2, n, m) {
-      const i = b2[n];
-      b2[n] = b2[m];
-      b2[m] = i;
+    function swap(b, n, m) {
+      const i = b[n];
+      b[n] = b[m];
+      b[m] = i;
     }
     Buffer2.prototype.swap16 = function swap16() {
       const len = this.length;
@@ -672,12 +672,12 @@ var require_buffer = __commonJS({
       return slowToString.apply(this, arguments);
     };
     Buffer2.prototype.toLocaleString = Buffer2.prototype.toString;
-    Buffer2.prototype.equals = function equals(b2) {
-      if (!Buffer2.isBuffer(b2))
+    Buffer2.prototype.equals = function equals(b) {
+      if (!Buffer2.isBuffer(b))
         throw new TypeError("Argument must be a Buffer");
-      if (this === b2)
+      if (this === b)
         return true;
-      return Buffer2.compare(this, b2) === 0;
+      return Buffer2.compare(this, b) === 0;
     };
     Buffer2.prototype.inspect = function inspect() {
       let str = "";
@@ -1923,7 +1923,10 @@ var init_shims = __esm({
   "shims/shims.js"() {
     "use strict";
     globalThis.Buffer = require_buffer().Buffer;
-    globalThis.process = { env: {} };
+    globalThis.process = {
+      env: {},
+      nextTick: (fn) => setTimeout(fn, 0)
+    };
     globalThis.global = globalThis;
   }
 });
@@ -2391,20 +2394,20 @@ function sha256(data) {
       let s1 = rrot(w[j - 2], 17) ^ rrot(w[j - 2], 19) ^ w[j - 2] >>> 10;
       w[j] = w[j - 16] + s0 + w[j - 7] + s1 | 0;
     }
-    let a = h0, b2 = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
     for (let j = 0; j < 64; j++) {
-      let S1 = rrot(e, 6) ^ rrot(e, 11) ^ rrot(e, 25), ch = e & f ^ ~e & g, t1 = h + S1 + ch + k[j] + w[j] | 0, S0 = rrot(a, 2) ^ rrot(a, 13) ^ rrot(a, 22), maj = a & b2 ^ a & c ^ b2 & c, t2 = S0 + maj | 0;
+      let S1 = rrot(e, 6) ^ rrot(e, 11) ^ rrot(e, 25), ch = e & f ^ ~e & g, t1 = h + S1 + ch + k[j] + w[j] | 0, S0 = rrot(a, 2) ^ rrot(a, 13) ^ rrot(a, 22), maj = a & b ^ a & c ^ b & c, t2 = S0 + maj | 0;
       h = g;
       g = f;
       f = e;
       e = d + t1 | 0;
       d = c;
-      c = b2;
-      b2 = a;
+      c = b;
+      b = a;
       a = t1 + t2 | 0;
     }
     h0 = h0 + a | 0;
-    h1 = h1 + b2 | 0;
+    h1 = h1 + b | 0;
     h2 = h2 + c | 0;
     h3 = h3 + d | 0;
     h4 = h4 + e | 0;
@@ -3743,7 +3746,6 @@ var require_sasl = __commonJS({
       session.response = clientFinalMessageWithoutProof + ",p=" + clientProof;
     }
     function finalizeSession(session, serverData) {
-      console.log("finalizing!");
       if (session.message !== "SASLResponse") {
         throw new Error("SASL: Last message was not SASLResponse");
       }
@@ -3818,20 +3820,20 @@ var require_sasl = __commonJS({
         serverSignature
       };
     }
-    function xorBuffers(a, b2) {
+    function xorBuffers(a, b) {
       if (!Buffer.isBuffer(a)) {
         throw new TypeError("first argument must be a Buffer");
       }
-      if (!Buffer.isBuffer(b2)) {
+      if (!Buffer.isBuffer(b)) {
         throw new TypeError("second argument must be a Buffer");
       }
-      if (a.length !== b2.length) {
+      if (a.length !== b.length) {
         throw new Error("Buffer lengths must match");
       }
       if (a.length === 0) {
         throw new Error("Buffers cannot be empty");
       }
-      return Buffer.from(a.map((_, i) => a[i] ^ b2[i]));
+      return Buffer.from(a.map((_, i) => a[i] ^ b[i]));
     }
     function sha2562(text) {
       return crypto2.createHash("sha256").update(text).digest();
@@ -5124,7 +5126,7 @@ var init_tls = __esm({
             Module["asm"] = exports2;
             wasmMemory = Module["asm"]["k"];
             updateGlobalBufferAndViews(wasmMemory.buffer);
-            wasmTable = Module["asm"]["p"];
+            wasmTable = Module["asm"]["q"];
             addOnInit(Module["asm"]["l"]);
             removeRunDependency("wasm-instantiate");
           }
@@ -5618,7 +5620,7 @@ var init_tls = __esm({
             return ccall(ident, returnType, argTypes, arguments, opts);
           };
         }
-        var asmLibraryArg = { "__asyncjs__jsAesGcmDecrypt": __asyncjs__jsAesGcmDecrypt, "__asyncjs__jsAesGcmEncrypt": __asyncjs__jsAesGcmEncrypt, "j": __asyncjs__jsProvideEncryptedFromNetwork, "__asyncjs__jsSha": __asyncjs__jsSha, "g": __gmtime_js, "h": __tzset_js, "f": _emscripten_date_now, "c": _emscripten_resize_heap, "e": _fd_close, "b": _fd_seek, "d": _fd_write, "i": jsWriteEncryptedToNetwork, "a": wc_GenerateSeed };
+        var asmLibraryArg = { "__asyncjs__jsAesGcmDecrypt": __asyncjs__jsAesGcmDecrypt, "__asyncjs__jsAesGcmEncrypt": __asyncjs__jsAesGcmEncrypt, "j": __asyncjs__jsProvideEncryptedFromNetwork, "__asyncjs__jsSha": __asyncjs__jsSha, "g": __gmtime_js, "h": __tzset_js, "f": _emscripten_date_now, "d": _emscripten_resize_heap, "e": _fd_close, "c": _fd_seek, "a": _fd_write, "i": jsWriteEncryptedToNetwork, "b": wc_GenerateSeed };
         var asm = createWasm();
         var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
           return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["l"]).apply(null, arguments);
@@ -5632,35 +5634,38 @@ var init_tls = __esm({
         var _writeData = Module["_writeData"] = function() {
           return (_writeData = Module["_writeData"] = Module["asm"]["o"]).apply(null, arguments);
         };
+        var _pending = Module["_pending"] = function() {
+          return (_pending = Module["_pending"] = Module["asm"]["p"]).apply(null, arguments);
+        };
         var _malloc = Module["_malloc"] = function() {
-          return (_malloc = Module["_malloc"] = Module["asm"]["q"]).apply(null, arguments);
+          return (_malloc = Module["_malloc"] = Module["asm"]["r"]).apply(null, arguments);
         };
         var _free = Module["_free"] = function() {
-          return (_free = Module["_free"] = Module["asm"]["r"]).apply(null, arguments);
+          return (_free = Module["_free"] = Module["asm"]["s"]).apply(null, arguments);
         };
         var stackSave = Module["stackSave"] = function() {
-          return (stackSave = Module["stackSave"] = Module["asm"]["s"]).apply(null, arguments);
+          return (stackSave = Module["stackSave"] = Module["asm"]["t"]).apply(null, arguments);
         };
         var stackRestore = Module["stackRestore"] = function() {
-          return (stackRestore = Module["stackRestore"] = Module["asm"]["t"]).apply(null, arguments);
+          return (stackRestore = Module["stackRestore"] = Module["asm"]["u"]).apply(null, arguments);
         };
         var stackAlloc = Module["stackAlloc"] = function() {
-          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["u"]).apply(null, arguments);
+          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["v"]).apply(null, arguments);
         };
         var _asyncify_start_unwind = Module["_asyncify_start_unwind"] = function() {
-          return (_asyncify_start_unwind = Module["_asyncify_start_unwind"] = Module["asm"]["v"]).apply(null, arguments);
+          return (_asyncify_start_unwind = Module["_asyncify_start_unwind"] = Module["asm"]["w"]).apply(null, arguments);
         };
         var _asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = function() {
-          return (_asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = Module["asm"]["w"]).apply(null, arguments);
+          return (_asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = Module["asm"]["x"]).apply(null, arguments);
         };
         var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = function() {
-          return (_asyncify_start_rewind = Module["_asyncify_start_rewind"] = Module["asm"]["x"]).apply(null, arguments);
+          return (_asyncify_start_rewind = Module["_asyncify_start_rewind"] = Module["asm"]["y"]).apply(null, arguments);
         };
         var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = function() {
-          return (_asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = Module["asm"]["y"]).apply(null, arguments);
+          return (_asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = Module["asm"]["z"]).apply(null, arguments);
         };
-        var ___start_em_js = Module["___start_em_js"] = 19200;
-        var ___stop_em_js = Module["___stop_em_js"] = 22474;
+        var ___start_em_js = Module["___start_em_js"] = 19232;
+        var ___stop_em_js = Module["___stop_em_js"] = 22506;
         Module["ccall"] = ccall;
         Module["cwrap"] = cwrap;
         var calledRun;
@@ -5718,7 +5723,7 @@ var init_tls = __esm({
   }
 });
 
-// shims/net/index.js
+// shims/net/index.ts
 var net_exports = {};
 __export(net_exports, {
   Socket: () => Socket,
@@ -5727,28 +5732,33 @@ __export(net_exports, {
 function log(...args) {
   console.log(...args);
 }
-function b(data) {
-  return data.reduce((memo, byte) => memo + " " + byte.toString(16).padStart(2, "0"), "") + " / " + new TextDecoder().decode(data);
+function bindump(data) {
 }
 function isIP(input) {
   return 0;
 }
 var import_events, Socket;
 var init_net = __esm({
-  "shims/net/index.js"() {
+  "shims/net/index.ts"() {
     init_shims();
     import_events = __toESM(require_events(), 1);
     init_tls();
     Socket = class extends import_events.EventEmitter {
-      writable = true;
-      authorized = false;
-      wsProxy = "proxy.hahathon.monster/";
-      ws = null;
-      module = null;
-      incomingDataQueue = [];
-      outstandingDataRequest = null;
-      tlsConnectionPromise = null;
-      latestIOPromise = Promise.resolve(0);
+      constructor() {
+        super(...arguments);
+        this.connecting = false;
+        this.pending = true;
+        this.writable = true;
+        this.authorized = false;
+        this.wsProxy = "proxy.hahathon.monster/";
+        this.ws = null;
+        this.module = null;
+        this.tlsState = 0 /* None */;
+        this.tlsWaitState = 0 /* Idle */;
+        this.outstandingDataRequest = null;
+        this.incomingDataQueue = [];
+        this.writeQueue = [];
+      }
       setNoDelay() {
         log("setNoDelay");
       }
@@ -5762,12 +5772,13 @@ var init_net = __esm({
         log("unref");
       }
       connect(port, host) {
+        this.connecting = true;
+        const isCloudflare = typeof tlsWasm !== "string";
         const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
-        const cf = typeof tlsWasm !== "string";
-        const wsPromise = cf ? fetch("http://" + wsAddr, { headers: { Upgrade: "websocket" } }).then((resp) => {
+        const wsPromise = isCloudflare ? fetch("http://" + wsAddr, { headers: { Upgrade: "websocket" } }).then((resp) => {
+          log("Cloudflare WebSocket opened");
           const ws = resp.webSocket;
           ws.accept();
-          log("Cloudflare WebSocket opened");
           return ws;
         }) : new Promise((resolve) => {
           const ws = new WebSocket("ws://" + wsAddr);
@@ -5780,29 +5791,30 @@ var init_net = __esm({
           wsPromise,
           tls_emscripten({
             instantiateWasm: (info, receive) => {
-              if (cf) {
-                log("loading wasm");
+              if (isCloudflare) {
+                log("creating wasm instance");
                 const instance = new WebAssembly.Instance(tlsWasm, info);
                 receive(instance);
                 return instance.exports;
               } else {
-                log("streaming wasm");
-                WebAssembly.instantiateStreaming(fetch(tlsWasm), info).then(({ instance, module }) => {
-                  receive(instance, module);
+                log("streaming wasm ...");
+                WebAssembly.instantiateStreaming(fetch(tlsWasm), info).then(({ instance }) => {
+                  log("wasm instantiated");
+                  receive(instance);
                 });
                 return {};
               }
             },
-            provideEncryptedFromNetwork: (buf, maxBytes) => {
+            provideEncryptedFromNetwork: (buffer, maxBytes) => {
               log(`provideEncryptedFromNetwork: providing up to ${maxBytes} bytes`);
               return new Promise((resolve) => {
-                this.outstandingDataRequest = { container: buf, maxBytes, resolve };
-                this.dequeueIncomingData();
+                this.outstandingDataRequest = { buffer, maxBytes, resolve };
+                this.tlsTick();
               });
             },
-            writeEncryptedToNetwork: (buf, size) => {
+            writeEncryptedToNetwork: (buffer, size) => {
               log(`writeEncryptedToNetwork: sending ${size} bytes`);
-              const arr = this.module.HEAPU8.slice(buf, buf + size);
+              const arr = this.module.HEAPU8.slice(buffer, buffer + size);
               this.ws.send(arr);
               return size;
             }
@@ -5812,95 +5824,133 @@ var init_net = __esm({
           this.ws = ws;
           this.ws.binaryType = "arraybuffer";
           this.ws.addEventListener("error", (err) => {
-            throw err;
+            log("websocket error", err);
+            this.emit("error", err);
           });
           this.ws.addEventListener("close", () => {
+            log("websocket closed");
+            this.emit("close");
           });
           this.ws.addEventListener("message", (msg) => {
             const data = Buffer.from(msg.data);
             log(`socket received ${data.length} byte(s)`);
-            if (this.tlsConnectionPromise === null) {
-              log(`emitting received data direct`);
+            if (this.tlsState === 0 /* None */) {
+              log(`emitting data direct`);
               this.emit("data", data);
             } else {
+              log(`queuing data`);
               this.incomingDataQueue.push(data);
-              this.dequeueIncomingData();
-              this.latestIOPromise.then(() => {
-                if (this.authorized && this.incomingDataQueue.length > 0) {
-                  log("prompting decryption");
-                  const maxBytes = this.incomingDataQueue.reduce((memo, arr) => memo + arr.length, 0);
-                  const buf = this.module._malloc(maxBytes);
-                  this.latestIOPromise = this.module.ccall("readData", "number", ["number", "number"], [buf, maxBytes], { async: true });
-                  this.latestIOPromise.then((bytesRead) => {
-                    const decryptData = new Uint8Array(bytesRead);
-                    decryptData.set(this.module.HEAPU8.subarray(buf, buf + bytesRead));
-                    this.module._free(buf);
-                    log(`emitting ${decryptData.length} bytes of decrypted data`, b(decryptData));
-                    this.emit("data", Buffer.from(decryptData));
-                    log("might get stuck here", this.incomingDataQueue);
-                  });
-                } else {
-                }
-              });
+              this.tlsTick();
             }
           });
-          log("socket connected, ready");
+          log("socket ready");
+          this.connecting = false;
+          this.pending = false;
           this.emit("connect");
           this.emit("ready");
         });
       }
-      dequeueIncomingData() {
-        log("dequeue to wasm for decryption...");
-        if (this.incomingDataQueue.length === 0)
-          return log("no data available");
-        if (this.outstandingDataRequest === null)
-          return log("data available but not awaited");
-        let nextData = this.incomingDataQueue[0];
-        const { container, maxBytes, resolve } = this.outstandingDataRequest;
-        if (nextData.length > maxBytes) {
-          log("splitting next chunk");
-          this.incomingDataQueue[0] = nextData.subarray(maxBytes);
-          nextData = nextData.subarray(0, maxBytes);
-        } else {
-          log("returning next chunk whole");
-          this.incomingDataQueue.shift();
-        }
-        this.module.HEAPU8.set(nextData, container);
-        this.outstandingDataRequest = null;
-        const len = nextData.length;
-        log(`${len} bytes dequeued`);
-        resolve(len);
+      startTls(host) {
+        log(`starting TLS`);
+        this.tlsState = 1 /* Handshake */;
+        this.module.ccall("initTls", "number", ["string"], [host], { async: true }).then(() => {
+          log(`TLS connection established`);
+          this.tlsState = 2 /* Established */;
+          this.authorized = true;
+          this.emit("secureConnection", this);
+          this.tlsTick();
+        });
       }
-      write(data, encoding = "utf8", callback = () => void 0) {
-        if (typeof data === "string")
-          data = new TextEncoder(encoding).encode(data);
-        if (this.tlsConnectionPromise === null) {
-          log(`sending ${data.length} byte(s):`, b(data));
-          this.ws.send(data);
-          callback();
-        } else {
-          log(`received ${data.length} byte(s) for encryption:`, b(data));
-          Promise.all([this.tlsConnectionPromise, this.latestIOPromise]).then(() => {
-            log(`encrypting ${data.length} byte(s)`);
-            this.latestIOPromise = this.module.ccall("writeData", "number", ["array", "number"], [data, data.length], { async: true });
-            this.latestIOPromise.then(() => {
-              log("finished write");
-              callback();
-            });
+      pause() {
+        throw new Error("not implemented");
+      }
+      resume() {
+        throw new Error("not implemented");
+      }
+      tlsTick() {
+        log("tick");
+        if (this.outstandingDataRequest !== null) {
+          log("fulfilling outstanding data request ...");
+          if (this.incomingDataQueue.length === 0)
+            return log("no data available");
+          let nextData = this.incomingDataQueue[0];
+          const { buffer, maxBytes, resolve } = this.outstandingDataRequest;
+          if (nextData.length > maxBytes) {
+            log("splitting next chunk");
+            this.incomingDataQueue[0] = nextData.subarray(maxBytes);
+            nextData = nextData.subarray(0, maxBytes);
+          } else {
+            log("returning next chunk whole");
+            this.incomingDataQueue.shift();
+          }
+          this.module.HEAPU8.set(nextData, buffer);
+          this.outstandingDataRequest = null;
+          const len = nextData.length;
+          log(`${len} bytes supplied`);
+          resolve(len);
+          return this.tlsTick();
+        }
+        if (this.tlsState === 1 /* Handshake */) {
+          log("mid-handshake: nothing to do");
+          return;
+        }
+        if (this.tlsWaitState !== 0 /* Idle */) {
+          log(`wait state ${this.tlsWaitState}: nothing to do`);
+          return;
+        }
+        const undecryptedBytes = this.incomingDataQueue.reduce((memo, arr) => memo + arr.length, 0);
+        const pendingBytes = undecryptedBytes;
+        if (pendingBytes > 0) {
+          this.tlsWaitState = 1 /* WaitRead */;
+          const receiveBuffer = this.module._malloc(pendingBytes);
+          log(`prompting decryption of up to ${pendingBytes} bytes`);
+          this.module.ccall("readData", "number", ["number", "number"], [receiveBuffer, pendingBytes], { async: true }).then((bytesRead) => {
+            const decryptData = Buffer.alloc(bytesRead);
+            decryptData.set(this.module.HEAPU8.slice(receiveBuffer, receiveBuffer + bytesRead));
+            this.module._free(receiveBuffer);
+            log(`emitting ${decryptData.length} bytes of decrypted data`, bindump(decryptData));
+            this.emit("data", decryptData);
+            this.tlsWaitState = 0 /* Idle */;
+            this.tlsTick();
           });
+          return;
+        }
+        if (this.writeQueue.length > 0) {
+          this.tlsWaitState = 1 /* WaitRead */;
+          const writeItem = this.writeQueue.shift();
+          const { data, callback } = writeItem;
+          const writeLen = data.length;
+          log(`encrypting ${writeLen} byte(s)`);
+          this.module.ccall("writeData", "number", ["array", "number"], [data, writeLen], { async: true }).then(() => {
+            log("data written");
+            this.tlsWaitState = 0 /* Idle */;
+            callback();
+            this.tlsTick();
+          });
+          return;
+        } else {
+          log("emitted drain");
+          this.emit("drain");
+          return;
+        }
+      }
+      write(data, encoding = "utf8", callback = (err) => void 0) {
+        if (typeof data === "string")
+          data = Buffer.from(data, encoding);
+        if (this.tlsState === 0 /* None */) {
+          log(`sending ${data.length} byte(s):`, bindump(data));
+          this.ws.send(data);
+        } else {
+          log(`received ${data.length} byte(s) for encryption:`, bindump(data));
+          this.writeQueue.push({ data, callback });
+          this.tlsTick();
         }
         return true;
       }
       end() {
       }
-      startTls(host) {
-        log(`starting TLS`);
-        this.tlsConnectionPromise = this.module.ccall("initTls", "number", ["string"], [host], { async: true });
-        this.tlsConnectionPromise.then(() => {
-          log(`TLS connected`);
-          this.authorized = true;
-          this.emit("secureConnection", this);
-        });
+      destroy() {
+        this.ws.close();
       }
     };
   }
@@ -8284,7 +8334,8 @@ var pgshims_default = {
   async fetch(request, env, ctx) {
     const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
     await client.connect();
-    const result = await client.query("SELECT * FROM generate_series(0, 5000)");
+    const result = await client.query("SELECT * FROM generate_series(0, 10000)");
+    console.log(result);
     return new Response(JSON.stringify(result.rows));
   }
 };
