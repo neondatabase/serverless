@@ -10,4 +10,4 @@ command = "./build.sh"
 [vars]
 # DATABASE_URL
 # Run `wrangler secret put DATABASE_URL` and enter the connection string when prompted.
-# And/or for `wrangler dev --local`: create `.dev.vars` containing `DATABASE_URL=mysecretconnstr`.
+# And/or for local dev, create `.dev.vars` containing `DATABASE_URL=postgres://mysecretconnstr`.

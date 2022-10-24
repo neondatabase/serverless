@@ -13,6 +13,7 @@ export default {
     const values = await Promise.all(new Array(100).fill(0).map(_ => crypto.randomUUID()));
     const result2 = await client.query(`INSERT INTO strings (string) VALUES ${placeholders} RETURNING id`,
       values);
+    //await client.end();
     return new Response(JSON.stringify(result1.rows.concat(result2.rows)));
   }
 }
