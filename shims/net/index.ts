@@ -55,11 +55,11 @@ declare global {
   const debug: boolean;  // e.g. --define:debug=false in esbuild command
   const tlsWasm: any;    // we'll add this import back in later (see above)
   interface Response { webSocket: WebSocket; }  // on Cloudflare
-  interface WebSocket { accept: () => void; }   // ditto
+  interface WebSocket { accept: () => void; }   // on Cloudflare
 }
 
 interface DataRequest {
-  buffer: number /* buffer pointer */;
+  buffer: number /* pointer */;
   maxBytes: number;
   resolve: (bytesProvided: number) => void;
 }
@@ -76,14 +76,14 @@ enum TlsWaitState {
   WaitWrite,
 }
 
-function log(...args: any[]) {
-  console.log(...args.map(arg => arg instanceof Uint8Array ? hexDump(arg) : arg));
-}
-
 function hexDump(data: Uint8Array) {
   return `${data.length} bytes` + data.reduce((memo, byte) =>
     memo + ' ' + byte.toString(16).padStart(2, '0'), '\nhex:') +
     '\nstr: ' + new TextDecoder().decode(data);
+}
+
+function log(...args: any[]) {
+  console.log(...args.map(arg => arg instanceof Uint8Array ? hexDump(arg) : arg));
 }
 
 export function isIP(input: string) {
@@ -220,7 +220,7 @@ export class Socket extends EventEmitter {
   tlsTick(): void {
     debug && log('tick');
 
-    // fulfill an outstanding data request if data available
+    // fulfill any outstanding data request if data available
     if (this.outstandingDataRequest !== null) {
       debug && log('fulfilling outstanding data request ...');
 
@@ -251,7 +251,7 @@ export class Socket extends EventEmitter {
       return this.tlsTick();
     }
 
-    // do nothing if we're mid-handshake or waiting for an async read or write to finish
+    // else, if we're mid-handshake or waiting for an async read/write to finish, do nothing
     if (this.tlsState === TlsState.Handshake) {
       debug && log('mid-handshake: nothing to do');
       return;
@@ -261,7 +261,7 @@ export class Socket extends EventEmitter {
       return;
     }
 
-    // data needs decrypting/reading?
+    // else, if there's data to decrypt/read back, do that
     const undecryptedBytes = this.incomingDataQueue.reduce((memo, arr) => memo + arr.length, 0);
     const unreadBytes = this.module.ccall('pending', 'number', [], []);
     const pendingBytes = undecryptedBytes + unreadBytes;
@@ -286,7 +286,7 @@ export class Socket extends EventEmitter {
       return;
     }
 
-    // data needs writing?
+    // else if data needs writing, write it
     if (this.writeQueue.length > 0) {
       this.tlsWaitState = TlsWaitState.WaitRead;
       const writeItem = this.writeQueue.shift()!;
