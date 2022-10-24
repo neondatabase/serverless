@@ -1,6 +1,6 @@
 import { sha256 } from './sha256';
 
-export function randomBytes(length) {
+export function randomBytes(length: number) {
   return crypto.getRandomValues(Buffer.alloc(length));
 }
 
@@ -8,10 +8,10 @@ export function randomBytes(length) {
 // (1) we can't use crypto.subtle here because the returns must be synchronous
 // (2) these are very limited implementations: SHA-256 only, and you can only call `update` once!
 
-export function createHash(type /* 'sha256' | 'md5' */) {
+export function createHash(type: 'sha256') {
   if (type !== 'sha256') throw new Error('Only sha256 is supported');
   return {
-    update: function (data /* string | Buffer */) {
+    update: function (data: string | Buffer | Uint8Array) {
       return {
         digest: function () {
           return Buffer.from(sha256(data));
@@ -21,10 +21,10 @@ export function createHash(type /* 'sha256' | 'md5' */) {
   }
 }
 
-export function createHmac(type /* 'sha256' or 'md5' */, key /* string or Buffer/Uint8Array */) {
+export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
   if (type !== 'sha256') throw new Error('Only sha256 is supported');
   return {
-    update: function (data /* string or Buffer */) {
+    update: function (data: string | Buffer | Uint8Array) {
       return {
         digest: function () {
           if (typeof key === 'string') key = new TextEncoder().encode(key);
@@ -33,6 +33,7 @@ export function createHmac(type /* 'sha256' or 'md5' */, key /* string or Buffer
           const keyLen = key.length;
           if (keyLen > 64) {
             key = sha256(key);
+
           } else if (keyLen < 64) {
             const tmp = new Uint8Array(64);
             tmp.set(key);

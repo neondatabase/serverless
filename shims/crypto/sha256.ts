@@ -26,7 +26,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // digest is a 32-byte Uint8Array instance with an added .hex() function.
 // Input should be either a string (that will be encoded as UTF-8) or an array-like object with values 0..255.
 
-export function sha256(data) {
+export function sha256<T extends string | Uint8Array>(data?: T):
+  T extends string | Uint8Array ? Uint8Array : { add: (data: string | Uint8Array) => void; digest: () => Uint8Array } {
   let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a,
     h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19,
     tsz = 0, bp = 0;
@@ -38,7 +39,7 @@ export function sha256(data) {
     0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
     0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
     0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2],
-    rrot = (x, n) => (x >>> n) | (x << (32 - n)),
+    rrot = (x: number, n: number) => (x >>> n) | (x << (32 - n)),
     w = new Uint32Array(64),
     buf = new Uint8Array(64),
     process = () => {
@@ -64,7 +65,7 @@ export function sha256(data) {
       h4 = (h4 + e) | 0; h5 = (h5 + f) | 0; h6 = (h6 + g) | 0; h7 = (h7 + h) | 0;
       bp = 0;
     },
-    add = data => {
+    add = (data: string | Uint8Array) => {
       if (typeof data === "string") {
         data = (new TextEncoder).encode(data);
       }
@@ -101,7 +102,7 @@ export function sha256(data) {
       reply[28] = h7 >>> 24; reply[29] = (h7 >>> 16) & 255; reply[30] = (h7 >>> 8) & 255; reply[31] = h7 & 255;
       return reply;
     };
-  if (data === undefined) return { add, digest };
+  if (data === undefined) return { add, digest } as any;
   add(data);
-  return digest();
+  return digest() as any;
 }
