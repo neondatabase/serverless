@@ -1,10 +1,21 @@
 /**
+ * This file shims parts of the Node.js built-in net and tls packages, by 
+ * implementing net.Socket and tls.connect() on top of WebSockets and WolfSSL 
+ * compiled to WebAssembly with emscripten. It's designed to work both in 
+ * browsers and in Cloudflare Workers (where WebSockets and WebAssembly work a
+ * bit differently).
+ * 
  * - This diagram represents data flow once the TLS handshake has completed.
- * - Data queues contain encrypted incoming data from the network and
- *   unencrypted outgoing data from pg:
- *   - idq = incoming data queue, wq = write queue
+ *   Data flow is complicated by the need to prevent re-entrancy: emscripten's
+ *   ASYNCIFY feature enables async JS calls, but we mustn't call back into JS
+ *   while we wait.
+ * 
+ * - The data queues contain encrypted incoming data from the network and
+ *   unencrypted outgoing data from pg. 
+ * 
  * - Prior to the handshake, pg writes are passed straight to the network and
  *   network data events lead directly to pg data events. 
+ * 
  * - During the handshake, the TLS engine spontaneously calls into JS to read
  *   and write, and outgoing writes (which pg issues early) are queued.
  * 
@@ -28,10 +39,12 @@
  *                         ┌────▼──┴─▼───┴───┐
  *                         │   TLS decrypt   │
  *                         └─────────────────┘
+ * 
+ * Key: idq = incoming data queue; wq = write queue.
  */
 
 // import tlsWasm from './tls.wasm';
-// ^^^ the relevant import is added at the end of the build
+// ^^^ the relevant import is added at the end of the build process
 // * in browsers, tlsWasm is the path to a WebAssembly file
 // * on Cloudflare, tlsWasm is a pre-cooked WebAssembly instance
 
@@ -39,14 +52,10 @@ import { EventEmitter } from 'events';
 import { tls_emscripten } from './tls';
 
 declare global {
-  const DBG: boolean;
-  const tlsWasm: any;  // we'll add this import back in later, see above
-  interface Response {
-    webSocket: WebSocket;
-  }
-  interface WebSocket {
-    accept: () => void;
-  }
+  const debug: boolean;  // e.g. --define:debug=false in esbuild command
+  const tlsWasm: any;    // we'll add this import back in later (see above)
+  interface Response { webSocket: WebSocket; }  // on Cloudflare
+  interface WebSocket { accept: () => void; }   // ditto
 }
 
 interface DataRequest {
@@ -67,11 +76,13 @@ enum TlsWaitState {
   WaitWrite,
 }
 
-const log = console.log.bind(console);
+function log(...args: any[]) {
+  console.log(...args.map(arg => arg instanceof Uint8Array ? hexDump(arg) : arg));
+}
 
-function bindump(data: Uint8Array) {
-  return data.reduce((memo, byte) =>
-    memo + ' ' + byte.toString(16).padStart(2, '0'), 'hex:') +
+function hexDump(data: Uint8Array) {
+  return `${data.length} bytes` + data.reduce((memo, byte) =>
+    memo + ' ' + byte.toString(16).padStart(2, '0'), '\nhex:') +
     '\nstr: ' + new TextDecoder().decode(data);
 }
 
@@ -97,10 +108,8 @@ export class Socket extends EventEmitter {
   incomingDataQueue: Buffer[] = [];
   writeQueue: { data: Buffer, callback: (err?: any) => void }[] = [];
 
-  setNoDelay() { DBG && log('setNoDelay'); }
-  setKeepAlive() { DBG && log('setKeepAlive'); }
-  ref() { DBG && log('ref'); }
-  unref() { DBG && log('unref'); }
+  setNoDelay() { debug && log('setNoDelay'); }
+  setKeepAlive() { debug && log('setKeepAlive'); }
 
   connect(port: number | string, host: string) {
     this.connecting = true;
@@ -109,7 +118,7 @@ export class Socket extends EventEmitter {
     const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
     const wsPromise = isCloudflare ?
       fetch('http://' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
-        DBG && log('Cloudflare WebSocket opened');
+        debug && log('Cloudflare WebSocket opened');
         const ws = resp.webSocket;
         ws.accept();
         return ws;
@@ -117,7 +126,7 @@ export class Socket extends EventEmitter {
       new Promise<WebSocket>(resolve => {
         const ws = new WebSocket('ws://' + wsAddr);
         ws.addEventListener('open', () => {
-          DBG && log('native WebSocket opened');
+          debug && log('native WebSocket opened');
           resolve(ws);
         });
       });
@@ -127,31 +136,31 @@ export class Socket extends EventEmitter {
       tls_emscripten({
         instantiateWasm: (info: WebAssembly.Imports, receive: (instance: WebAssembly.Instance) => void) => {
           if (isCloudflare) {
-            DBG && log('creating wasm instance');
+            debug && log('creating wasm instance');
             const instance = new WebAssembly.Instance(tlsWasm, info);
             receive(instance);
             return instance.exports;
 
           } else {
-            DBG && log('streaming wasm ...');
+            debug && log('streaming wasm ...');
             WebAssembly.instantiateStreaming(fetch(tlsWasm), info)
               .then(({ instance }) => {
-                DBG && log('wasm instantiated');
+                debug && log('wasm instantiated');
                 receive(instance);
               });
             return {};
           }
         },
         provideEncryptedFromNetwork: (buffer: number, maxBytes: number) => {
-          DBG && log(`provideEncryptedFromNetwork: providing up to ${maxBytes} bytes`);
+          debug && log(`provideEncryptedFromNetwork: providing up to ${maxBytes} bytes`);
           return new Promise(resolve => {
             this.outstandingDataRequest = { buffer, maxBytes, resolve };
             this.tlsTick();
           });
         },
         writeEncryptedToNetwork: (buffer: number, size: number) => {
-          DBG && log(`writeEncryptedToNetwork: sending ${size} bytes`);
           const arr = this.module.HEAPU8.slice(buffer, buffer + size);
+          debug && log(`writeEncryptedToNetwork:`, arr);
           this.ws!.send(arr);
           return size;
         },
@@ -163,31 +172,31 @@ export class Socket extends EventEmitter {
       this.ws.binaryType = 'arraybuffer';
 
       this.ws.addEventListener('error', (err) => {
-        DBG && log('websocket error', err);
+        debug && log('websocket error', err);
         this.emit('error', err);
       });
 
       this.ws.addEventListener('close', () => {
-        DBG && log('websocket closed');
+        debug && log('websocket closed');
         this.emit('close');
       });
 
       this.ws.addEventListener('message', (msg: { data: ArrayBuffer }) => {
         const data = Buffer.from(msg.data) as unknown as Buffer;
-        DBG && log(`socket received ${data.length} byte(s)`);
+        debug && log(`socket received:`, data);
 
         if (this.tlsState === TlsState.None) {
-          DBG && log(`emitting data direct`);
+          debug && log(`emitting data direct`);
           this.emit('data', data);
 
         } else {
-          DBG && log(`queuing data`);
+          debug && log(`queuing data`);
           this.incomingDataQueue.push(data);
           this.tlsTick();
         }
       });
 
-      DBG && log('socket ready');
+      debug && log('socket ready');
       this.connecting = false;
       this.pending = false;
       this.emit('connect');
@@ -196,11 +205,11 @@ export class Socket extends EventEmitter {
   }
 
   startTls(host: string) {
-    DBG && log(`starting TLS`);
+    debug && log(`starting TLS`);
     this.tlsState = TlsState.Handshake;
     this.module.ccall('initTls', 'number', ['string'], [host], { async: true })
       .then(() => {
-        DBG && log(`TLS connection established`);
+        debug && log(`TLS connection established`);
         this.tlsState = TlsState.Established;
         this.authorized = true;
         this.emit('secureConnection', this);
@@ -208,23 +217,15 @@ export class Socket extends EventEmitter {
       });
   }
 
-  pause() {
-    throw new Error('not implemented');
-  }
-
-  resume() {
-    throw new Error('not implemented');
-  }
-
   tlsTick(): void {
-    DBG && log('tick');
+    debug && log('tick');
 
     // fulfill an outstanding data request if data available
     if (this.outstandingDataRequest !== null) {
-      DBG && log('fulfilling outstanding data request ...');
+      debug && log('fulfilling outstanding data request ...');
 
       if (this.incomingDataQueue.length === 0) {
-        DBG && log('no data available');
+        debug && log('no data available');
         return
       }
 
@@ -232,32 +233,31 @@ export class Socket extends EventEmitter {
       const { buffer, maxBytes, resolve } = this.outstandingDataRequest;
 
       if (nextData.length > maxBytes) {
-        DBG && log('splitting next chunk');
+        debug && log('splitting next chunk');
         this.incomingDataQueue[0] = nextData.subarray(maxBytes);
         nextData = nextData.subarray(0, maxBytes);
 
       } else {
-        DBG && log('returning next chunk whole');
+        debug && log('returning next chunk whole');
         this.incomingDataQueue.shift();
       }
 
       this.module.HEAPU8.set(nextData, buffer);  // copy data to appropriate memory range
       this.outstandingDataRequest = null;
 
-      const len = nextData.length;
-      DBG && log(`${len} bytes supplied`);
+      debug && log(`supplied:`, nextData);
 
-      resolve(len);
+      resolve(nextData.length);
       return this.tlsTick();
     }
 
     // do nothing if we're mid-handshake or waiting for an async read or write to finish
     if (this.tlsState === TlsState.Handshake) {
-      DBG && log('mid-handshake: nothing to do');
+      debug && log('mid-handshake: nothing to do');
       return;
     }
     if (this.tlsWaitState !== TlsWaitState.Idle) {
-      DBG && log(`wait state ${this.tlsWaitState}: nothing to do`);
+      debug && log(`wait state ${this.tlsWaitState}: nothing to do`);
       return;
     }
 
@@ -269,14 +269,14 @@ export class Socket extends EventEmitter {
       this.tlsWaitState = TlsWaitState.WaitRead;
       const receiveBuffer = this.module._malloc(pendingBytes);
 
-      DBG && log(`reading up to ${pendingBytes} bytes (${undecryptedBytes} + ${unreadBytes})`);
+      debug && log(`reading up to ${pendingBytes} bytes (${undecryptedBytes} + ${unreadBytes})`);
       this.module.ccall('readData', 'number', ['number', 'number'], [receiveBuffer, pendingBytes], { async: true })
         .then((bytesRead: number) => {
           const decryptData = Buffer.alloc(bytesRead);
           decryptData.set(this.module.HEAPU8.subarray(receiveBuffer, receiveBuffer + bytesRead));
           this.module._free(receiveBuffer);
 
-          DBG && log(`emitting ${decryptData.length} bytes of decrypted data`, bindump(decryptData));
+          debug && log(`emitting decrypted data:`, decryptData);
           this.emit('data', decryptData);
 
           this.tlsWaitState = TlsWaitState.Idle;
@@ -293,10 +293,10 @@ export class Socket extends EventEmitter {
       const { data, callback } = writeItem;
       const writeLen = data.length;
 
-      DBG && log(`encrypting ${writeLen} byte(s)`);
+      debug && log(`encrypting ${writeLen} byte(s)`);
       this.module.ccall('writeData', 'number', ['array', 'number'], [data, writeLen], { async: true })
         .then(() => {
-          DBG && log('data written');
+          debug && log('data written:', data);
           this.tlsWaitState = TlsWaitState.Idle;
           callback();
           this.tlsTick();
@@ -305,7 +305,7 @@ export class Socket extends EventEmitter {
       return;
 
     } else {
-      DBG && log('emitted drain');
+      debug && log('emitted drain');
       this.emit('drain');
       return;
     }
@@ -315,11 +315,11 @@ export class Socket extends EventEmitter {
     if (typeof data === 'string') data = Buffer.from(data, encoding) as unknown as Buffer;
 
     if (this.tlsState === TlsState.None) {
-      DBG && log(`sending ${data.length} byte(s):`, bindump(data));
+      debug && log(`sending data:`, data);
       this.ws!.send(data);
 
     } else {
-      DBG && log(`received ${data.length} byte(s) for encryption:`, bindump(data));
+      debug && log(`received for encryption:`, data);
       this.writeQueue.push({ data, callback });
       this.tlsTick();
     }
