@@ -96,6 +96,7 @@ export class Socket extends EventEmitter {
   pending = true;
   writable = true;
   authorized = false;
+  destroyed = false;
   wsProxy = 'proxy.hahathon.monster/';
 
   // private
@@ -111,8 +112,9 @@ export class Socket extends EventEmitter {
   setNoDelay() { debug && log('setNoDelay'); }
   setKeepAlive() { debug && log('setKeepAlive'); }
 
-  connect(port: number | string, host: string) {
+  connect(port: number | string, host: string, connectListener?: () => void) {
     this.connecting = true;
+    if (connectListener) this.once('connect', connectListener);
 
     const isCloudflare = typeof tlsWasm !== 'string';
     const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
@@ -202,6 +204,8 @@ export class Socket extends EventEmitter {
       this.emit('connect');
       this.emit('ready');
     });
+
+    return this;
   }
 
   startTls(host: string) {
@@ -272,12 +276,18 @@ export class Socket extends EventEmitter {
       debug && log(`reading up to ${pendingBytes} bytes (${undecryptedBytes} + ${unreadBytes})`);
       this.module.ccall('readData', 'number', ['number', 'number'], [receiveBuffer, pendingBytes], { async: true })
         .then((bytesRead: number) => {
-          const decryptData = Buffer.alloc(bytesRead);
-          decryptData.set(this.module.HEAPU8.subarray(receiveBuffer, receiveBuffer + bytesRead));
-          this.module._free(receiveBuffer);
+          if (bytesRead > 0) {
+            const decryptData = Buffer.alloc(bytesRead);
+            decryptData.set(this.module.HEAPU8.subarray(receiveBuffer, receiveBuffer + bytesRead));
+            this.module._free(receiveBuffer);
 
-          debug && log(`emitting decrypted data:`, decryptData);
-          this.emit('data', decryptData);
+            debug && log(`emitting decrypted data:`, decryptData);
+            this.emit('data', decryptData);
+
+          } else {
+            // zero-length read means a closed socket, so:
+            this.emit('end');
+          }
 
           this.tlsWaitState = TlsWaitState.Idle;
           this.tlsTick();
@@ -327,11 +337,19 @@ export class Socket extends EventEmitter {
     return true;
   }
 
-  end() {
-    // no-op
+  end(callback?: (() => void)) {
+    debug && log('socket ending');
+    this.ws!.close();
+    if (callback) callback();
+    this.emit('end');
+    return this;
   }
 
   destroy() {
+    debug && log('socket destroy');
     this.ws!.close();
+    this.destroyed = true;
+    this.emit('end');
+    return this;
   }
 }
