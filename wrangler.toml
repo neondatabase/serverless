@@ -5,13 +5,7 @@ node_compat = false
 
 [build]
 watch_dir = "shims"
-command = """( \
-  echo "import tlsWasm from '../shims/net/tls.wasm';" && \
-  npx esbuild index.ts \
-    --define:DBG=false --minify \
-    --external:pg-native --inject:shims/shims.js --bundle --format=esm \
-  ) > dist-cf/index.js \
-"""
+command = "./build.sh"
 
 [vars]
 # DATABASE_URL
