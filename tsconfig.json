@@ -21,7 +21,6 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "exclude": [
-    "dist-cf",
-    "dist-browser"
+    "dist"
   ]
 }

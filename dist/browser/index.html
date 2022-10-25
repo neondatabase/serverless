@@ -2,7 +2,7 @@
   import main from './index.js';
 
   // load up .dev.vars into env
-  const resp = await fetch('../.dev.vars');
+  const resp = await fetch('/.dev.vars');
   const text = await resp.text();
   const env = text.split('\n').reduce((memo, line) => {
     const eqIndex = line.indexOf('=')

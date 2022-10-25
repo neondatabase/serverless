@@ -1,5 +1,5 @@
 name = "pgshims"
-main = "dist-cf/index.js"
+main = "dist/cf/index.js"
 compatibility_date = "2022-10-19"
 node_compat = false
 

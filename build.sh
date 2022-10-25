@@ -1,8 +1,18 @@
 #!/usr/bin/env zsh
-cp shims/net/tls.wasm dist-common/
+
+if [ "$1" = "debug" ]; then
+  DEBUG_ARG="--define:debug=true"
+  MINIFY_ARG=""
+else 
+  DEBUG_ARG="--define:debug=false"
+  MINIFY_ARG="--minify"
+fi
+
 npx esbuild index.ts \
   --external:pg-native --inject:shims/shims.js \
   --bundle --format=esm \
-  --define:debug=false | \
-tee >((echo 'const tlsWasm = "../dist-common/tls.wasm";' && cat -) > dist-browser/index.js) | \
-  (echo 'import tlsWasm from "../dist-common/tls.wasm";' && cat -) > dist-cf/index.js
+  $DEBUG_ARG $MINIFY_ARG | \
+tee >((echo 'const tlsWasm = "../tls.wasm";' && cat -) > dist/browser/index.js) | \
+  (echo 'import tlsWasm from "../tls.wasm";' && cat -) > dist/cf/index.js
+
+cp shims/net/tls.wasm dist/
