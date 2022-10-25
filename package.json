@@ -5,15 +5,11 @@
   "main": "index.js",
   "author": "George MacKerron",
   "license": "ISC",
-  "engines": {
-    "npm": ">=8.3.0"
-  },
   "scripts": {
     "updateSchema": "env $(grep -v '^#' .dev.vars) npx zapatos"
   },
   "dependencies": {
     "zapatos": "^6.1.1",
-    "perf_hooks": "file:shims/perf_hooks",
     "pg": "^8.8.0",
     "buffer": "^6.0.3",
     "events": "^3.3.0",
@@ -23,6 +19,7 @@
     "fs": "file:shims/fs",
     "net": "file:shims/net",
     "path": "file:shims/path",
+    "perf_hooks": "file:shims/perf_hooks",
     "stream": "file:shims/stream",
     "string_decoder": "file:shims/string_decoder",
     "tls": "file:shims/tls",
