@@ -54,8 +54,18 @@ import { tls_emscripten } from './tls';
 declare global {
   const debug: boolean;  // e.g. --define:debug=false in esbuild command
   const tlsWasm: any;    // we'll add this import back in later (see above)
-  interface Response { webSocket: WebSocket; }  // on Cloudflare
-  interface WebSocket { accept: () => void; }   // on Cloudflare
+  // WebAssembly is currently missing from @cloudflare/worker-types
+  namespace WebAssembly {
+    interface Instance { }
+    interface Imports { }
+    const Instance: any;
+    const Imports: any;
+    const instantiateStreaming: (resp: Promise<Response>, info: any) => Promise<{ instance: Instance }>;
+  }
+  interface WebSocket {
+    accept: () => void;
+    binaryType: string;
+  }
 }
 
 interface DataRequest {
@@ -124,6 +134,7 @@ export class Socket extends EventEmitter {
       fetch('http://' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
         debug && log('Cloudflare WebSocket opened');
         const ws = resp.webSocket;
+        if (ws === null) throw new Error('missing webSocket property');
         ws.accept();
         return ws;
       }) :
@@ -185,8 +196,8 @@ export class Socket extends EventEmitter {
         this.emit('close');
       });
 
-      this.ws.addEventListener('message', (msg: { data: ArrayBuffer }) => {
-        const data = Buffer.from(msg.data) as unknown as Buffer;
+      this.ws.addEventListener('message', (msg) => {
+        const data = Buffer.from(msg.data as ArrayBuffer) as unknown as Buffer;
         debug && log(`socket received:`, data);
 
         if (this.tlsState === TlsState.None) {
@@ -293,8 +304,8 @@ export class Socket extends EventEmitter {
           } else {
             // a zero-length read means a closed connection
             debug && log('socket closed by peer, ending');
-            this.tlsState = TlsState.Ended;
             this.ws!.close();
+            this.tlsState = TlsState.Ended;
             this.emit('end');
           }
         });
@@ -351,7 +362,6 @@ export class Socket extends EventEmitter {
         .then(() => {
           this.ws!.close();
           if (callback) callback();
-          this.emit('end');
         })
     );
     return this;

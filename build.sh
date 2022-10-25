@@ -8,7 +8,7 @@ else
   MINIFY_ARG="--minify"
 fi
 
-npx esbuild index.ts \
+npx esbuild src/index.ts \
   --external:pg-native --inject:shims/shims.js \
   --bundle --format=esm \
   $DEBUG_ARG $MINIFY_ARG | \

@@ -1,4 +1,5 @@
 {
+  "outDir": "src",
   "db": {
     "connectionString": "{{DATABASE_URL}}"
   }

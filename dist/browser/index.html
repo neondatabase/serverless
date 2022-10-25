@@ -1,7 +1,10 @@
 <script type="module">
   import main from './index.js';
 
-  // load up .dev.vars into env
+  // shim req
+  const req = {};
+
+  // shim env
   const resp = await fetch('/.dev.vars');
   const text = await resp.text();
   const env = text.split('\n').reduce((memo, line) => {
@@ -17,9 +20,10 @@
 
   // shim the Response object
   globalThis.Response = function (data) {
-    document.body.innerText = data;
+    document.querySelector('pre').innerText = data;
   }
 
   // run the worker
-  main.fetch(null, env, ctx);
+  main.fetch(req, env, ctx);
 </script>
+<pre></pre>

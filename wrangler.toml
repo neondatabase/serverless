@@ -4,7 +4,7 @@ compatibility_date = "2022-10-19"
 node_compat = false
 
 [build]
-watch_dir = "shims"
+watch_dir = "src"
 command = "./build.sh"
 
 [vars]
