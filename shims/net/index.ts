@@ -68,6 +68,7 @@ enum TlsState {
   None,
   Handshake,
   Established,
+  Ended
 }
 
 enum TlsWaitState {
@@ -95,6 +96,7 @@ export class Socket extends EventEmitter {
   connecting = false;
   pending = true;
   writable = true;
+  encrypted = false;
   authorized = false;
   destroyed = false;
   wsProxy = 'proxy.hahathon.monster/';
@@ -215,6 +217,7 @@ export class Socket extends EventEmitter {
       .then(() => {
         debug && log(`TLS connection established`);
         this.tlsState = TlsState.Established;
+        this.encrypted = true;
         this.authorized = true;
         this.emit('secureConnection', this);
         this.tlsTick();
@@ -255,9 +258,9 @@ export class Socket extends EventEmitter {
       return this.tlsTick();
     }
 
-    // else, if we're mid-handshake or waiting for an async read/write to finish, do nothing
-    if (this.tlsState === TlsState.Handshake) {
-      debug && log('mid-handshake: nothing to do');
+    // else, if we're mid-handshake, ended, or waiting for an async read/write to finish, do nothing
+    if (this.tlsState !== TlsState.Established) {
+      debug && log('connection not established: nothing to do');
       return;
     }
     if (this.tlsWaitState !== TlsWaitState.Idle) {
@@ -276,6 +279,8 @@ export class Socket extends EventEmitter {
       debug && log(`reading up to ${pendingBytes} bytes (${undecryptedBytes} + ${unreadBytes})`);
       this.module.ccall('readData', 'number', ['number', 'number'], [receiveBuffer, pendingBytes], { async: true })
         .then((bytesRead: number) => {
+          this.tlsWaitState = TlsWaitState.Idle;
+
           if (bytesRead > 0) {
             const decryptData = Buffer.alloc(bytesRead);
             decryptData.set(this.module.HEAPU8.subarray(receiveBuffer, receiveBuffer + bytesRead));
@@ -283,14 +288,15 @@ export class Socket extends EventEmitter {
 
             debug && log(`emitting decrypted data:`, decryptData);
             this.emit('data', decryptData);
+            this.tlsTick();
 
           } else {
-            // zero-length read means a closed socket, so:
+            // a zero-length read means a closed connection
+            debug && log('socket closed by peer, ending');
+            this.tlsState = TlsState.Ended;
+            this.ws!.close();
             this.emit('end');
           }
-
-          this.tlsWaitState = TlsWaitState.Idle;
-          this.tlsTick();
         });
 
       return;
@@ -321,7 +327,8 @@ export class Socket extends EventEmitter {
     }
   }
 
-  write(data: Buffer | string, encoding = 'utf8', callback = (err: any) => void 0) {
+  write(data: Buffer | string, encoding = 'utf8', callback = (err?: any) => void 0) {
+    if (data.length === 0) return callback();
     if (typeof data === 'string') data = Buffer.from(data, encoding) as unknown as Buffer;
 
     if (this.tlsState === TlsState.None) {
@@ -337,19 +344,20 @@ export class Socket extends EventEmitter {
     return true;
   }
 
-  end(callback?: (() => void)) {
-    debug && log('socket ending');
-    this.ws!.close();
-    if (callback) callback();
-    this.emit('end');
+  end(data: Buffer | string = Buffer.alloc(0) as unknown as Buffer, encoding = 'utf8', callback?: (() => void)) {
+    debug && log('ending socket');
+    this.write(data, encoding, () =>
+      this.module.ccall('shutdown', 'number', [], [], { async: true })
+        .then(() => {
+          this.ws!.close();
+          if (callback) callback();
+          this.emit('end');
+        })
+    );
     return this;
   }
 
   destroy() {
-    debug && log('socket destroy');
-    this.ws!.close();
-    this.destroyed = true;
-    this.emit('end');
-    return this;
+    return this.end();
   }
 }
