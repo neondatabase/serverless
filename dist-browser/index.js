@@ -1,4 +1,4 @@
-const tlsWasm = "../shims/net/tls.wasm";
+const tlsWasm = "../dist-common/tls.wasm";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -9428,9 +9428,9 @@ var pgshims_default = {
   async fetch(request, env, ctx) {
     const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
     await client.connect();
-    const result1 = await select("whc_sites_2021", all, { columns: ["name_en"] }).run(client);
-    await client.end();
-    return new Response(JSON.stringify(result1));
+    const result = await select("whc_sites_2021", all, { columns: ["name_en"] }).run(client);
+    ctx.waitUntil(client.end());
+    return new Response(JSON.stringify(result));
   }
 };
 export {

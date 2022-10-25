@@ -1,7 +1,7 @@
 <script type="module">
   import main from './index.js';
 
-  // load up .dev.vars
+  // load up .dev.vars into env
   const resp = await fetch('../.dev.vars');
   const text = await resp.text();
   const env = text.split('\n').reduce((memo, line) => {
@@ -12,11 +12,14 @@
     return memo;
   }, {});
 
+  // shim ctx
+  const ctx = { waitUntil(promise) { } };  // browser always waits!
+
   // shim the Response object
   globalThis.Response = function (data) {
     document.body.innerText = data;
   }
 
   // run the worker
-  main.fetch(null, env, null);
+  main.fetch(null, env, ctx);
 </script>
