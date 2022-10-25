@@ -1,4 +1,4 @@
-const tlsWasm = "./shims/net/tls.wasm";
+const tlsWasm = "../shims/net/tls.wasm";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -5922,6 +5922,7 @@ var init_net = __esm({
         return this;
       }
       destroy() {
+        this.destroyed = true;
         return this.end();
       }
     };

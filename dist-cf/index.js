@@ -5922,6 +5922,7 @@ var init_net = __esm({
         return this;
       }
       destroy() {
+        this.destroyed = true;
         return this.end();
       }
     };

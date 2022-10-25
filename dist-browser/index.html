@@ -1,8 +1,8 @@
 <script type="module">
-  import main from './dist-browser/index.js';
+  import main from './index.js';
 
   // load up .dev.vars
-  const resp = await fetch('.dev.vars');
+  const resp = await fetch('../.dev.vars');
   const text = await resp.text();
   const env = text.split('\n').reduce((memo, line) => {
     const eqIndex = line.indexOf('=')
