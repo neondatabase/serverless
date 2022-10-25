@@ -1,6 +1,9428 @@
 import tlsWasm from "../shims/net/tls.wasm";
-var Ha=Object.create;var pt=Object.defineProperty;var Ga=Object.getOwnPropertyDescriptor;var $a=Object.getOwnPropertyNames;var Ya=Object.getPrototypeOf,Va=Object.prototype.hasOwnProperty;var Ka=(r=>typeof require!="undefined"?require:typeof Proxy!="undefined"?new Proxy(r,{get:(e,t)=>(typeof require!="undefined"?require:e)[t]}):r)(function(r){if(typeof require!="undefined")return require.apply(this,arguments);throw new Error('Dynamic require of "'+r+'" is not supported')});var $=(r,e)=>()=>(r&&(e=r(r=0)),e);var T=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),ne=(r,e)=>{for(var t in e)pt(r,t,{get:e[t],enumerable:!0})},In=(r,e,t,n)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of $a(e))!Va.call(r,i)&&i!==t&&pt(r,i,{get:()=>e[i],enumerable:!(n=Ga(e,i))||n.enumerable});return r};var Tn=(r,e,t)=>(t=r!=null?Ha(Ya(r)):{},In(e||!r||!r.__esModule?pt(t,"default",{value:r,enumerable:!0}):t,r)),O=r=>In(pt({},"__esModule",{value:!0}),r);var Rn=T(mt=>{"use strict";p();mt.byteLength=Xa;mt.toByteArray=Ja;mt.fromByteArray=ro;var se=[],Z=[],za=typeof Uint8Array<"u"?Uint8Array:Array,Qt="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";for(Ee=0,Bn=Qt.length;Ee<Bn;++Ee)se[Ee]=Qt[Ee],Z[Qt.charCodeAt(Ee)]=Ee;var Ee,Bn;Z["-".charCodeAt(0)]=62;Z["_".charCodeAt(0)]=63;function Cn(r){var e=r.length;if(e%4>0)throw new Error("Invalid string. Length must be a multiple of 4");var t=r.indexOf("=");t===-1&&(t=e);var n=t===e?0:4-t%4;return[t,n]}function Xa(r){var e=Cn(r),t=e[0],n=e[1];return(t+n)*3/4-n}function Za(r,e,t){return(e+t)*3/4-t}function Ja(r){var e,t=Cn(r),n=t[0],i=t[1],s=new za(Za(r,n,i)),a=0,o=i>0?n-4:n,u;for(u=0;u<o;u+=4)e=Z[r.charCodeAt(u)]<<18|Z[r.charCodeAt(u+1)]<<12|Z[r.charCodeAt(u+2)]<<6|Z[r.charCodeAt(u+3)],s[a++]=e>>16&255,s[a++]=e>>8&255,s[a++]=e&255;return i===2&&(e=Z[r.charCodeAt(u)]<<2|Z[r.charCodeAt(u+1)]>>4,s[a++]=e&255),i===1&&(e=Z[r.charCodeAt(u)]<<10|Z[r.charCodeAt(u+1)]<<4|Z[r.charCodeAt(u+2)]>>2,s[a++]=e>>8&255,s[a++]=e&255),s}function eo(r){return se[r>>18&63]+se[r>>12&63]+se[r>>6&63]+se[r&63]}function to(r,e,t){for(var n,i=[],s=e;s<t;s+=3)n=(r[s]<<16&16711680)+(r[s+1]<<8&65280)+(r[s+2]&255),i.push(eo(n));return i.join("")}function ro(r){for(var e,t=r.length,n=t%3,i=[],s=16383,a=0,o=t-n;a<o;a+=s)i.push(to(r,a,a+s>o?o:a+s));return n===1?(e=r[t-1],i.push(se[e>>2]+se[e<<4&63]+"==")):n===2&&(e=(r[t-2]<<8)+r[t-1],i.push(se[e>>10]+se[e>>4&63]+se[e<<2&63]+"=")),i.join("")}});var Pn=T(jt=>{p();jt.read=function(r,e,t,n,i){var s,a,o=i*8-n-1,u=(1<<o)-1,f=u>>1,h=-7,m=t?i-1:0,x=t?-1:1,I=r[e+m];for(m+=x,s=I&(1<<-h)-1,I>>=-h,h+=o;h>0;s=s*256+r[e+m],m+=x,h-=8);for(a=s&(1<<-h)-1,s>>=-h,h+=n;h>0;a=a*256+r[e+m],m+=x,h-=8);if(s===0)s=1-f;else{if(s===u)return a?NaN:(I?-1:1)*(1/0);a=a+Math.pow(2,n),s=s-f}return(I?-1:1)*a*Math.pow(2,s-n)};jt.write=function(r,e,t,n,i,s){var a,o,u,f=s*8-i-1,h=(1<<f)-1,m=h>>1,x=i===23?Math.pow(2,-24)-Math.pow(2,-77):0,I=n?0:s-1,P=n?1:-1,G=e<0||e===0&&1/e<0?1:0;for(e=Math.abs(e),isNaN(e)||e===1/0?(o=isNaN(e)?1:0,a=h):(a=Math.floor(Math.log(e)/Math.LN2),e*(u=Math.pow(2,-a))<1&&(a--,u*=2),a+m>=1?e+=x/u:e+=x*Math.pow(2,1-m),e*u>=2&&(a++,u/=2),a+m>=h?(o=0,a=h):a+m>=1?(o=(e*u-1)*Math.pow(2,i),a=a+m):(o=e*Math.pow(2,m-1)*Math.pow(2,i),a=0));i>=8;r[t+I]=o&255,I+=P,o/=256,i-=8);for(a=a<<i|o,f+=i;f>0;r[t+I]=a&255,I+=P,a/=256,f-=8);r[t+I-P]|=G*128}});var Vn=T(Fe=>{"use strict";p();var Wt=Rn(),Me=Pn(),Mn=typeof Symbol=="function"&&typeof Symbol.for=="function"?Symbol.for("nodejs.util.inspect.custom"):null;Fe.Buffer=d;Fe.SlowBuffer=uo;Fe.INSPECT_MAX_BYTES=50;var yt=2147483647;Fe.kMaxLength=yt;d.TYPED_ARRAY_SUPPORT=no();!d.TYPED_ARRAY_SUPPORT&&typeof console<"u"&&typeof console.error=="function"&&console.error("This browser lacks typed array (Uint8Array) support which is required by `buffer` v5.x. Use `buffer` v4.x if you require old browser support.");function no(){try{let r=new Uint8Array(1),e={foo:function(){return 42}};return Object.setPrototypeOf(e,Uint8Array.prototype),Object.setPrototypeOf(r,e),r.foo()===42}catch{return!1}}Object.defineProperty(d.prototype,"parent",{enumerable:!0,get:function(){if(!!d.isBuffer(this))return this.buffer}});Object.defineProperty(d.prototype,"offset",{enumerable:!0,get:function(){if(!!d.isBuffer(this))return this.byteOffset}});function ue(r){if(r>yt)throw new RangeError('The value "'+r+'" is invalid for option "size"');let e=new Uint8Array(r);return Object.setPrototypeOf(e,d.prototype),e}function d(r,e,t){if(typeof r=="number"){if(typeof e=="string")throw new TypeError('The "string" argument must be of type string. Received type number');return Yt(r)}return kn(r,e,t)}d.poolSize=8192;function kn(r,e,t){if(typeof r=="string")return so(r,e);if(ArrayBuffer.isView(r))return ao(r);if(r==null)throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type "+typeof r);if(ae(r,ArrayBuffer)||r&&ae(r.buffer,ArrayBuffer)||typeof SharedArrayBuffer<"u"&&(ae(r,SharedArrayBuffer)||r&&ae(r.buffer,SharedArrayBuffer)))return Gt(r,e,t);if(typeof r=="number")throw new TypeError('The "value" argument must not be of type number. Received type number');let n=r.valueOf&&r.valueOf();if(n!=null&&n!==r)return d.from(n,e,t);let i=oo(r);if(i)return i;if(typeof Symbol<"u"&&Symbol.toPrimitive!=null&&typeof r[Symbol.toPrimitive]=="function")return d.from(r[Symbol.toPrimitive]("string"),e,t);throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type "+typeof r)}d.from=function(r,e,t){return kn(r,e,t)};Object.setPrototypeOf(d.prototype,Uint8Array.prototype);Object.setPrototypeOf(d,Uint8Array);function Un(r){if(typeof r!="number")throw new TypeError('"size" argument must be of type number');if(r<0)throw new RangeError('The value "'+r+'" is invalid for option "size"')}function io(r,e,t){return Un(r),r<=0?ue(r):e!==void 0?typeof t=="string"?ue(r).fill(e,t):ue(r).fill(e):ue(r)}d.alloc=function(r,e,t){return io(r,e,t)};function Yt(r){return Un(r),ue(r<0?0:Vt(r)|0)}d.allocUnsafe=function(r){return Yt(r)};d.allocUnsafeSlow=function(r){return Yt(r)};function so(r,e){if((typeof e!="string"||e==="")&&(e="utf8"),!d.isEncoding(e))throw new TypeError("Unknown encoding: "+e);let t=On(r,e)|0,n=ue(t),i=n.write(r,e);return i!==t&&(n=n.slice(0,i)),n}function Ht(r){let e=r.length<0?0:Vt(r.length)|0,t=ue(e);for(let n=0;n<e;n+=1)t[n]=r[n]&255;return t}function ao(r){if(ae(r,Uint8Array)){let e=new Uint8Array(r);return Gt(e.buffer,e.byteOffset,e.byteLength)}return Ht(r)}function Gt(r,e,t){if(e<0||r.byteLength<e)throw new RangeError('"offset" is outside of buffer bounds');if(r.byteLength<e+(t||0))throw new RangeError('"length" is outside of buffer bounds');let n;return e===void 0&&t===void 0?n=new Uint8Array(r):t===void 0?n=new Uint8Array(r,e):n=new Uint8Array(r,e,t),Object.setPrototypeOf(n,d.prototype),n}function oo(r){if(d.isBuffer(r)){let e=Vt(r.length)|0,t=ue(e);return t.length===0||r.copy(t,0,0,e),t}if(r.length!==void 0)return typeof r.length!="number"||zt(r.length)?ue(0):Ht(r);if(r.type==="Buffer"&&Array.isArray(r.data))return Ht(r.data)}function Vt(r){if(r>=yt)throw new RangeError("Attempt to allocate Buffer larger than maximum size: 0x"+yt.toString(16)+" bytes");return r|0}function uo(r){return+r!=r&&(r=0),d.alloc(+r)}d.isBuffer=function(e){return e!=null&&e._isBuffer===!0&&e!==d.prototype};d.compare=function(e,t){if(ae(e,Uint8Array)&&(e=d.from(e,e.offset,e.byteLength)),ae(t,Uint8Array)&&(t=d.from(t,t.offset,t.byteLength)),!d.isBuffer(e)||!d.isBuffer(t))throw new TypeError('The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array');if(e===t)return 0;let n=e.length,i=t.length;for(let s=0,a=Math.min(n,i);s<a;++s)if(e[s]!==t[s]){n=e[s],i=t[s];break}return n<i?-1:i<n?1:0};d.isEncoding=function(e){switch(String(e).toLowerCase()){case"hex":case"utf8":case"utf-8":case"ascii":case"latin1":case"binary":case"base64":case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return!0;default:return!1}};d.concat=function(e,t){if(!Array.isArray(e))throw new TypeError('"list" argument must be an Array of Buffers');if(e.length===0)return d.alloc(0);let n;if(t===void 0)for(t=0,n=0;n<e.length;++n)t+=e[n].length;let i=d.allocUnsafe(t),s=0;for(n=0;n<e.length;++n){let a=e[n];if(ae(a,Uint8Array))s+a.length>i.length?(d.isBuffer(a)||(a=d.from(a)),a.copy(i,s)):Uint8Array.prototype.set.call(i,a,s);else if(d.isBuffer(a))a.copy(i,s);else throw new TypeError('"list" argument must be an Array of Buffers');s+=a.length}return i};function On(r,e){if(d.isBuffer(r))return r.length;if(ArrayBuffer.isView(r)||ae(r,ArrayBuffer))return r.byteLength;if(typeof r!="string")throw new TypeError('The "string" argument must be one of type string, Buffer, or ArrayBuffer. Received type '+typeof r);let t=r.length,n=arguments.length>2&&arguments[2]===!0;if(!n&&t===0)return 0;let i=!1;for(;;)switch(e){case"ascii":case"latin1":case"binary":return t;case"utf8":case"utf-8":return $t(r).length;case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return t*2;case"hex":return t>>>1;case"base64":return Yn(r).length;default:if(i)return n?-1:$t(r).length;e=(""+e).toLowerCase(),i=!0}}d.byteLength=On;function co(r,e,t){let n=!1;if((e===void 0||e<0)&&(e=0),e>this.length||((t===void 0||t>this.length)&&(t=this.length),t<=0)||(t>>>=0,e>>>=0,t<=e))return"";for(r||(r="utf8");;)switch(r){case"hex":return vo(this,e,t);case"utf8":case"utf-8":return Nn(this,e,t);case"ascii":return wo(this,e,t);case"latin1":case"binary":return _o(this,e,t);case"base64":return yo(this,e,t);case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return Eo(this,e,t);default:if(n)throw new TypeError("Unknown encoding: "+r);r=(r+"").toLowerCase(),n=!0}}d.prototype._isBuffer=!0;function be(r,e,t){let n=r[e];r[e]=r[t],r[t]=n}d.prototype.swap16=function(){let e=this.length;if(e%2!==0)throw new RangeError("Buffer size must be a multiple of 16-bits");for(let t=0;t<e;t+=2)be(this,t,t+1);return this};d.prototype.swap32=function(){let e=this.length;if(e%4!==0)throw new RangeError("Buffer size must be a multiple of 32-bits");for(let t=0;t<e;t+=4)be(this,t,t+3),be(this,t+1,t+2);return this};d.prototype.swap64=function(){let e=this.length;if(e%8!==0)throw new RangeError("Buffer size must be a multiple of 64-bits");for(let t=0;t<e;t+=8)be(this,t,t+7),be(this,t+1,t+6),be(this,t+2,t+5),be(this,t+3,t+4);return this};d.prototype.toString=function(){let e=this.length;return e===0?"":arguments.length===0?Nn(this,0,e):co.apply(this,arguments)};d.prototype.toLocaleString=d.prototype.toString;d.prototype.equals=function(e){if(!d.isBuffer(e))throw new TypeError("Argument must be a Buffer");return this===e?!0:d.compare(this,e)===0};d.prototype.inspect=function(){let e="",t=Fe.INSPECT_MAX_BYTES;return e=this.toString("hex",0,t).replace(/(.{2})/g,"$1 ").trim(),this.length>t&&(e+=" ... "),"<Buffer "+e+">"};Mn&&(d.prototype[Mn]=d.prototype.inspect);d.prototype.compare=function(e,t,n,i,s){if(ae(e,Uint8Array)&&(e=d.from(e,e.offset,e.byteLength)),!d.isBuffer(e))throw new TypeError('The "target" argument must be one of type Buffer or Uint8Array. Received type '+typeof e);if(t===void 0&&(t=0),n===void 0&&(n=e?e.length:0),i===void 0&&(i=0),s===void 0&&(s=this.length),t<0||n>e.length||i<0||s>this.length)throw new RangeError("out of range index");if(i>=s&&t>=n)return 0;if(i>=s)return-1;if(t>=n)return 1;if(t>>>=0,n>>>=0,i>>>=0,s>>>=0,this===e)return 0;let a=s-i,o=n-t,u=Math.min(a,o),f=this.slice(i,s),h=e.slice(t,n);for(let m=0;m<u;++m)if(f[m]!==h[m]){a=f[m],o=h[m];break}return a<o?-1:o<a?1:0};function qn(r,e,t,n,i){if(r.length===0)return-1;if(typeof t=="string"?(n=t,t=0):t>2147483647?t=2147483647:t<-2147483648&&(t=-2147483648),t=+t,zt(t)&&(t=i?0:r.length-1),t<0&&(t=r.length+t),t>=r.length){if(i)return-1;t=r.length-1}else if(t<0)if(i)t=0;else return-1;if(typeof e=="string"&&(e=d.from(e,n)),d.isBuffer(e))return e.length===0?-1:Ln(r,e,t,n,i);if(typeof e=="number")return e=e&255,typeof Uint8Array.prototype.indexOf=="function"?i?Uint8Array.prototype.indexOf.call(r,e,t):Uint8Array.prototype.lastIndexOf.call(r,e,t):Ln(r,[e],t,n,i);throw new TypeError("val must be string, number or Buffer")}function Ln(r,e,t,n,i){let s=1,a=r.length,o=e.length;if(n!==void 0&&(n=String(n).toLowerCase(),n==="ucs2"||n==="ucs-2"||n==="utf16le"||n==="utf-16le")){if(r.length<2||e.length<2)return-1;s=2,a/=2,o/=2,t/=2}function u(h,m){return s===1?h[m]:h.readUInt16BE(m*s)}let f;if(i){let h=-1;for(f=t;f<a;f++)if(u(r,f)===u(e,h===-1?0:f-h)){if(h===-1&&(h=f),f-h+1===o)return h*s}else h!==-1&&(f-=f-h),h=-1}else for(t+o>a&&(t=a-o),f=t;f>=0;f--){let h=!0;for(let m=0;m<o;m++)if(u(r,f+m)!==u(e,m)){h=!1;break}if(h)return f}return-1}d.prototype.includes=function(e,t,n){return this.indexOf(e,t,n)!==-1};d.prototype.indexOf=function(e,t,n){return qn(this,e,t,n,!0)};d.prototype.lastIndexOf=function(e,t,n){return qn(this,e,t,n,!1)};function lo(r,e,t,n){t=Number(t)||0;let i=r.length-t;n?(n=Number(n),n>i&&(n=i)):n=i;let s=e.length;n>s/2&&(n=s/2);let a;for(a=0;a<n;++a){let o=parseInt(e.substr(a*2,2),16);if(zt(o))return a;r[t+a]=o}return a}function fo(r,e,t,n){return gt($t(e,r.length-t),r,t,n)}function ho(r,e,t,n){return gt(Ao(e),r,t,n)}function po(r,e,t,n){return gt(Yn(e),r,t,n)}function mo(r,e,t,n){return gt(Io(e,r.length-t),r,t,n)}d.prototype.write=function(e,t,n,i){if(t===void 0)i="utf8",n=this.length,t=0;else if(n===void 0&&typeof t=="string")i=t,n=this.length,t=0;else if(isFinite(t))t=t>>>0,isFinite(n)?(n=n>>>0,i===void 0&&(i="utf8")):(i=n,n=void 0);else throw new Error("Buffer.write(string, encoding, offset[, length]) is no longer supported");let s=this.length-t;if((n===void 0||n>s)&&(n=s),e.length>0&&(n<0||t<0)||t>this.length)throw new RangeError("Attempt to write outside buffer bounds");i||(i="utf8");let a=!1;for(;;)switch(i){case"hex":return lo(this,e,t,n);case"utf8":case"utf-8":return fo(this,e,t,n);case"ascii":case"latin1":case"binary":return ho(this,e,t,n);case"base64":return po(this,e,t,n);case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return mo(this,e,t,n);default:if(a)throw new TypeError("Unknown encoding: "+i);i=(""+i).toLowerCase(),a=!0}};d.prototype.toJSON=function(){return{type:"Buffer",data:Array.prototype.slice.call(this._arr||this,0)}};function yo(r,e,t){return e===0&&t===r.length?Wt.fromByteArray(r):Wt.fromByteArray(r.slice(e,t))}function Nn(r,e,t){t=Math.min(r.length,t);let n=[],i=e;for(;i<t;){let s=r[i],a=null,o=s>239?4:s>223?3:s>191?2:1;if(i+o<=t){let u,f,h,m;switch(o){case 1:s<128&&(a=s);break;case 2:u=r[i+1],(u&192)===128&&(m=(s&31)<<6|u&63,m>127&&(a=m));break;case 3:u=r[i+1],f=r[i+2],(u&192)===128&&(f&192)===128&&(m=(s&15)<<12|(u&63)<<6|f&63,m>2047&&(m<55296||m>57343)&&(a=m));break;case 4:u=r[i+1],f=r[i+2],h=r[i+3],(u&192)===128&&(f&192)===128&&(h&192)===128&&(m=(s&15)<<18|(u&63)<<12|(f&63)<<6|h&63,m>65535&&m<1114112&&(a=m))}}a===null?(a=65533,o=1):a>65535&&(a-=65536,n.push(a>>>10&1023|55296),a=56320|a&1023),n.push(a),i+=o}return go(n)}var Fn=4096;function go(r){let e=r.length;if(e<=Fn)return String.fromCharCode.apply(String,r);let t="",n=0;for(;n<e;)t+=String.fromCharCode.apply(String,r.slice(n,n+=Fn));return t}function wo(r,e,t){let n="";t=Math.min(r.length,t);for(let i=e;i<t;++i)n+=String.fromCharCode(r[i]&127);return n}function _o(r,e,t){let n="";t=Math.min(r.length,t);for(let i=e;i<t;++i)n+=String.fromCharCode(r[i]);return n}function vo(r,e,t){let n=r.length;(!e||e<0)&&(e=0),(!t||t<0||t>n)&&(t=n);let i="";for(let s=e;s<t;++s)i+=To[r[s]];return i}function Eo(r,e,t){let n=r.slice(e,t),i="";for(let s=0;s<n.length-1;s+=2)i+=String.fromCharCode(n[s]+n[s+1]*256);return i}d.prototype.slice=function(e,t){let n=this.length;e=~~e,t=t===void 0?n:~~t,e<0?(e+=n,e<0&&(e=0)):e>n&&(e=n),t<0?(t+=n,t<0&&(t=0)):t>n&&(t=n),t<e&&(t=e);let i=this.subarray(e,t);return Object.setPrototypeOf(i,d.prototype),i};function q(r,e,t){if(r%1!==0||r<0)throw new RangeError("offset is not uint");if(r+e>t)throw new RangeError("Trying to access beyond buffer length")}d.prototype.readUintLE=d.prototype.readUIntLE=function(e,t,n){e=e>>>0,t=t>>>0,n||q(e,t,this.length);let i=this[e],s=1,a=0;for(;++a<t&&(s*=256);)i+=this[e+a]*s;return i};d.prototype.readUintBE=d.prototype.readUIntBE=function(e,t,n){e=e>>>0,t=t>>>0,n||q(e,t,this.length);let i=this[e+--t],s=1;for(;t>0&&(s*=256);)i+=this[e+--t]*s;return i};d.prototype.readUint8=d.prototype.readUInt8=function(e,t){return e=e>>>0,t||q(e,1,this.length),this[e]};d.prototype.readUint16LE=d.prototype.readUInt16LE=function(e,t){return e=e>>>0,t||q(e,2,this.length),this[e]|this[e+1]<<8};d.prototype.readUint16BE=d.prototype.readUInt16BE=function(e,t){return e=e>>>0,t||q(e,2,this.length),this[e]<<8|this[e+1]};d.prototype.readUint32LE=d.prototype.readUInt32LE=function(e,t){return e=e>>>0,t||q(e,4,this.length),(this[e]|this[e+1]<<8|this[e+2]<<16)+this[e+3]*16777216};d.prototype.readUint32BE=d.prototype.readUInt32BE=function(e,t){return e=e>>>0,t||q(e,4,this.length),this[e]*16777216+(this[e+1]<<16|this[e+2]<<8|this[e+3])};d.prototype.readBigUInt64LE=me(function(e){e=e>>>0,Le(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&Ke(e,this.length-8);let i=t+this[++e]*2**8+this[++e]*2**16+this[++e]*2**24,s=this[++e]+this[++e]*2**8+this[++e]*2**16+n*2**24;return BigInt(i)+(BigInt(s)<<BigInt(32))});d.prototype.readBigUInt64BE=me(function(e){e=e>>>0,Le(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&Ke(e,this.length-8);let i=t*2**24+this[++e]*2**16+this[++e]*2**8+this[++e],s=this[++e]*2**24+this[++e]*2**16+this[++e]*2**8+n;return(BigInt(i)<<BigInt(32))+BigInt(s)});d.prototype.readIntLE=function(e,t,n){e=e>>>0,t=t>>>0,n||q(e,t,this.length);let i=this[e],s=1,a=0;for(;++a<t&&(s*=256);)i+=this[e+a]*s;return s*=128,i>=s&&(i-=Math.pow(2,8*t)),i};d.prototype.readIntBE=function(e,t,n){e=e>>>0,t=t>>>0,n||q(e,t,this.length);let i=t,s=1,a=this[e+--i];for(;i>0&&(s*=256);)a+=this[e+--i]*s;return s*=128,a>=s&&(a-=Math.pow(2,8*t)),a};d.prototype.readInt8=function(e,t){return e=e>>>0,t||q(e,1,this.length),this[e]&128?(255-this[e]+1)*-1:this[e]};d.prototype.readInt16LE=function(e,t){e=e>>>0,t||q(e,2,this.length);let n=this[e]|this[e+1]<<8;return n&32768?n|4294901760:n};d.prototype.readInt16BE=function(e,t){e=e>>>0,t||q(e,2,this.length);let n=this[e+1]|this[e]<<8;return n&32768?n|4294901760:n};d.prototype.readInt32LE=function(e,t){return e=e>>>0,t||q(e,4,this.length),this[e]|this[e+1]<<8|this[e+2]<<16|this[e+3]<<24};d.prototype.readInt32BE=function(e,t){return e=e>>>0,t||q(e,4,this.length),this[e]<<24|this[e+1]<<16|this[e+2]<<8|this[e+3]};d.prototype.readBigInt64LE=me(function(e){e=e>>>0,Le(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&Ke(e,this.length-8);let i=this[e+4]+this[e+5]*2**8+this[e+6]*2**16+(n<<24);return(BigInt(i)<<BigInt(32))+BigInt(t+this[++e]*2**8+this[++e]*2**16+this[++e]*2**24)});d.prototype.readBigInt64BE=me(function(e){e=e>>>0,Le(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&Ke(e,this.length-8);let i=(t<<24)+this[++e]*2**16+this[++e]*2**8+this[++e];return(BigInt(i)<<BigInt(32))+BigInt(this[++e]*2**24+this[++e]*2**16+this[++e]*2**8+n)});d.prototype.readFloatLE=function(e,t){return e=e>>>0,t||q(e,4,this.length),Me.read(this,e,!0,23,4)};d.prototype.readFloatBE=function(e,t){return e=e>>>0,t||q(e,4,this.length),Me.read(this,e,!1,23,4)};d.prototype.readDoubleLE=function(e,t){return e=e>>>0,t||q(e,8,this.length),Me.read(this,e,!0,52,8)};d.prototype.readDoubleBE=function(e,t){return e=e>>>0,t||q(e,8,this.length),Me.read(this,e,!1,52,8)};function Y(r,e,t,n,i,s){if(!d.isBuffer(r))throw new TypeError('"buffer" argument must be a Buffer instance');if(e>i||e<s)throw new RangeError('"value" argument is out of bounds');if(t+n>r.length)throw new RangeError("Index out of range")}d.prototype.writeUintLE=d.prototype.writeUIntLE=function(e,t,n,i){if(e=+e,t=t>>>0,n=n>>>0,!i){let o=Math.pow(2,8*n)-1;Y(this,e,t,n,o,0)}let s=1,a=0;for(this[t]=e&255;++a<n&&(s*=256);)this[t+a]=e/s&255;return t+n};d.prototype.writeUintBE=d.prototype.writeUIntBE=function(e,t,n,i){if(e=+e,t=t>>>0,n=n>>>0,!i){let o=Math.pow(2,8*n)-1;Y(this,e,t,n,o,0)}let s=n-1,a=1;for(this[t+s]=e&255;--s>=0&&(a*=256);)this[t+s]=e/a&255;return t+n};d.prototype.writeUint8=d.prototype.writeUInt8=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,1,255,0),this[t]=e&255,t+1};d.prototype.writeUint16LE=d.prototype.writeUInt16LE=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,2,65535,0),this[t]=e&255,this[t+1]=e>>>8,t+2};d.prototype.writeUint16BE=d.prototype.writeUInt16BE=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,2,65535,0),this[t]=e>>>8,this[t+1]=e&255,t+2};d.prototype.writeUint32LE=d.prototype.writeUInt32LE=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,4,4294967295,0),this[t+3]=e>>>24,this[t+2]=e>>>16,this[t+1]=e>>>8,this[t]=e&255,t+4};d.prototype.writeUint32BE=d.prototype.writeUInt32BE=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,4,4294967295,0),this[t]=e>>>24,this[t+1]=e>>>16,this[t+2]=e>>>8,this[t+3]=e&255,t+4};function Qn(r,e,t,n,i){$n(e,n,i,r,t,7);let s=Number(e&BigInt(4294967295));r[t++]=s,s=s>>8,r[t++]=s,s=s>>8,r[t++]=s,s=s>>8,r[t++]=s;let a=Number(e>>BigInt(32)&BigInt(4294967295));return r[t++]=a,a=a>>8,r[t++]=a,a=a>>8,r[t++]=a,a=a>>8,r[t++]=a,t}function jn(r,e,t,n,i){$n(e,n,i,r,t,7);let s=Number(e&BigInt(4294967295));r[t+7]=s,s=s>>8,r[t+6]=s,s=s>>8,r[t+5]=s,s=s>>8,r[t+4]=s;let a=Number(e>>BigInt(32)&BigInt(4294967295));return r[t+3]=a,a=a>>8,r[t+2]=a,a=a>>8,r[t+1]=a,a=a>>8,r[t]=a,t+8}d.prototype.writeBigUInt64LE=me(function(e,t=0){return Qn(this,e,t,BigInt(0),BigInt("0xffffffffffffffff"))});d.prototype.writeBigUInt64BE=me(function(e,t=0){return jn(this,e,t,BigInt(0),BigInt("0xffffffffffffffff"))});d.prototype.writeIntLE=function(e,t,n,i){if(e=+e,t=t>>>0,!i){let u=Math.pow(2,8*n-1);Y(this,e,t,n,u-1,-u)}let s=0,a=1,o=0;for(this[t]=e&255;++s<n&&(a*=256);)e<0&&o===0&&this[t+s-1]!==0&&(o=1),this[t+s]=(e/a>>0)-o&255;return t+n};d.prototype.writeIntBE=function(e,t,n,i){if(e=+e,t=t>>>0,!i){let u=Math.pow(2,8*n-1);Y(this,e,t,n,u-1,-u)}let s=n-1,a=1,o=0;for(this[t+s]=e&255;--s>=0&&(a*=256);)e<0&&o===0&&this[t+s+1]!==0&&(o=1),this[t+s]=(e/a>>0)-o&255;return t+n};d.prototype.writeInt8=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,1,127,-128),e<0&&(e=255+e+1),this[t]=e&255,t+1};d.prototype.writeInt16LE=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,2,32767,-32768),this[t]=e&255,this[t+1]=e>>>8,t+2};d.prototype.writeInt16BE=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,2,32767,-32768),this[t]=e>>>8,this[t+1]=e&255,t+2};d.prototype.writeInt32LE=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,4,2147483647,-2147483648),this[t]=e&255,this[t+1]=e>>>8,this[t+2]=e>>>16,this[t+3]=e>>>24,t+4};d.prototype.writeInt32BE=function(e,t,n){return e=+e,t=t>>>0,n||Y(this,e,t,4,2147483647,-2147483648),e<0&&(e=4294967295+e+1),this[t]=e>>>24,this[t+1]=e>>>16,this[t+2]=e>>>8,this[t+3]=e&255,t+4};d.prototype.writeBigInt64LE=me(function(e,t=0){return Qn(this,e,t,-BigInt("0x8000000000000000"),BigInt("0x7fffffffffffffff"))});d.prototype.writeBigInt64BE=me(function(e,t=0){return jn(this,e,t,-BigInt("0x8000000000000000"),BigInt("0x7fffffffffffffff"))});function Wn(r,e,t,n,i,s){if(t+n>r.length)throw new RangeError("Index out of range");if(t<0)throw new RangeError("Index out of range")}function Hn(r,e,t,n,i){return e=+e,t=t>>>0,i||Wn(r,e,t,4,34028234663852886e22,-34028234663852886e22),Me.write(r,e,t,n,23,4),t+4}d.prototype.writeFloatLE=function(e,t,n){return Hn(this,e,t,!0,n)};d.prototype.writeFloatBE=function(e,t,n){return Hn(this,e,t,!1,n)};function Gn(r,e,t,n,i){return e=+e,t=t>>>0,i||Wn(r,e,t,8,17976931348623157e292,-17976931348623157e292),Me.write(r,e,t,n,52,8),t+8}d.prototype.writeDoubleLE=function(e,t,n){return Gn(this,e,t,!0,n)};d.prototype.writeDoubleBE=function(e,t,n){return Gn(this,e,t,!1,n)};d.prototype.copy=function(e,t,n,i){if(!d.isBuffer(e))throw new TypeError("argument should be a Buffer");if(n||(n=0),!i&&i!==0&&(i=this.length),t>=e.length&&(t=e.length),t||(t=0),i>0&&i<n&&(i=n),i===n||e.length===0||this.length===0)return 0;if(t<0)throw new RangeError("targetStart out of bounds");if(n<0||n>=this.length)throw new RangeError("Index out of range");if(i<0)throw new RangeError("sourceEnd out of bounds");i>this.length&&(i=this.length),e.length-t<i-n&&(i=e.length-t+n);let s=i-n;return this===e&&typeof Uint8Array.prototype.copyWithin=="function"?this.copyWithin(t,n,i):Uint8Array.prototype.set.call(e,this.subarray(n,i),t),s};d.prototype.fill=function(e,t,n,i){if(typeof e=="string"){if(typeof t=="string"?(i=t,t=0,n=this.length):typeof n=="string"&&(i=n,n=this.length),i!==void 0&&typeof i!="string")throw new TypeError("encoding must be a string");if(typeof i=="string"&&!d.isEncoding(i))throw new TypeError("Unknown encoding: "+i);if(e.length===1){let a=e.charCodeAt(0);(i==="utf8"&&a<128||i==="latin1")&&(e=a)}}else typeof e=="number"?e=e&255:typeof e=="boolean"&&(e=Number(e));if(t<0||this.length<t||this.length<n)throw new RangeError("Out of range index");if(n<=t)return this;t=t>>>0,n=n===void 0?this.length:n>>>0,e||(e=0);let s;if(typeof e=="number")for(s=t;s<n;++s)this[s]=e;else{let a=d.isBuffer(e)?e:d.from(e,i),o=a.length;if(o===0)throw new TypeError('The value "'+e+'" is invalid for argument "value"');for(s=0;s<n-t;++s)this[s+t]=a[s%o]}return this};var Pe={};function Kt(r,e,t){Pe[r]=class extends t{constructor(){super(),Object.defineProperty(this,"message",{value:e.apply(this,arguments),writable:!0,configurable:!0}),this.name=`${this.name} [${r}]`,this.stack,delete this.name}get code(){return r}set code(i){Object.defineProperty(this,"code",{configurable:!0,enumerable:!0,value:i,writable:!0})}toString(){return`${this.name} [${r}]: ${this.message}`}}}Kt("ERR_BUFFER_OUT_OF_BOUNDS",function(r){return r?`${r} is outside of buffer bounds`:"Attempt to access memory outside buffer bounds"},RangeError);Kt("ERR_INVALID_ARG_TYPE",function(r,e){return`The "${r}" argument must be of type number. Received type ${typeof e}`},TypeError);Kt("ERR_OUT_OF_RANGE",function(r,e,t){let n=`The value of "${r}" is out of range.`,i=t;return Number.isInteger(t)&&Math.abs(t)>2**32?i=Dn(String(t)):typeof t=="bigint"&&(i=String(t),(t>BigInt(2)**BigInt(32)||t<-(BigInt(2)**BigInt(32)))&&(i=Dn(i)),i+="n"),n+=` It must be ${e}. Received ${i}`,n},RangeError);function Dn(r){let e="",t=r.length,n=r[0]==="-"?1:0;for(;t>=n+4;t-=3)e=`_${r.slice(t-3,t)}${e}`;return`${r.slice(0,t)}${e}`}function bo(r,e,t){Le(e,"offset"),(r[e]===void 0||r[e+t]===void 0)&&Ke(e,r.length-(t+1))}function $n(r,e,t,n,i,s){if(r>t||r<e){let a=typeof e=="bigint"?"n":"",o;throw s>3?e===0||e===BigInt(0)?o=`>= 0${a} and < 2${a} ** ${(s+1)*8}${a}`:o=`>= -(2${a} ** ${(s+1)*8-1}${a}) and < 2 ** ${(s+1)*8-1}${a}`:o=`>= ${e}${a} and <= ${t}${a}`,new Pe.ERR_OUT_OF_RANGE("value",o,r)}bo(n,i,s)}function Le(r,e){if(typeof r!="number")throw new Pe.ERR_INVALID_ARG_TYPE(e,"number",r)}function Ke(r,e,t){throw Math.floor(r)!==r?(Le(r,t),new Pe.ERR_OUT_OF_RANGE(t||"offset","an integer",r)):e<0?new Pe.ERR_BUFFER_OUT_OF_BOUNDS:new Pe.ERR_OUT_OF_RANGE(t||"offset",`>= ${t?1:0} and <= ${e}`,r)}var xo=/[^+/0-9A-Za-z-_]/g;function So(r){if(r=r.split("=")[0],r=r.trim().replace(xo,""),r.length<2)return"";for(;r.length%4!==0;)r=r+"=";return r}function $t(r,e){e=e||1/0;let t,n=r.length,i=null,s=[];for(let a=0;a<n;++a){if(t=r.charCodeAt(a),t>55295&&t<57344){if(!i){if(t>56319){(e-=3)>-1&&s.push(239,191,189);continue}else if(a+1===n){(e-=3)>-1&&s.push(239,191,189);continue}i=t;continue}if(t<56320){(e-=3)>-1&&s.push(239,191,189),i=t;continue}t=(i-55296<<10|t-56320)+65536}else i&&(e-=3)>-1&&s.push(239,191,189);if(i=null,t<128){if((e-=1)<0)break;s.push(t)}else if(t<2048){if((e-=2)<0)break;s.push(t>>6|192,t&63|128)}else if(t<65536){if((e-=3)<0)break;s.push(t>>12|224,t>>6&63|128,t&63|128)}else if(t<1114112){if((e-=4)<0)break;s.push(t>>18|240,t>>12&63|128,t>>6&63|128,t&63|128)}else throw new Error("Invalid code point")}return s}function Ao(r){let e=[];for(let t=0;t<r.length;++t)e.push(r.charCodeAt(t)&255);return e}function Io(r,e){let t,n,i,s=[];for(let a=0;a<r.length&&!((e-=2)<0);++a)t=r.charCodeAt(a),n=t>>8,i=t%256,s.push(i),s.push(n);return s}function Yn(r){return Wt.toByteArray(So(r))}function gt(r,e,t,n){let i;for(i=0;i<n&&!(i+t>=e.length||i>=r.length);++i)e[i+t]=r[i];return i}function ae(r,e){return r instanceof e||r!=null&&r.constructor!=null&&r.constructor.name!=null&&r.constructor.name===e.name}function zt(r){return r!==r}var To=function(){let r="0123456789abcdef",e=new Array(256);for(let t=0;t<16;++t){let n=t*16;for(let i=0;i<16;++i)e[n+i]=r[t]+r[i]}return e}();function me(r){return typeof BigInt>"u"?Bo:r}function Bo(){throw new Error("BigInt not supported")}});var p=$(()=>{"use strict";globalThis.Buffer=Vn().Buffer;globalThis.process={env:{},nextTick:r=>setTimeout(r,0)};globalThis.global=globalThis});var ye=T((jl,Xt)=>{"use strict";p();var De=typeof Reflect=="object"?Reflect:null,Kn=De&&typeof De.apply=="function"?De.apply:function(e,t,n){return Function.prototype.apply.call(e,t,n)},wt;De&&typeof De.ownKeys=="function"?wt=De.ownKeys:Object.getOwnPropertySymbols?wt=function(e){return Object.getOwnPropertyNames(e).concat(Object.getOwnPropertySymbols(e))}:wt=function(e){return Object.getOwnPropertyNames(e)};function Co(r){console&&console.warn&&console.warn(r)}var Xn=Number.isNaN||function(e){return e!==e};function R(){R.init.call(this)}Xt.exports=R;Xt.exports.once=Lo;R.EventEmitter=R;R.prototype._events=void 0;R.prototype._eventsCount=0;R.prototype._maxListeners=void 0;var zn=10;function _t(r){if(typeof r!="function")throw new TypeError('The "listener" argument must be of type Function. Received type '+typeof r)}Object.defineProperty(R,"defaultMaxListeners",{enumerable:!0,get:function(){return zn},set:function(r){if(typeof r!="number"||r<0||Xn(r))throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received '+r+".");zn=r}});R.init=function(){(this._events===void 0||this._events===Object.getPrototypeOf(this)._events)&&(this._events=Object.create(null),this._eventsCount=0),this._maxListeners=this._maxListeners||void 0};R.prototype.setMaxListeners=function(e){if(typeof e!="number"||e<0||Xn(e))throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received '+e+".");return this._maxListeners=e,this};function Zn(r){return r._maxListeners===void 0?R.defaultMaxListeners:r._maxListeners}R.prototype.getMaxListeners=function(){return Zn(this)};R.prototype.emit=function(e){for(var t=[],n=1;n<arguments.length;n++)t.push(arguments[n]);var i=e==="error",s=this._events;if(s!==void 0)i=i&&s.error===void 0;else if(!i)return!1;if(i){var a;if(t.length>0&&(a=t[0]),a instanceof Error)throw a;var o=new Error("Unhandled error."+(a?" ("+a.message+")":""));throw o.context=a,o}var u=s[e];if(u===void 0)return!1;if(typeof u=="function")Kn(u,this,t);else for(var f=u.length,h=ni(u,f),n=0;n<f;++n)Kn(h[n],this,t);return!0};function Jn(r,e,t,n){var i,s,a;if(_t(t),s=r._events,s===void 0?(s=r._events=Object.create(null),r._eventsCount=0):(s.newListener!==void 0&&(r.emit("newListener",e,t.listener?t.listener:t),s=r._events),a=s[e]),a===void 0)a=s[e]=t,++r._eventsCount;else if(typeof a=="function"?a=s[e]=n?[t,a]:[a,t]:n?a.unshift(t):a.push(t),i=Zn(r),i>0&&a.length>i&&!a.warned){a.warned=!0;var o=new Error("Possible EventEmitter memory leak detected. "+a.length+" "+String(e)+" listeners added. Use emitter.setMaxListeners() to increase limit");o.name="MaxListenersExceededWarning",o.emitter=r,o.type=e,o.count=a.length,Co(o)}return r}R.prototype.addListener=function(e,t){return Jn(this,e,t,!1)};R.prototype.on=R.prototype.addListener;R.prototype.prependListener=function(e,t){return Jn(this,e,t,!0)};function Ro(){if(!this.fired)return this.target.removeListener(this.type,this.wrapFn),this.fired=!0,arguments.length===0?this.listener.call(this.target):this.listener.apply(this.target,arguments)}function ei(r,e,t){var n={fired:!1,wrapFn:void 0,target:r,type:e,listener:t},i=Ro.bind(n);return i.listener=t,n.wrapFn=i,i}R.prototype.once=function(e,t){return _t(t),this.on(e,ei(this,e,t)),this};R.prototype.prependOnceListener=function(e,t){return _t(t),this.prependListener(e,ei(this,e,t)),this};R.prototype.removeListener=function(e,t){var n,i,s,a,o;if(_t(t),i=this._events,i===void 0)return this;if(n=i[e],n===void 0)return this;if(n===t||n.listener===t)--this._eventsCount===0?this._events=Object.create(null):(delete i[e],i.removeListener&&this.emit("removeListener",e,n.listener||t));else if(typeof n!="function"){for(s=-1,a=n.length-1;a>=0;a--)if(n[a]===t||n[a].listener===t){o=n[a].listener,s=a;break}if(s<0)return this;s===0?n.shift():Po(n,s),n.length===1&&(i[e]=n[0]),i.removeListener!==void 0&&this.emit("removeListener",e,o||t)}return this};R.prototype.off=R.prototype.removeListener;R.prototype.removeAllListeners=function(e){var t,n,i;if(n=this._events,n===void 0)return this;if(n.removeListener===void 0)return arguments.length===0?(this._events=Object.create(null),this._eventsCount=0):n[e]!==void 0&&(--this._eventsCount===0?this._events=Object.create(null):delete n[e]),this;if(arguments.length===0){var s=Object.keys(n),a;for(i=0;i<s.length;++i)a=s[i],a!=="removeListener"&&this.removeAllListeners(a);return this.removeAllListeners("removeListener"),this._events=Object.create(null),this._eventsCount=0,this}if(t=n[e],typeof t=="function")this.removeListener(e,t);else if(t!==void 0)for(i=t.length-1;i>=0;i--)this.removeListener(e,t[i]);return this};function ti(r,e,t){var n=r._events;if(n===void 0)return[];var i=n[e];return i===void 0?[]:typeof i=="function"?t?[i.listener||i]:[i]:t?Mo(i):ni(i,i.length)}R.prototype.listeners=function(e){return ti(this,e,!0)};R.prototype.rawListeners=function(e){return ti(this,e,!1)};R.listenerCount=function(r,e){return typeof r.listenerCount=="function"?r.listenerCount(e):ri.call(r,e)};R.prototype.listenerCount=ri;function ri(r){var e=this._events;if(e!==void 0){var t=e[r];if(typeof t=="function")return 1;if(t!==void 0)return t.length}return 0}R.prototype.eventNames=function(){return this._eventsCount>0?wt(this._events):[]};function ni(r,e){for(var t=new Array(e),n=0;n<e;++n)t[n]=r[n];return t}function Po(r,e){for(;e+1<r.length;e++)r[e]=r[e+1];r.pop()}function Mo(r){for(var e=new Array(r.length),t=0;t<e.length;++t)e[t]=r[t].listener||r[t];return e}function Lo(r,e){return new Promise(function(t,n){function i(a){r.removeListener(e,s),n(a)}function s(){typeof r.removeListener=="function"&&r.removeListener("error",i),t([].slice.call(arguments))}ii(r,e,s,{once:!0}),e!=="error"&&Fo(r,i,{once:!0})})}function Fo(r,e,t){typeof r.on=="function"&&ii(r,"error",e,t)}function ii(r,e,t,n){if(typeof r.on=="function")n.once?r.once(e,t):r.on(e,t);else if(typeof r.addEventListener=="function")r.addEventListener(e,function i(s){n.once&&r.removeEventListener(e,i),t(s)});else throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type '+typeof r)}});var ze={};ne(ze,{default:()=>Do});var Do,Xe=$(()=>{p();Do={}});function Ze(r){let e=1779033703,t=3144134277,n=1013904242,i=2773480762,s=1359893119,a=2600822924,o=528734635,u=1541459225,f=0,h=0,m=[1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298],x=(B,v)=>B>>>v|B<<32-v,I=new Uint32Array(64),P=new Uint8Array(64),G=()=>{for(let M=0,X=0;M<16;M++,X+=4)I[M]=P[X]<<24|P[X+1]<<16|P[X+2]<<8|P[X+3];for(let M=16;M<64;M++){let X=x(I[M-15],7)^x(I[M-15],18)^I[M-15]>>>3,Te=x(I[M-2],17)^x(I[M-2],19)^I[M-2]>>>10;I[M]=I[M-16]+X+I[M-7]+Te|0}let B=e,v=t,Se=n,le=i,W=s,_e=a,Ae=o,Ie=u;for(let M=0;M<64;M++){let X=x(W,6)^x(W,11)^x(W,25),Te=W&_e^~W&Ae,lt=Ie+X+Te+m[M]+I[M]|0,Ft=x(B,2)^x(B,13)^x(B,22),ft=B&v^B&Se^v&Se,Ge=Ft+ft|0;Ie=Ae,Ae=_e,_e=W,W=le+lt|0,le=Se,Se=v,v=B,B=lt+Ge|0}e=e+B|0,t=t+v|0,n=n+Se|0,i=i+le|0,s=s+W|0,a=a+_e|0,o=o+Ae|0,u=u+Ie|0,h=0},xe=B=>{typeof B=="string"&&(B=new TextEncoder().encode(B));for(let v=0;v<B.length;v++)P[h++]=B[v],h===64&&G();f+=B.length},ct=()=>{if(P[h++]=128,h==64&&G(),h+8>64){for(;h<64;)P[h++]=0;G()}for(;h<58;)P[h++]=0;let B=f*8;P[h++]=B/1099511627776&255,P[h++]=B/4294967296&255,P[h++]=B>>>24,P[h++]=B>>>16&255,P[h++]=B>>>8&255,P[h++]=B&255,G();let v=new Uint8Array(32);return v[0]=e>>>24,v[1]=e>>>16&255,v[2]=e>>>8&255,v[3]=e&255,v[4]=t>>>24,v[5]=t>>>16&255,v[6]=t>>>8&255,v[7]=t&255,v[8]=n>>>24,v[9]=n>>>16&255,v[10]=n>>>8&255,v[11]=n&255,v[12]=i>>>24,v[13]=i>>>16&255,v[14]=i>>>8&255,v[15]=i&255,v[16]=s>>>24,v[17]=s>>>16&255,v[18]=s>>>8&255,v[19]=s&255,v[20]=a>>>24,v[21]=a>>>16&255,v[22]=a>>>8&255,v[23]=a&255,v[24]=o>>>24,v[25]=o>>>16&255,v[26]=o>>>8&255,v[27]=o&255,v[28]=u>>>24,v[29]=u>>>16&255,v[30]=u>>>8&255,v[31]=u&255,v};return r===void 0?{add:xe,digest:ct}:(xe(r),ct())}var si=$(()=>{"use strict";p()});var Zt={};ne(Zt,{createHash:()=>Uo,createHmac:()=>Oo,randomBytes:()=>ko});function ko(r){return crypto.getRandomValues(Buffer.alloc(r))}function Uo(r){if(r!=="sha256")throw new Error("Only sha256 is supported");return{update:function(e){return{digest:function(){return Buffer.from(Ze(e))}}}}}function Oo(r,e){if(r!=="sha256")throw new Error("Only sha256 is supported");return{update:function(t){return{digest:function(){typeof e=="string"&&(e=new TextEncoder().encode(e)),typeof t=="string"&&(t=new TextEncoder().encode(t));let n=e.length;if(n>64)e=Ze(e);else if(n<64){let u=new Uint8Array(64);u.set(e),e=u}let i=new Uint8Array(64),s=new Uint8Array(64);for(let u=0;u<64;u++)i[u]=54^e[u],s[u]=92^e[u];let a=new Uint8Array(t.length+64);a.set(i,0),a.set(t,64);let o=new Uint8Array(64+32);return o.set(s,0),o.set(Ze(a),64),Buffer.from(Ze(o))}}}}}var Jt=$(()=>{p();si()});var er=T(ai=>{"use strict";p();ai.parse=function(r,e){return new Je(r,e).parse()};var Je=class{constructor(e,t){this.source=e,this.transform=t||qo,this.position=0,this.entries=[],this.recorded=[],this.dimension=0}isEof(){return this.position>=this.source.length}nextCharacter(){var e=this.source[this.position++];return e==="\\"?{value:this.source[this.position++],escaped:!0}:{value:e,escaped:!1}}record(e){this.recorded.push(e)}newEntry(e){var t;(this.recorded.length>0||e)&&(t=this.recorded.join(""),t==="NULL"&&!e&&(t=null),t!==null&&(t=this.transform(t)),this.entries.push(t),this.recorded=[])}consumeDimensions(){if(this.source[0]==="[")for(;!this.isEof();){var e=this.nextCharacter();if(e.value==="=")break}}parse(e){var t,n,i;for(this.consumeDimensions();!this.isEof();)if(t=this.nextCharacter(),t.value==="{"&&!i)this.dimension++,this.dimension>1&&(n=new Je(this.source.substr(this.position-1),this.transform),this.entries.push(n.parse(!0)),this.position+=n.position-2);else if(t.value==="}"&&!i){if(this.dimension--,!this.dimension&&(this.newEntry(),e))return this.entries}else t.value==='"'&&!t.escaped?(i&&this.newEntry(!0),i=!i):t.value===","&&!i?this.newEntry():this.record(t.value);if(this.dimension!==0)throw new Error("array dimension not balanced");return this.entries}};function qo(r){return r}});var tr=T(($l,oi)=>{p();var No=er();oi.exports={create:function(r,e){return{parse:function(){return No.parse(r,e)}}}}});var li=T((Yl,ci)=>{"use strict";p();var Qo=/(\d{1,})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d{1,})?.*?( BC)?$/,jo=/^(\d{1,})-(\d{2})-(\d{2})( BC)?$/,Wo=/([Z+-])(\d{2})?:?(\d{2})?:?(\d{2})?/,Ho=/^-?infinity$/;ci.exports=function(e){if(Ho.test(e))return Number(e.replace("i","I"));var t=Qo.exec(e);if(!t)return Go(e)||null;var n=!!t[8],i=parseInt(t[1],10);n&&(i=ui(i));var s=parseInt(t[2],10)-1,a=t[3],o=parseInt(t[4],10),u=parseInt(t[5],10),f=parseInt(t[6],10),h=t[7];h=h?1e3*parseFloat(h):0;var m,x=$o(e);return x!=null?(m=new Date(Date.UTC(i,s,a,o,u,f,h)),rr(i)&&m.setUTCFullYear(i),x!==0&&m.setTime(m.getTime()-x)):(m=new Date(i,s,a,o,u,f,h),rr(i)&&m.setFullYear(i)),m};function Go(r){var e=jo.exec(r);if(!!e){var t=parseInt(e[1],10),n=!!e[4];n&&(t=ui(t));var i=parseInt(e[2],10)-1,s=e[3],a=new Date(t,i,s);return rr(t)&&a.setFullYear(t),a}}function $o(r){if(r.endsWith("+00"))return 0;var e=Wo.exec(r.split(" ")[1]);if(!!e){var t=e[1];if(t==="Z")return 0;var n=t==="-"?-1:1,i=parseInt(e[2],10)*3600+parseInt(e[3]||0,10)*60+parseInt(e[4]||0,10);return i*n*1e3}}function ui(r){return-(r-1)}function rr(r){return r>=0&&r<100}});var hi=T((Vl,fi)=>{p();fi.exports=Vo;var Yo=Object.prototype.hasOwnProperty;function Vo(r){for(var e=1;e<arguments.length;e++){var t=arguments[e];for(var n in t)Yo.call(t,n)&&(r[n]=t[n])}return r}});var mi=T((Kl,pi)=>{"use strict";p();var Ko=hi();pi.exports=ke;function ke(r){if(!(this instanceof ke))return new ke(r);Ko(this,ou(r))}var zo=["seconds","minutes","hours","days","months","years"];ke.prototype.toPostgres=function(){var r=zo.filter(this.hasOwnProperty,this);return this.milliseconds&&r.indexOf("seconds")<0&&r.push("seconds"),r.length===0?"0":r.map(function(e){var t=this[e]||0;return e==="seconds"&&this.milliseconds&&(t=(t+this.milliseconds/1e3).toFixed(6).replace(/\.?0+$/,"")),t+" "+e},this).join(" ")};var Xo={years:"Y",months:"M",days:"D",hours:"H",minutes:"M",seconds:"S"},Zo=["years","months","days"],Jo=["hours","minutes","seconds"];ke.prototype.toISOString=ke.prototype.toISO=function(){var r=Zo.map(t,this).join(""),e=Jo.map(t,this).join("");return"P"+r+"T"+e;function t(n){var i=this[n]||0;return n==="seconds"&&this.milliseconds&&(i=(i+this.milliseconds/1e3).toFixed(6).replace(/0+$/,"")),i+Xo[n]}};var nr="([+-]?\\d+)",eu=nr+"\\s+years?",tu=nr+"\\s+mons?",ru=nr+"\\s+days?",nu="([+-])?([\\d]*):(\\d\\d):(\\d\\d)\\.?(\\d{1,6})?",iu=new RegExp([eu,tu,ru,nu].map(function(r){return"("+r+")?"}).join("\\s*")),di={years:2,months:4,days:6,hours:9,minutes:10,seconds:11,milliseconds:12},su=["hours","minutes","seconds","milliseconds"];function au(r){var e=r+"000000".slice(r.length);return parseInt(e,10)/1e3}function ou(r){if(!r)return{};var e=iu.exec(r),t=e[8]==="-";return Object.keys(di).reduce(function(n,i){var s=di[i],a=e[s];return!a||(a=i==="milliseconds"?au(a):parseInt(a,10),!a)||(t&&~su.indexOf(i)&&(a*=-1),n[i]=a),n},{})}});var gi=T((zl,yi)=>{"use strict";p();yi.exports=function(e){if(/^\\x/.test(e))return new Buffer(e.substr(2),"hex");for(var t="",n=0;n<e.length;)if(e[n]!=="\\")t+=e[n],++n;else if(/[0-7]{3}/.test(e.substr(n+1,3)))t+=String.fromCharCode(parseInt(e.substr(n+1,3),8)),n+=4;else{for(var i=1;n+i<e.length&&e[n+i]==="\\";)i++;for(var s=0;s<Math.floor(i/2);++s)t+="\\";n+=Math.floor(i/2)*2}return new Buffer(t,"binary")}});var Si=T((Xl,xi)=>{p();var et=er(),tt=tr(),vt=li(),_i=mi(),vi=gi();function Et(r){return function(t){return t===null?t:r(t)}}function Ei(r){return r===null?r:r==="TRUE"||r==="t"||r==="true"||r==="y"||r==="yes"||r==="on"||r==="1"}function uu(r){return r?et.parse(r,Ei):null}function cu(r){return parseInt(r,10)}function ir(r){return r?et.parse(r,Et(cu)):null}function lu(r){return r?et.parse(r,Et(function(e){return bi(e).trim()})):null}var fu=function(r){if(!r)return null;var e=tt.create(r,function(t){return t!==null&&(t=ur(t)),t});return e.parse()},sr=function(r){if(!r)return null;var e=tt.create(r,function(t){return t!==null&&(t=parseFloat(t)),t});return e.parse()},J=function(r){if(!r)return null;var e=tt.create(r);return e.parse()},ar=function(r){if(!r)return null;var e=tt.create(r,function(t){return t!==null&&(t=vt(t)),t});return e.parse()},hu=function(r){if(!r)return null;var e=tt.create(r,function(t){return t!==null&&(t=_i(t)),t});return e.parse()},du=function(r){return r?et.parse(r,Et(vi)):null},or=function(r){return parseInt(r,10)},bi=function(r){var e=String(r);return/^\d+$/.test(e)?e:r},wi=function(r){return r?et.parse(r,Et(JSON.parse)):null},ur=function(r){return r[0]!=="("?null:(r=r.substring(1,r.length-1).split(","),{x:parseFloat(r[0]),y:parseFloat(r[1])})},pu=function(r){if(r[0]!=="<"&&r[1]!=="(")return null;for(var e="(",t="",n=!1,i=2;i<r.length-1;i++){if(n||(e+=r[i]),r[i]===")"){n=!0;continue}else if(!n)continue;r[i]!==","&&(t+=r[i])}var s=ur(e);return s.radius=parseFloat(t),s},mu=function(r){r(20,bi),r(21,or),r(23,or),r(26,or),r(700,parseFloat),r(701,parseFloat),r(16,Ei),r(1082,vt),r(1114,vt),r(1184,vt),r(600,ur),r(651,J),r(718,pu),r(1e3,uu),r(1001,du),r(1005,ir),r(1007,ir),r(1028,ir),r(1016,lu),r(1017,fu),r(1021,sr),r(1022,sr),r(1231,sr),r(1014,J),r(1015,J),r(1008,J),r(1009,J),r(1040,J),r(1041,J),r(1115,ar),r(1182,ar),r(1185,ar),r(1186,_i),r(1187,hu),r(17,vi),r(114,JSON.parse.bind(JSON)),r(3802,JSON.parse.bind(JSON)),r(199,wi),r(3807,wi),r(3907,J),r(2951,J),r(791,J),r(1183,J),r(1270,J)};xi.exports={init:mu}});var Ii=T((Zl,Ai)=>{"use strict";p();var V=1e6;function yu(r){var e=r.readInt32BE(0),t=r.readUInt32BE(4),n="";e<0&&(e=~e+(t===0),t=~t+1>>>0,n="-");var i="",s,a,o,u,f,h;{if(s=e%V,e=e/V>>>0,a=4294967296*s+t,t=a/V>>>0,o=""+(a-V*t),t===0&&e===0)return n+o+i;for(u="",f=6-o.length,h=0;h<f;h++)u+="0";i=u+o+i}{if(s=e%V,e=e/V>>>0,a=4294967296*s+t,t=a/V>>>0,o=""+(a-V*t),t===0&&e===0)return n+o+i;for(u="",f=6-o.length,h=0;h<f;h++)u+="0";i=u+o+i}{if(s=e%V,e=e/V>>>0,a=4294967296*s+t,t=a/V>>>0,o=""+(a-V*t),t===0&&e===0)return n+o+i;for(u="",f=6-o.length,h=0;h<f;h++)u+="0";i=u+o+i}return s=e%V,a=4294967296*s+t,o=""+a%V,n+o+i}Ai.exports=yu});var Pi=T((Jl,Ri)=>{p();var gu=Ii(),L=function(r,e,t,n,i){t=t||0,n=n||!1,i=i||function(I,P,G){return I*Math.pow(2,G)+P};var s=t>>3,a=function(I){return n?~I&255:I},o=255,u=8-t%8;e<u&&(o=255<<8-e&255,u=e),t&&(o=o>>t%8);var f=0;t%8+e>=8&&(f=i(0,a(r[s])&o,u));for(var h=e+t>>3,m=s+1;m<h;m++)f=i(f,a(r[m]),8);var x=(e+t)%8;return x>0&&(f=i(f,a(r[h])>>8-x,x)),f},Ci=function(r,e,t){var n=Math.pow(2,t-1)-1,i=L(r,1),s=L(r,t,1);if(s===0)return 0;var a=1,o=function(f,h,m){f===0&&(f=1);for(var x=1;x<=m;x++)a/=2,(h&1<<m-x)>0&&(f+=a);return f},u=L(r,e,t+1,!1,o);return s==Math.pow(2,t+1)-1?u===0?i===0?1/0:-1/0:NaN:(i===0?1:-1)*Math.pow(2,s-n)*u},wu=function(r){return L(r,1)==1?-1*(L(r,15,1,!0)+1):L(r,15,1)},Ti=function(r){return L(r,1)==1?-1*(L(r,31,1,!0)+1):L(r,31,1)},_u=function(r){return Ci(r,23,8)},vu=function(r){return Ci(r,52,11)},Eu=function(r){var e=L(r,16,32);if(e==49152)return NaN;for(var t=Math.pow(1e4,L(r,16,16)),n=0,i=[],s=L(r,16),a=0;a<s;a++)n+=L(r,16,64+16*a)*t,t/=1e4;var o=Math.pow(10,L(r,16,48));return(e===0?1:-1)*Math.round(n*o)/o},Bi=function(r,e){var t=L(e,1),n=L(e,63,1),i=new Date((t===0?1:-1)*n/1e3+9466848e5);return r||i.setTime(i.getTime()+i.getTimezoneOffset()*6e4),i.usec=n%1e3,i.getMicroSeconds=function(){return this.usec},i.setMicroSeconds=function(s){this.usec=s},i.getUTCMicroSeconds=function(){return this.usec},i},rt=function(r){for(var e=L(r,32),t=L(r,32,32),n=L(r,32,64),i=96,s=[],a=0;a<e;a++)s[a]=L(r,32,i),i+=32,i+=32;var o=function(f){var h=L(r,32,i);if(i+=32,h==4294967295)return null;var m;if(f==23||f==20)return m=L(r,h*8,i),i+=h*8,m;if(f==25)return m=r.toString(this.encoding,i>>3,(i+=h<<3)>>3),m;console.log("ERROR: ElementType not implemented: "+f)},u=function(f,h){var m=[],x;if(f.length>1){var I=f.shift();for(x=0;x<I;x++)m[x]=u(f,h);f.unshift(I)}else for(x=0;x<f[0];x++)m[x]=o(h);return m};return u(s,n)},bu=function(r){return r.toString("utf8")},xu=function(r){return r===null?null:L(r,8)>0},Su=function(r){r(20,gu),r(21,wu),r(23,Ti),r(26,Ti),r(1700,Eu),r(700,_u),r(701,vu),r(16,xu),r(1114,Bi.bind(null,!1)),r(1184,Bi.bind(null,!0)),r(1e3,rt),r(1007,rt),r(1016,rt),r(1008,rt),r(1009,rt),r(25,bu)};Ri.exports={init:Su}});var Li=T((ef,Mi)=>{p();Mi.exports={BOOL:16,BYTEA:17,CHAR:18,INT8:20,INT2:21,INT4:23,REGPROC:24,TEXT:25,OID:26,TID:27,XID:28,CID:29,JSON:114,XML:142,PG_NODE_TREE:194,SMGR:210,PATH:602,POLYGON:604,CIDR:650,FLOAT4:700,FLOAT8:701,ABSTIME:702,RELTIME:703,TINTERVAL:704,CIRCLE:718,MACADDR8:774,MONEY:790,MACADDR:829,INET:869,ACLITEM:1033,BPCHAR:1042,VARCHAR:1043,DATE:1082,TIME:1083,TIMESTAMP:1114,TIMESTAMPTZ:1184,INTERVAL:1186,TIMETZ:1266,BIT:1560,VARBIT:1562,NUMERIC:1700,REFCURSOR:1790,REGPROCEDURE:2202,REGOPER:2203,REGOPERATOR:2204,REGCLASS:2205,REGTYPE:2206,UUID:2950,TXID_SNAPSHOT:2970,PG_LSN:3220,PG_NDISTINCT:3361,PG_DEPENDENCIES:3402,TSVECTOR:3614,TSQUERY:3615,GTSVECTOR:3642,REGCONFIG:3734,REGDICTIONARY:3769,JSONB:3802,REGNAMESPACE:4089,REGROLE:4096}});var st=T(it=>{p();var Au=Si(),Iu=Pi(),Tu=tr(),Bu=Li();it.getTypeParser=Cu;it.setTypeParser=Ru;it.arrayParser=Tu;it.builtins=Bu;var nt={text:{},binary:{}};function Fi(r){return String(r)}function Cu(r,e){return e=e||"text",nt[e]&&nt[e][r]||Fi}function Ru(r,e,t){typeof e=="function"&&(t=e,e="text"),nt[e][r]=t}Au.init(function(r,e){nt.text[r]=e});Iu.init(function(r,e){nt.binary[r]=e})});var at=T((rf,cr)=>{"use strict";p();cr.exports={host:"localhost",user:process.platform==="win32"?process.env.USERNAME:process.env.USER,database:void 0,password:null,connectionString:void 0,port:5432,rows:0,binary:!1,max:10,idleTimeoutMillis:3e4,client_encoding:"",ssl:!1,application_name:void 0,fallback_application_name:void 0,options:void 0,parseInputDatesAsUTC:!1,statement_timeout:!1,lock_timeout:!1,idle_in_transaction_session_timeout:!1,query_timeout:!1,connect_timeout:0,keepalives:1,keepalives_idle:0};var Ue=st(),Pu=Ue.getTypeParser(20,"text"),Mu=Ue.getTypeParser(1016,"text");cr.exports.__defineSetter__("parseInt8",function(r){Ue.setTypeParser(20,"text",r?Ue.getTypeParser(23,"text"):Pu),Ue.setTypeParser(1016,"text",r?Ue.getTypeParser(1007,"text"):Mu)})});var xt=T((nf,ki)=>{"use strict";p();var Lu=(Jt(),O(Zt)),Fu=at();function Du(r){var e=r.replace(/\\/g,"\\\\").replace(/"/g,'\\"');return'"'+e+'"'}function Di(r){for(var e="{",t=0;t<r.length;t++)t>0&&(e=e+","),r[t]===null||typeof r[t]>"u"?e=e+"NULL":Array.isArray(r[t])?e=e+Di(r[t]):r[t]instanceof Buffer?e+="\\\\x"+r[t].toString("hex"):e+=Du(bt(r[t]));return e=e+"}",e}var bt=function(r,e){if(r==null)return null;if(r instanceof Buffer)return r;if(ArrayBuffer.isView(r)){var t=Buffer.from(r.buffer,r.byteOffset,r.byteLength);return t.length===r.byteLength?t:t.slice(r.byteOffset,r.byteOffset+r.byteLength)}return r instanceof Date?Fu.parseInputDatesAsUTC?Ou(r):Uu(r):Array.isArray(r)?Di(r):typeof r=="object"?ku(r,e):r.toString()};function ku(r,e){if(r&&typeof r.toPostgres=="function"){if(e=e||[],e.indexOf(r)!==-1)throw new Error('circular reference detected while preparing "'+r+'" for query');return e.push(r),bt(r.toPostgres(bt),e)}return JSON.stringify(r)}function j(r,e){for(r=""+r;r.length<e;)r="0"+r;return r}function Uu(r){var e=-r.getTimezoneOffset(),t=r.getFullYear(),n=t<1;n&&(t=Math.abs(t)+1);var i=j(t,4)+"-"+j(r.getMonth()+1,2)+"-"+j(r.getDate(),2)+"T"+j(r.getHours(),2)+":"+j(r.getMinutes(),2)+":"+j(r.getSeconds(),2)+"."+j(r.getMilliseconds(),3);return e<0?(i+="-",e*=-1):i+="+",i+=j(Math.floor(e/60),2)+":"+j(e%60,2),n&&(i+=" BC"),i}function Ou(r){var e=r.getUTCFullYear(),t=e<1;t&&(e=Math.abs(e)+1);var n=j(e,4)+"-"+j(r.getUTCMonth()+1,2)+"-"+j(r.getUTCDate(),2)+"T"+j(r.getUTCHours(),2)+":"+j(r.getUTCMinutes(),2)+":"+j(r.getUTCSeconds(),2)+"."+j(r.getUTCMilliseconds(),3);return n+="+00:00",t&&(n+=" BC"),n}function qu(r,e,t){return r=typeof r=="string"?{text:r}:r,e&&(typeof e=="function"?r.callback=e:r.values=e),t&&(r.callback=t),r}var lr=function(r){return Lu.createHash("md5").update(r,"utf-8").digest("hex")},Nu=function(r,e,t){var n=lr(e+r),i=lr(Buffer.concat([Buffer.from(n),t]));return"md5"+i};ki.exports={prepareValue:function(e){return bt(e)},normalizeQueryConfig:qu,postgresMd5PasswordHash:Nu,md5:lr}});var Qi=T((sf,Ni)=>{"use strict";p();var fr=(Jt(),O(Zt));function Qu(r){if(r.indexOf("SCRAM-SHA-256")===-1)throw new Error("SASL: Only mechanism SCRAM-SHA-256 is currently supported");let e=fr.randomBytes(18).toString("base64");return{mechanism:"SCRAM-SHA-256",clientNonce:e,response:"n,,n=*,r="+e,message:"SASLInitialResponse"}}function ju(r,e,t){if(r.message!=="SASLInitialResponse")throw new Error("SASL: Last message was not SASLInitialResponse");if(typeof e!="string")throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string");if(typeof t!="string")throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: serverData must be a string");let n=Gu(t);if(n.nonce.startsWith(r.clientNonce)){if(n.nonce.length===r.clientNonce.length)throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce is too short")}else throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce does not start with client nonce");var i=Buffer.from(n.salt,"base64"),s=Vu(e,i,n.iteration),a=Oe(s,"Client Key"),o=Yu(a),u="n=*,r="+r.clientNonce,f="r="+n.nonce+",s="+n.salt+",i="+n.iteration,h="c=biws,r="+n.nonce,m=u+","+f+","+h,x=Oe(o,m),I=qi(a,x),P=I.toString("base64"),G=Oe(s,"Server Key"),xe=Oe(G,m);r.message="SASLResponse",r.serverSignature=xe.toString("base64"),r.response=h+",p="+P}function Wu(r,e){if(r.message!=="SASLResponse")throw new Error("SASL: Last message was not SASLResponse");if(typeof e!="string")throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: serverData must be a string");let{serverSignature:t}=$u(e);if(t!==r.serverSignature)throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature does not match")}function Hu(r){if(typeof r!="string")throw new TypeError("SASL: text must be a string");return r.split("").map((e,t)=>r.charCodeAt(t)).every(e=>e>=33&&e<=43||e>=45&&e<=126)}function Ui(r){return/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.test(r)}function Oi(r){if(typeof r!="string")throw new TypeError("SASL: attribute pairs text must be a string");return new Map(r.split(",").map(e=>{if(!/^.=/.test(e))throw new Error("SASL: Invalid attribute pair entry");let t=e[0],n=e.substring(2);return[t,n]}))}function Gu(r){let e=Oi(r),t=e.get("r");if(t){if(!Hu(t))throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce must only contain printable characters")}else throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce missing");let n=e.get("s");if(n){if(!Ui(n))throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: salt must be base64")}else throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: salt missing");let i=e.get("i");if(i){if(!/^[1-9][0-9]*$/.test(i))throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: invalid iteration count")}else throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: iteration missing");let s=parseInt(i,10);return{nonce:t,salt:n,iteration:s}}function $u(r){let t=Oi(r).get("v");if(t){if(!Ui(t))throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature must be base64")}else throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature is missing");return{serverSignature:t}}function qi(r,e){if(!Buffer.isBuffer(r))throw new TypeError("first argument must be a Buffer");if(!Buffer.isBuffer(e))throw new TypeError("second argument must be a Buffer");if(r.length!==e.length)throw new Error("Buffer lengths must match");if(r.length===0)throw new Error("Buffers cannot be empty");return Buffer.from(r.map((t,n)=>r[n]^e[n]))}function Yu(r){return fr.createHash("sha256").update(r).digest()}function Oe(r,e){return fr.createHmac("sha256",r).update(e).digest()}function Vu(r,e,t){for(var n=Oe(r,Buffer.concat([e,Buffer.from([0,0,0,1])])),i=n,s=0;s<t-1;s++)n=Oe(r,n),i=qi(i,n);return i}Ni.exports={startSession:Qu,continueSession:ju,finalizeSession:Wu}});var hr={};ne(hr,{default:()=>Ku});var Ku,dr=$(()=>{p();Ku={}});var pr={};ne(pr,{default:()=>zu});var zu,mr=$(()=>{p();zu={}});var yr={};ne(yr,{default:()=>Xu});var Xu,gr=$(()=>{p();Xu={}});var ji={};ne(ji,{StringDecoder:()=>wr});var wr,Wi=$(()=>{p();wr=class{constructor(e){this.td=new TextDecoder(e)}write(e){return this.td.decode(e,{stream:!0})}end(e){return this.td.decode(e)}}});var Yi=T((af,$i)=>{"use strict";p();var{Transform:Zu}=(gr(),O(yr)),{StringDecoder:Ju}=(Wi(),O(ji)),ge=Symbol("last"),St=Symbol("decoder");function ec(r,e,t){let n;if(this.overflow){if(n=this[St].write(r).split(this.matcher),n.length===1)return t();n.shift(),this.overflow=!1}else this[ge]+=this[St].write(r),n=this[ge].split(this.matcher);this[ge]=n.pop();for(let i=0;i<n.length;i++)try{Gi(this,this.mapper(n[i]))}catch(s){return t(s)}if(this.overflow=this[ge].length>this.maxLength,this.overflow&&!this.skipOverflow){t(new Error("maximum buffer reached"));return}t()}function tc(r){if(this[ge]+=this[St].end(),this[ge])try{Gi(this,this.mapper(this[ge]))}catch(e){return r(e)}r()}function Gi(r,e){e!==void 0&&r.push(e)}function Hi(r){return r}function rc(r,e,t){switch(r=r||/\r?\n/,e=e||Hi,t=t||{},arguments.length){case 1:typeof r=="function"?(e=r,r=/\r?\n/):typeof r=="object"&&!(r instanceof RegExp)&&(t=r,r=/\r?\n/);break;case 2:typeof r=="function"?(t=e,e=r,r=/\r?\n/):typeof e=="object"&&(t=e,e=Hi)}t=Object.assign({},t),t.autoDestroy=!0,t.transform=ec,t.flush=tc,t.readableObjectMode=!0;let n=new Zu(t);return n[ge]="",n[St]=new Ju("utf8"),n.matcher=r,n.mapper=e,n.maxLength=t.maxLength,n.skipOverflow=t.skipOverflow||!1,n.overflow=!1,n._destroy=function(i,s){this._writableState.errorEmitted=!1,s(i)},n}$i.exports=rc});var zi=T((of,ce)=>{"use strict";p();var Vi=(dr(),O(hr)),nc=(gr(),O(yr)).Stream,ic=Yi(),Ki=(Xe(),O(ze)),sc=5432,At=process.platform==="win32",ot=process.stderr,ac=56,oc=7,uc=61440,cc=32768;function lc(r){return(r&uc)==cc}var qe=["host","port","database","user","password"],_r=qe.length,fc=qe[_r-1];function vr(){var r=ot instanceof nc&&ot.writable===!0;if(r){var e=Array.prototype.slice.call(arguments).concat(`
-`);ot.write(Ki.format.apply(Ki,e))}}Object.defineProperty(ce.exports,"isWin",{get:function(){return At},set:function(r){At=r}});ce.exports.warnTo=function(r){var e=ot;return ot=r,e};ce.exports.getFileName=function(r){var e=r||process.env,t=e.PGPASSFILE||(At?Vi.join(e.APPDATA||"./","postgresql","pgpass.conf"):Vi.join(e.HOME||"./",".pgpass"));return t};ce.exports.usePgPass=function(r,e){return Object.prototype.hasOwnProperty.call(process.env,"PGPASSWORD")?!1:At?!0:(e=e||"<unkn>",lc(r.mode)?r.mode&(ac|oc)?(vr('WARNING: password file "%s" has group or world access; permissions should be u=rw (0600) or less',e),!1):!0:(vr('WARNING: password file "%s" is not a plain file',e),!1))};var hc=ce.exports.match=function(r,e){return qe.slice(0,-1).reduce(function(t,n,i){return i==1&&Number(r[n]||sc)===Number(e[n])?t&&!0:t&&(e[n]==="*"||e[n]===r[n])},!0)};ce.exports.getPassword=function(r,e,t){var n,i=e.pipe(ic());function s(u){var f=dc(u);f&&pc(f)&&hc(r,f)&&(n=f[fc],i.end())}var a=function(){e.destroy(),t(n)},o=function(u){e.destroy(),vr("WARNING: error on reading file: %s",u),t(void 0)};e.on("error",o),i.on("data",s).on("end",a).on("error",o)};var dc=ce.exports.parseLine=function(r){if(r.length<11||r.match(/^\s+#/))return null;for(var e="",t="",n=0,i=0,s=0,a={},o=!1,u=function(h,m,x){var I=r.substring(m,x);Object.hasOwnProperty.call(process.env,"PGPASS_NO_DEESCAPE")||(I=I.replace(/\\([:\\])/g,"$1")),a[qe[h]]=I},f=0;f<r.length-1;f+=1){if(e=r.charAt(f+1),t=r.charAt(f),o=n==_r-1,o){u(n,i);break}f>=0&&e==":"&&t!=="\\"&&(u(n,i,f+1),i=f+2,n+=1)}return a=Object.keys(a).length===_r?a:null,a},pc=ce.exports.isValidEntry=function(r){for(var e={0:function(a){return a.length>0},1:function(a){return a==="*"?!0:(a=Number(a),isFinite(a)&&a>0&&a<9007199254740992&&Math.floor(a)===a)},2:function(a){return a.length>0},3:function(a){return a.length>0},4:function(a){return a.length>0}},t=0;t<qe.length;t+=1){var n=e[t],i=r[qe[t]]||"",s=n(i);if(!s)return!1}return!0}});var Zi=T((cf,Er)=>{"use strict";p();var uf=(dr(),O(hr)),Xi=(mr(),O(pr)),It=zi();Er.exports=function(r,e){var t=It.getFileName();Xi.stat(t,function(n,i){if(n||!It.usePgPass(i,t))return e(void 0);var s=Xi.createReadStream(t);It.getPassword(r,s,e)})};Er.exports.warnTo=It.warnTo});var br=T((lf,Ji)=>{"use strict";p();var mc=st();function Tt(r){this._types=r||mc,this.text={},this.binary={}}Tt.prototype.getOverrides=function(r){switch(r){case"text":return this.text;case"binary":return this.binary;default:return{}}};Tt.prototype.setTypeParser=function(r,e,t){typeof e=="function"&&(t=e,e="text"),this.getOverrides(e)[r]=t};Tt.prototype.getTypeParser=function(r,e){return e=e||"text",this.getOverrides(e)[r]||this._types.getTypeParser(r,e)};Ji.exports=Tt});var es={};ne(es,{default:()=>yc});var yc,ts=$(()=>{p();yc={}});var rs={};ne(rs,{parse:()=>gc});function gc(r,e=!1){let{protocol:t}=new URL(r),n="http:"+r.substring(t.length),{username:i,password:s,hostname:a,port:o,pathname:u,search:f,searchParams:h,hash:m}=new URL(n),x=i+":"+s,I=e?Object.fromEntries(h.entries()):f;return{href:r,protocol:t,auth:x,username:i,password:s,hostname:a,port:o,pathname:u,search:f,query:I,hash:m}}var ns=$(()=>{p()});var ss=T((ff,is)=>{"use strict";p();var wc=(ns(),O(rs)),xr=(mr(),O(pr));function Sr(r){if(r.charAt(0)==="/"){var t=r.split(" ");return{host:t[0],database:t[1]}}var e=wc.parse(/ |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.test(r)?encodeURI(r).replace(/\%25(\d\d)/g,"%$1"):r,!0),t=e.query;for(var n in t)Array.isArray(t[n])&&(t[n]=t[n][t[n].length-1]);var i=(e.auth||":").split(":");if(t.user=i[0],t.password=i.splice(1).join(":"),t.port=e.port,e.protocol=="socket:")return t.host=decodeURI(e.pathname),t.database=e.query.db,t.client_encoding=e.query.encoding,t;t.host||(t.host=e.hostname);var s=e.pathname;if(!t.host&&s&&/^%2f/i.test(s)){var a=s.split("/");t.host=decodeURIComponent(a[0]),s=a.splice(1).join("/")}switch(s&&s.charAt(0)==="/"&&(s=s.slice(1)||null),t.database=s&&decodeURI(s),(t.ssl==="true"||t.ssl==="1")&&(t.ssl=!0),t.ssl==="0"&&(t.ssl=!1),(t.sslcert||t.sslkey||t.sslrootcert||t.sslmode)&&(t.ssl={}),t.sslcert&&(t.ssl.cert=xr.readFileSync(t.sslcert).toString()),t.sslkey&&(t.ssl.key=xr.readFileSync(t.sslkey).toString()),t.sslrootcert&&(t.ssl.ca=xr.readFileSync(t.sslrootcert).toString()),t.sslmode){case"disable":{t.ssl=!1;break}case"prefer":case"require":case"verify-ca":case"verify-full":break;case"no-verify":{t.ssl.rejectUnauthorized=!1;break}}return t}is.exports=Sr;Sr.parse=Sr});var Ir=T((hf,us)=>{"use strict";p();var _c=(ts(),O(es)),os=at(),as=ss().parse,H=function(r,e,t){return t===void 0?t=process.env["PG"+r.toUpperCase()]:t===!1||(t=process.env[t]),e[r]||t||os[r]},vc=function(){switch(process.env.PGSSLMODE){case"disable":return!1;case"prefer":case"require":case"verify-ca":case"verify-full":return!0;case"no-verify":return{rejectUnauthorized:!1}}return os.ssl},Ne=function(r){return"'"+(""+r).replace(/\\/g,"\\\\").replace(/'/g,"\\'")+"'"},ee=function(r,e,t){var n=e[t];n!=null&&r.push(t+"="+Ne(n))},Ar=class{constructor(e){e=typeof e=="string"?as(e):e||{},e.connectionString&&(e=Object.assign({},e,as(e.connectionString))),this.user=H("user",e),this.database=H("database",e),this.database===void 0&&(this.database=this.user),this.port=parseInt(H("port",e),10),this.host=H("host",e),Object.defineProperty(this,"password",{configurable:!0,enumerable:!1,writable:!0,value:H("password",e)}),this.binary=H("binary",e),this.options=H("options",e),this.ssl=typeof e.ssl>"u"?vc():e.ssl,typeof this.ssl=="string"&&this.ssl==="true"&&(this.ssl=!0),this.ssl==="no-verify"&&(this.ssl={rejectUnauthorized:!1}),this.ssl&&this.ssl.key&&Object.defineProperty(this.ssl,"key",{enumerable:!1}),this.client_encoding=H("client_encoding",e),this.replication=H("replication",e),this.isDomainSocket=!(this.host||"").indexOf("/"),this.application_name=H("application_name",e,"PGAPPNAME"),this.fallback_application_name=H("fallback_application_name",e,!1),this.statement_timeout=H("statement_timeout",e,!1),this.lock_timeout=H("lock_timeout",e,!1),this.idle_in_transaction_session_timeout=H("idle_in_transaction_session_timeout",e,!1),this.query_timeout=H("query_timeout",e,!1),e.connectionTimeoutMillis===void 0?this.connect_timeout=process.env.PGCONNECT_TIMEOUT||0:this.connect_timeout=Math.floor(e.connectionTimeoutMillis/1e3),e.keepAlive===!1?this.keepalives=0:e.keepAlive===!0&&(this.keepalives=1),typeof e.keepAliveInitialDelayMillis=="number"&&(this.keepalives_idle=Math.floor(e.keepAliveInitialDelayMillis/1e3))}getLibpqConnectionString(e){var t=[];ee(t,this,"user"),ee(t,this,"password"),ee(t,this,"port"),ee(t,this,"application_name"),ee(t,this,"fallback_application_name"),ee(t,this,"connect_timeout"),ee(t,this,"options");var n=typeof this.ssl=="object"?this.ssl:this.ssl?{sslmode:this.ssl}:{};if(ee(t,n,"sslmode"),ee(t,n,"sslca"),ee(t,n,"sslkey"),ee(t,n,"sslcert"),ee(t,n,"sslrootcert"),this.database&&t.push("dbname="+Ne(this.database)),this.replication&&t.push("replication="+Ne(this.replication)),this.host&&t.push("host="+Ne(this.host)),this.isDomainSocket)return e(null,t.join(" "));this.client_encoding&&t.push("client_encoding="+Ne(this.client_encoding)),_c.lookup(this.host,function(i,s){return i?e(i,null):(t.push("hostaddr="+Ne(s)),e(null,t.join(" ")))})}};us.exports=Ar});var fs=T((df,ls)=>{"use strict";p();var Ec=st(),cs=/^([A-Za-z]+)(?: (\d+))?(?: (\d+))?/,Tr=class{constructor(e,t){this.command=null,this.rowCount=null,this.oid=null,this.rows=[],this.fields=[],this._parsers=void 0,this._types=t,this.RowCtor=null,this.rowAsArray=e==="array",this.rowAsArray&&(this.parseRow=this._parseRowAsArray)}addCommandComplete(e){var t;e.text?t=cs.exec(e.text):t=cs.exec(e.command),t&&(this.command=t[1],t[3]?(this.oid=parseInt(t[2],10),this.rowCount=parseInt(t[3],10)):t[2]&&(this.rowCount=parseInt(t[2],10)))}_parseRowAsArray(e){for(var t=new Array(e.length),n=0,i=e.length;n<i;n++){var s=e[n];s!==null?t[n]=this._parsers[n](s):t[n]=null}return t}parseRow(e){for(var t={},n=0,i=e.length;n<i;n++){var s=e[n],a=this.fields[n].name;s!==null?t[a]=this._parsers[n](s):t[a]=null}return t}addRow(e){this.rows.push(e)}addFields(e){this.fields=e,this.fields.length&&(this._parsers=new Array(e.length));for(var t=0;t<e.length;t++){var n=e[t];this._types?this._parsers[t]=this._types.getTypeParser(n.dataTypeID,n.format||"text"):this._parsers[t]=Ec.getTypeParser(n.dataTypeID,n.format||"text")}}};ls.exports=Tr});var ms=T((pf,ps)=>{"use strict";p();var{EventEmitter:bc}=ye(),hs=fs(),ds=xt(),Br=class extends bc{constructor(e,t,n){super(),e=ds.normalizeQueryConfig(e,t,n),this.text=e.text,this.values=e.values,this.rows=e.rows,this.types=e.types,this.name=e.name,this.binary=e.binary,this.portal=e.portal||"",this.callback=e.callback,this._rowMode=e.rowMode,process.domain&&e.callback&&(this.callback=process.domain.bind(e.callback)),this._result=new hs(this._rowMode,this.types),this._results=this._result,this.isPreparedStatement=!1,this._canceledDueToError=!1,this._promise=null}requiresPreparation(){return this.name||this.rows?!0:!this.text||!this.values?!1:this.values.length>0}_checkForMultirow(){this._result.command&&(Array.isArray(this._results)||(this._results=[this._result]),this._result=new hs(this._rowMode,this.types),this._results.push(this._result))}handleRowDescription(e){this._checkForMultirow(),this._result.addFields(e.fields),this._accumulateRows=this.callback||!this.listeners("row").length}handleDataRow(e){let t;if(!this._canceledDueToError){try{t=this._result.parseRow(e.fields)}catch(n){this._canceledDueToError=n;return}this.emit("row",t,this._result),this._accumulateRows&&this._result.addRow(t)}}handleCommandComplete(e,t){this._checkForMultirow(),this._result.addCommandComplete(e),this.rows&&t.sync()}handleEmptyQuery(e){this.rows&&e.sync()}handleError(e,t){if(this._canceledDueToError&&(e=this._canceledDueToError,this._canceledDueToError=!1),this.callback)return this.callback(e);this.emit("error",e)}handleReadyForQuery(e){if(this._canceledDueToError)return this.handleError(this._canceledDueToError,e);if(this.callback)try{this.callback(null,this._results)}catch(t){process.nextTick(()=>{throw t})}this.emit("end",this._results)}submit(e){if(typeof this.text!="string"&&typeof this.name!="string")return new Error("A query must have either text or a name. Supplying neither is unsupported.");let t=e.parsedStatements[this.name];return this.text&&t&&this.text!==t?new Error(`Prepared statements must be unique - '${this.name}' was used for a different statement`):this.values&&!Array.isArray(this.values)?new Error("Query values must be an array"):(this.requiresPreparation()?this.prepare(e):e.query(this.text),null)}hasBeenParsed(e){return this.name&&e.parsedStatements[this.name]}handlePortalSuspended(e){this._getRows(e,this.rows)}_getRows(e,t){e.execute({portal:this.portal,rows:t}),t?e.flush():e.sync()}prepare(e){this.isPreparedStatement=!0,this.hasBeenParsed(e)||e.parse({text:this.text,name:this.name,types:this.types});try{e.bind({portal:this.portal,statement:this.name,values:this.values,binary:this.binary,valueMapper:ds.prepareValue})}catch(t){this.handleError(t,e);return}e.describe({type:"P",name:this.portal||""}),this._getRows(e,this.rows)}handleCopyInResponse(e){e.sendCopyFail("No source stream defined")}handleCopyData(e,t){}};ps.exports=Br});var ys,gs=$(()=>{"use strict";p();ys=(()=>{var r=typeof document<"u"&&document.currentScript?document.currentScript.src:void 0;return function(e){e=e||{};var t=typeof e<"u"?e:{},n,i;t.ready=new Promise(function(c,l){n=c,i=l});var s=Object.assign({},t),a=[],o="./this.program",u=(c,l)=>{throw l},f=!0,h=!1,m="";function x(c){return t.locateFile?t.locateFile(c,m):m+c}var I,P,G,xe;(f||h)&&(h?m=self.location.href:typeof document<"u"&&document.currentScript&&(m=document.currentScript.src),r&&(m=r),m.indexOf("blob:")!==0?m=m.substr(0,m.replace(/[?#].*/,"").lastIndexOf("/")+1):m="",I=c=>{var l=new XMLHttpRequest;return l.open("GET",c,!1),l.send(null),l.responseText},h&&(G=c=>{var l=new XMLHttpRequest;return l.open("GET",c,!1),l.responseType="arraybuffer",l.send(null),new Uint8Array(l.response)}),P=(c,l,y)=>{var g=new XMLHttpRequest;g.open("GET",c,!0),g.responseType="arraybuffer",g.onload=()=>{if(g.status==200||g.status==0&&g.response){l(g.response);return}y()},g.onerror=y,g.send(null)},xe=c=>document.title=c);var ct=t.print||console.log.bind(console),B=t.printErr||console.warn.bind(console);Object.assign(t,s),s=null,t.arguments&&(a=t.arguments),t.thisProgram&&(o=t.thisProgram),t.quit&&(u=t.quit);var v;t.wasmBinary&&(v=t.wasmBinary);var Se=t.noExitRuntime||!0;typeof WebAssembly!="object"&&Be("no native wasm support detected");var le,W=!1,_e;function Ae(c,l){c||Be(l)}var Ie=typeof TextDecoder<"u"?new TextDecoder("utf8"):void 0;function M(c,l,y){for(var g=l+y,b=l;c[b]&&!(b>=g);)++b;if(b-l>16&&c.buffer&&Ie)return Ie.decode(c.subarray(l,b));for(var A="";l<b;){var _=c[l++];if(!(_&128)){A+=String.fromCharCode(_);continue}var E=c[l++]&63;if((_&224)==192){A+=String.fromCharCode((_&31)<<6|E);continue}var C=c[l++]&63;if((_&240)==224?_=(_&15)<<12|E<<6|C:_=(_&7)<<18|E<<12|C<<6|c[l++]&63,_<65536)A+=String.fromCharCode(_);else{var k=_-65536;A+=String.fromCharCode(55296|k>>10,56320|k&1023)}}return A}function X(c,l){return c?M($e,c,l):""}function Te(c,l,y,g){if(!(g>0))return 0;for(var b=y,A=y+g-1,_=0;_<c.length;++_){var E=c.charCodeAt(_);if(E>=55296&&E<=57343){var C=c.charCodeAt(++_);E=65536+((E&1023)<<10)|C&1023}if(E<=127){if(y>=A)break;l[y++]=E}else if(E<=2047){if(y+1>=A)break;l[y++]=192|E>>6,l[y++]=128|E&63}else if(E<=65535){if(y+2>=A)break;l[y++]=224|E>>12,l[y++]=128|E>>6&63,l[y++]=128|E&63}else{if(y+3>=A)break;l[y++]=240|E>>18,l[y++]=128|E>>12&63,l[y++]=128|E>>6&63,l[y++]=128|E&63}}return l[y]=0,y-b}function lt(c,l,y){return Te(c,$e,l,y)}function Ft(c){for(var l=0,y=0;y<c.length;++y){var g=c.charCodeAt(y);g<=127?l++:g<=2047?l+=2:g>=55296&&g<=57343?(l+=4,++y):l+=3}return l}var ft,Ge,$e,Zs,Js,Q,oe,ea,ta;function un(c){ft=c,t.HEAP8=Ge=new Int8Array(c),t.HEAP16=Zs=new Int16Array(c),t.HEAP32=Q=new Int32Array(c),t.HEAPU8=$e=new Uint8Array(c),t.HEAPU16=Js=new Uint16Array(c),t.HEAPU32=oe=new Uint32Array(c),t.HEAPF32=ea=new Float32Array(c),t.HEAPF64=ta=new Float64Array(c)}var Pl=t.INITIAL_MEMORY||16777216,ra,cn=[],ln=[],fn=[],na=!1;function ia(){if(t.preRun)for(typeof t.preRun=="function"&&(t.preRun=[t.preRun]);t.preRun.length;)oa(t.preRun.shift());kt(cn)}function sa(){na=!0,kt(ln)}function aa(){if(t.postRun)for(typeof t.postRun=="function"&&(t.postRun=[t.postRun]);t.postRun.length;)ca(t.postRun.shift());kt(fn)}function oa(c){cn.unshift(c)}function ua(c){ln.unshift(c)}function ca(c){fn.unshift(c)}var ve=0,Dt=null,Ye=null;function la(c){ve++,t.monitorRunDependencies&&t.monitorRunDependencies(ve)}function fa(c){if(ve--,t.monitorRunDependencies&&t.monitorRunDependencies(ve),ve==0&&(Dt!==null&&(clearInterval(Dt),Dt=null),Ye)){var l=Ye;Ye=null,l()}}function Be(c){t.onAbort&&t.onAbort(c),c="Aborted("+c+")",B(c),W=!0,_e=1,c+=". Build with -sASSERTIONS for more info.";var l=new WebAssembly.RuntimeError(c);throw i(l),l}var ha="data:application/octet-stream;base64,";function hn(c){return c.startsWith(ha)}var te;te="tls.wasm",hn(te)||(te=x(te));function dn(c){try{if(c==te&&v)return new Uint8Array(v);if(G)return G(c);throw"both async and sync fetching of the wasm failed"}catch(l){Be(l)}}function da(){return!v&&(f||h)&&typeof fetch=="function"?fetch(te,{credentials:"same-origin"}).then(function(c){if(!c.ok)throw"failed to load wasm binary file at '"+te+"'";return c.arrayBuffer()}).catch(function(){return dn(te)}):Promise.resolve().then(function(){return dn(te)})}function pa(){var c={a:Oa};function l(_,E){var C=_.exports;C=w.instrumentWasmExports(C),t.asm=C,le=t.asm.k,un(le.buffer),ra=t.asm.q,ua(t.asm.l),fa("wasm-instantiate")}la("wasm-instantiate");function y(_){l(_.instance)}function g(_){return da().then(function(E){return WebAssembly.instantiate(E,c)}).then(function(E){return E}).then(_,function(E){B("failed to asynchronously prepare wasm: "+E),Be(E)})}function b(){return!v&&typeof WebAssembly.instantiateStreaming=="function"&&!hn(te)&&typeof fetch=="function"?fetch(te,{credentials:"same-origin"}).then(function(_){var E=WebAssembly.instantiateStreaming(_,c);return E.then(y,function(C){return B("wasm streaming compile failed: "+C),B("falling back to ArrayBuffer instantiation"),g(y)})}):g(y)}if(t.instantiateWasm)try{var A=t.instantiateWasm(c,l);return A=w.instrumentWasmExports(A),A}catch(_){B("Module.instantiateWasm callback failed with error: "+_),i(_)}return b().catch(i),{}}function ma(c,l){return w.handleAsync(async()=>await t.provideEncryptedFromNetwork(c,l))}function ya(c,l){return t.writeEncryptedToNetwork(c,l)}function ga(c,l,y,g){return w.handleAsync(async()=>{if(l!==0){if(t._digestStream==null){let A=new crypto.DigestStream(`SHA-${c}`),_=A.getWriter();t._digestStream={stream:A,writer:_}}let b=t.HEAPU8.subarray(l,l+y);await t._digestStream.writer.write(b)}else{let{stream:b,writer:A}=t._digestStream;await A.close();let _=await b.digest,E=new Uint8Array(_);t.HEAPU8.set(E,g),t._digestStream=null}})}function wa(c,l,y,g,b,A,_,E,C,k,z){return w.handleAsync(async()=>{let fe=t.HEAPU8.subarray(b,b+A),he=k<<3,re=t.HEAPU8.subarray(_,_+E),de={name:"AES-GCM",iv:fe,tagLength:he,additionalData:re},pe=t.HEAPU8.subarray(y,y+g),U=await crypto.subtle.importKey("raw",pe,{name:"AES-GCM"},!1,["encrypt"]),ie=t.HEAPU8.subarray(c,c+l),Ce=await crypto.subtle.encrypt(de,U,ie),Re=new Uint8Array(Ce),Ve=Re.subarray(0,l),Nt=Re.subarray(l);t.HEAPU8.set(Ve,z),t.HEAPU8.set(Nt,C)})}function _a(c,l,y,g,b,A,_,E,C,k,z){return w.handleAsync(async()=>{let fe=t.HEAPU8.subarray(b,b+A),he=k<<3,re=t.HEAPU8.subarray(_,_+E),de={name:"AES-GCM",iv:fe,tagLength:he,additionalData:re},pe=t.HEAPU8.subarray(y,y+g),U=await crypto.subtle.importKey("raw",pe,{name:"AES-GCM"},!1,["decrypt"]),ie=t.HEAPU8.subarray(c,c+l),Ce=t.HEAPU8.subarray(C,C+k),Re=new Uint8Array(l+k);Re.set(ie),Re.set(Ce,l);try{let Ve=await crypto.subtle.decrypt(de,U,Re),Nt=new Uint8Array(Ve);return t.HEAPU8.set(Nt,z),0}catch(Ve){return console.log("decrypt error:",Ve.message),-1}})}function va(c,l,y){let g=t.HEAPU8.subarray(l,l+y);return crypto.getRandomValues(g),0}function Ea(c){this.name="ExitStatus",this.message="Program terminated with exit("+c+")",this.status=c}function kt(c){for(;c.length>0;)c.shift()(t)}function ba(c){if(c instanceof Ea||c=="unwind")return _e;u(1,c)}function xa(c,l){Ge.set(c,l)}function Sa(c){return oe[c>>2]+Q[c+4>>2]*4294967296}function Aa(c,l){var y=new Date(Sa(c)*1e3);Q[l>>2]=y.getUTCSeconds(),Q[l+4>>2]=y.getUTCMinutes(),Q[l+8>>2]=y.getUTCHours(),Q[l+12>>2]=y.getUTCDate(),Q[l+16>>2]=y.getUTCMonth(),Q[l+20>>2]=y.getUTCFullYear()-1900,Q[l+24>>2]=y.getUTCDay();var g=Date.UTC(y.getUTCFullYear(),0,1,0,0,0,0),b=(y.getTime()-g)/(1e3*60*60*24)|0;Q[l+28>>2]=b}function pn(c){var l=Ft(c)+1,y=Ot(l);return y&&Te(c,Ge,y,l),y}function Ia(c,l,y){var g=new Date().getFullYear(),b=new Date(g,0,1),A=new Date(g,6,1),_=b.getTimezoneOffset(),E=A.getTimezoneOffset(),C=Math.max(_,E);Q[c>>2]=C*60,Q[l>>2]=Number(_!=E);function k(de){var pe=de.toTimeString().match(/\(([A-Za-z ]+)\)$/);return pe?pe[1]:"GMT"}var z=k(b),fe=k(A),he=pn(z),re=pn(fe);E<_?(oe[y>>2]=he,oe[y+4>>2]=re):(oe[y>>2]=re,oe[y+4>>2]=he)}function Ut(c,l,y){Ut.called||(Ut.called=!0,Ia(c,l,y))}function Ta(){return Date.now()}function Ba(){return 2147483648}function Ca(c){try{return le.grow(c-ft.byteLength+65535>>>16),un(le.buffer),1}catch{}}function Ra(c){var l=$e.length;c=c>>>0;var y=Ba();if(c>y)return!1;let g=(C,k)=>C+(k-C%k)%k;for(var b=1;b<=4;b*=2){var A=l*(1+.2/b);A=Math.min(A,c+100663296);var _=Math.min(y,g(Math.max(c,A),65536)),E=Ca(_);if(E)return!0}return!1}var mn={varargs:void 0,get:function(){mn.varargs+=4;var c=Q[mn.varargs-4>>2];return c},getStr:function(c){var l=X(c);return l}};function Pa(c){return 52}function Ma(c,l,y,g,b){return 70}var La=[null,[],[]];function Fa(c,l){var y=La[c];l===0||l===10?((c===1?ct:B)(M(y,0)),y.length=0):y.push(l)}function Da(c,l,y,g){for(var b=0,A=0;A<y;A++){var _=oe[l>>2],E=oe[l+4>>2];l+=8;for(var C=0;C<E;C++)Fa(c,$e[_+C]);b+=E}return oe[g>>2]=b,0}function ht(c){try{return c()}catch(l){Be(l)}}function ka(c){if(!W)try{c()}catch(l){ba(l)}}function Ml(){}function Ll(){}var w={State:{Normal:0,Unwinding:1,Rewinding:2,Disabled:3},state:0,StackSize:4096,currData:null,handleSleepReturnValue:0,exportCallStack:[],callStackNameToId:{},callStackIdToName:{},callStackId:0,asyncPromiseHandlers:null,sleepCallbacks:[],getCallStackId:function(c){var l=w.callStackNameToId[c];return l===void 0&&(l=w.callStackId++,w.callStackNameToId[c]=l,w.callStackIdToName[l]=c),l},instrumentWasmImports:function(c){var l=["env.invoke_*","env.emscripten_sleep","env.emscripten_wget","env.emscripten_wget_data","env.emscripten_idb_load","env.emscripten_idb_store","env.emscripten_idb_delete","env.emscripten_idb_exists","env.emscripten_idb_load_blob","env.emscripten_idb_store_blob","env.SDL_Delay","env.emscripten_scan_registers","env.emscripten_lazy_load_code","env.emscripten_fiber_swap","wasi_snapshot_preview1.fd_sync","env.__wasi_fd_sync","env._emval_await","env._dlopen_js","env.__asyncjs__*"].map(g=>g.split(".")[1]);for(var y in c)(function(g){var b=c[g],A=b.sig;if(typeof b=="function")var _=l.indexOf(g)>=0||g.startsWith("__asyncjs__")})(y)},instrumentWasmExports:function(c){var l={};for(var y in c)(function(g){var b=c[g];typeof b=="function"?l[g]=function(){w.exportCallStack.push(g);try{return b.apply(null,arguments)}finally{if(!W){var A=w.exportCallStack.pop();Ae(A===g),w.maybeStopUnwind()}}}:l[g]=b})(y);return l},maybeStopUnwind:function(){w.currData&&w.state===w.State.Unwinding&&w.exportCallStack.length===0&&(w.state=w.State.Normal,ht(bn),typeof Fibers<"u"&&Fibers.trampoline())},whenDone:function(){return new Promise((c,l)=>{w.asyncPromiseHandlers={resolve:c,reject:l}})},allocateData:function(){var c=Ot(12+w.StackSize);return w.setDataHeader(c,c+12,w.StackSize),w.setDataRewindFunc(c),c},setDataHeader:function(c,l,y){Q[c>>2]=l,Q[c+4>>2]=l+y},setDataRewindFunc:function(c){var l=w.exportCallStack[0],y=w.getCallStackId(l);Q[c+8>>2]=y},getDataRewindFunc:function(c){var l=Q[c+8>>2],y=w.callStackIdToName[l],g=t.asm[y];return g},doRewind:function(c){var l=w.getDataRewindFunc(c);return l()},handleSleep:function(c){if(!W){if(w.state===w.State.Normal){var l=!1,y=!1;c(g=>{if(!W&&(w.handleSleepReturnValue=g||0,l=!0,!!y)){w.state=w.State.Rewinding,ht(()=>xn(w.currData)),typeof Browser<"u"&&Browser.mainLoop.func&&Browser.mainLoop.resume();var b,A=!1;try{b=w.doRewind(w.currData)}catch(C){b=C,A=!0}var _=!1;if(!w.currData){var E=w.asyncPromiseHandlers;E&&(w.asyncPromiseHandlers=null,(A?E.reject:E.resolve)(b),_=!0)}if(A&&!_)throw b}}),y=!0,l||(w.state=w.State.Unwinding,w.currData=w.allocateData(),typeof Browser<"u"&&Browser.mainLoop.func&&Browser.mainLoop.pause(),ht(()=>En(w.currData)))}else w.state===w.State.Rewinding?(w.state=w.State.Normal,ht(Sn),wn(w.currData),w.currData=null,w.sleepCallbacks.forEach(g=>ka(g))):Be("invalid state: "+w.state);return w.handleSleepReturnValue}},handleAsync:function(c){return w.handleSleep(l=>{c().then(l)})}};function yn(c){var l=t["_"+c];return l}function gn(c,l,y,g,b){var A={string:U=>{var ie=0;if(U!=null&&U!==0){var Ce=(U.length<<2)+1;ie=qt(Ce),lt(U,ie,Ce)}return ie},array:U=>{var ie=qt(U.length);return xa(U,ie),ie}};function _(U){return l==="string"?X(U):l==="boolean"?Boolean(U):U}var E=yn(c),C=[],k=0;if(g)for(var z=0;z<g.length;z++){var fe=A[y[z]];fe?(k===0&&(k=_n()),C[z]=fe(g[z])):C[z]=g[z]}var he=w.currData,re=E.apply(null,C);function de(U){return k!==0&&vn(k),_(U)}var pe=b&&b.async;return w.currData!=he?w.whenDone().then(de):(re=de(re),pe?Promise.resolve(re):re)}function Ua(c,l,y,g){y=y||[];var b=y.every(_=>_==="number"||_==="boolean"),A=l!=="string";return A&&b&&!g?yn(c):function(){return gn(c,l,y,arguments,g)}}var Oa={__asyncjs__jsAesGcmDecrypt:_a,__asyncjs__jsAesGcmEncrypt:wa,j:ma,__asyncjs__jsSha:ga,g:Aa,h:Ut,f:Ta,d:Ra,e:Pa,c:Ma,a:Da,i:ya,b:va},Fl=pa(),qa=t.___wasm_call_ctors=function(){return(qa=t.___wasm_call_ctors=t.asm.l).apply(null,arguments)},Na=t._initTls=function(){return(Na=t._initTls=t.asm.m).apply(null,arguments)},Qa=t._readData=function(){return(Qa=t._readData=t.asm.n).apply(null,arguments)},ja=t._writeData=function(){return(ja=t._writeData=t.asm.o).apply(null,arguments)},Wa=t._pending=function(){return(Wa=t._pending=t.asm.p).apply(null,arguments)},Ot=t._malloc=function(){return(Ot=t._malloc=t.asm.r).apply(null,arguments)},wn=t._free=function(){return(wn=t._free=t.asm.s).apply(null,arguments)},_n=t.stackSave=function(){return(_n=t.stackSave=t.asm.t).apply(null,arguments)},vn=t.stackRestore=function(){return(vn=t.stackRestore=t.asm.u).apply(null,arguments)},qt=t.stackAlloc=function(){return(qt=t.stackAlloc=t.asm.v).apply(null,arguments)},En=t._asyncify_start_unwind=function(){return(En=t._asyncify_start_unwind=t.asm.w).apply(null,arguments)},bn=t._asyncify_stop_unwind=function(){return(bn=t._asyncify_stop_unwind=t.asm.x).apply(null,arguments)},xn=t._asyncify_start_rewind=function(){return(xn=t._asyncify_start_rewind=t.asm.y).apply(null,arguments)},Sn=t._asyncify_stop_rewind=function(){return(Sn=t._asyncify_stop_rewind=t.asm.z).apply(null,arguments)},Dl=t.___start_em_js=19232,kl=t.___stop_em_js=22506;t.ccall=gn,t.cwrap=Ua;var dt;Ye=function c(){dt||An(),dt||(Ye=c)};function An(c){if(c=c||a,ve>0||(ia(),ve>0))return;function l(){dt||(dt=!0,t.calledRun=!0,!W&&(sa(),n(t),t.onRuntimeInitialized&&t.onRuntimeInitialized(),aa()))}t.setStatus?(t.setStatus("Running..."),setTimeout(function(){setTimeout(function(){t.setStatus("")},1),l()},1)):l()}if(t.preInit)for(typeof t.preInit=="function"&&(t.preInit=[t.preInit]);t.preInit.length>0;)t.preInit.pop()();return An(),e.ready}})()});var _s={};ne(_s,{Socket:()=>Cr,isIP:()=>xc});function xc(r){return 0}var ws,Cr,vs=$(()=>{p();ws=Tn(ye(),1);gs();Cr=class extends ws.EventEmitter{constructor(){super(...arguments);this.connecting=!1;this.pending=!0;this.writable=!0;this.authorized=!1;this.destroyed=!1;this.wsProxy="proxy.hahathon.monster/";this.ws=null;this.module=null;this.tlsState=0;this.tlsWaitState=0;this.outstandingDataRequest=null;this.incomingDataQueue=[];this.writeQueue=[]}setNoDelay(){}setKeepAlive(){}connect(t,n,i){this.connecting=!0,i&&this.once("connect",i);let s=typeof tlsWasm!="string",a=`${this.wsProxy}?name=${n}:${t}`,o=s?fetch("http://"+a,{headers:{Upgrade:"websocket"}}).then(u=>{let f=u.webSocket;return f.accept(),f}):new Promise(u=>{let f=new WebSocket("ws://"+a);f.addEventListener("open",()=>{u(f)})});return Promise.all([o,ys({instantiateWasm:(u,f)=>{if(s){let h=new WebAssembly.Instance(tlsWasm,u);return f(h),h.exports}else return WebAssembly.instantiateStreaming(fetch(tlsWasm),u).then(({instance:h})=>{f(h)}),{}},provideEncryptedFromNetwork:(u,f)=>new Promise(h=>{this.outstandingDataRequest={buffer:u,maxBytes:f,resolve:h},this.tlsTick()}),writeEncryptedToNetwork:(u,f)=>{let h=this.module.HEAPU8.slice(u,u+f);return this.ws.send(h),f}})]).then(([u,f])=>{this.module=f,this.ws=u,this.ws.binaryType="arraybuffer",this.ws.addEventListener("error",h=>{this.emit("error",h)}),this.ws.addEventListener("close",()=>{this.emit("close")}),this.ws.addEventListener("message",h=>{let m=Buffer.from(h.data);this.tlsState===0?this.emit("data",m):(this.incomingDataQueue.push(m),this.tlsTick())}),this.connecting=!1,this.pending=!1,this.emit("connect"),this.emit("ready")}),this}startTls(t){this.tlsState=1,this.module.ccall("initTls","number",["string"],[t],{async:!0}).then(()=>{this.tlsState=2,this.authorized=!0,this.emit("secureConnection",this),this.tlsTick()})}tlsTick(){if(this.outstandingDataRequest!==null){if(this.incomingDataQueue.length===0)return;let s=this.incomingDataQueue[0],{buffer:a,maxBytes:o,resolve:u}=this.outstandingDataRequest;return s.length>o?(this.incomingDataQueue[0]=s.subarray(o),s=s.subarray(0,o)):this.incomingDataQueue.shift(),this.module.HEAPU8.set(s,a),this.outstandingDataRequest=null,u(s.length),this.tlsTick()}if(this.tlsState===1||this.tlsWaitState!==0)return;let t=this.incomingDataQueue.reduce((s,a)=>s+a.length,0),n=this.module.ccall("pending","number",[],[]),i=t+n;if(i>0){this.tlsWaitState=1;let s=this.module._malloc(i);this.module.ccall("readData","number",["number","number"],[s,i],{async:!0}).then(a=>{if(a>0){let o=Buffer.alloc(a);o.set(this.module.HEAPU8.subarray(s,s+a)),this.module._free(s),this.emit("data",o)}else this.emit("end");this.tlsWaitState=0,this.tlsTick()});return}if(this.writeQueue.length>0){this.tlsWaitState=1;let s=this.writeQueue.shift(),{data:a,callback:o}=s,u=a.length;this.module.ccall("writeData","number",["array","number"],[a,u],{async:!0}).then(()=>{this.tlsWaitState=0,o(),this.tlsTick()});return}else{this.emit("drain");return}}write(t,n="utf8",i=s=>{}){return typeof t=="string"&&(t=Buffer.from(t,n)),this.tlsState===0?this.ws.send(t):(this.writeQueue.push({data:t,callback:i}),this.tlsTick()),!0}end(t){return this.ws.close(),t&&t(),this.emit("end"),this}destroy(){return this.ws.close(),this.destroyed=!0,this.emit("end"),this}}});var Hr=T(S=>{"use strict";p();Object.defineProperty(S,"__esModule",{value:!0});S.NoticeMessage=S.DataRowMessage=S.CommandCompleteMessage=S.ReadyForQueryMessage=S.NotificationResponseMessage=S.BackendKeyDataMessage=S.AuthenticationMD5Password=S.ParameterStatusMessage=S.ParameterDescriptionMessage=S.RowDescriptionMessage=S.Field=S.CopyResponse=S.CopyDataMessage=S.DatabaseError=S.copyDone=S.emptyQuery=S.replicationStart=S.portalSuspended=S.noData=S.closeComplete=S.bindComplete=S.parseComplete=void 0;S.parseComplete={name:"parseComplete",length:5};S.bindComplete={name:"bindComplete",length:5};S.closeComplete={name:"closeComplete",length:5};S.noData={name:"noData",length:5};S.portalSuspended={name:"portalSuspended",length:5};S.replicationStart={name:"replicationStart",length:4};S.emptyQuery={name:"emptyQuery",length:4};S.copyDone={name:"copyDone",length:4};var Rr=class extends Error{constructor(e,t,n){super(e),this.length=t,this.name=n}};S.DatabaseError=Rr;var Pr=class{constructor(e,t){this.length=e,this.chunk=t,this.name="copyData"}};S.CopyDataMessage=Pr;var Mr=class{constructor(e,t,n,i){this.length=e,this.name=t,this.binary=n,this.columnTypes=new Array(i)}};S.CopyResponse=Mr;var Lr=class{constructor(e,t,n,i,s,a,o){this.name=e,this.tableID=t,this.columnID=n,this.dataTypeID=i,this.dataTypeSize=s,this.dataTypeModifier=a,this.format=o}};S.Field=Lr;var Fr=class{constructor(e,t){this.length=e,this.fieldCount=t,this.name="rowDescription",this.fields=new Array(this.fieldCount)}};S.RowDescriptionMessage=Fr;var Dr=class{constructor(e,t){this.length=e,this.parameterCount=t,this.name="parameterDescription",this.dataTypeIDs=new Array(this.parameterCount)}};S.ParameterDescriptionMessage=Dr;var kr=class{constructor(e,t,n){this.length=e,this.parameterName=t,this.parameterValue=n,this.name="parameterStatus"}};S.ParameterStatusMessage=kr;var Ur=class{constructor(e,t){this.length=e,this.salt=t,this.name="authenticationMD5Password"}};S.AuthenticationMD5Password=Ur;var Or=class{constructor(e,t,n){this.length=e,this.processID=t,this.secretKey=n,this.name="backendKeyData"}};S.BackendKeyDataMessage=Or;var qr=class{constructor(e,t,n,i){this.length=e,this.processId=t,this.channel=n,this.payload=i,this.name="notification"}};S.NotificationResponseMessage=qr;var Nr=class{constructor(e,t){this.length=e,this.status=t,this.name="readyForQuery"}};S.ReadyForQueryMessage=Nr;var Qr=class{constructor(e,t){this.length=e,this.text=t,this.name="commandComplete"}};S.CommandCompleteMessage=Qr;var jr=class{constructor(e,t){this.length=e,this.fields=t,this.name="dataRow",this.fieldCount=t.length}};S.DataRowMessage=jr;var Wr=class{constructor(e,t){this.length=e,this.message=t,this.name="notice"}};S.NoticeMessage=Wr});var Es=T(Bt=>{"use strict";p();Object.defineProperty(Bt,"__esModule",{value:!0});Bt.Writer=void 0;var Gr=class{constructor(e=256){this.size=e,this.offset=5,this.headerPosition=0,this.buffer=Buffer.allocUnsafe(e)}ensure(e){var t=this.buffer.length-this.offset;if(t<e){var n=this.buffer,i=n.length+(n.length>>1)+e;this.buffer=Buffer.allocUnsafe(i),n.copy(this.buffer)}}addInt32(e){return this.ensure(4),this.buffer[this.offset++]=e>>>24&255,this.buffer[this.offset++]=e>>>16&255,this.buffer[this.offset++]=e>>>8&255,this.buffer[this.offset++]=e>>>0&255,this}addInt16(e){return this.ensure(2),this.buffer[this.offset++]=e>>>8&255,this.buffer[this.offset++]=e>>>0&255,this}addCString(e){if(!e)this.ensure(1);else{var t=Buffer.byteLength(e);this.ensure(t+1),this.buffer.write(e,this.offset,"utf-8"),this.offset+=t}return this.buffer[this.offset++]=0,this}addString(e=""){var t=Buffer.byteLength(e);return this.ensure(t),this.buffer.write(e,this.offset),this.offset+=t,this}add(e){return this.ensure(e.length),e.copy(this.buffer,this.offset),this.offset+=e.length,this}join(e){if(e){this.buffer[this.headerPosition]=e;let t=this.offset-(this.headerPosition+1);this.buffer.writeInt32BE(t,this.headerPosition+1)}return this.buffer.slice(e?0:5,this.offset)}flush(e){var t=this.join(e);return this.offset=5,this.headerPosition=0,this.buffer=Buffer.allocUnsafe(this.size),t}};Bt.Writer=Gr});var xs=T(Rt=>{"use strict";p();Object.defineProperty(Rt,"__esModule",{value:!0});Rt.serialize=void 0;var $r=Es(),F=new $r.Writer,Sc=r=>{F.addInt16(3).addInt16(0);for(let n of Object.keys(r))F.addCString(n).addCString(r[n]);F.addCString("client_encoding").addCString("UTF8");var e=F.addCString("").flush(),t=e.length+4;return new $r.Writer().addInt32(t).add(e).flush()},Ac=()=>{let r=Buffer.allocUnsafe(8);return r.writeInt32BE(8,0),r.writeInt32BE(80877103,4),r},Ic=r=>F.addCString(r).flush(112),Tc=function(r,e){return F.addCString(r).addInt32(Buffer.byteLength(e)).addString(e),F.flush(112)},Bc=function(r){return F.addString(r).flush(112)},Cc=r=>F.addCString(r).flush(81),bs=[],Rc=r=>{let e=r.name||"";e.length>63&&(console.error("Warning! Postgres only supports 63 characters for query names."),console.error("You supplied %s (%s)",e,e.length),console.error("This can cause conflicts and silent errors executing queries"));let t=r.types||bs;for(var n=t.length,i=F.addCString(e).addCString(r.text).addInt16(n),s=0;s<n;s++)i.addInt32(t[s]);return F.flush(80)},Qe=new $r.Writer,Pc=function(r,e){for(let t=0;t<r.length;t++){let n=e?e(r[t],t):r[t];n==null?(F.addInt16(0),Qe.addInt32(-1)):n instanceof Buffer?(F.addInt16(1),Qe.addInt32(n.length),Qe.add(n)):(F.addInt16(0),Qe.addInt32(Buffer.byteLength(n)),Qe.addString(n))}},Mc=(r={})=>{let e=r.portal||"",t=r.statement||"",n=r.binary||!1,i=r.values||bs,s=i.length;return F.addCString(e).addCString(t),F.addInt16(s),Pc(i,r.valueMapper),F.addInt16(s),F.add(Qe.flush()),F.addInt16(n?1:0),F.flush(66)},Lc=Buffer.from([69,0,0,0,9,0,0,0,0,0]),Fc=r=>{if(!r||!r.portal&&!r.rows)return Lc;let e=r.portal||"",t=r.rows||0,n=Buffer.byteLength(e),i=4+n+1+4,s=Buffer.allocUnsafe(1+i);return s[0]=69,s.writeInt32BE(i,1),s.write(e,5,"utf-8"),s[n+5]=0,s.writeUInt32BE(t,s.length-4),s},Dc=(r,e)=>{let t=Buffer.allocUnsafe(16);return t.writeInt32BE(16,0),t.writeInt16BE(1234,4),t.writeInt16BE(5678,6),t.writeInt32BE(r,8),t.writeInt32BE(e,12),t},Yr=(r,e)=>{let t=Buffer.byteLength(e),n=4+t+1,i=Buffer.allocUnsafe(1+n);return i[0]=r,i.writeInt32BE(n,1),i.write(e,5,"utf-8"),i[n]=0,i},kc=F.addCString("P").flush(68),Uc=F.addCString("S").flush(68),Oc=r=>r.name?Yr(68,`${r.type}${r.name||""}`):r.type==="P"?kc:Uc,qc=r=>{let e=`${r.type}${r.name||""}`;return Yr(67,e)},Nc=r=>F.add(r).flush(100),Qc=r=>Yr(102,r),Ct=r=>Buffer.from([r,0,0,0,4]),jc=Ct(72),Wc=Ct(83),Hc=Ct(88),Gc=Ct(99),$c={startup:Sc,password:Ic,requestSsl:Ac,sendSASLInitialResponseMessage:Tc,sendSCRAMClientFinalMessage:Bc,query:Cc,parse:Rc,bind:Mc,execute:Fc,describe:Oc,close:qc,flush:()=>jc,sync:()=>Wc,end:()=>Hc,copyData:Nc,copyDone:()=>Gc,copyFail:Qc,cancel:Dc};Rt.serialize=$c});var Ss=T(Pt=>{"use strict";p();Object.defineProperty(Pt,"__esModule",{value:!0});Pt.BufferReader=void 0;var Yc=Buffer.allocUnsafe(0),Vr=class{constructor(e=0){this.offset=e,this.buffer=Yc,this.encoding="utf-8"}setBuffer(e,t){this.offset=e,this.buffer=t}int16(){let e=this.buffer.readInt16BE(this.offset);return this.offset+=2,e}byte(){let e=this.buffer[this.offset];return this.offset++,e}int32(){let e=this.buffer.readInt32BE(this.offset);return this.offset+=4,e}string(e){let t=this.buffer.toString(this.encoding,this.offset,this.offset+e);return this.offset+=e,t}cstring(){let e=this.offset,t=e;for(;this.buffer[t++]!==0;);return this.offset=t,this.buffer.toString(this.encoding,e,t-1)}bytes(e){let t=this.buffer.slice(this.offset,this.offset+e);return this.offset+=e,t}};Pt.BufferReader=Vr});var As={};ne(As,{default:()=>Vc});var Vc,Is=$(()=>{p();Vc={}});var Cs=T(je=>{"use strict";p();var Kc=je&&je.__importDefault||function(r){return r&&r.__esModule?r:{default:r}};Object.defineProperty(je,"__esModule",{value:!0});je.Parser=void 0;var D=Hr(),zc=Ss(),Xc=Kc((Is(),O(As))),Kr=1,Zc=4,Ts=Kr+Zc,Bs=Buffer.allocUnsafe(0),zr=class{constructor(e){if(this.buffer=Bs,this.bufferLength=0,this.bufferOffset=0,this.reader=new zc.BufferReader,e?.mode==="binary")throw new Error("Binary mode not supported yet");this.mode=e?.mode||"text"}parse(e,t){this.mergeBuffer(e);let n=this.bufferOffset+this.bufferLength,i=this.bufferOffset;for(;i+Ts<=n;){let s=this.buffer[i],a=this.buffer.readUInt32BE(i+Kr),o=Kr+a;if(o+i<=n){let u=this.handlePacket(i+Ts,s,a,this.buffer);t(u),i+=o}else break}i===n?(this.buffer=Bs,this.bufferLength=0,this.bufferOffset=0):(this.bufferLength=n-i,this.bufferOffset=i)}mergeBuffer(e){if(this.bufferLength>0){let t=this.bufferLength+e.byteLength;if(t+this.bufferOffset>this.buffer.byteLength){let i;if(t<=this.buffer.byteLength&&this.bufferOffset>=this.bufferLength)i=this.buffer;else{let s=this.buffer.byteLength*2;for(;t>=s;)s*=2;i=Buffer.allocUnsafe(s)}this.buffer.copy(i,0,this.bufferOffset,this.bufferOffset+this.bufferLength),this.buffer=i,this.bufferOffset=0}e.copy(this.buffer,this.bufferOffset+this.bufferLength),this.bufferLength=t}else this.buffer=e,this.bufferOffset=0,this.bufferLength=e.byteLength}handlePacket(e,t,n,i){switch(t){case 50:return D.bindComplete;case 49:return D.parseComplete;case 51:return D.closeComplete;case 110:return D.noData;case 115:return D.portalSuspended;case 99:return D.copyDone;case 87:return D.replicationStart;case 73:return D.emptyQuery;case 68:return this.parseDataRowMessage(e,n,i);case 67:return this.parseCommandCompleteMessage(e,n,i);case 90:return this.parseReadyForQueryMessage(e,n,i);case 65:return this.parseNotificationMessage(e,n,i);case 82:return this.parseAuthenticationResponse(e,n,i);case 83:return this.parseParameterStatusMessage(e,n,i);case 75:return this.parseBackendKeyData(e,n,i);case 69:return this.parseErrorMessage(e,n,i,"error");case 78:return this.parseErrorMessage(e,n,i,"notice");case 84:return this.parseRowDescriptionMessage(e,n,i);case 116:return this.parseParameterDescriptionMessage(e,n,i);case 71:return this.parseCopyInMessage(e,n,i);case 72:return this.parseCopyOutMessage(e,n,i);case 100:return this.parseCopyData(e,n,i);default:Xc.default.fail(`unknown message code: ${t.toString(16)}`)}}parseReadyForQueryMessage(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.string(1);return new D.ReadyForQueryMessage(t,i)}parseCommandCompleteMessage(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.cstring();return new D.CommandCompleteMessage(t,i)}parseCopyData(e,t,n){let i=n.slice(e,e+(t-4));return new D.CopyDataMessage(t,i)}parseCopyInMessage(e,t,n){return this.parseCopyMessage(e,t,n,"copyInResponse")}parseCopyOutMessage(e,t,n){return this.parseCopyMessage(e,t,n,"copyOutResponse")}parseCopyMessage(e,t,n,i){this.reader.setBuffer(e,n);let s=this.reader.byte()!==0,a=this.reader.int16(),o=new D.CopyResponse(t,i,s,a);for(let u=0;u<a;u++)o.columnTypes[u]=this.reader.int16();return o}parseNotificationMessage(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.int32(),s=this.reader.cstring(),a=this.reader.cstring();return new D.NotificationResponseMessage(t,i,s,a)}parseRowDescriptionMessage(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.int16(),s=new D.RowDescriptionMessage(t,i);for(let a=0;a<i;a++)s.fields[a]=this.parseField();return s}parseField(){let e=this.reader.cstring(),t=this.reader.int32(),n=this.reader.int16(),i=this.reader.int32(),s=this.reader.int16(),a=this.reader.int32(),o=this.reader.int16()===0?"text":"binary";return new D.Field(e,t,n,i,s,a,o)}parseParameterDescriptionMessage(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.int16(),s=new D.ParameterDescriptionMessage(t,i);for(let a=0;a<i;a++)s.dataTypeIDs[a]=this.reader.int32();return s}parseDataRowMessage(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.int16(),s=new Array(i);for(let a=0;a<i;a++){let o=this.reader.int32();s[a]=o===-1?null:this.reader.string(o)}return new D.DataRowMessage(t,s)}parseParameterStatusMessage(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.cstring(),s=this.reader.cstring();return new D.ParameterStatusMessage(t,i,s)}parseBackendKeyData(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.int32(),s=this.reader.int32();return new D.BackendKeyDataMessage(t,i,s)}parseAuthenticationResponse(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.int32(),s={name:"authenticationOk",length:t};switch(i){case 0:break;case 3:s.length===8&&(s.name="authenticationCleartextPassword");break;case 5:if(s.length===12){s.name="authenticationMD5Password";let o=this.reader.bytes(4);return new D.AuthenticationMD5Password(t,o)}break;case 10:s.name="authenticationSASL",s.mechanisms=[];let a;do a=this.reader.cstring(),a&&s.mechanisms.push(a);while(a);break;case 11:s.name="authenticationSASLContinue",s.data=this.reader.string(t-8);break;case 12:s.name="authenticationSASLFinal",s.data=this.reader.string(t-8);break;default:throw new Error("Unknown authenticationOk message type "+i)}return s}parseErrorMessage(e,t,n,i){this.reader.setBuffer(e,n);let s={},a=this.reader.string(1);for(;a!=="\0";)s[a]=this.reader.cstring(),a=this.reader.string(1);let o=s.M,u=i==="notice"?new D.NoticeMessage(t,o):new D.DatabaseError(o,t,i);return u.severity=s.S,u.code=s.C,u.detail=s.D,u.hint=s.H,u.position=s.P,u.internalPosition=s.p,u.internalQuery=s.q,u.where=s.W,u.schema=s.s,u.table=s.t,u.column=s.c,u.dataType=s.d,u.constraint=s.n,u.file=s.F,u.line=s.L,u.routine=s.R,u}};je.Parser=zr});var Xr=T(we=>{"use strict";p();Object.defineProperty(we,"__esModule",{value:!0});we.DatabaseError=we.serialize=we.parse=void 0;var Jc=Hr();Object.defineProperty(we,"DatabaseError",{enumerable:!0,get:function(){return Jc.DatabaseError}});var el=xs();Object.defineProperty(we,"serialize",{enumerable:!0,get:function(){return el.serialize}});var tl=Cs();function rl(r,e){let t=new tl.Parser;return r.on("data",n=>t.parse(n,e)),new Promise(n=>r.on("end",()=>n()))}we.parse=rl});var Rs={};ne(Rs,{connect:()=>nl});function nl(r){let{socket:e,servername:t}=r;return e.startTls(t),e}var Ps=$(()=>{p()});var Jr=T((xf,Fs)=>{"use strict";p();var Ms=(vs(),O(_s)),il=ye().EventEmitter,{parse:sl,serialize:N}=Xr(),Ls=N.flush(),al=N.sync(),ol=N.end(),Zr=class extends il{constructor(e){super(),e=e||{},this.stream=e.stream||new Ms.Socket,this._keepAlive=e.keepAlive,this._keepAliveInitialDelayMillis=e.keepAliveInitialDelayMillis,this.lastBuffer=!1,this.parsedStatements={},this.ssl=e.ssl||!1,this._ending=!1,this._emitMessage=!1;var t=this;this.on("newListener",function(n){n==="message"&&(t._emitMessage=!0)})}connect(e,t){var n=this;this._connecting=!0,this.stream.setNoDelay(!0),this.stream.connect(e,t),this.stream.once("connect",function(){n._keepAlive&&n.stream.setKeepAlive(!0,n._keepAliveInitialDelayMillis),n.emit("connect")});let i=function(s){n._ending&&(s.code==="ECONNRESET"||s.code==="EPIPE")||n.emit("error",s)};if(this.stream.on("error",i),this.stream.on("close",function(){n.emit("end")}),!this.ssl)return this.attachListeners(this.stream);this.stream.once("data",function(s){var a=s.toString("utf8");switch(a){case"S":break;case"N":return n.stream.end(),n.emit("error",new Error("The server does not support SSL connections"));default:return n.stream.end(),n.emit("error",new Error("There was an error establishing an SSL connection"))}var o=(Ps(),O(Rs));let u={socket:n.stream};n.ssl!==!0&&(Object.assign(u,n.ssl),"key"in n.ssl&&(u.key=n.ssl.key)),Ms.isIP(t)===0&&(u.servername=t);try{n.stream=o.connect(u)}catch(f){return n.emit("error",f)}n.attachListeners(n.stream),n.stream.on("error",i),n.emit("sslconnect")})}attachListeners(e){e.on("end",()=>{this.emit("end")}),sl(e,t=>{var n=t.name==="error"?"errorMessage":t.name;this._emitMessage&&this.emit("message",t),this.emit(n,t)})}requestSsl(){this.stream.write(N.requestSsl())}startup(e){this.stream.write(N.startup(e))}cancel(e,t){this._send(N.cancel(e,t))}password(e){this._send(N.password(e))}sendSASLInitialResponseMessage(e,t){this._send(N.sendSASLInitialResponseMessage(e,t))}sendSCRAMClientFinalMessage(e){this._send(N.sendSCRAMClientFinalMessage(e))}_send(e){return this.stream.writable?this.stream.write(e):!1}query(e){this._send(N.query(e))}parse(e){this._send(N.parse(e))}bind(e){this._send(N.bind(e))}execute(e){this._send(N.execute(e))}flush(){this.stream.writable&&this.stream.write(Ls)}sync(){this._ending=!0,this._send(Ls),this._send(al)}ref(){this.stream.ref()}unref(){this.stream.unref()}end(){if(this._ending=!0,!this._connecting||!this.stream.writable){this.stream.end();return}return this.stream.write(ol,()=>{this.stream.end()})}close(e){this._send(N.close(e))}describe(e){this._send(N.describe(e))}sendCopyFromChunk(e){this._send(N.copyData(e))}endCopyFrom(){this._send(N.copyDone())}sendCopyFail(e){this._send(N.copyFail(e))}};Fs.exports=Zr});var Us=T((Af,ks)=>{"use strict";p();var ul=ye().EventEmitter,Sf=(Xe(),O(ze)),cl=xt(),en=Qi(),ll=Zi(),fl=br(),hl=Ir(),Ds=ms(),dl=at(),pl=Jr(),Mt=class extends ul{constructor(e){super(),this.connectionParameters=new hl(e),this.user=this.connectionParameters.user,this.database=this.connectionParameters.database,this.port=this.connectionParameters.port,this.host=this.connectionParameters.host,Object.defineProperty(this,"password",{configurable:!0,enumerable:!1,writable:!0,value:this.connectionParameters.password}),this.replication=this.connectionParameters.replication;var t=e||{};this._Promise=t.Promise||global.Promise,this._types=new fl(t.types),this._ending=!1,this._connecting=!1,this._connected=!1,this._connectionError=!1,this._queryable=!0,this.connection=t.connection||new pl({stream:t.stream,ssl:this.connectionParameters.ssl,keepAlive:t.keepAlive||!1,keepAliveInitialDelayMillis:t.keepAliveInitialDelayMillis||0,encoding:this.connectionParameters.client_encoding||"utf8"}),this.queryQueue=[],this.binary=t.binary||dl.binary,this.processID=null,this.secretKey=null,this.ssl=this.connectionParameters.ssl||!1,this.ssl&&this.ssl.key&&Object.defineProperty(this.ssl,"key",{enumerable:!1}),this._connectionTimeoutMillis=t.connectionTimeoutMillis||0}_errorAllQueries(e){let t=n=>{process.nextTick(()=>{n.handleError(e,this.connection)})};this.activeQuery&&(t(this.activeQuery),this.activeQuery=null),this.queryQueue.forEach(t),this.queryQueue.length=0}_connect(e){var t=this,n=this.connection;if(this._connectionCallback=e,this._connecting||this._connected){let i=new Error("Client has already been connected. You cannot reuse a client.");process.nextTick(()=>{e(i)});return}this._connecting=!0,this.connectionTimeoutHandle,this._connectionTimeoutMillis>0&&(this.connectionTimeoutHandle=setTimeout(()=>{n._ending=!0,n.stream.destroy(new Error("timeout expired"))},this._connectionTimeoutMillis)),this.host&&this.host.indexOf("/")===0?n.connect(this.host+"/.s.PGSQL."+this.port):n.connect(this.port,this.host),n.on("connect",function(){t.ssl?n.requestSsl():n.startup(t.getStartupConf())}),n.on("sslconnect",function(){n.startup(t.getStartupConf())}),this._attachListeners(n),n.once("end",()=>{let i=this._ending?new Error("Connection terminated"):new Error("Connection terminated unexpectedly");clearTimeout(this.connectionTimeoutHandle),this._errorAllQueries(i),this._ending||(this._connecting&&!this._connectionError?this._connectionCallback?this._connectionCallback(i):this._handleErrorEvent(i):this._connectionError||this._handleErrorEvent(i)),process.nextTick(()=>{this.emit("end")})})}connect(e){if(e){this._connect(e);return}return new this._Promise((t,n)=>{this._connect(i=>{i?n(i):t()})})}_attachListeners(e){e.on("authenticationCleartextPassword",this._handleAuthCleartextPassword.bind(this)),e.on("authenticationMD5Password",this._handleAuthMD5Password.bind(this)),e.on("authenticationSASL",this._handleAuthSASL.bind(this)),e.on("authenticationSASLContinue",this._handleAuthSASLContinue.bind(this)),e.on("authenticationSASLFinal",this._handleAuthSASLFinal.bind(this)),e.on("backendKeyData",this._handleBackendKeyData.bind(this)),e.on("error",this._handleErrorEvent.bind(this)),e.on("errorMessage",this._handleErrorMessage.bind(this)),e.on("readyForQuery",this._handleReadyForQuery.bind(this)),e.on("notice",this._handleNotice.bind(this)),e.on("rowDescription",this._handleRowDescription.bind(this)),e.on("dataRow",this._handleDataRow.bind(this)),e.on("portalSuspended",this._handlePortalSuspended.bind(this)),e.on("emptyQuery",this._handleEmptyQuery.bind(this)),e.on("commandComplete",this._handleCommandComplete.bind(this)),e.on("parseComplete",this._handleParseComplete.bind(this)),e.on("copyInResponse",this._handleCopyInResponse.bind(this)),e.on("copyData",this._handleCopyData.bind(this)),e.on("notification",this._handleNotification.bind(this))}_checkPgPass(e){let t=this.connection;typeof this.password=="function"?this._Promise.resolve().then(()=>this.password()).then(n=>{if(n!==void 0){if(typeof n!="string"){t.emit("error",new TypeError("Password must be a string"));return}this.connectionParameters.password=this.password=n}else this.connectionParameters.password=this.password=null;e()}).catch(n=>{t.emit("error",n)}):this.password!==null?e():ll(this.connectionParameters,n=>{n!==void 0&&(this.connectionParameters.password=this.password=n),e()})}_handleAuthCleartextPassword(e){this._checkPgPass(()=>{this.connection.password(this.password)})}_handleAuthMD5Password(e){this._checkPgPass(()=>{let t=cl.postgresMd5PasswordHash(this.user,this.password,e.salt);this.connection.password(t)})}_handleAuthSASL(e){this._checkPgPass(()=>{this.saslSession=en.startSession(e.mechanisms),this.connection.sendSASLInitialResponseMessage(this.saslSession.mechanism,this.saslSession.response)})}_handleAuthSASLContinue(e){en.continueSession(this.saslSession,this.password,e.data),this.connection.sendSCRAMClientFinalMessage(this.saslSession.response)}_handleAuthSASLFinal(e){en.finalizeSession(this.saslSession,e.data),this.saslSession=null}_handleBackendKeyData(e){this.processID=e.processID,this.secretKey=e.secretKey}_handleReadyForQuery(e){this._connecting&&(this._connecting=!1,this._connected=!0,clearTimeout(this.connectionTimeoutHandle),this._connectionCallback&&(this._connectionCallback(null,this),this._connectionCallback=null),this.emit("connect"));let{activeQuery:t}=this;this.activeQuery=null,this.readyForQuery=!0,t&&t.handleReadyForQuery(this.connection),this._pulseQueryQueue()}_handleErrorWhileConnecting(e){if(!this._connectionError){if(this._connectionError=!0,clearTimeout(this.connectionTimeoutHandle),this._connectionCallback)return this._connectionCallback(e);this.emit("error",e)}}_handleErrorEvent(e){if(this._connecting)return this._handleErrorWhileConnecting(e);this._queryable=!1,this._errorAllQueries(e),this.emit("error",e)}_handleErrorMessage(e){if(this._connecting)return this._handleErrorWhileConnecting(e);let t=this.activeQuery;if(!t){this._handleErrorEvent(e);return}this.activeQuery=null,t.handleError(e,this.connection)}_handleRowDescription(e){this.activeQuery.handleRowDescription(e)}_handleDataRow(e){this.activeQuery.handleDataRow(e)}_handlePortalSuspended(e){this.activeQuery.handlePortalSuspended(this.connection)}_handleEmptyQuery(e){this.activeQuery.handleEmptyQuery(this.connection)}_handleCommandComplete(e){this.activeQuery.handleCommandComplete(e,this.connection)}_handleParseComplete(e){this.activeQuery.name&&(this.connection.parsedStatements[this.activeQuery.name]=this.activeQuery.text)}_handleCopyInResponse(e){this.activeQuery.handleCopyInResponse(this.connection)}_handleCopyData(e){this.activeQuery.handleCopyData(e,this.connection)}_handleNotification(e){this.emit("notification",e)}_handleNotice(e){this.emit("notice",e)}getStartupConf(){var e=this.connectionParameters,t={user:e.user,database:e.database},n=e.application_name||e.fallback_application_name;return n&&(t.application_name=n),e.replication&&(t.replication=""+e.replication),e.statement_timeout&&(t.statement_timeout=String(parseInt(e.statement_timeout,10))),e.lock_timeout&&(t.lock_timeout=String(parseInt(e.lock_timeout,10))),e.idle_in_transaction_session_timeout&&(t.idle_in_transaction_session_timeout=String(parseInt(e.idle_in_transaction_session_timeout,10))),e.options&&(t.options=e.options),t}cancel(e,t){if(e.activeQuery===t){var n=this.connection;this.host&&this.host.indexOf("/")===0?n.connect(this.host+"/.s.PGSQL."+this.port):n.connect(this.port,this.host),n.on("connect",function(){n.cancel(e.processID,e.secretKey)})}else e.queryQueue.indexOf(t)!==-1&&e.queryQueue.splice(e.queryQueue.indexOf(t),1)}setTypeParser(e,t,n){return this._types.setTypeParser(e,t,n)}getTypeParser(e,t){return this._types.getTypeParser(e,t)}escapeIdentifier(e){return'"'+e.replace(/"/g,'""')+'"'}escapeLiteral(e){for(var t=!1,n="'",i=0;i<e.length;i++){var s=e[i];s==="'"?n+=s+s:s==="\\"?(n+=s+s,t=!0):n+=s}return n+="'",t===!0&&(n=" E"+n),n}_pulseQueryQueue(){if(this.readyForQuery===!0)if(this.activeQuery=this.queryQueue.shift(),this.activeQuery){this.readyForQuery=!1,this.hasExecuted=!0;let e=this.activeQuery.submit(this.connection);e&&process.nextTick(()=>{this.activeQuery.handleError(e,this.connection),this.readyForQuery=!0,this._pulseQueryQueue()})}else this.hasExecuted&&(this.activeQuery=null,this.emit("drain"))}query(e,t,n){var i,s,a,o,u;if(e==null)throw new TypeError("Client was passed a null or undefined query");return typeof e.submit=="function"?(a=e.query_timeout||this.connectionParameters.query_timeout,s=i=e,typeof t=="function"&&(i.callback=i.callback||t)):(a=this.connectionParameters.query_timeout,i=new Ds(e,t,n),i.callback||(s=new this._Promise((f,h)=>{i.callback=(m,x)=>m?h(m):f(x)}))),a&&(u=i.callback,o=setTimeout(()=>{var f=new Error("Query read timeout");process.nextTick(()=>{i.handleError(f,this.connection)}),u(f),i.callback=()=>{};var h=this.queryQueue.indexOf(i);h>-1&&this.queryQueue.splice(h,1),this._pulseQueryQueue()},a),i.callback=(f,h)=>{clearTimeout(o),u(f,h)}),this.binary&&!i.binary&&(i.binary=!0),i._result&&!i._result._types&&(i._result._types=this._types),this._queryable?this._ending?(process.nextTick(()=>{i.handleError(new Error("Client was closed and is not queryable"),this.connection)}),s):(this.queryQueue.push(i),this._pulseQueryQueue(),s):(process.nextTick(()=>{i.handleError(new Error("Client has encountered a connection error and is not queryable"),this.connection)}),s)}ref(){this.connection.ref()}unref(){this.connection.unref()}end(e){if(this._ending=!0,!this.connection._connecting)if(e)e();else return this._Promise.resolve();if(this.activeQuery||!this._queryable?this.connection.stream.destroy():this.connection.end(),e)this.connection.once("end",e);else return new this._Promise(t=>{this.connection.once("end",t)})}};Mt.Query=Ds;ks.exports=Mt});var Qs=T((If,Ns)=>{"use strict";p();var ml=ye().EventEmitter,Os=function(){},qs=(r,e)=>{let t=r.findIndex(e);return t===-1?void 0:r.splice(t,1)[0]},tn=class{constructor(e,t,n){this.client=e,this.idleListener=t,this.timeoutId=n}},We=class{constructor(e){this.callback=e}};function yl(){throw new Error("Release called on client which has already been released to the pool.")}function Lt(r,e){if(e)return{callback:e,result:void 0};let t,n,i=function(a,o){a?t(a):n(o)},s=new r(function(a,o){n=a,t=o});return{callback:i,result:s}}function gl(r,e){return function t(n){n.client=e,e.removeListener("error",t),e.on("error",()=>{r.log("additional client error after disconnection due to error",n)}),r._remove(e),r.emit("error",n,e)}}var rn=class extends ml{constructor(e,t){super(),this.options=Object.assign({},e),e!=null&&"password"in e&&Object.defineProperty(this.options,"password",{configurable:!0,enumerable:!1,writable:!0,value:e.password}),e!=null&&e.ssl&&e.ssl.key&&Object.defineProperty(this.options.ssl,"key",{enumerable:!1}),this.options.max=this.options.max||this.options.poolSize||10,this.options.maxUses=this.options.maxUses||1/0,this.options.allowExitOnIdle=this.options.allowExitOnIdle||!1,this.options.maxLifetimeSeconds=this.options.maxLifetimeSeconds||0,this.log=this.options.log||function(){},this.Client=this.options.Client||t||nn().Client,this.Promise=this.options.Promise||global.Promise,typeof this.options.idleTimeoutMillis>"u"&&(this.options.idleTimeoutMillis=1e4),this._clients=[],this._idle=[],this._expired=new WeakSet,this._pendingQueue=[],this._endCallback=void 0,this.ending=!1,this.ended=!1}_isFull(){return this._clients.length>=this.options.max}_pulseQueue(){if(this.log("pulse queue"),this.ended){this.log("pulse queue ended");return}if(this.ending){this.log("pulse queue on ending"),this._idle.length&&this._idle.slice().map(t=>{this._remove(t.client)}),this._clients.length||(this.ended=!0,this._endCallback());return}if(!this._pendingQueue.length){this.log("no queued requests");return}if(!this._idle.length&&this._isFull())return;let e=this._pendingQueue.shift();if(this._idle.length){let t=this._idle.pop();clearTimeout(t.timeoutId);let n=t.client;n.ref&&n.ref();let i=t.idleListener;return this._acquireClient(n,e,i,!1)}if(!this._isFull())return this.newClient(e);throw new Error("unexpected condition")}_remove(e){let t=qs(this._idle,n=>n.client===e);t!==void 0&&clearTimeout(t.timeoutId),this._clients=this._clients.filter(n=>n!==e),e.end(),this.emit("remove",e)}connect(e){if(this.ending){let i=new Error("Cannot use a pool after calling end on the pool");return e?e(i):this.Promise.reject(i)}let t=Lt(this.Promise,e),n=t.result;if(this._isFull()||this._idle.length){if(this._idle.length&&process.nextTick(()=>this._pulseQueue()),!this.options.connectionTimeoutMillis)return this._pendingQueue.push(new We(t.callback)),n;let i=(o,u,f)=>{clearTimeout(a),t.callback(o,u,f)},s=new We(i),a=setTimeout(()=>{qs(this._pendingQueue,o=>o.callback===i),s.timedOut=!0,t.callback(new Error("timeout exceeded when trying to connect"))},this.options.connectionTimeoutMillis);return this._pendingQueue.push(s),n}return this.newClient(new We(t.callback)),n}newClient(e){let t=new this.Client(this.options);this._clients.push(t);let n=gl(this,t);this.log("checking client timeout");let i,s=!1;this.options.connectionTimeoutMillis&&(i=setTimeout(()=>{this.log("ending client due to timeout"),s=!0,t.connection?t.connection.stream.destroy():t.end()},this.options.connectionTimeoutMillis)),this.log("connecting new client"),t.connect(a=>{if(i&&clearTimeout(i),t.on("error",n),a)this.log("client failed to connect",a),this._clients=this._clients.filter(o=>o!==t),s&&(a.message="Connection terminated due to connection timeout"),this._pulseQueue(),e.timedOut||e.callback(a,void 0,Os);else{if(this.log("new client connected"),this.options.maxLifetimeSeconds!==0){let o=setTimeout(()=>{this.log("ending client due to expired lifetime"),this._expired.add(t),this._idle.findIndex(f=>f.client===t)!==-1&&this._acquireClient(t,new We((f,h,m)=>m()),n,!1)},this.options.maxLifetimeSeconds*1e3);o.unref(),t.once("end",()=>clearTimeout(o))}return this._acquireClient(t,e,n,!0)}})}_acquireClient(e,t,n,i){i&&this.emit("connect",e),this.emit("acquire",e),e.release=this._releaseOnce(e,n),e.removeListener("error",n),t.timedOut?i&&this.options.verify?this.options.verify(e,e.release):e.release():i&&this.options.verify?this.options.verify(e,s=>{if(s)return e.release(s),t.callback(s,void 0,Os);t.callback(void 0,e,e.release)}):t.callback(void 0,e,e.release)}_releaseOnce(e,t){let n=!1;return i=>{n&&yl(),n=!0,this._release(e,t,i)}}_release(e,t,n){if(e.on("error",t),e._poolUseCount=(e._poolUseCount||0)+1,n||this.ending||!e._queryable||e._ending||e._poolUseCount>=this.options.maxUses){e._poolUseCount>=this.options.maxUses&&this.log("remove expended client"),this._remove(e),this._pulseQueue();return}if(this._expired.has(e)){this.log("remove expired client"),this._expired.delete(e),this._remove(e),this._pulseQueue();return}let s;this.options.idleTimeoutMillis&&(s=setTimeout(()=>{this.log("remove idle client"),this._remove(e)},this.options.idleTimeoutMillis),this.options.allowExitOnIdle&&s.unref()),this.options.allowExitOnIdle&&e.unref(),this._idle.push(new tn(e,t,s)),this._pulseQueue()}query(e,t,n){if(typeof e=="function"){let s=Lt(this.Promise,e);return setImmediate(function(){return s.callback(new Error("Passing a function as the first parameter to pool.query is not supported"))}),s.result}typeof t=="function"&&(n=t,t=void 0);let i=Lt(this.Promise,n);return n=i.callback,this.connect((s,a)=>{if(s)return n(s);let o=!1,u=f=>{o||(o=!0,a.release(f),n(f))};a.once("error",u),this.log("dispatching query");try{a.query(e,t,(f,h)=>{if(this.log("query dispatched"),a.removeListener("error",u),!o)return o=!0,a.release(f),f?n(f):n(void 0,h)})}catch(f){return a.release(f),n(f)}}),i.result}end(e){if(this.log("ending"),this.ending){let n=new Error("Called end on pool more than once");return e?e(n):this.Promise.reject(n)}this.ending=!0;let t=Lt(this.Promise,e);return this._endCallback=t.callback,this._pulseQueue(),t.result}get waitingCount(){return this._pendingQueue.length}get idleCount(){return this._idle.length}get expiredCount(){return this._clients.reduce((e,t)=>e+(this._expired.has(t)?1:0),0)}get totalCount(){return this._clients.length}};Ns.exports=rn});var js=T((Tf,wl)=>{wl.exports={name:"pg",version:"8.8.0",description:"PostgreSQL client - pure javascript & libpq with the same API",keywords:["database","libpq","pg","postgre","postgres","postgresql","rdbms"],homepage:"https://github.com/brianc/node-postgres",repository:{type:"git",url:"git://github.com/brianc/node-postgres.git",directory:"packages/pg"},author:"Brian Carlson <brian.m.carlson@gmail.com>",main:"./lib",dependencies:{"buffer-writer":"2.0.0","packet-reader":"1.0.0","pg-connection-string":"^2.5.0","pg-pool":"^3.5.2","pg-protocol":"^1.5.0","pg-types":"^2.1.0",pgpass:"1.x"},devDependencies:{async:"2.6.4",bluebird:"3.5.2",co:"4.6.0","pg-copy-streams":"0.3.0"},peerDependencies:{"pg-native":">=3.0.1"},peerDependenciesMeta:{"pg-native":{optional:!0}},scripts:{test:"make test-all"},files:["lib","SPONSORS.md"],license:"MIT",engines:{node:">= 8.0.0"},gitHead:"c99fb2c127ddf8d712500db2c7b9a5491a178655"}});var Gs=T((Bf,Hs)=>{"use strict";p();var Ws=ye().EventEmitter,_l=(Xe(),O(ze)),sn=xt(),He=Hs.exports=function(r,e,t){Ws.call(this),r=sn.normalizeQueryConfig(r,e,t),this.text=r.text,this.values=r.values,this.name=r.name,this.callback=r.callback,this.state="new",this._arrayMode=r.rowMode==="array",this._emitRowEvents=!1,this.on("newListener",function(n){n==="row"&&(this._emitRowEvents=!0)}.bind(this))};_l.inherits(He,Ws);var vl={sqlState:"code",statementPosition:"position",messagePrimary:"message",context:"where",schemaName:"schema",tableName:"table",columnName:"column",dataTypeName:"dataType",constraintName:"constraint",sourceFile:"file",sourceLine:"line",sourceFunction:"routine"};He.prototype.handleError=function(r){var e=this.native.pq.resultErrorFields();if(e)for(var t in e){var n=vl[t]||t;r[n]=e[t]}this.callback?this.callback(r):this.emit("error",r),this.state="error"};He.prototype.then=function(r,e){return this._getPromise().then(r,e)};He.prototype.catch=function(r){return this._getPromise().catch(r)};He.prototype._getPromise=function(){return this._promise?this._promise:(this._promise=new Promise(function(r,e){this._once("end",r),this._once("error",e)}.bind(this)),this._promise)};He.prototype.submit=function(r){this.state="running";var e=this;this.native=r.native,r.native.arrayMode=this._arrayMode;var t=function(s,a,o){if(r.native.arrayMode=!1,setImmediate(function(){e.emit("_done")}),s)return e.handleError(s);e._emitRowEvents&&(o.length>1?a.forEach((u,f)=>{u.forEach(h=>{e.emit("row",h,o[f])})}):a.forEach(function(u){e.emit("row",u,o)})),e.state="end",e.emit("end",o),e.callback&&e.callback(null,o)};if(process.domain&&(t=process.domain.bind(t)),this.name){this.name.length>63&&(console.error("Warning! Postgres only supports 63 characters for query names."),console.error("You supplied %s (%s)",this.name,this.name.length),console.error("This can cause conflicts and silent errors executing queries"));var n=(this.values||[]).map(sn.prepareValue);if(r.namedQueries[this.name]){if(this.text&&r.namedQueries[this.name]!==this.text){let s=new Error(`Prepared statements must be unique - '${this.name}' was used for a different statement`);return t(s)}return r.native.execute(this.name,n,t)}return r.native.prepare(this.name,this.text,n.length,function(s){return s?t(s):(r.namedQueries[e.name]=e.text,e.native.execute(e.name,n,t))})}else if(this.values){if(!Array.isArray(this.values)){let s=new Error("Query values must be an array");return t(s)}var i=this.values.map(sn.prepareValue);r.native.query(this.text,i,t)}else r.native.query(this.text,t)}});var Ks=T((Rf,Vs)=>{"use strict";p();var El=Ka("pg-native"),bl=br(),Cf=js(),$s=ye().EventEmitter,xl=(Xe(),O(ze)),Sl=Ir(),Ys=Gs(),K=Vs.exports=function(r){$s.call(this),r=r||{},this._Promise=r.Promise||global.Promise,this._types=new bl(r.types),this.native=new El({types:this._types}),this._queryQueue=[],this._ending=!1,this._connecting=!1,this._connected=!1,this._queryable=!0;var e=this.connectionParameters=new Sl(r);this.user=e.user,Object.defineProperty(this,"password",{configurable:!0,enumerable:!1,writable:!0,value:e.password}),this.database=e.database,this.host=e.host,this.port=e.port,this.namedQueries={}};K.Query=Ys;xl.inherits(K,$s);K.prototype._errorAllQueries=function(r){let e=t=>{process.nextTick(()=>{t.native=this.native,t.handleError(r)})};this._hasActiveQuery()&&(e(this._activeQuery),this._activeQuery=null),this._queryQueue.forEach(e),this._queryQueue.length=0};K.prototype._connect=function(r){var e=this;if(this._connecting){process.nextTick(()=>r(new Error("Client has already been connected. You cannot reuse a client.")));return}this._connecting=!0,this.connectionParameters.getLibpqConnectionString(function(t,n){if(t)return r(t);e.native.connect(n,function(i){if(i)return e.native.end(),r(i);e._connected=!0,e.native.on("error",function(s){e._queryable=!1,e._errorAllQueries(s),e.emit("error",s)}),e.native.on("notification",function(s){e.emit("notification",{channel:s.relname,payload:s.extra})}),e.emit("connect"),e._pulseQueryQueue(!0),r()})})};K.prototype.connect=function(r){if(r){this._connect(r);return}return new this._Promise((e,t)=>{this._connect(n=>{n?t(n):e()})})};K.prototype.query=function(r,e,t){var n,i,s,a,o;if(r==null)throw new TypeError("Client was passed a null or undefined query");if(typeof r.submit=="function")s=r.query_timeout||this.connectionParameters.query_timeout,i=n=r,typeof e=="function"&&(r.callback=e);else if(s=this.connectionParameters.query_timeout,n=new Ys(r,e,t),!n.callback){let u,f;i=new this._Promise((h,m)=>{u=h,f=m}),n.callback=(h,m)=>h?f(h):u(m)}return s&&(o=n.callback,a=setTimeout(()=>{var u=new Error("Query read timeout");process.nextTick(()=>{n.handleError(u,this.connection)}),o(u),n.callback=()=>{};var f=this._queryQueue.indexOf(n);f>-1&&this._queryQueue.splice(f,1),this._pulseQueryQueue()},s),n.callback=(u,f)=>{clearTimeout(a),o(u,f)}),this._queryable?this._ending?(n.native=this.native,process.nextTick(()=>{n.handleError(new Error("Client was closed and is not queryable"))}),i):(this._queryQueue.push(n),this._pulseQueryQueue(),i):(n.native=this.native,process.nextTick(()=>{n.handleError(new Error("Client has encountered a connection error and is not queryable"))}),i)};K.prototype.end=function(r){var e=this;this._ending=!0,this._connected||this.once("connect",this.end.bind(this,r));var t;return r||(t=new this._Promise(function(n,i){r=s=>s?i(s):n()})),this.native.end(function(){e._errorAllQueries(new Error("Connection terminated")),process.nextTick(()=>{e.emit("end"),r&&r()})}),t};K.prototype._hasActiveQuery=function(){return this._activeQuery&&this._activeQuery.state!=="error"&&this._activeQuery.state!=="end"};K.prototype._pulseQueryQueue=function(r){if(!!this._connected&&!this._hasActiveQuery()){var e=this._queryQueue.shift();if(!e){r||this.emit("drain");return}this._activeQuery=e,e.submit(this);var t=this;e.once("_done",function(){t._pulseQueryQueue()})}};K.prototype.cancel=function(r){this._activeQuery===r?this.native.cancel(function(){}):this._queryQueue.indexOf(r)!==-1&&this._queryQueue.splice(this._queryQueue.indexOf(r),1)};K.prototype.ref=function(){};K.prototype.unref=function(){};K.prototype.setTypeParser=function(r,e,t){return this._types.setTypeParser(r,e,t)};K.prototype.getTypeParser=function(r,e){return this._types.getTypeParser(r,e)}});var an=T((Pf,zs)=>{"use strict";p();zs.exports=Ks()});var nn=T((Lf,ut)=>{"use strict";p();var Al=Us(),Il=at(),Tl=Jr(),Bl=Qs(),{DatabaseError:Cl}=Xr(),Rl=r=>class extends Bl{constructor(t){super(t,r)}},on=function(r){this.defaults=Il,this.Client=r,this.Query=this.Client.Query,this.Pool=Rl(this.Client),this._pools=[],this.Connection=Tl,this.types=st(),this.DatabaseError=Cl};typeof process.env.NODE_PG_FORCE_NATIVE<"u"?ut.exports=new on(an()):(ut.exports=new on(Al),Object.defineProperty(ut.exports,"native",{configurable:!0,enumerable:!1,get(){var r=null;try{r=new on(an())}catch(e){if(e.code!=="MODULE_NOT_FOUND")throw e}return Object.defineProperty(ut.exports,"native",{value:r}),r}}))});p();var Xs=Tn(nn()),Ff={async fetch(r,e,t){let n=new Xs.Client({connectionString:e.DATABASE_URL});await n.connect();let i=await n.query("SELECT name_en FROM whc_sites_2021 ORDER BY name_en"),s=new Array(100).fill(0).map((u,f)=>`($${f+1})`).join(", "),a=await Promise.all(new Array(100).fill(0).map(u=>crypto.randomUUID())),o=await n.query(`INSERT INTO strings (string) VALUES ${s} RETURNING id`,a);return await n.end(),new Response(JSON.stringify(i.rows.concat(o.rows)))}};export{Ff as default};
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
+}) : x)(function(x) {
+  if (typeof require !== "undefined")
+    return require.apply(this, arguments);
+  throw new Error('Dynamic require of "' + x + '" is not supported');
+});
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
+var __commonJS = (cb, mod2) => function __require2() {
+  return mod2 || (0, cb[__getOwnPropNames(cb)[0]])((mod2 = { exports: {} }).exports, mod2), mod2.exports;
+};
+var __export = (target, all2) => {
+  for (var name in all2)
+    __defProp(target, name, { get: all2[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(
+  isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target, "default", { value: mod2, enumerable: true }) : target,
+  mod2
+));
+var __toCommonJS = (mod2) => __copyProps(__defProp({}, "__esModule", { value: true }), mod2);
+
+// node_modules/base64-js/index.js
+var require_base64_js = __commonJS({
+  "node_modules/base64-js/index.js"(exports) {
+    "use strict";
+    init_shims();
+    exports.byteLength = byteLength;
+    exports.toByteArray = toByteArray;
+    exports.fromByteArray = fromByteArray;
+    var lookup = [];
+    var revLookup = [];
+    var Arr = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
+    var code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    for (i = 0, len = code.length; i < len; ++i) {
+      lookup[i] = code[i];
+      revLookup[code.charCodeAt(i)] = i;
+    }
+    var i;
+    var len;
+    revLookup["-".charCodeAt(0)] = 62;
+    revLookup["_".charCodeAt(0)] = 63;
+    function getLens(b64) {
+      var len2 = b64.length;
+      if (len2 % 4 > 0) {
+        throw new Error("Invalid string. Length must be a multiple of 4");
+      }
+      var validLen = b64.indexOf("=");
+      if (validLen === -1)
+        validLen = len2;
+      var placeHoldersLen = validLen === len2 ? 0 : 4 - validLen % 4;
+      return [validLen, placeHoldersLen];
+    }
+    function byteLength(b64) {
+      var lens = getLens(b64);
+      var validLen = lens[0];
+      var placeHoldersLen = lens[1];
+      return (validLen + placeHoldersLen) * 3 / 4 - placeHoldersLen;
+    }
+    function _byteLength(b64, validLen, placeHoldersLen) {
+      return (validLen + placeHoldersLen) * 3 / 4 - placeHoldersLen;
+    }
+    function toByteArray(b64) {
+      var tmp;
+      var lens = getLens(b64);
+      var validLen = lens[0];
+      var placeHoldersLen = lens[1];
+      var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen));
+      var curByte = 0;
+      var len2 = placeHoldersLen > 0 ? validLen - 4 : validLen;
+      var i2;
+      for (i2 = 0; i2 < len2; i2 += 4) {
+        tmp = revLookup[b64.charCodeAt(i2)] << 18 | revLookup[b64.charCodeAt(i2 + 1)] << 12 | revLookup[b64.charCodeAt(i2 + 2)] << 6 | revLookup[b64.charCodeAt(i2 + 3)];
+        arr[curByte++] = tmp >> 16 & 255;
+        arr[curByte++] = tmp >> 8 & 255;
+        arr[curByte++] = tmp & 255;
+      }
+      if (placeHoldersLen === 2) {
+        tmp = revLookup[b64.charCodeAt(i2)] << 2 | revLookup[b64.charCodeAt(i2 + 1)] >> 4;
+        arr[curByte++] = tmp & 255;
+      }
+      if (placeHoldersLen === 1) {
+        tmp = revLookup[b64.charCodeAt(i2)] << 10 | revLookup[b64.charCodeAt(i2 + 1)] << 4 | revLookup[b64.charCodeAt(i2 + 2)] >> 2;
+        arr[curByte++] = tmp >> 8 & 255;
+        arr[curByte++] = tmp & 255;
+      }
+      return arr;
+    }
+    function tripletToBase64(num) {
+      return lookup[num >> 18 & 63] + lookup[num >> 12 & 63] + lookup[num >> 6 & 63] + lookup[num & 63];
+    }
+    function encodeChunk(uint8, start, end) {
+      var tmp;
+      var output = [];
+      for (var i2 = start; i2 < end; i2 += 3) {
+        tmp = (uint8[i2] << 16 & 16711680) + (uint8[i2 + 1] << 8 & 65280) + (uint8[i2 + 2] & 255);
+        output.push(tripletToBase64(tmp));
+      }
+      return output.join("");
+    }
+    function fromByteArray(uint8) {
+      var tmp;
+      var len2 = uint8.length;
+      var extraBytes = len2 % 3;
+      var parts = [];
+      var maxChunkLength = 16383;
+      for (var i2 = 0, len22 = len2 - extraBytes; i2 < len22; i2 += maxChunkLength) {
+        parts.push(encodeChunk(uint8, i2, i2 + maxChunkLength > len22 ? len22 : i2 + maxChunkLength));
+      }
+      if (extraBytes === 1) {
+        tmp = uint8[len2 - 1];
+        parts.push(
+          lookup[tmp >> 2] + lookup[tmp << 4 & 63] + "=="
+        );
+      } else if (extraBytes === 2) {
+        tmp = (uint8[len2 - 2] << 8) + uint8[len2 - 1];
+        parts.push(
+          lookup[tmp >> 10] + lookup[tmp >> 4 & 63] + lookup[tmp << 2 & 63] + "="
+        );
+      }
+      return parts.join("");
+    }
+  }
+});
+
+// node_modules/ieee754/index.js
+var require_ieee754 = __commonJS({
+  "node_modules/ieee754/index.js"(exports) {
+    init_shims();
+    exports.read = function(buffer, offset, isLE, mLen, nBytes) {
+      var e, m;
+      var eLen = nBytes * 8 - mLen - 1;
+      var eMax = (1 << eLen) - 1;
+      var eBias = eMax >> 1;
+      var nBits = -7;
+      var i = isLE ? nBytes - 1 : 0;
+      var d = isLE ? -1 : 1;
+      var s = buffer[offset + i];
+      i += d;
+      e = s & (1 << -nBits) - 1;
+      s >>= -nBits;
+      nBits += eLen;
+      for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {
+      }
+      m = e & (1 << -nBits) - 1;
+      e >>= -nBits;
+      nBits += mLen;
+      for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {
+      }
+      if (e === 0) {
+        e = 1 - eBias;
+      } else if (e === eMax) {
+        return m ? NaN : (s ? -1 : 1) * Infinity;
+      } else {
+        m = m + Math.pow(2, mLen);
+        e = e - eBias;
+      }
+      return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
+    };
+    exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
+      var e, m, c;
+      var eLen = nBytes * 8 - mLen - 1;
+      var eMax = (1 << eLen) - 1;
+      var eBias = eMax >> 1;
+      var rt = mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0;
+      var i = isLE ? 0 : nBytes - 1;
+      var d = isLE ? 1 : -1;
+      var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
+      value = Math.abs(value);
+      if (isNaN(value) || value === Infinity) {
+        m = isNaN(value) ? 1 : 0;
+        e = eMax;
+      } else {
+        e = Math.floor(Math.log(value) / Math.LN2);
+        if (value * (c = Math.pow(2, -e)) < 1) {
+          e--;
+          c *= 2;
+        }
+        if (e + eBias >= 1) {
+          value += rt / c;
+        } else {
+          value += rt * Math.pow(2, 1 - eBias);
+        }
+        if (value * c >= 2) {
+          e++;
+          c /= 2;
+        }
+        if (e + eBias >= eMax) {
+          m = 0;
+          e = eMax;
+        } else if (e + eBias >= 1) {
+          m = (value * c - 1) * Math.pow(2, mLen);
+          e = e + eBias;
+        } else {
+          m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
+          e = 0;
+        }
+      }
+      for (; mLen >= 8; buffer[offset + i] = m & 255, i += d, m /= 256, mLen -= 8) {
+      }
+      e = e << mLen | m;
+      eLen += mLen;
+      for (; eLen > 0; buffer[offset + i] = e & 255, i += d, e /= 256, eLen -= 8) {
+      }
+      buffer[offset + i - d] |= s * 128;
+    };
+  }
+});
+
+// node_modules/buffer/index.js
+var require_buffer = __commonJS({
+  "node_modules/buffer/index.js"(exports) {
+    "use strict";
+    init_shims();
+    var base64 = require_base64_js();
+    var ieee754 = require_ieee754();
+    var customInspectSymbol = typeof Symbol === "function" && typeof Symbol["for"] === "function" ? Symbol["for"]("nodejs.util.inspect.custom") : null;
+    exports.Buffer = Buffer2;
+    exports.SlowBuffer = SlowBuffer;
+    exports.INSPECT_MAX_BYTES = 50;
+    var K_MAX_LENGTH = 2147483647;
+    exports.kMaxLength = K_MAX_LENGTH;
+    Buffer2.TYPED_ARRAY_SUPPORT = typedArraySupport();
+    if (!Buffer2.TYPED_ARRAY_SUPPORT && typeof console !== "undefined" && typeof console.error === "function") {
+      console.error(
+        "This browser lacks typed array (Uint8Array) support which is required by `buffer` v5.x. Use `buffer` v4.x if you require old browser support."
+      );
+    }
+    function typedArraySupport() {
+      try {
+        const arr = new Uint8Array(1);
+        const proto = { foo: function() {
+          return 42;
+        } };
+        Object.setPrototypeOf(proto, Uint8Array.prototype);
+        Object.setPrototypeOf(arr, proto);
+        return arr.foo() === 42;
+      } catch (e) {
+        return false;
+      }
+    }
+    Object.defineProperty(Buffer2.prototype, "parent", {
+      enumerable: true,
+      get: function() {
+        if (!Buffer2.isBuffer(this))
+          return void 0;
+        return this.buffer;
+      }
+    });
+    Object.defineProperty(Buffer2.prototype, "offset", {
+      enumerable: true,
+      get: function() {
+        if (!Buffer2.isBuffer(this))
+          return void 0;
+        return this.byteOffset;
+      }
+    });
+    function createBuffer(length) {
+      if (length > K_MAX_LENGTH) {
+        throw new RangeError('The value "' + length + '" is invalid for option "size"');
+      }
+      const buf = new Uint8Array(length);
+      Object.setPrototypeOf(buf, Buffer2.prototype);
+      return buf;
+    }
+    function Buffer2(arg, encodingOrOffset, length) {
+      if (typeof arg === "number") {
+        if (typeof encodingOrOffset === "string") {
+          throw new TypeError(
+            'The "string" argument must be of type string. Received type number'
+          );
+        }
+        return allocUnsafe(arg);
+      }
+      return from(arg, encodingOrOffset, length);
+    }
+    Buffer2.poolSize = 8192;
+    function from(value, encodingOrOffset, length) {
+      if (typeof value === "string") {
+        return fromString(value, encodingOrOffset);
+      }
+      if (ArrayBuffer.isView(value)) {
+        return fromArrayView(value);
+      }
+      if (value == null) {
+        throw new TypeError(
+          "The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value
+        );
+      }
+      if (isInstance(value, ArrayBuffer) || value && isInstance(value.buffer, ArrayBuffer)) {
+        return fromArrayBuffer(value, encodingOrOffset, length);
+      }
+      if (typeof SharedArrayBuffer !== "undefined" && (isInstance(value, SharedArrayBuffer) || value && isInstance(value.buffer, SharedArrayBuffer))) {
+        return fromArrayBuffer(value, encodingOrOffset, length);
+      }
+      if (typeof value === "number") {
+        throw new TypeError(
+          'The "value" argument must not be of type number. Received type number'
+        );
+      }
+      const valueOf = value.valueOf && value.valueOf();
+      if (valueOf != null && valueOf !== value) {
+        return Buffer2.from(valueOf, encodingOrOffset, length);
+      }
+      const b = fromObject(value);
+      if (b)
+        return b;
+      if (typeof Symbol !== "undefined" && Symbol.toPrimitive != null && typeof value[Symbol.toPrimitive] === "function") {
+        return Buffer2.from(value[Symbol.toPrimitive]("string"), encodingOrOffset, length);
+      }
+      throw new TypeError(
+        "The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value
+      );
+    }
+    Buffer2.from = function(value, encodingOrOffset, length) {
+      return from(value, encodingOrOffset, length);
+    };
+    Object.setPrototypeOf(Buffer2.prototype, Uint8Array.prototype);
+    Object.setPrototypeOf(Buffer2, Uint8Array);
+    function assertSize(size) {
+      if (typeof size !== "number") {
+        throw new TypeError('"size" argument must be of type number');
+      } else if (size < 0) {
+        throw new RangeError('The value "' + size + '" is invalid for option "size"');
+      }
+    }
+    function alloc(size, fill, encoding) {
+      assertSize(size);
+      if (size <= 0) {
+        return createBuffer(size);
+      }
+      if (fill !== void 0) {
+        return typeof encoding === "string" ? createBuffer(size).fill(fill, encoding) : createBuffer(size).fill(fill);
+      }
+      return createBuffer(size);
+    }
+    Buffer2.alloc = function(size, fill, encoding) {
+      return alloc(size, fill, encoding);
+    };
+    function allocUnsafe(size) {
+      assertSize(size);
+      return createBuffer(size < 0 ? 0 : checked(size) | 0);
+    }
+    Buffer2.allocUnsafe = function(size) {
+      return allocUnsafe(size);
+    };
+    Buffer2.allocUnsafeSlow = function(size) {
+      return allocUnsafe(size);
+    };
+    function fromString(string, encoding) {
+      if (typeof encoding !== "string" || encoding === "") {
+        encoding = "utf8";
+      }
+      if (!Buffer2.isEncoding(encoding)) {
+        throw new TypeError("Unknown encoding: " + encoding);
+      }
+      const length = byteLength(string, encoding) | 0;
+      let buf = createBuffer(length);
+      const actual = buf.write(string, encoding);
+      if (actual !== length) {
+        buf = buf.slice(0, actual);
+      }
+      return buf;
+    }
+    function fromArrayLike(array) {
+      const length = array.length < 0 ? 0 : checked(array.length) | 0;
+      const buf = createBuffer(length);
+      for (let i = 0; i < length; i += 1) {
+        buf[i] = array[i] & 255;
+      }
+      return buf;
+    }
+    function fromArrayView(arrayView) {
+      if (isInstance(arrayView, Uint8Array)) {
+        const copy = new Uint8Array(arrayView);
+        return fromArrayBuffer(copy.buffer, copy.byteOffset, copy.byteLength);
+      }
+      return fromArrayLike(arrayView);
+    }
+    function fromArrayBuffer(array, byteOffset, length) {
+      if (byteOffset < 0 || array.byteLength < byteOffset) {
+        throw new RangeError('"offset" is outside of buffer bounds');
+      }
+      if (array.byteLength < byteOffset + (length || 0)) {
+        throw new RangeError('"length" is outside of buffer bounds');
+      }
+      let buf;
+      if (byteOffset === void 0 && length === void 0) {
+        buf = new Uint8Array(array);
+      } else if (length === void 0) {
+        buf = new Uint8Array(array, byteOffset);
+      } else {
+        buf = new Uint8Array(array, byteOffset, length);
+      }
+      Object.setPrototypeOf(buf, Buffer2.prototype);
+      return buf;
+    }
+    function fromObject(obj) {
+      if (Buffer2.isBuffer(obj)) {
+        const len = checked(obj.length) | 0;
+        const buf = createBuffer(len);
+        if (buf.length === 0) {
+          return buf;
+        }
+        obj.copy(buf, 0, 0, len);
+        return buf;
+      }
+      if (obj.length !== void 0) {
+        if (typeof obj.length !== "number" || numberIsNaN(obj.length)) {
+          return createBuffer(0);
+        }
+        return fromArrayLike(obj);
+      }
+      if (obj.type === "Buffer" && Array.isArray(obj.data)) {
+        return fromArrayLike(obj.data);
+      }
+    }
+    function checked(length) {
+      if (length >= K_MAX_LENGTH) {
+        throw new RangeError("Attempt to allocate Buffer larger than maximum size: 0x" + K_MAX_LENGTH.toString(16) + " bytes");
+      }
+      return length | 0;
+    }
+    function SlowBuffer(length) {
+      if (+length != length) {
+        length = 0;
+      }
+      return Buffer2.alloc(+length);
+    }
+    Buffer2.isBuffer = function isBuffer(b) {
+      return b != null && b._isBuffer === true && b !== Buffer2.prototype;
+    };
+    Buffer2.compare = function compare(a, b) {
+      if (isInstance(a, Uint8Array))
+        a = Buffer2.from(a, a.offset, a.byteLength);
+      if (isInstance(b, Uint8Array))
+        b = Buffer2.from(b, b.offset, b.byteLength);
+      if (!Buffer2.isBuffer(a) || !Buffer2.isBuffer(b)) {
+        throw new TypeError(
+          'The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array'
+        );
+      }
+      if (a === b)
+        return 0;
+      let x = a.length;
+      let y = b.length;
+      for (let i = 0, len = Math.min(x, y); i < len; ++i) {
+        if (a[i] !== b[i]) {
+          x = a[i];
+          y = b[i];
+          break;
+        }
+      }
+      if (x < y)
+        return -1;
+      if (y < x)
+        return 1;
+      return 0;
+    };
+    Buffer2.isEncoding = function isEncoding(encoding) {
+      switch (String(encoding).toLowerCase()) {
+        case "hex":
+        case "utf8":
+        case "utf-8":
+        case "ascii":
+        case "latin1":
+        case "binary":
+        case "base64":
+        case "ucs2":
+        case "ucs-2":
+        case "utf16le":
+        case "utf-16le":
+          return true;
+        default:
+          return false;
+      }
+    };
+    Buffer2.concat = function concat(list, length) {
+      if (!Array.isArray(list)) {
+        throw new TypeError('"list" argument must be an Array of Buffers');
+      }
+      if (list.length === 0) {
+        return Buffer2.alloc(0);
+      }
+      let i;
+      if (length === void 0) {
+        length = 0;
+        for (i = 0; i < list.length; ++i) {
+          length += list[i].length;
+        }
+      }
+      const buffer = Buffer2.allocUnsafe(length);
+      let pos = 0;
+      for (i = 0; i < list.length; ++i) {
+        let buf = list[i];
+        if (isInstance(buf, Uint8Array)) {
+          if (pos + buf.length > buffer.length) {
+            if (!Buffer2.isBuffer(buf))
+              buf = Buffer2.from(buf);
+            buf.copy(buffer, pos);
+          } else {
+            Uint8Array.prototype.set.call(
+              buffer,
+              buf,
+              pos
+            );
+          }
+        } else if (!Buffer2.isBuffer(buf)) {
+          throw new TypeError('"list" argument must be an Array of Buffers');
+        } else {
+          buf.copy(buffer, pos);
+        }
+        pos += buf.length;
+      }
+      return buffer;
+    };
+    function byteLength(string, encoding) {
+      if (Buffer2.isBuffer(string)) {
+        return string.length;
+      }
+      if (ArrayBuffer.isView(string) || isInstance(string, ArrayBuffer)) {
+        return string.byteLength;
+      }
+      if (typeof string !== "string") {
+        throw new TypeError(
+          'The "string" argument must be one of type string, Buffer, or ArrayBuffer. Received type ' + typeof string
+        );
+      }
+      const len = string.length;
+      const mustMatch = arguments.length > 2 && arguments[2] === true;
+      if (!mustMatch && len === 0)
+        return 0;
+      let loweredCase = false;
+      for (; ; ) {
+        switch (encoding) {
+          case "ascii":
+          case "latin1":
+          case "binary":
+            return len;
+          case "utf8":
+          case "utf-8":
+            return utf8ToBytes(string).length;
+          case "ucs2":
+          case "ucs-2":
+          case "utf16le":
+          case "utf-16le":
+            return len * 2;
+          case "hex":
+            return len >>> 1;
+          case "base64":
+            return base64ToBytes(string).length;
+          default:
+            if (loweredCase) {
+              return mustMatch ? -1 : utf8ToBytes(string).length;
+            }
+            encoding = ("" + encoding).toLowerCase();
+            loweredCase = true;
+        }
+      }
+    }
+    Buffer2.byteLength = byteLength;
+    function slowToString(encoding, start, end) {
+      let loweredCase = false;
+      if (start === void 0 || start < 0) {
+        start = 0;
+      }
+      if (start > this.length) {
+        return "";
+      }
+      if (end === void 0 || end > this.length) {
+        end = this.length;
+      }
+      if (end <= 0) {
+        return "";
+      }
+      end >>>= 0;
+      start >>>= 0;
+      if (end <= start) {
+        return "";
+      }
+      if (!encoding)
+        encoding = "utf8";
+      while (true) {
+        switch (encoding) {
+          case "hex":
+            return hexSlice(this, start, end);
+          case "utf8":
+          case "utf-8":
+            return utf8Slice(this, start, end);
+          case "ascii":
+            return asciiSlice(this, start, end);
+          case "latin1":
+          case "binary":
+            return latin1Slice(this, start, end);
+          case "base64":
+            return base64Slice(this, start, end);
+          case "ucs2":
+          case "ucs-2":
+          case "utf16le":
+          case "utf-16le":
+            return utf16leSlice(this, start, end);
+          default:
+            if (loweredCase)
+              throw new TypeError("Unknown encoding: " + encoding);
+            encoding = (encoding + "").toLowerCase();
+            loweredCase = true;
+        }
+      }
+    }
+    Buffer2.prototype._isBuffer = true;
+    function swap(b, n, m) {
+      const i = b[n];
+      b[n] = b[m];
+      b[m] = i;
+    }
+    Buffer2.prototype.swap16 = function swap16() {
+      const len = this.length;
+      if (len % 2 !== 0) {
+        throw new RangeError("Buffer size must be a multiple of 16-bits");
+      }
+      for (let i = 0; i < len; i += 2) {
+        swap(this, i, i + 1);
+      }
+      return this;
+    };
+    Buffer2.prototype.swap32 = function swap32() {
+      const len = this.length;
+      if (len % 4 !== 0) {
+        throw new RangeError("Buffer size must be a multiple of 32-bits");
+      }
+      for (let i = 0; i < len; i += 4) {
+        swap(this, i, i + 3);
+        swap(this, i + 1, i + 2);
+      }
+      return this;
+    };
+    Buffer2.prototype.swap64 = function swap64() {
+      const len = this.length;
+      if (len % 8 !== 0) {
+        throw new RangeError("Buffer size must be a multiple of 64-bits");
+      }
+      for (let i = 0; i < len; i += 8) {
+        swap(this, i, i + 7);
+        swap(this, i + 1, i + 6);
+        swap(this, i + 2, i + 5);
+        swap(this, i + 3, i + 4);
+      }
+      return this;
+    };
+    Buffer2.prototype.toString = function toString2() {
+      const length = this.length;
+      if (length === 0)
+        return "";
+      if (arguments.length === 0)
+        return utf8Slice(this, 0, length);
+      return slowToString.apply(this, arguments);
+    };
+    Buffer2.prototype.toLocaleString = Buffer2.prototype.toString;
+    Buffer2.prototype.equals = function equals(b) {
+      if (!Buffer2.isBuffer(b))
+        throw new TypeError("Argument must be a Buffer");
+      if (this === b)
+        return true;
+      return Buffer2.compare(this, b) === 0;
+    };
+    Buffer2.prototype.inspect = function inspect() {
+      let str = "";
+      const max2 = exports.INSPECT_MAX_BYTES;
+      str = this.toString("hex", 0, max2).replace(/(.{2})/g, "$1 ").trim();
+      if (this.length > max2)
+        str += " ... ";
+      return "<Buffer " + str + ">";
+    };
+    if (customInspectSymbol) {
+      Buffer2.prototype[customInspectSymbol] = Buffer2.prototype.inspect;
+    }
+    Buffer2.prototype.compare = function compare(target, start, end, thisStart, thisEnd) {
+      if (isInstance(target, Uint8Array)) {
+        target = Buffer2.from(target, target.offset, target.byteLength);
+      }
+      if (!Buffer2.isBuffer(target)) {
+        throw new TypeError(
+          'The "target" argument must be one of type Buffer or Uint8Array. Received type ' + typeof target
+        );
+      }
+      if (start === void 0) {
+        start = 0;
+      }
+      if (end === void 0) {
+        end = target ? target.length : 0;
+      }
+      if (thisStart === void 0) {
+        thisStart = 0;
+      }
+      if (thisEnd === void 0) {
+        thisEnd = this.length;
+      }
+      if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+        throw new RangeError("out of range index");
+      }
+      if (thisStart >= thisEnd && start >= end) {
+        return 0;
+      }
+      if (thisStart >= thisEnd) {
+        return -1;
+      }
+      if (start >= end) {
+        return 1;
+      }
+      start >>>= 0;
+      end >>>= 0;
+      thisStart >>>= 0;
+      thisEnd >>>= 0;
+      if (this === target)
+        return 0;
+      let x = thisEnd - thisStart;
+      let y = end - start;
+      const len = Math.min(x, y);
+      const thisCopy = this.slice(thisStart, thisEnd);
+      const targetCopy = target.slice(start, end);
+      for (let i = 0; i < len; ++i) {
+        if (thisCopy[i] !== targetCopy[i]) {
+          x = thisCopy[i];
+          y = targetCopy[i];
+          break;
+        }
+      }
+      if (x < y)
+        return -1;
+      if (y < x)
+        return 1;
+      return 0;
+    };
+    function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
+      if (buffer.length === 0)
+        return -1;
+      if (typeof byteOffset === "string") {
+        encoding = byteOffset;
+        byteOffset = 0;
+      } else if (byteOffset > 2147483647) {
+        byteOffset = 2147483647;
+      } else if (byteOffset < -2147483648) {
+        byteOffset = -2147483648;
+      }
+      byteOffset = +byteOffset;
+      if (numberIsNaN(byteOffset)) {
+        byteOffset = dir ? 0 : buffer.length - 1;
+      }
+      if (byteOffset < 0)
+        byteOffset = buffer.length + byteOffset;
+      if (byteOffset >= buffer.length) {
+        if (dir)
+          return -1;
+        else
+          byteOffset = buffer.length - 1;
+      } else if (byteOffset < 0) {
+        if (dir)
+          byteOffset = 0;
+        else
+          return -1;
+      }
+      if (typeof val === "string") {
+        val = Buffer2.from(val, encoding);
+      }
+      if (Buffer2.isBuffer(val)) {
+        if (val.length === 0) {
+          return -1;
+        }
+        return arrayIndexOf(buffer, val, byteOffset, encoding, dir);
+      } else if (typeof val === "number") {
+        val = val & 255;
+        if (typeof Uint8Array.prototype.indexOf === "function") {
+          if (dir) {
+            return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset);
+          } else {
+            return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset);
+          }
+        }
+        return arrayIndexOf(buffer, [val], byteOffset, encoding, dir);
+      }
+      throw new TypeError("val must be string, number or Buffer");
+    }
+    function arrayIndexOf(arr, val, byteOffset, encoding, dir) {
+      let indexSize = 1;
+      let arrLength = arr.length;
+      let valLength = val.length;
+      if (encoding !== void 0) {
+        encoding = String(encoding).toLowerCase();
+        if (encoding === "ucs2" || encoding === "ucs-2" || encoding === "utf16le" || encoding === "utf-16le") {
+          if (arr.length < 2 || val.length < 2) {
+            return -1;
+          }
+          indexSize = 2;
+          arrLength /= 2;
+          valLength /= 2;
+          byteOffset /= 2;
+        }
+      }
+      function read(buf, i2) {
+        if (indexSize === 1) {
+          return buf[i2];
+        } else {
+          return buf.readUInt16BE(i2 * indexSize);
+        }
+      }
+      let i;
+      if (dir) {
+        let foundIndex = -1;
+        for (i = byteOffset; i < arrLength; i++) {
+          if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+            if (foundIndex === -1)
+              foundIndex = i;
+            if (i - foundIndex + 1 === valLength)
+              return foundIndex * indexSize;
+          } else {
+            if (foundIndex !== -1)
+              i -= i - foundIndex;
+            foundIndex = -1;
+          }
+        }
+      } else {
+        if (byteOffset + valLength > arrLength)
+          byteOffset = arrLength - valLength;
+        for (i = byteOffset; i >= 0; i--) {
+          let found = true;
+          for (let j = 0; j < valLength; j++) {
+            if (read(arr, i + j) !== read(val, j)) {
+              found = false;
+              break;
+            }
+          }
+          if (found)
+            return i;
+        }
+      }
+      return -1;
+    }
+    Buffer2.prototype.includes = function includes(val, byteOffset, encoding) {
+      return this.indexOf(val, byteOffset, encoding) !== -1;
+    };
+    Buffer2.prototype.indexOf = function indexOf(val, byteOffset, encoding) {
+      return bidirectionalIndexOf(this, val, byteOffset, encoding, true);
+    };
+    Buffer2.prototype.lastIndexOf = function lastIndexOf(val, byteOffset, encoding) {
+      return bidirectionalIndexOf(this, val, byteOffset, encoding, false);
+    };
+    function hexWrite(buf, string, offset, length) {
+      offset = Number(offset) || 0;
+      const remaining = buf.length - offset;
+      if (!length) {
+        length = remaining;
+      } else {
+        length = Number(length);
+        if (length > remaining) {
+          length = remaining;
+        }
+      }
+      const strLen = string.length;
+      if (length > strLen / 2) {
+        length = strLen / 2;
+      }
+      let i;
+      for (i = 0; i < length; ++i) {
+        const parsed = parseInt(string.substr(i * 2, 2), 16);
+        if (numberIsNaN(parsed))
+          return i;
+        buf[offset + i] = parsed;
+      }
+      return i;
+    }
+    function utf8Write(buf, string, offset, length) {
+      return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length);
+    }
+    function asciiWrite(buf, string, offset, length) {
+      return blitBuffer(asciiToBytes(string), buf, offset, length);
+    }
+    function base64Write(buf, string, offset, length) {
+      return blitBuffer(base64ToBytes(string), buf, offset, length);
+    }
+    function ucs2Write(buf, string, offset, length) {
+      return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length);
+    }
+    Buffer2.prototype.write = function write(string, offset, length, encoding) {
+      if (offset === void 0) {
+        encoding = "utf8";
+        length = this.length;
+        offset = 0;
+      } else if (length === void 0 && typeof offset === "string") {
+        encoding = offset;
+        length = this.length;
+        offset = 0;
+      } else if (isFinite(offset)) {
+        offset = offset >>> 0;
+        if (isFinite(length)) {
+          length = length >>> 0;
+          if (encoding === void 0)
+            encoding = "utf8";
+        } else {
+          encoding = length;
+          length = void 0;
+        }
+      } else {
+        throw new Error(
+          "Buffer.write(string, encoding, offset[, length]) is no longer supported"
+        );
+      }
+      const remaining = this.length - offset;
+      if (length === void 0 || length > remaining)
+        length = remaining;
+      if (string.length > 0 && (length < 0 || offset < 0) || offset > this.length) {
+        throw new RangeError("Attempt to write outside buffer bounds");
+      }
+      if (!encoding)
+        encoding = "utf8";
+      let loweredCase = false;
+      for (; ; ) {
+        switch (encoding) {
+          case "hex":
+            return hexWrite(this, string, offset, length);
+          case "utf8":
+          case "utf-8":
+            return utf8Write(this, string, offset, length);
+          case "ascii":
+          case "latin1":
+          case "binary":
+            return asciiWrite(this, string, offset, length);
+          case "base64":
+            return base64Write(this, string, offset, length);
+          case "ucs2":
+          case "ucs-2":
+          case "utf16le":
+          case "utf-16le":
+            return ucs2Write(this, string, offset, length);
+          default:
+            if (loweredCase)
+              throw new TypeError("Unknown encoding: " + encoding);
+            encoding = ("" + encoding).toLowerCase();
+            loweredCase = true;
+        }
+      }
+    };
+    Buffer2.prototype.toJSON = function toJSON() {
+      return {
+        type: "Buffer",
+        data: Array.prototype.slice.call(this._arr || this, 0)
+      };
+    };
+    function base64Slice(buf, start, end) {
+      if (start === 0 && end === buf.length) {
+        return base64.fromByteArray(buf);
+      } else {
+        return base64.fromByteArray(buf.slice(start, end));
+      }
+    }
+    function utf8Slice(buf, start, end) {
+      end = Math.min(buf.length, end);
+      const res = [];
+      let i = start;
+      while (i < end) {
+        const firstByte = buf[i];
+        let codePoint = null;
+        let bytesPerSequence = firstByte > 239 ? 4 : firstByte > 223 ? 3 : firstByte > 191 ? 2 : 1;
+        if (i + bytesPerSequence <= end) {
+          let secondByte, thirdByte, fourthByte, tempCodePoint;
+          switch (bytesPerSequence) {
+            case 1:
+              if (firstByte < 128) {
+                codePoint = firstByte;
+              }
+              break;
+            case 2:
+              secondByte = buf[i + 1];
+              if ((secondByte & 192) === 128) {
+                tempCodePoint = (firstByte & 31) << 6 | secondByte & 63;
+                if (tempCodePoint > 127) {
+                  codePoint = tempCodePoint;
+                }
+              }
+              break;
+            case 3:
+              secondByte = buf[i + 1];
+              thirdByte = buf[i + 2];
+              if ((secondByte & 192) === 128 && (thirdByte & 192) === 128) {
+                tempCodePoint = (firstByte & 15) << 12 | (secondByte & 63) << 6 | thirdByte & 63;
+                if (tempCodePoint > 2047 && (tempCodePoint < 55296 || tempCodePoint > 57343)) {
+                  codePoint = tempCodePoint;
+                }
+              }
+              break;
+            case 4:
+              secondByte = buf[i + 1];
+              thirdByte = buf[i + 2];
+              fourthByte = buf[i + 3];
+              if ((secondByte & 192) === 128 && (thirdByte & 192) === 128 && (fourthByte & 192) === 128) {
+                tempCodePoint = (firstByte & 15) << 18 | (secondByte & 63) << 12 | (thirdByte & 63) << 6 | fourthByte & 63;
+                if (tempCodePoint > 65535 && tempCodePoint < 1114112) {
+                  codePoint = tempCodePoint;
+                }
+              }
+          }
+        }
+        if (codePoint === null) {
+          codePoint = 65533;
+          bytesPerSequence = 1;
+        } else if (codePoint > 65535) {
+          codePoint -= 65536;
+          res.push(codePoint >>> 10 & 1023 | 55296);
+          codePoint = 56320 | codePoint & 1023;
+        }
+        res.push(codePoint);
+        i += bytesPerSequence;
+      }
+      return decodeCodePointsArray(res);
+    }
+    var MAX_ARGUMENTS_LENGTH = 4096;
+    function decodeCodePointsArray(codePoints) {
+      const len = codePoints.length;
+      if (len <= MAX_ARGUMENTS_LENGTH) {
+        return String.fromCharCode.apply(String, codePoints);
+      }
+      let res = "";
+      let i = 0;
+      while (i < len) {
+        res += String.fromCharCode.apply(
+          String,
+          codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+        );
+      }
+      return res;
+    }
+    function asciiSlice(buf, start, end) {
+      let ret = "";
+      end = Math.min(buf.length, end);
+      for (let i = start; i < end; ++i) {
+        ret += String.fromCharCode(buf[i] & 127);
+      }
+      return ret;
+    }
+    function latin1Slice(buf, start, end) {
+      let ret = "";
+      end = Math.min(buf.length, end);
+      for (let i = start; i < end; ++i) {
+        ret += String.fromCharCode(buf[i]);
+      }
+      return ret;
+    }
+    function hexSlice(buf, start, end) {
+      const len = buf.length;
+      if (!start || start < 0)
+        start = 0;
+      if (!end || end < 0 || end > len)
+        end = len;
+      let out = "";
+      for (let i = start; i < end; ++i) {
+        out += hexSliceLookupTable[buf[i]];
+      }
+      return out;
+    }
+    function utf16leSlice(buf, start, end) {
+      const bytes = buf.slice(start, end);
+      let res = "";
+      for (let i = 0; i < bytes.length - 1; i += 2) {
+        res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256);
+      }
+      return res;
+    }
+    Buffer2.prototype.slice = function slice(start, end) {
+      const len = this.length;
+      start = ~~start;
+      end = end === void 0 ? len : ~~end;
+      if (start < 0) {
+        start += len;
+        if (start < 0)
+          start = 0;
+      } else if (start > len) {
+        start = len;
+      }
+      if (end < 0) {
+        end += len;
+        if (end < 0)
+          end = 0;
+      } else if (end > len) {
+        end = len;
+      }
+      if (end < start)
+        end = start;
+      const newBuf = this.subarray(start, end);
+      Object.setPrototypeOf(newBuf, Buffer2.prototype);
+      return newBuf;
+    };
+    function checkOffset(offset, ext, length) {
+      if (offset % 1 !== 0 || offset < 0)
+        throw new RangeError("offset is not uint");
+      if (offset + ext > length)
+        throw new RangeError("Trying to access beyond buffer length");
+    }
+    Buffer2.prototype.readUintLE = Buffer2.prototype.readUIntLE = function readUIntLE(offset, byteLength2, noAssert) {
+      offset = offset >>> 0;
+      byteLength2 = byteLength2 >>> 0;
+      if (!noAssert)
+        checkOffset(offset, byteLength2, this.length);
+      let val = this[offset];
+      let mul = 1;
+      let i = 0;
+      while (++i < byteLength2 && (mul *= 256)) {
+        val += this[offset + i] * mul;
+      }
+      return val;
+    };
+    Buffer2.prototype.readUintBE = Buffer2.prototype.readUIntBE = function readUIntBE(offset, byteLength2, noAssert) {
+      offset = offset >>> 0;
+      byteLength2 = byteLength2 >>> 0;
+      if (!noAssert) {
+        checkOffset(offset, byteLength2, this.length);
+      }
+      let val = this[offset + --byteLength2];
+      let mul = 1;
+      while (byteLength2 > 0 && (mul *= 256)) {
+        val += this[offset + --byteLength2] * mul;
+      }
+      return val;
+    };
+    Buffer2.prototype.readUint8 = Buffer2.prototype.readUInt8 = function readUInt8(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 1, this.length);
+      return this[offset];
+    };
+    Buffer2.prototype.readUint16LE = Buffer2.prototype.readUInt16LE = function readUInt16LE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 2, this.length);
+      return this[offset] | this[offset + 1] << 8;
+    };
+    Buffer2.prototype.readUint16BE = Buffer2.prototype.readUInt16BE = function readUInt16BE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 2, this.length);
+      return this[offset] << 8 | this[offset + 1];
+    };
+    Buffer2.prototype.readUint32LE = Buffer2.prototype.readUInt32LE = function readUInt32LE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 4, this.length);
+      return (this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16) + this[offset + 3] * 16777216;
+    };
+    Buffer2.prototype.readUint32BE = Buffer2.prototype.readUInt32BE = function readUInt32BE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 4, this.length);
+      return this[offset] * 16777216 + (this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3]);
+    };
+    Buffer2.prototype.readBigUInt64LE = defineBigIntMethod(function readBigUInt64LE(offset) {
+      offset = offset >>> 0;
+      validateNumber(offset, "offset");
+      const first = this[offset];
+      const last = this[offset + 7];
+      if (first === void 0 || last === void 0) {
+        boundsError(offset, this.length - 8);
+      }
+      const lo = first + this[++offset] * 2 ** 8 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 24;
+      const hi = this[++offset] + this[++offset] * 2 ** 8 + this[++offset] * 2 ** 16 + last * 2 ** 24;
+      return BigInt(lo) + (BigInt(hi) << BigInt(32));
+    });
+    Buffer2.prototype.readBigUInt64BE = defineBigIntMethod(function readBigUInt64BE(offset) {
+      offset = offset >>> 0;
+      validateNumber(offset, "offset");
+      const first = this[offset];
+      const last = this[offset + 7];
+      if (first === void 0 || last === void 0) {
+        boundsError(offset, this.length - 8);
+      }
+      const hi = first * 2 ** 24 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 8 + this[++offset];
+      const lo = this[++offset] * 2 ** 24 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 8 + last;
+      return (BigInt(hi) << BigInt(32)) + BigInt(lo);
+    });
+    Buffer2.prototype.readIntLE = function readIntLE(offset, byteLength2, noAssert) {
+      offset = offset >>> 0;
+      byteLength2 = byteLength2 >>> 0;
+      if (!noAssert)
+        checkOffset(offset, byteLength2, this.length);
+      let val = this[offset];
+      let mul = 1;
+      let i = 0;
+      while (++i < byteLength2 && (mul *= 256)) {
+        val += this[offset + i] * mul;
+      }
+      mul *= 128;
+      if (val >= mul)
+        val -= Math.pow(2, 8 * byteLength2);
+      return val;
+    };
+    Buffer2.prototype.readIntBE = function readIntBE(offset, byteLength2, noAssert) {
+      offset = offset >>> 0;
+      byteLength2 = byteLength2 >>> 0;
+      if (!noAssert)
+        checkOffset(offset, byteLength2, this.length);
+      let i = byteLength2;
+      let mul = 1;
+      let val = this[offset + --i];
+      while (i > 0 && (mul *= 256)) {
+        val += this[offset + --i] * mul;
+      }
+      mul *= 128;
+      if (val >= mul)
+        val -= Math.pow(2, 8 * byteLength2);
+      return val;
+    };
+    Buffer2.prototype.readInt8 = function readInt8(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 1, this.length);
+      if (!(this[offset] & 128))
+        return this[offset];
+      return (255 - this[offset] + 1) * -1;
+    };
+    Buffer2.prototype.readInt16LE = function readInt16LE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 2, this.length);
+      const val = this[offset] | this[offset + 1] << 8;
+      return val & 32768 ? val | 4294901760 : val;
+    };
+    Buffer2.prototype.readInt16BE = function readInt16BE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 2, this.length);
+      const val = this[offset + 1] | this[offset] << 8;
+      return val & 32768 ? val | 4294901760 : val;
+    };
+    Buffer2.prototype.readInt32LE = function readInt32LE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 4, this.length);
+      return this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16 | this[offset + 3] << 24;
+    };
+    Buffer2.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 4, this.length);
+      return this[offset] << 24 | this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3];
+    };
+    Buffer2.prototype.readBigInt64LE = defineBigIntMethod(function readBigInt64LE(offset) {
+      offset = offset >>> 0;
+      validateNumber(offset, "offset");
+      const first = this[offset];
+      const last = this[offset + 7];
+      if (first === void 0 || last === void 0) {
+        boundsError(offset, this.length - 8);
+      }
+      const val = this[offset + 4] + this[offset + 5] * 2 ** 8 + this[offset + 6] * 2 ** 16 + (last << 24);
+      return (BigInt(val) << BigInt(32)) + BigInt(first + this[++offset] * 2 ** 8 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 24);
+    });
+    Buffer2.prototype.readBigInt64BE = defineBigIntMethod(function readBigInt64BE(offset) {
+      offset = offset >>> 0;
+      validateNumber(offset, "offset");
+      const first = this[offset];
+      const last = this[offset + 7];
+      if (first === void 0 || last === void 0) {
+        boundsError(offset, this.length - 8);
+      }
+      const val = (first << 24) + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 8 + this[++offset];
+      return (BigInt(val) << BigInt(32)) + BigInt(this[++offset] * 2 ** 24 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 8 + last);
+    });
+    Buffer2.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 4, this.length);
+      return ieee754.read(this, offset, true, 23, 4);
+    };
+    Buffer2.prototype.readFloatBE = function readFloatBE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 4, this.length);
+      return ieee754.read(this, offset, false, 23, 4);
+    };
+    Buffer2.prototype.readDoubleLE = function readDoubleLE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 8, this.length);
+      return ieee754.read(this, offset, true, 52, 8);
+    };
+    Buffer2.prototype.readDoubleBE = function readDoubleBE(offset, noAssert) {
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkOffset(offset, 8, this.length);
+      return ieee754.read(this, offset, false, 52, 8);
+    };
+    function checkInt(buf, value, offset, ext, max2, min2) {
+      if (!Buffer2.isBuffer(buf))
+        throw new TypeError('"buffer" argument must be a Buffer instance');
+      if (value > max2 || value < min2)
+        throw new RangeError('"value" argument is out of bounds');
+      if (offset + ext > buf.length)
+        throw new RangeError("Index out of range");
+    }
+    Buffer2.prototype.writeUintLE = Buffer2.prototype.writeUIntLE = function writeUIntLE(value, offset, byteLength2, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      byteLength2 = byteLength2 >>> 0;
+      if (!noAssert) {
+        const maxBytes = Math.pow(2, 8 * byteLength2) - 1;
+        checkInt(this, value, offset, byteLength2, maxBytes, 0);
+      }
+      let mul = 1;
+      let i = 0;
+      this[offset] = value & 255;
+      while (++i < byteLength2 && (mul *= 256)) {
+        this[offset + i] = value / mul & 255;
+      }
+      return offset + byteLength2;
+    };
+    Buffer2.prototype.writeUintBE = Buffer2.prototype.writeUIntBE = function writeUIntBE(value, offset, byteLength2, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      byteLength2 = byteLength2 >>> 0;
+      if (!noAssert) {
+        const maxBytes = Math.pow(2, 8 * byteLength2) - 1;
+        checkInt(this, value, offset, byteLength2, maxBytes, 0);
+      }
+      let i = byteLength2 - 1;
+      let mul = 1;
+      this[offset + i] = value & 255;
+      while (--i >= 0 && (mul *= 256)) {
+        this[offset + i] = value / mul & 255;
+      }
+      return offset + byteLength2;
+    };
+    Buffer2.prototype.writeUint8 = Buffer2.prototype.writeUInt8 = function writeUInt8(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 1, 255, 0);
+      this[offset] = value & 255;
+      return offset + 1;
+    };
+    Buffer2.prototype.writeUint16LE = Buffer2.prototype.writeUInt16LE = function writeUInt16LE(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 2, 65535, 0);
+      this[offset] = value & 255;
+      this[offset + 1] = value >>> 8;
+      return offset + 2;
+    };
+    Buffer2.prototype.writeUint16BE = Buffer2.prototype.writeUInt16BE = function writeUInt16BE(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 2, 65535, 0);
+      this[offset] = value >>> 8;
+      this[offset + 1] = value & 255;
+      return offset + 2;
+    };
+    Buffer2.prototype.writeUint32LE = Buffer2.prototype.writeUInt32LE = function writeUInt32LE(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 4, 4294967295, 0);
+      this[offset + 3] = value >>> 24;
+      this[offset + 2] = value >>> 16;
+      this[offset + 1] = value >>> 8;
+      this[offset] = value & 255;
+      return offset + 4;
+    };
+    Buffer2.prototype.writeUint32BE = Buffer2.prototype.writeUInt32BE = function writeUInt32BE(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 4, 4294967295, 0);
+      this[offset] = value >>> 24;
+      this[offset + 1] = value >>> 16;
+      this[offset + 2] = value >>> 8;
+      this[offset + 3] = value & 255;
+      return offset + 4;
+    };
+    function wrtBigUInt64LE(buf, value, offset, min2, max2) {
+      checkIntBI(value, min2, max2, buf, offset, 7);
+      let lo = Number(value & BigInt(4294967295));
+      buf[offset++] = lo;
+      lo = lo >> 8;
+      buf[offset++] = lo;
+      lo = lo >> 8;
+      buf[offset++] = lo;
+      lo = lo >> 8;
+      buf[offset++] = lo;
+      let hi = Number(value >> BigInt(32) & BigInt(4294967295));
+      buf[offset++] = hi;
+      hi = hi >> 8;
+      buf[offset++] = hi;
+      hi = hi >> 8;
+      buf[offset++] = hi;
+      hi = hi >> 8;
+      buf[offset++] = hi;
+      return offset;
+    }
+    function wrtBigUInt64BE(buf, value, offset, min2, max2) {
+      checkIntBI(value, min2, max2, buf, offset, 7);
+      let lo = Number(value & BigInt(4294967295));
+      buf[offset + 7] = lo;
+      lo = lo >> 8;
+      buf[offset + 6] = lo;
+      lo = lo >> 8;
+      buf[offset + 5] = lo;
+      lo = lo >> 8;
+      buf[offset + 4] = lo;
+      let hi = Number(value >> BigInt(32) & BigInt(4294967295));
+      buf[offset + 3] = hi;
+      hi = hi >> 8;
+      buf[offset + 2] = hi;
+      hi = hi >> 8;
+      buf[offset + 1] = hi;
+      hi = hi >> 8;
+      buf[offset] = hi;
+      return offset + 8;
+    }
+    Buffer2.prototype.writeBigUInt64LE = defineBigIntMethod(function writeBigUInt64LE(value, offset = 0) {
+      return wrtBigUInt64LE(this, value, offset, BigInt(0), BigInt("0xffffffffffffffff"));
+    });
+    Buffer2.prototype.writeBigUInt64BE = defineBigIntMethod(function writeBigUInt64BE(value, offset = 0) {
+      return wrtBigUInt64BE(this, value, offset, BigInt(0), BigInt("0xffffffffffffffff"));
+    });
+    Buffer2.prototype.writeIntLE = function writeIntLE(value, offset, byteLength2, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert) {
+        const limit = Math.pow(2, 8 * byteLength2 - 1);
+        checkInt(this, value, offset, byteLength2, limit - 1, -limit);
+      }
+      let i = 0;
+      let mul = 1;
+      let sub = 0;
+      this[offset] = value & 255;
+      while (++i < byteLength2 && (mul *= 256)) {
+        if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+          sub = 1;
+        }
+        this[offset + i] = (value / mul >> 0) - sub & 255;
+      }
+      return offset + byteLength2;
+    };
+    Buffer2.prototype.writeIntBE = function writeIntBE(value, offset, byteLength2, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert) {
+        const limit = Math.pow(2, 8 * byteLength2 - 1);
+        checkInt(this, value, offset, byteLength2, limit - 1, -limit);
+      }
+      let i = byteLength2 - 1;
+      let mul = 1;
+      let sub = 0;
+      this[offset + i] = value & 255;
+      while (--i >= 0 && (mul *= 256)) {
+        if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+          sub = 1;
+        }
+        this[offset + i] = (value / mul >> 0) - sub & 255;
+      }
+      return offset + byteLength2;
+    };
+    Buffer2.prototype.writeInt8 = function writeInt8(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 1, 127, -128);
+      if (value < 0)
+        value = 255 + value + 1;
+      this[offset] = value & 255;
+      return offset + 1;
+    };
+    Buffer2.prototype.writeInt16LE = function writeInt16LE(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 2, 32767, -32768);
+      this[offset] = value & 255;
+      this[offset + 1] = value >>> 8;
+      return offset + 2;
+    };
+    Buffer2.prototype.writeInt16BE = function writeInt16BE(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 2, 32767, -32768);
+      this[offset] = value >>> 8;
+      this[offset + 1] = value & 255;
+      return offset + 2;
+    };
+    Buffer2.prototype.writeInt32LE = function writeInt32LE(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 4, 2147483647, -2147483648);
+      this[offset] = value & 255;
+      this[offset + 1] = value >>> 8;
+      this[offset + 2] = value >>> 16;
+      this[offset + 3] = value >>> 24;
+      return offset + 4;
+    };
+    Buffer2.prototype.writeInt32BE = function writeInt32BE(value, offset, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert)
+        checkInt(this, value, offset, 4, 2147483647, -2147483648);
+      if (value < 0)
+        value = 4294967295 + value + 1;
+      this[offset] = value >>> 24;
+      this[offset + 1] = value >>> 16;
+      this[offset + 2] = value >>> 8;
+      this[offset + 3] = value & 255;
+      return offset + 4;
+    };
+    Buffer2.prototype.writeBigInt64LE = defineBigIntMethod(function writeBigInt64LE(value, offset = 0) {
+      return wrtBigUInt64LE(this, value, offset, -BigInt("0x8000000000000000"), BigInt("0x7fffffffffffffff"));
+    });
+    Buffer2.prototype.writeBigInt64BE = defineBigIntMethod(function writeBigInt64BE(value, offset = 0) {
+      return wrtBigUInt64BE(this, value, offset, -BigInt("0x8000000000000000"), BigInt("0x7fffffffffffffff"));
+    });
+    function checkIEEE754(buf, value, offset, ext, max2, min2) {
+      if (offset + ext > buf.length)
+        throw new RangeError("Index out of range");
+      if (offset < 0)
+        throw new RangeError("Index out of range");
+    }
+    function writeFloat(buf, value, offset, littleEndian, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert) {
+        checkIEEE754(buf, value, offset, 4, 34028234663852886e22, -34028234663852886e22);
+      }
+      ieee754.write(buf, value, offset, littleEndian, 23, 4);
+      return offset + 4;
+    }
+    Buffer2.prototype.writeFloatLE = function writeFloatLE(value, offset, noAssert) {
+      return writeFloat(this, value, offset, true, noAssert);
+    };
+    Buffer2.prototype.writeFloatBE = function writeFloatBE(value, offset, noAssert) {
+      return writeFloat(this, value, offset, false, noAssert);
+    };
+    function writeDouble(buf, value, offset, littleEndian, noAssert) {
+      value = +value;
+      offset = offset >>> 0;
+      if (!noAssert) {
+        checkIEEE754(buf, value, offset, 8, 17976931348623157e292, -17976931348623157e292);
+      }
+      ieee754.write(buf, value, offset, littleEndian, 52, 8);
+      return offset + 8;
+    }
+    Buffer2.prototype.writeDoubleLE = function writeDoubleLE(value, offset, noAssert) {
+      return writeDouble(this, value, offset, true, noAssert);
+    };
+    Buffer2.prototype.writeDoubleBE = function writeDoubleBE(value, offset, noAssert) {
+      return writeDouble(this, value, offset, false, noAssert);
+    };
+    Buffer2.prototype.copy = function copy(target, targetStart, start, end) {
+      if (!Buffer2.isBuffer(target))
+        throw new TypeError("argument should be a Buffer");
+      if (!start)
+        start = 0;
+      if (!end && end !== 0)
+        end = this.length;
+      if (targetStart >= target.length)
+        targetStart = target.length;
+      if (!targetStart)
+        targetStart = 0;
+      if (end > 0 && end < start)
+        end = start;
+      if (end === start)
+        return 0;
+      if (target.length === 0 || this.length === 0)
+        return 0;
+      if (targetStart < 0) {
+        throw new RangeError("targetStart out of bounds");
+      }
+      if (start < 0 || start >= this.length)
+        throw new RangeError("Index out of range");
+      if (end < 0)
+        throw new RangeError("sourceEnd out of bounds");
+      if (end > this.length)
+        end = this.length;
+      if (target.length - targetStart < end - start) {
+        end = target.length - targetStart + start;
+      }
+      const len = end - start;
+      if (this === target && typeof Uint8Array.prototype.copyWithin === "function") {
+        this.copyWithin(targetStart, start, end);
+      } else {
+        Uint8Array.prototype.set.call(
+          target,
+          this.subarray(start, end),
+          targetStart
+        );
+      }
+      return len;
+    };
+    Buffer2.prototype.fill = function fill(val, start, end, encoding) {
+      if (typeof val === "string") {
+        if (typeof start === "string") {
+          encoding = start;
+          start = 0;
+          end = this.length;
+        } else if (typeof end === "string") {
+          encoding = end;
+          end = this.length;
+        }
+        if (encoding !== void 0 && typeof encoding !== "string") {
+          throw new TypeError("encoding must be a string");
+        }
+        if (typeof encoding === "string" && !Buffer2.isEncoding(encoding)) {
+          throw new TypeError("Unknown encoding: " + encoding);
+        }
+        if (val.length === 1) {
+          const code = val.charCodeAt(0);
+          if (encoding === "utf8" && code < 128 || encoding === "latin1") {
+            val = code;
+          }
+        }
+      } else if (typeof val === "number") {
+        val = val & 255;
+      } else if (typeof val === "boolean") {
+        val = Number(val);
+      }
+      if (start < 0 || this.length < start || this.length < end) {
+        throw new RangeError("Out of range index");
+      }
+      if (end <= start) {
+        return this;
+      }
+      start = start >>> 0;
+      end = end === void 0 ? this.length : end >>> 0;
+      if (!val)
+        val = 0;
+      let i;
+      if (typeof val === "number") {
+        for (i = start; i < end; ++i) {
+          this[i] = val;
+        }
+      } else {
+        const bytes = Buffer2.isBuffer(val) ? val : Buffer2.from(val, encoding);
+        const len = bytes.length;
+        if (len === 0) {
+          throw new TypeError('The value "' + val + '" is invalid for argument "value"');
+        }
+        for (i = 0; i < end - start; ++i) {
+          this[i + start] = bytes[i % len];
+        }
+      }
+      return this;
+    };
+    var errors = {};
+    function E(sym, getMessage, Base) {
+      errors[sym] = class NodeError extends Base {
+        constructor() {
+          super();
+          Object.defineProperty(this, "message", {
+            value: getMessage.apply(this, arguments),
+            writable: true,
+            configurable: true
+          });
+          this.name = `${this.name} [${sym}]`;
+          this.stack;
+          delete this.name;
+        }
+        get code() {
+          return sym;
+        }
+        set code(value) {
+          Object.defineProperty(this, "code", {
+            configurable: true,
+            enumerable: true,
+            value,
+            writable: true
+          });
+        }
+        toString() {
+          return `${this.name} [${sym}]: ${this.message}`;
+        }
+      };
+    }
+    E(
+      "ERR_BUFFER_OUT_OF_BOUNDS",
+      function(name) {
+        if (name) {
+          return `${name} is outside of buffer bounds`;
+        }
+        return "Attempt to access memory outside buffer bounds";
+      },
+      RangeError
+    );
+    E(
+      "ERR_INVALID_ARG_TYPE",
+      function(name, actual) {
+        return `The "${name}" argument must be of type number. Received type ${typeof actual}`;
+      },
+      TypeError
+    );
+    E(
+      "ERR_OUT_OF_RANGE",
+      function(str, range, input) {
+        let msg = `The value of "${str}" is out of range.`;
+        let received = input;
+        if (Number.isInteger(input) && Math.abs(input) > 2 ** 32) {
+          received = addNumericalSeparator(String(input));
+        } else if (typeof input === "bigint") {
+          received = String(input);
+          if (input > BigInt(2) ** BigInt(32) || input < -(BigInt(2) ** BigInt(32))) {
+            received = addNumericalSeparator(received);
+          }
+          received += "n";
+        }
+        msg += ` It must be ${range}. Received ${received}`;
+        return msg;
+      },
+      RangeError
+    );
+    function addNumericalSeparator(val) {
+      let res = "";
+      let i = val.length;
+      const start = val[0] === "-" ? 1 : 0;
+      for (; i >= start + 4; i -= 3) {
+        res = `_${val.slice(i - 3, i)}${res}`;
+      }
+      return `${val.slice(0, i)}${res}`;
+    }
+    function checkBounds(buf, offset, byteLength2) {
+      validateNumber(offset, "offset");
+      if (buf[offset] === void 0 || buf[offset + byteLength2] === void 0) {
+        boundsError(offset, buf.length - (byteLength2 + 1));
+      }
+    }
+    function checkIntBI(value, min2, max2, buf, offset, byteLength2) {
+      if (value > max2 || value < min2) {
+        const n = typeof min2 === "bigint" ? "n" : "";
+        let range;
+        if (byteLength2 > 3) {
+          if (min2 === 0 || min2 === BigInt(0)) {
+            range = `>= 0${n} and < 2${n} ** ${(byteLength2 + 1) * 8}${n}`;
+          } else {
+            range = `>= -(2${n} ** ${(byteLength2 + 1) * 8 - 1}${n}) and < 2 ** ${(byteLength2 + 1) * 8 - 1}${n}`;
+          }
+        } else {
+          range = `>= ${min2}${n} and <= ${max2}${n}`;
+        }
+        throw new errors.ERR_OUT_OF_RANGE("value", range, value);
+      }
+      checkBounds(buf, offset, byteLength2);
+    }
+    function validateNumber(value, name) {
+      if (typeof value !== "number") {
+        throw new errors.ERR_INVALID_ARG_TYPE(name, "number", value);
+      }
+    }
+    function boundsError(value, length, type) {
+      if (Math.floor(value) !== value) {
+        validateNumber(value, type);
+        throw new errors.ERR_OUT_OF_RANGE(type || "offset", "an integer", value);
+      }
+      if (length < 0) {
+        throw new errors.ERR_BUFFER_OUT_OF_BOUNDS();
+      }
+      throw new errors.ERR_OUT_OF_RANGE(
+        type || "offset",
+        `>= ${type ? 1 : 0} and <= ${length}`,
+        value
+      );
+    }
+    var INVALID_BASE64_RE = /[^+/0-9A-Za-z-_]/g;
+    function base64clean(str) {
+      str = str.split("=")[0];
+      str = str.trim().replace(INVALID_BASE64_RE, "");
+      if (str.length < 2)
+        return "";
+      while (str.length % 4 !== 0) {
+        str = str + "=";
+      }
+      return str;
+    }
+    function utf8ToBytes(string, units) {
+      units = units || Infinity;
+      let codePoint;
+      const length = string.length;
+      let leadSurrogate = null;
+      const bytes = [];
+      for (let i = 0; i < length; ++i) {
+        codePoint = string.charCodeAt(i);
+        if (codePoint > 55295 && codePoint < 57344) {
+          if (!leadSurrogate) {
+            if (codePoint > 56319) {
+              if ((units -= 3) > -1)
+                bytes.push(239, 191, 189);
+              continue;
+            } else if (i + 1 === length) {
+              if ((units -= 3) > -1)
+                bytes.push(239, 191, 189);
+              continue;
+            }
+            leadSurrogate = codePoint;
+            continue;
+          }
+          if (codePoint < 56320) {
+            if ((units -= 3) > -1)
+              bytes.push(239, 191, 189);
+            leadSurrogate = codePoint;
+            continue;
+          }
+          codePoint = (leadSurrogate - 55296 << 10 | codePoint - 56320) + 65536;
+        } else if (leadSurrogate) {
+          if ((units -= 3) > -1)
+            bytes.push(239, 191, 189);
+        }
+        leadSurrogate = null;
+        if (codePoint < 128) {
+          if ((units -= 1) < 0)
+            break;
+          bytes.push(codePoint);
+        } else if (codePoint < 2048) {
+          if ((units -= 2) < 0)
+            break;
+          bytes.push(
+            codePoint >> 6 | 192,
+            codePoint & 63 | 128
+          );
+        } else if (codePoint < 65536) {
+          if ((units -= 3) < 0)
+            break;
+          bytes.push(
+            codePoint >> 12 | 224,
+            codePoint >> 6 & 63 | 128,
+            codePoint & 63 | 128
+          );
+        } else if (codePoint < 1114112) {
+          if ((units -= 4) < 0)
+            break;
+          bytes.push(
+            codePoint >> 18 | 240,
+            codePoint >> 12 & 63 | 128,
+            codePoint >> 6 & 63 | 128,
+            codePoint & 63 | 128
+          );
+        } else {
+          throw new Error("Invalid code point");
+        }
+      }
+      return bytes;
+    }
+    function asciiToBytes(str) {
+      const byteArray = [];
+      for (let i = 0; i < str.length; ++i) {
+        byteArray.push(str.charCodeAt(i) & 255);
+      }
+      return byteArray;
+    }
+    function utf16leToBytes(str, units) {
+      let c, hi, lo;
+      const byteArray = [];
+      for (let i = 0; i < str.length; ++i) {
+        if ((units -= 2) < 0)
+          break;
+        c = str.charCodeAt(i);
+        hi = c >> 8;
+        lo = c % 256;
+        byteArray.push(lo);
+        byteArray.push(hi);
+      }
+      return byteArray;
+    }
+    function base64ToBytes(str) {
+      return base64.toByteArray(base64clean(str));
+    }
+    function blitBuffer(src, dst, offset, length) {
+      let i;
+      for (i = 0; i < length; ++i) {
+        if (i + offset >= dst.length || i >= src.length)
+          break;
+        dst[i + offset] = src[i];
+      }
+      return i;
+    }
+    function isInstance(obj, type) {
+      return obj instanceof type || obj != null && obj.constructor != null && obj.constructor.name != null && obj.constructor.name === type.name;
+    }
+    function numberIsNaN(obj) {
+      return obj !== obj;
+    }
+    var hexSliceLookupTable = function() {
+      const alphabet = "0123456789abcdef";
+      const table = new Array(256);
+      for (let i = 0; i < 16; ++i) {
+        const i16 = i * 16;
+        for (let j = 0; j < 16; ++j) {
+          table[i16 + j] = alphabet[i] + alphabet[j];
+        }
+      }
+      return table;
+    }();
+    function defineBigIntMethod(fn) {
+      return typeof BigInt === "undefined" ? BufferBigIntNotDefined : fn;
+    }
+    function BufferBigIntNotDefined() {
+      throw new Error("BigInt not supported");
+    }
+  }
+});
+
+// shims/shims.js
+var init_shims = __esm({
+  "shims/shims.js"() {
+    "use strict";
+    globalThis.Buffer = require_buffer().Buffer;
+    globalThis.process = {
+      env: {},
+      nextTick: (fn) => setTimeout(fn, 0)
+    };
+    globalThis.global = globalThis;
+  }
+});
+
+// node_modules/events/events.js
+var require_events = __commonJS({
+  "node_modules/events/events.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var R = typeof Reflect === "object" ? Reflect : null;
+    var ReflectApply = R && typeof R.apply === "function" ? R.apply : function ReflectApply2(target, receiver, args) {
+      return Function.prototype.apply.call(target, receiver, args);
+    };
+    var ReflectOwnKeys;
+    if (R && typeof R.ownKeys === "function") {
+      ReflectOwnKeys = R.ownKeys;
+    } else if (Object.getOwnPropertySymbols) {
+      ReflectOwnKeys = function ReflectOwnKeys2(target) {
+        return Object.getOwnPropertyNames(target).concat(Object.getOwnPropertySymbols(target));
+      };
+    } else {
+      ReflectOwnKeys = function ReflectOwnKeys2(target) {
+        return Object.getOwnPropertyNames(target);
+      };
+    }
+    function ProcessEmitWarning(warning) {
+      if (console && console.warn)
+        console.warn(warning);
+    }
+    var NumberIsNaN = Number.isNaN || function NumberIsNaN2(value) {
+      return value !== value;
+    };
+    function EventEmitter2() {
+      EventEmitter2.init.call(this);
+    }
+    module.exports = EventEmitter2;
+    module.exports.once = once;
+    EventEmitter2.EventEmitter = EventEmitter2;
+    EventEmitter2.prototype._events = void 0;
+    EventEmitter2.prototype._eventsCount = 0;
+    EventEmitter2.prototype._maxListeners = void 0;
+    var defaultMaxListeners = 10;
+    function checkListener(listener) {
+      if (typeof listener !== "function") {
+        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+      }
+    }
+    Object.defineProperty(EventEmitter2, "defaultMaxListeners", {
+      enumerable: true,
+      get: function() {
+        return defaultMaxListeners;
+      },
+      set: function(arg) {
+        if (typeof arg !== "number" || arg < 0 || NumberIsNaN(arg)) {
+          throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + ".");
+        }
+        defaultMaxListeners = arg;
+      }
+    });
+    EventEmitter2.init = function() {
+      if (this._events === void 0 || this._events === Object.getPrototypeOf(this)._events) {
+        this._events = /* @__PURE__ */ Object.create(null);
+        this._eventsCount = 0;
+      }
+      this._maxListeners = this._maxListeners || void 0;
+    };
+    EventEmitter2.prototype.setMaxListeners = function setMaxListeners(n) {
+      if (typeof n !== "number" || n < 0 || NumberIsNaN(n)) {
+        throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + ".");
+      }
+      this._maxListeners = n;
+      return this;
+    };
+    function _getMaxListeners(that) {
+      if (that._maxListeners === void 0)
+        return EventEmitter2.defaultMaxListeners;
+      return that._maxListeners;
+    }
+    EventEmitter2.prototype.getMaxListeners = function getMaxListeners() {
+      return _getMaxListeners(this);
+    };
+    EventEmitter2.prototype.emit = function emit(type) {
+      var args = [];
+      for (var i = 1; i < arguments.length; i++)
+        args.push(arguments[i]);
+      var doError = type === "error";
+      var events = this._events;
+      if (events !== void 0)
+        doError = doError && events.error === void 0;
+      else if (!doError)
+        return false;
+      if (doError) {
+        var er;
+        if (args.length > 0)
+          er = args[0];
+        if (er instanceof Error) {
+          throw er;
+        }
+        var err = new Error("Unhandled error." + (er ? " (" + er.message + ")" : ""));
+        err.context = er;
+        throw err;
+      }
+      var handler = events[type];
+      if (handler === void 0)
+        return false;
+      if (typeof handler === "function") {
+        ReflectApply(handler, this, args);
+      } else {
+        var len = handler.length;
+        var listeners = arrayClone(handler, len);
+        for (var i = 0; i < len; ++i)
+          ReflectApply(listeners[i], this, args);
+      }
+      return true;
+    };
+    function _addListener(target, type, listener, prepend) {
+      var m;
+      var events;
+      var existing;
+      checkListener(listener);
+      events = target._events;
+      if (events === void 0) {
+        events = target._events = /* @__PURE__ */ Object.create(null);
+        target._eventsCount = 0;
+      } else {
+        if (events.newListener !== void 0) {
+          target.emit(
+            "newListener",
+            type,
+            listener.listener ? listener.listener : listener
+          );
+          events = target._events;
+        }
+        existing = events[type];
+      }
+      if (existing === void 0) {
+        existing = events[type] = listener;
+        ++target._eventsCount;
+      } else {
+        if (typeof existing === "function") {
+          existing = events[type] = prepend ? [listener, existing] : [existing, listener];
+        } else if (prepend) {
+          existing.unshift(listener);
+        } else {
+          existing.push(listener);
+        }
+        m = _getMaxListeners(target);
+        if (m > 0 && existing.length > m && !existing.warned) {
+          existing.warned = true;
+          var w = new Error("Possible EventEmitter memory leak detected. " + existing.length + " " + String(type) + " listeners added. Use emitter.setMaxListeners() to increase limit");
+          w.name = "MaxListenersExceededWarning";
+          w.emitter = target;
+          w.type = type;
+          w.count = existing.length;
+          ProcessEmitWarning(w);
+        }
+      }
+      return target;
+    }
+    EventEmitter2.prototype.addListener = function addListener(type, listener) {
+      return _addListener(this, type, listener, false);
+    };
+    EventEmitter2.prototype.on = EventEmitter2.prototype.addListener;
+    EventEmitter2.prototype.prependListener = function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
+    function onceWrapper() {
+      if (!this.fired) {
+        this.target.removeListener(this.type, this.wrapFn);
+        this.fired = true;
+        if (arguments.length === 0)
+          return this.listener.call(this.target);
+        return this.listener.apply(this.target, arguments);
+      }
+    }
+    function _onceWrap(target, type, listener) {
+      var state = { fired: false, wrapFn: void 0, target, type, listener };
+      var wrapped = onceWrapper.bind(state);
+      wrapped.listener = listener;
+      state.wrapFn = wrapped;
+      return wrapped;
+    }
+    EventEmitter2.prototype.once = function once2(type, listener) {
+      checkListener(listener);
+      this.on(type, _onceWrap(this, type, listener));
+      return this;
+    };
+    EventEmitter2.prototype.prependOnceListener = function prependOnceListener(type, listener) {
+      checkListener(listener);
+      this.prependListener(type, _onceWrap(this, type, listener));
+      return this;
+    };
+    EventEmitter2.prototype.removeListener = function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
+      checkListener(listener);
+      events = this._events;
+      if (events === void 0)
+        return this;
+      list = events[type];
+      if (list === void 0)
+        return this;
+      if (list === listener || list.listener === listener) {
+        if (--this._eventsCount === 0)
+          this._events = /* @__PURE__ */ Object.create(null);
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit("removeListener", type, list.listener || listener);
+        }
+      } else if (typeof list !== "function") {
+        position = -1;
+        for (i = list.length - 1; i >= 0; i--) {
+          if (list[i] === listener || list[i].listener === listener) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+        if (position < 0)
+          return this;
+        if (position === 0)
+          list.shift();
+        else {
+          spliceOne(list, position);
+        }
+        if (list.length === 1)
+          events[type] = list[0];
+        if (events.removeListener !== void 0)
+          this.emit("removeListener", type, originalListener || listener);
+      }
+      return this;
+    };
+    EventEmitter2.prototype.off = EventEmitter2.prototype.removeListener;
+    EventEmitter2.prototype.removeAllListeners = function removeAllListeners(type) {
+      var listeners, events, i;
+      events = this._events;
+      if (events === void 0)
+        return this;
+      if (events.removeListener === void 0) {
+        if (arguments.length === 0) {
+          this._events = /* @__PURE__ */ Object.create(null);
+          this._eventsCount = 0;
+        } else if (events[type] !== void 0) {
+          if (--this._eventsCount === 0)
+            this._events = /* @__PURE__ */ Object.create(null);
+          else
+            delete events[type];
+        }
+        return this;
+      }
+      if (arguments.length === 0) {
+        var keys = Object.keys(events);
+        var key;
+        for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === "removeListener")
+            continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners("removeListener");
+        this._events = /* @__PURE__ */ Object.create(null);
+        this._eventsCount = 0;
+        return this;
+      }
+      listeners = events[type];
+      if (typeof listeners === "function") {
+        this.removeListener(type, listeners);
+      } else if (listeners !== void 0) {
+        for (i = listeners.length - 1; i >= 0; i--) {
+          this.removeListener(type, listeners[i]);
+        }
+      }
+      return this;
+    };
+    function _listeners(target, type, unwrap) {
+      var events = target._events;
+      if (events === void 0)
+        return [];
+      var evlistener = events[type];
+      if (evlistener === void 0)
+        return [];
+      if (typeof evlistener === "function")
+        return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+      return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+    }
+    EventEmitter2.prototype.listeners = function listeners(type) {
+      return _listeners(this, type, true);
+    };
+    EventEmitter2.prototype.rawListeners = function rawListeners(type) {
+      return _listeners(this, type, false);
+    };
+    EventEmitter2.listenerCount = function(emitter, type) {
+      if (typeof emitter.listenerCount === "function") {
+        return emitter.listenerCount(type);
+      } else {
+        return listenerCount.call(emitter, type);
+      }
+    };
+    EventEmitter2.prototype.listenerCount = listenerCount;
+    function listenerCount(type) {
+      var events = this._events;
+      if (events !== void 0) {
+        var evlistener = events[type];
+        if (typeof evlistener === "function") {
+          return 1;
+        } else if (evlistener !== void 0) {
+          return evlistener.length;
+        }
+      }
+      return 0;
+    }
+    EventEmitter2.prototype.eventNames = function eventNames() {
+      return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+    };
+    function arrayClone(arr, n) {
+      var copy = new Array(n);
+      for (var i = 0; i < n; ++i)
+        copy[i] = arr[i];
+      return copy;
+    }
+    function spliceOne(list, index) {
+      for (; index + 1 < list.length; index++)
+        list[index] = list[index + 1];
+      list.pop();
+    }
+    function unwrapListeners(arr) {
+      var ret = new Array(arr.length);
+      for (var i = 0; i < ret.length; ++i) {
+        ret[i] = arr[i].listener || arr[i];
+      }
+      return ret;
+    }
+    function once(emitter, name) {
+      return new Promise(function(resolve, reject) {
+        function errorListener(err) {
+          emitter.removeListener(name, resolver);
+          reject(err);
+        }
+        function resolver() {
+          if (typeof emitter.removeListener === "function") {
+            emitter.removeListener("error", errorListener);
+          }
+          resolve([].slice.call(arguments));
+        }
+        ;
+        eventTargetAgnosticAddListener(emitter, name, resolver, { once: true });
+        if (name !== "error") {
+          addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
+        }
+      });
+    }
+    function addErrorHandlerIfEventEmitter(emitter, handler, flags) {
+      if (typeof emitter.on === "function") {
+        eventTargetAgnosticAddListener(emitter, "error", handler, flags);
+      }
+    }
+    function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
+      if (typeof emitter.on === "function") {
+        if (flags.once) {
+          emitter.once(name, listener);
+        } else {
+          emitter.on(name, listener);
+        }
+      } else if (typeof emitter.addEventListener === "function") {
+        emitter.addEventListener(name, function wrapListener(arg) {
+          if (flags.once) {
+            emitter.removeEventListener(name, wrapListener);
+          }
+          listener(arg);
+        });
+      } else {
+        throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type ' + typeof emitter);
+      }
+    }
+  }
+});
+
+// shims/util/index.ts
+var util_exports = {};
+__export(util_exports, {
+  default: () => util_default
+});
+var util_default;
+var init_util = __esm({
+  "shims/util/index.ts"() {
+    init_shims();
+    util_default = {};
+  }
+});
+
+// shims/crypto/sha256.ts
+function sha256(data) {
+  let h0 = 1779033703, h1 = 3144134277, h2 = 1013904242, h3 = 2773480762, h4 = 1359893119, h5 = 2600822924, h6 = 528734635, h7 = 1541459225, tsz = 0, bp = 0;
+  const k = [
+    1116352408,
+    1899447441,
+    3049323471,
+    3921009573,
+    961987163,
+    1508970993,
+    2453635748,
+    2870763221,
+    3624381080,
+    310598401,
+    607225278,
+    1426881987,
+    1925078388,
+    2162078206,
+    2614888103,
+    3248222580,
+    3835390401,
+    4022224774,
+    264347078,
+    604807628,
+    770255983,
+    1249150122,
+    1555081692,
+    1996064986,
+    2554220882,
+    2821834349,
+    2952996808,
+    3210313671,
+    3336571891,
+    3584528711,
+    113926993,
+    338241895,
+    666307205,
+    773529912,
+    1294757372,
+    1396182291,
+    1695183700,
+    1986661051,
+    2177026350,
+    2456956037,
+    2730485921,
+    2820302411,
+    3259730800,
+    3345764771,
+    3516065817,
+    3600352804,
+    4094571909,
+    275423344,
+    430227734,
+    506948616,
+    659060556,
+    883997877,
+    958139571,
+    1322822218,
+    1537002063,
+    1747873779,
+    1955562222,
+    2024104815,
+    2227730452,
+    2361852424,
+    2428436474,
+    2756734187,
+    3204031479,
+    3329325298
+  ], rrot = (x, n) => x >>> n | x << 32 - n, w = new Uint32Array(64), buf = new Uint8Array(64), process2 = () => {
+    for (let j = 0, r = 0; j < 16; j++, r += 4) {
+      w[j] = buf[r] << 24 | buf[r + 1] << 16 | buf[r + 2] << 8 | buf[r + 3];
+    }
+    for (let j = 16; j < 64; j++) {
+      let s0 = rrot(w[j - 15], 7) ^ rrot(w[j - 15], 18) ^ w[j - 15] >>> 3;
+      let s1 = rrot(w[j - 2], 17) ^ rrot(w[j - 2], 19) ^ w[j - 2] >>> 10;
+      w[j] = w[j - 16] + s0 + w[j - 7] + s1 | 0;
+    }
+    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+    for (let j = 0; j < 64; j++) {
+      let S1 = rrot(e, 6) ^ rrot(e, 11) ^ rrot(e, 25), ch = e & f ^ ~e & g, t1 = h + S1 + ch + k[j] + w[j] | 0, S0 = rrot(a, 2) ^ rrot(a, 13) ^ rrot(a, 22), maj = a & b ^ a & c ^ b & c, t2 = S0 + maj | 0;
+      h = g;
+      g = f;
+      f = e;
+      e = d + t1 | 0;
+      d = c;
+      c = b;
+      b = a;
+      a = t1 + t2 | 0;
+    }
+    h0 = h0 + a | 0;
+    h1 = h1 + b | 0;
+    h2 = h2 + c | 0;
+    h3 = h3 + d | 0;
+    h4 = h4 + e | 0;
+    h5 = h5 + f | 0;
+    h6 = h6 + g | 0;
+    h7 = h7 + h | 0;
+    bp = 0;
+  }, add = (data2) => {
+    if (typeof data2 === "string") {
+      data2 = new TextEncoder().encode(data2);
+    }
+    for (let i = 0; i < data2.length; i++) {
+      buf[bp++] = data2[i];
+      if (bp === 64)
+        process2();
+    }
+    tsz += data2.length;
+  }, digest = () => {
+    buf[bp++] = 128;
+    if (bp == 64)
+      process2();
+    if (bp + 8 > 64) {
+      while (bp < 64)
+        buf[bp++] = 0;
+      process2();
+    }
+    while (bp < 58)
+      buf[bp++] = 0;
+    let L = tsz * 8;
+    buf[bp++] = L / 1099511627776 & 255;
+    buf[bp++] = L / 4294967296 & 255;
+    buf[bp++] = L >>> 24;
+    buf[bp++] = L >>> 16 & 255;
+    buf[bp++] = L >>> 8 & 255;
+    buf[bp++] = L & 255;
+    process2();
+    let reply = new Uint8Array(32);
+    reply[0] = h0 >>> 24;
+    reply[1] = h0 >>> 16 & 255;
+    reply[2] = h0 >>> 8 & 255;
+    reply[3] = h0 & 255;
+    reply[4] = h1 >>> 24;
+    reply[5] = h1 >>> 16 & 255;
+    reply[6] = h1 >>> 8 & 255;
+    reply[7] = h1 & 255;
+    reply[8] = h2 >>> 24;
+    reply[9] = h2 >>> 16 & 255;
+    reply[10] = h2 >>> 8 & 255;
+    reply[11] = h2 & 255;
+    reply[12] = h3 >>> 24;
+    reply[13] = h3 >>> 16 & 255;
+    reply[14] = h3 >>> 8 & 255;
+    reply[15] = h3 & 255;
+    reply[16] = h4 >>> 24;
+    reply[17] = h4 >>> 16 & 255;
+    reply[18] = h4 >>> 8 & 255;
+    reply[19] = h4 & 255;
+    reply[20] = h5 >>> 24;
+    reply[21] = h5 >>> 16 & 255;
+    reply[22] = h5 >>> 8 & 255;
+    reply[23] = h5 & 255;
+    reply[24] = h6 >>> 24;
+    reply[25] = h6 >>> 16 & 255;
+    reply[26] = h6 >>> 8 & 255;
+    reply[27] = h6 & 255;
+    reply[28] = h7 >>> 24;
+    reply[29] = h7 >>> 16 & 255;
+    reply[30] = h7 >>> 8 & 255;
+    reply[31] = h7 & 255;
+    return reply;
+  };
+  if (data === void 0)
+    return { add, digest };
+  add(data);
+  return digest();
+}
+var init_sha256 = __esm({
+  "shims/crypto/sha256.ts"() {
+    "use strict";
+    init_shims();
+  }
+});
+
+// shims/crypto/index.ts
+var crypto_exports = {};
+__export(crypto_exports, {
+  createHash: () => createHash,
+  createHmac: () => createHmac,
+  randomBytes: () => randomBytes
+});
+function randomBytes(length) {
+  return crypto.getRandomValues(Buffer.alloc(length));
+}
+function createHash(type) {
+  if (type !== "sha256")
+    throw new Error("Only sha256 is supported");
+  return {
+    update: function(data) {
+      return {
+        digest: function() {
+          return Buffer.from(sha256(data));
+        }
+      };
+    }
+  };
+}
+function createHmac(type, key) {
+  if (type !== "sha256")
+    throw new Error("Only sha256 is supported");
+  return {
+    update: function(data) {
+      return {
+        digest: function() {
+          if (typeof key === "string")
+            key = new TextEncoder().encode(key);
+          if (typeof data === "string")
+            data = new TextEncoder().encode(data);
+          const keyLen = key.length;
+          if (keyLen > 64) {
+            key = sha256(key);
+          } else if (keyLen < 64) {
+            const tmp = new Uint8Array(64);
+            tmp.set(key);
+            key = tmp;
+          }
+          const innerKey = new Uint8Array(64);
+          const outerKey = new Uint8Array(64);
+          for (let i = 0; i < 64; i++) {
+            innerKey[i] = 54 ^ key[i];
+            outerKey[i] = 92 ^ key[i];
+          }
+          const msg = new Uint8Array(data.length + 64);
+          msg.set(innerKey, 0);
+          msg.set(data, 64);
+          const result = new Uint8Array(64 + 32);
+          result.set(outerKey, 0);
+          result.set(sha256(msg), 64);
+          return Buffer.from(sha256(result));
+        }
+      };
+    }
+  };
+}
+var init_crypto = __esm({
+  "shims/crypto/index.ts"() {
+    init_shims();
+    init_sha256();
+  }
+});
+
+// node_modules/postgres-array/index.js
+var require_postgres_array = __commonJS({
+  "node_modules/postgres-array/index.js"(exports) {
+    "use strict";
+    init_shims();
+    exports.parse = function(source, transform) {
+      return new ArrayParser(source, transform).parse();
+    };
+    var ArrayParser = class {
+      constructor(source, transform) {
+        this.source = source;
+        this.transform = transform || identity;
+        this.position = 0;
+        this.entries = [];
+        this.recorded = [];
+        this.dimension = 0;
+      }
+      isEof() {
+        return this.position >= this.source.length;
+      }
+      nextCharacter() {
+        var character = this.source[this.position++];
+        if (character === "\\") {
+          return {
+            value: this.source[this.position++],
+            escaped: true
+          };
+        }
+        return {
+          value: character,
+          escaped: false
+        };
+      }
+      record(character) {
+        this.recorded.push(character);
+      }
+      newEntry(includeEmpty) {
+        var entry;
+        if (this.recorded.length > 0 || includeEmpty) {
+          entry = this.recorded.join("");
+          if (entry === "NULL" && !includeEmpty) {
+            entry = null;
+          }
+          if (entry !== null)
+            entry = this.transform(entry);
+          this.entries.push(entry);
+          this.recorded = [];
+        }
+      }
+      consumeDimensions() {
+        if (this.source[0] === "[") {
+          while (!this.isEof()) {
+            var char = this.nextCharacter();
+            if (char.value === "=")
+              break;
+          }
+        }
+      }
+      parse(nested) {
+        var character, parser, quote;
+        this.consumeDimensions();
+        while (!this.isEof()) {
+          character = this.nextCharacter();
+          if (character.value === "{" && !quote) {
+            this.dimension++;
+            if (this.dimension > 1) {
+              parser = new ArrayParser(this.source.substr(this.position - 1), this.transform);
+              this.entries.push(parser.parse(true));
+              this.position += parser.position - 2;
+            }
+          } else if (character.value === "}" && !quote) {
+            this.dimension--;
+            if (!this.dimension) {
+              this.newEntry();
+              if (nested)
+                return this.entries;
+            }
+          } else if (character.value === '"' && !character.escaped) {
+            if (quote)
+              this.newEntry(true);
+            quote = !quote;
+          } else if (character.value === "," && !quote) {
+            this.newEntry();
+          } else {
+            this.record(character.value);
+          }
+        }
+        if (this.dimension !== 0) {
+          throw new Error("array dimension not balanced");
+        }
+        return this.entries;
+      }
+    };
+    function identity(value) {
+      return value;
+    }
+  }
+});
+
+// node_modules/pg-types/lib/arrayParser.js
+var require_arrayParser = __commonJS({
+  "node_modules/pg-types/lib/arrayParser.js"(exports, module) {
+    init_shims();
+    var array = require_postgres_array();
+    module.exports = {
+      create: function(source, transform) {
+        return {
+          parse: function() {
+            return array.parse(source, transform);
+          }
+        };
+      }
+    };
+  }
+});
+
+// node_modules/postgres-date/index.js
+var require_postgres_date = __commonJS({
+  "node_modules/postgres-date/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var DATE_TIME = /(\d{1,})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d{1,})?.*?( BC)?$/;
+    var DATE = /^(\d{1,})-(\d{2})-(\d{2})( BC)?$/;
+    var TIME_ZONE = /([Z+-])(\d{2})?:?(\d{2})?:?(\d{2})?/;
+    var INFINITY = /^-?infinity$/;
+    module.exports = function parseDate(isoDate) {
+      if (INFINITY.test(isoDate)) {
+        return Number(isoDate.replace("i", "I"));
+      }
+      var matches = DATE_TIME.exec(isoDate);
+      if (!matches) {
+        return getDate(isoDate) || null;
+      }
+      var isBC = !!matches[8];
+      var year = parseInt(matches[1], 10);
+      if (isBC) {
+        year = bcYearToNegativeYear(year);
+      }
+      var month = parseInt(matches[2], 10) - 1;
+      var day = matches[3];
+      var hour = parseInt(matches[4], 10);
+      var minute = parseInt(matches[5], 10);
+      var second = parseInt(matches[6], 10);
+      var ms = matches[7];
+      ms = ms ? 1e3 * parseFloat(ms) : 0;
+      var date;
+      var offset = timeZoneOffset(isoDate);
+      if (offset != null) {
+        date = new Date(Date.UTC(year, month, day, hour, minute, second, ms));
+        if (is0To99(year)) {
+          date.setUTCFullYear(year);
+        }
+        if (offset !== 0) {
+          date.setTime(date.getTime() - offset);
+        }
+      } else {
+        date = new Date(year, month, day, hour, minute, second, ms);
+        if (is0To99(year)) {
+          date.setFullYear(year);
+        }
+      }
+      return date;
+    };
+    function getDate(isoDate) {
+      var matches = DATE.exec(isoDate);
+      if (!matches) {
+        return;
+      }
+      var year = parseInt(matches[1], 10);
+      var isBC = !!matches[4];
+      if (isBC) {
+        year = bcYearToNegativeYear(year);
+      }
+      var month = parseInt(matches[2], 10) - 1;
+      var day = matches[3];
+      var date = new Date(year, month, day);
+      if (is0To99(year)) {
+        date.setFullYear(year);
+      }
+      return date;
+    }
+    function timeZoneOffset(isoDate) {
+      if (isoDate.endsWith("+00")) {
+        return 0;
+      }
+      var zone = TIME_ZONE.exec(isoDate.split(" ")[1]);
+      if (!zone)
+        return;
+      var type = zone[1];
+      if (type === "Z") {
+        return 0;
+      }
+      var sign = type === "-" ? -1 : 1;
+      var offset = parseInt(zone[2], 10) * 3600 + parseInt(zone[3] || 0, 10) * 60 + parseInt(zone[4] || 0, 10);
+      return offset * sign * 1e3;
+    }
+    function bcYearToNegativeYear(year) {
+      return -(year - 1);
+    }
+    function is0To99(num) {
+      return num >= 0 && num < 100;
+    }
+  }
+});
+
+// node_modules/xtend/mutable.js
+var require_mutable = __commonJS({
+  "node_modules/xtend/mutable.js"(exports, module) {
+    init_shims();
+    module.exports = extend;
+    var hasOwnProperty = Object.prototype.hasOwnProperty;
+    function extend(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    }
+  }
+});
+
+// node_modules/postgres-interval/index.js
+var require_postgres_interval = __commonJS({
+  "node_modules/postgres-interval/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var extend = require_mutable();
+    module.exports = PostgresInterval;
+    function PostgresInterval(raw2) {
+      if (!(this instanceof PostgresInterval)) {
+        return new PostgresInterval(raw2);
+      }
+      extend(this, parse2(raw2));
+    }
+    var properties = ["seconds", "minutes", "hours", "days", "months", "years"];
+    PostgresInterval.prototype.toPostgres = function() {
+      var filtered = properties.filter(this.hasOwnProperty, this);
+      if (this.milliseconds && filtered.indexOf("seconds") < 0) {
+        filtered.push("seconds");
+      }
+      if (filtered.length === 0)
+        return "0";
+      return filtered.map(function(property) {
+        var value = this[property] || 0;
+        if (property === "seconds" && this.milliseconds) {
+          value = (value + this.milliseconds / 1e3).toFixed(6).replace(/\.?0+$/, "");
+        }
+        return value + " " + property;
+      }, this).join(" ");
+    };
+    var propertiesISOEquivalent = {
+      years: "Y",
+      months: "M",
+      days: "D",
+      hours: "H",
+      minutes: "M",
+      seconds: "S"
+    };
+    var dateProperties = ["years", "months", "days"];
+    var timeProperties = ["hours", "minutes", "seconds"];
+    PostgresInterval.prototype.toISOString = PostgresInterval.prototype.toISO = function() {
+      var datePart = dateProperties.map(buildProperty, this).join("");
+      var timePart = timeProperties.map(buildProperty, this).join("");
+      return "P" + datePart + "T" + timePart;
+      function buildProperty(property) {
+        var value = this[property] || 0;
+        if (property === "seconds" && this.milliseconds) {
+          value = (value + this.milliseconds / 1e3).toFixed(6).replace(/0+$/, "");
+        }
+        return value + propertiesISOEquivalent[property];
+      }
+    };
+    var NUMBER = "([+-]?\\d+)";
+    var YEAR = NUMBER + "\\s+years?";
+    var MONTH = NUMBER + "\\s+mons?";
+    var DAY = NUMBER + "\\s+days?";
+    var TIME = "([+-])?([\\d]*):(\\d\\d):(\\d\\d)\\.?(\\d{1,6})?";
+    var INTERVAL = new RegExp([YEAR, MONTH, DAY, TIME].map(function(regexString) {
+      return "(" + regexString + ")?";
+    }).join("\\s*"));
+    var positions = {
+      years: 2,
+      months: 4,
+      days: 6,
+      hours: 9,
+      minutes: 10,
+      seconds: 11,
+      milliseconds: 12
+    };
+    var negatives = ["hours", "minutes", "seconds", "milliseconds"];
+    function parseMilliseconds(fraction) {
+      var microseconds = fraction + "000000".slice(fraction.length);
+      return parseInt(microseconds, 10) / 1e3;
+    }
+    function parse2(interval) {
+      if (!interval)
+        return {};
+      var matches = INTERVAL.exec(interval);
+      var isNegative = matches[8] === "-";
+      return Object.keys(positions).reduce(function(parsed, property) {
+        var position = positions[property];
+        var value = matches[position];
+        if (!value)
+          return parsed;
+        value = property === "milliseconds" ? parseMilliseconds(value) : parseInt(value, 10);
+        if (!value)
+          return parsed;
+        if (isNegative && ~negatives.indexOf(property)) {
+          value *= -1;
+        }
+        parsed[property] = value;
+        return parsed;
+      }, {});
+    }
+  }
+});
+
+// node_modules/postgres-bytea/index.js
+var require_postgres_bytea = __commonJS({
+  "node_modules/postgres-bytea/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    module.exports = function parseBytea(input) {
+      if (/^\\x/.test(input)) {
+        return new Buffer(input.substr(2), "hex");
+      }
+      var output = "";
+      var i = 0;
+      while (i < input.length) {
+        if (input[i] !== "\\") {
+          output += input[i];
+          ++i;
+        } else {
+          if (/[0-7]{3}/.test(input.substr(i + 1, 3))) {
+            output += String.fromCharCode(parseInt(input.substr(i + 1, 3), 8));
+            i += 4;
+          } else {
+            var backslashes = 1;
+            while (i + backslashes < input.length && input[i + backslashes] === "\\") {
+              backslashes++;
+            }
+            for (var k = 0; k < Math.floor(backslashes / 2); ++k) {
+              output += "\\";
+            }
+            i += Math.floor(backslashes / 2) * 2;
+          }
+        }
+      }
+      return new Buffer(output, "binary");
+    };
+  }
+});
+
+// node_modules/pg-types/lib/textParsers.js
+var require_textParsers = __commonJS({
+  "node_modules/pg-types/lib/textParsers.js"(exports, module) {
+    init_shims();
+    var array = require_postgres_array();
+    var arrayParser = require_arrayParser();
+    var parseDate = require_postgres_date();
+    var parseInterval = require_postgres_interval();
+    var parseByteA = require_postgres_bytea();
+    function allowNull(fn) {
+      return function nullAllowed(value) {
+        if (value === null)
+          return value;
+        return fn(value);
+      };
+    }
+    function parseBool(value) {
+      if (value === null)
+        return value;
+      return value === "TRUE" || value === "t" || value === "true" || value === "y" || value === "yes" || value === "on" || value === "1";
+    }
+    function parseBoolArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, parseBool);
+    }
+    function parseBaseTenInt(string) {
+      return parseInt(string, 10);
+    }
+    function parseIntegerArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, allowNull(parseBaseTenInt));
+    }
+    function parseBigIntegerArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, allowNull(function(entry) {
+        return parseBigInteger(entry).trim();
+      }));
+    }
+    var parsePointArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parsePoint(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseFloatArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseFloat(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseStringArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value);
+      return p.parse();
+    };
+    var parseDateArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseDate(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseIntervalArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseInterval(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseByteAArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      return array.parse(value, allowNull(parseByteA));
+    };
+    var parseInteger = function(value) {
+      return parseInt(value, 10);
+    };
+    var parseBigInteger = function(value) {
+      var valStr = String(value);
+      if (/^\d+$/.test(valStr)) {
+        return valStr;
+      }
+      return value;
+    };
+    var parseJsonArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      return array.parse(value, allowNull(JSON.parse));
+    };
+    var parsePoint = function(value) {
+      if (value[0] !== "(") {
+        return null;
+      }
+      value = value.substring(1, value.length - 1).split(",");
+      return {
+        x: parseFloat(value[0]),
+        y: parseFloat(value[1])
+      };
+    };
+    var parseCircle = function(value) {
+      if (value[0] !== "<" && value[1] !== "(") {
+        return null;
+      }
+      var point = "(";
+      var radius = "";
+      var pointParsed = false;
+      for (var i = 2; i < value.length - 1; i++) {
+        if (!pointParsed) {
+          point += value[i];
+        }
+        if (value[i] === ")") {
+          pointParsed = true;
+          continue;
+        } else if (!pointParsed) {
+          continue;
+        }
+        if (value[i] === ",") {
+          continue;
+        }
+        radius += value[i];
+      }
+      var result = parsePoint(point);
+      result.radius = parseFloat(radius);
+      return result;
+    };
+    var init = function(register) {
+      register(20, parseBigInteger);
+      register(21, parseInteger);
+      register(23, parseInteger);
+      register(26, parseInteger);
+      register(700, parseFloat);
+      register(701, parseFloat);
+      register(16, parseBool);
+      register(1082, parseDate);
+      register(1114, parseDate);
+      register(1184, parseDate);
+      register(600, parsePoint);
+      register(651, parseStringArray);
+      register(718, parseCircle);
+      register(1e3, parseBoolArray);
+      register(1001, parseByteAArray);
+      register(1005, parseIntegerArray);
+      register(1007, parseIntegerArray);
+      register(1028, parseIntegerArray);
+      register(1016, parseBigIntegerArray);
+      register(1017, parsePointArray);
+      register(1021, parseFloatArray);
+      register(1022, parseFloatArray);
+      register(1231, parseFloatArray);
+      register(1014, parseStringArray);
+      register(1015, parseStringArray);
+      register(1008, parseStringArray);
+      register(1009, parseStringArray);
+      register(1040, parseStringArray);
+      register(1041, parseStringArray);
+      register(1115, parseDateArray);
+      register(1182, parseDateArray);
+      register(1185, parseDateArray);
+      register(1186, parseInterval);
+      register(1187, parseIntervalArray);
+      register(17, parseByteA);
+      register(114, JSON.parse.bind(JSON));
+      register(3802, JSON.parse.bind(JSON));
+      register(199, parseJsonArray);
+      register(3807, parseJsonArray);
+      register(3907, parseStringArray);
+      register(2951, parseStringArray);
+      register(791, parseStringArray);
+      register(1183, parseStringArray);
+      register(1270, parseStringArray);
+    };
+    module.exports = {
+      init
+    };
+  }
+});
+
+// node_modules/pg-int8/index.js
+var require_pg_int8 = __commonJS({
+  "node_modules/pg-int8/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var BASE = 1e6;
+    function readInt8(buffer) {
+      var high = buffer.readInt32BE(0);
+      var low = buffer.readUInt32BE(4);
+      var sign = "";
+      if (high < 0) {
+        high = ~high + (low === 0);
+        low = ~low + 1 >>> 0;
+        sign = "-";
+      }
+      var result = "";
+      var carry;
+      var t;
+      var digits;
+      var pad;
+      var l;
+      var i;
+      {
+        carry = high % BASE;
+        high = high / BASE >>> 0;
+        t = 4294967296 * carry + low;
+        low = t / BASE >>> 0;
+        digits = "" + (t - BASE * low);
+        if (low === 0 && high === 0) {
+          return sign + digits + result;
+        }
+        pad = "";
+        l = 6 - digits.length;
+        for (i = 0; i < l; i++) {
+          pad += "0";
+        }
+        result = pad + digits + result;
+      }
+      {
+        carry = high % BASE;
+        high = high / BASE >>> 0;
+        t = 4294967296 * carry + low;
+        low = t / BASE >>> 0;
+        digits = "" + (t - BASE * low);
+        if (low === 0 && high === 0) {
+          return sign + digits + result;
+        }
+        pad = "";
+        l = 6 - digits.length;
+        for (i = 0; i < l; i++) {
+          pad += "0";
+        }
+        result = pad + digits + result;
+      }
+      {
+        carry = high % BASE;
+        high = high / BASE >>> 0;
+        t = 4294967296 * carry + low;
+        low = t / BASE >>> 0;
+        digits = "" + (t - BASE * low);
+        if (low === 0 && high === 0) {
+          return sign + digits + result;
+        }
+        pad = "";
+        l = 6 - digits.length;
+        for (i = 0; i < l; i++) {
+          pad += "0";
+        }
+        result = pad + digits + result;
+      }
+      {
+        carry = high % BASE;
+        t = 4294967296 * carry + low;
+        digits = "" + t % BASE;
+        return sign + digits + result;
+      }
+    }
+    module.exports = readInt8;
+  }
+});
+
+// node_modules/pg-types/lib/binaryParsers.js
+var require_binaryParsers = __commonJS({
+  "node_modules/pg-types/lib/binaryParsers.js"(exports, module) {
+    init_shims();
+    var parseInt64 = require_pg_int8();
+    var parseBits = function(data, bits, offset, invert, callback) {
+      offset = offset || 0;
+      invert = invert || false;
+      callback = callback || function(lastValue, newValue, bits2) {
+        return lastValue * Math.pow(2, bits2) + newValue;
+      };
+      var offsetBytes = offset >> 3;
+      var inv = function(value) {
+        if (invert) {
+          return ~value & 255;
+        }
+        return value;
+      };
+      var mask = 255;
+      var firstBits = 8 - offset % 8;
+      if (bits < firstBits) {
+        mask = 255 << 8 - bits & 255;
+        firstBits = bits;
+      }
+      if (offset) {
+        mask = mask >> offset % 8;
+      }
+      var result = 0;
+      if (offset % 8 + bits >= 8) {
+        result = callback(0, inv(data[offsetBytes]) & mask, firstBits);
+      }
+      var bytes = bits + offset >> 3;
+      for (var i = offsetBytes + 1; i < bytes; i++) {
+        result = callback(result, inv(data[i]), 8);
+      }
+      var lastBits = (bits + offset) % 8;
+      if (lastBits > 0) {
+        result = callback(result, inv(data[bytes]) >> 8 - lastBits, lastBits);
+      }
+      return result;
+    };
+    var parseFloatFromBits = function(data, precisionBits, exponentBits) {
+      var bias = Math.pow(2, exponentBits - 1) - 1;
+      var sign = parseBits(data, 1);
+      var exponent = parseBits(data, exponentBits, 1);
+      if (exponent === 0) {
+        return 0;
+      }
+      var precisionBitsCounter = 1;
+      var parsePrecisionBits = function(lastValue, newValue, bits) {
+        if (lastValue === 0) {
+          lastValue = 1;
+        }
+        for (var i = 1; i <= bits; i++) {
+          precisionBitsCounter /= 2;
+          if ((newValue & 1 << bits - i) > 0) {
+            lastValue += precisionBitsCounter;
+          }
+        }
+        return lastValue;
+      };
+      var mantissa = parseBits(data, precisionBits, exponentBits + 1, false, parsePrecisionBits);
+      if (exponent == Math.pow(2, exponentBits + 1) - 1) {
+        if (mantissa === 0) {
+          return sign === 0 ? Infinity : -Infinity;
+        }
+        return NaN;
+      }
+      return (sign === 0 ? 1 : -1) * Math.pow(2, exponent - bias) * mantissa;
+    };
+    var parseInt16 = function(value) {
+      if (parseBits(value, 1) == 1) {
+        return -1 * (parseBits(value, 15, 1, true) + 1);
+      }
+      return parseBits(value, 15, 1);
+    };
+    var parseInt32 = function(value) {
+      if (parseBits(value, 1) == 1) {
+        return -1 * (parseBits(value, 31, 1, true) + 1);
+      }
+      return parseBits(value, 31, 1);
+    };
+    var parseFloat32 = function(value) {
+      return parseFloatFromBits(value, 23, 8);
+    };
+    var parseFloat64 = function(value) {
+      return parseFloatFromBits(value, 52, 11);
+    };
+    var parseNumeric = function(value) {
+      var sign = parseBits(value, 16, 32);
+      if (sign == 49152) {
+        return NaN;
+      }
+      var weight = Math.pow(1e4, parseBits(value, 16, 16));
+      var result = 0;
+      var digits = [];
+      var ndigits = parseBits(value, 16);
+      for (var i = 0; i < ndigits; i++) {
+        result += parseBits(value, 16, 64 + 16 * i) * weight;
+        weight /= 1e4;
+      }
+      var scale = Math.pow(10, parseBits(value, 16, 48));
+      return (sign === 0 ? 1 : -1) * Math.round(result * scale) / scale;
+    };
+    var parseDate = function(isUTC, value) {
+      var sign = parseBits(value, 1);
+      var rawValue = parseBits(value, 63, 1);
+      var result = new Date((sign === 0 ? 1 : -1) * rawValue / 1e3 + 9466848e5);
+      if (!isUTC) {
+        result.setTime(result.getTime() + result.getTimezoneOffset() * 6e4);
+      }
+      result.usec = rawValue % 1e3;
+      result.getMicroSeconds = function() {
+        return this.usec;
+      };
+      result.setMicroSeconds = function(value2) {
+        this.usec = value2;
+      };
+      result.getUTCMicroSeconds = function() {
+        return this.usec;
+      };
+      return result;
+    };
+    var parseArray = function(value) {
+      var dim = parseBits(value, 32);
+      var flags = parseBits(value, 32, 32);
+      var elementType = parseBits(value, 32, 64);
+      var offset = 96;
+      var dims = [];
+      for (var i = 0; i < dim; i++) {
+        dims[i] = parseBits(value, 32, offset);
+        offset += 32;
+        offset += 32;
+      }
+      var parseElement = function(elementType2) {
+        var length = parseBits(value, 32, offset);
+        offset += 32;
+        if (length == 4294967295) {
+          return null;
+        }
+        var result;
+        if (elementType2 == 23 || elementType2 == 20) {
+          result = parseBits(value, length * 8, offset);
+          offset += length * 8;
+          return result;
+        } else if (elementType2 == 25) {
+          result = value.toString(this.encoding, offset >> 3, (offset += length << 3) >> 3);
+          return result;
+        } else {
+          console.log("ERROR: ElementType not implemented: " + elementType2);
+        }
+      };
+      var parse2 = function(dimension, elementType2) {
+        var array = [];
+        var i2;
+        if (dimension.length > 1) {
+          var count2 = dimension.shift();
+          for (i2 = 0; i2 < count2; i2++) {
+            array[i2] = parse2(dimension, elementType2);
+          }
+          dimension.unshift(count2);
+        } else {
+          for (i2 = 0; i2 < dimension[0]; i2++) {
+            array[i2] = parseElement(elementType2);
+          }
+        }
+        return array;
+      };
+      return parse2(dims, elementType);
+    };
+    var parseText = function(value) {
+      return value.toString("utf8");
+    };
+    var parseBool = function(value) {
+      if (value === null)
+        return null;
+      return parseBits(value, 8) > 0;
+    };
+    var init = function(register) {
+      register(20, parseInt64);
+      register(21, parseInt16);
+      register(23, parseInt32);
+      register(26, parseInt32);
+      register(1700, parseNumeric);
+      register(700, parseFloat32);
+      register(701, parseFloat64);
+      register(16, parseBool);
+      register(1114, parseDate.bind(null, false));
+      register(1184, parseDate.bind(null, true));
+      register(1e3, parseArray);
+      register(1007, parseArray);
+      register(1016, parseArray);
+      register(1008, parseArray);
+      register(1009, parseArray);
+      register(25, parseText);
+    };
+    module.exports = {
+      init
+    };
+  }
+});
+
+// node_modules/pg-types/lib/builtins.js
+var require_builtins = __commonJS({
+  "node_modules/pg-types/lib/builtins.js"(exports, module) {
+    init_shims();
+    module.exports = {
+      BOOL: 16,
+      BYTEA: 17,
+      CHAR: 18,
+      INT8: 20,
+      INT2: 21,
+      INT4: 23,
+      REGPROC: 24,
+      TEXT: 25,
+      OID: 26,
+      TID: 27,
+      XID: 28,
+      CID: 29,
+      JSON: 114,
+      XML: 142,
+      PG_NODE_TREE: 194,
+      SMGR: 210,
+      PATH: 602,
+      POLYGON: 604,
+      CIDR: 650,
+      FLOAT4: 700,
+      FLOAT8: 701,
+      ABSTIME: 702,
+      RELTIME: 703,
+      TINTERVAL: 704,
+      CIRCLE: 718,
+      MACADDR8: 774,
+      MONEY: 790,
+      MACADDR: 829,
+      INET: 869,
+      ACLITEM: 1033,
+      BPCHAR: 1042,
+      VARCHAR: 1043,
+      DATE: 1082,
+      TIME: 1083,
+      TIMESTAMP: 1114,
+      TIMESTAMPTZ: 1184,
+      INTERVAL: 1186,
+      TIMETZ: 1266,
+      BIT: 1560,
+      VARBIT: 1562,
+      NUMERIC: 1700,
+      REFCURSOR: 1790,
+      REGPROCEDURE: 2202,
+      REGOPER: 2203,
+      REGOPERATOR: 2204,
+      REGCLASS: 2205,
+      REGTYPE: 2206,
+      UUID: 2950,
+      TXID_SNAPSHOT: 2970,
+      PG_LSN: 3220,
+      PG_NDISTINCT: 3361,
+      PG_DEPENDENCIES: 3402,
+      TSVECTOR: 3614,
+      TSQUERY: 3615,
+      GTSVECTOR: 3642,
+      REGCONFIG: 3734,
+      REGDICTIONARY: 3769,
+      JSONB: 3802,
+      REGNAMESPACE: 4089,
+      REGROLE: 4096
+    };
+  }
+});
+
+// node_modules/pg-types/index.js
+var require_pg_types = __commonJS({
+  "node_modules/pg-types/index.js"(exports) {
+    init_shims();
+    var textParsers = require_textParsers();
+    var binaryParsers = require_binaryParsers();
+    var arrayParser = require_arrayParser();
+    var builtinTypes = require_builtins();
+    exports.getTypeParser = getTypeParser;
+    exports.setTypeParser = setTypeParser;
+    exports.arrayParser = arrayParser;
+    exports.builtins = builtinTypes;
+    var typeParsers = {
+      text: {},
+      binary: {}
+    };
+    function noParse(val) {
+      return String(val);
+    }
+    function getTypeParser(oid, format) {
+      format = format || "text";
+      if (!typeParsers[format]) {
+        return noParse;
+      }
+      return typeParsers[format][oid] || noParse;
+    }
+    function setTypeParser(oid, format, parseFn) {
+      if (typeof format == "function") {
+        parseFn = format;
+        format = "text";
+      }
+      typeParsers[format][oid] = parseFn;
+    }
+    textParsers.init(function(oid, converter) {
+      typeParsers.text[oid] = converter;
+    });
+    binaryParsers.init(function(oid, converter) {
+      typeParsers.binary[oid] = converter;
+    });
+  }
+});
+
+// node_modules/pg/lib/defaults.js
+var require_defaults = __commonJS({
+  "node_modules/pg/lib/defaults.js"(exports, module) {
+    "use strict";
+    init_shims();
+    module.exports = {
+      host: "localhost",
+      user: process.platform === "win32" ? process.env.USERNAME : process.env.USER,
+      database: void 0,
+      password: null,
+      connectionString: void 0,
+      port: 5432,
+      rows: 0,
+      binary: false,
+      max: 10,
+      idleTimeoutMillis: 3e4,
+      client_encoding: "",
+      ssl: false,
+      application_name: void 0,
+      fallback_application_name: void 0,
+      options: void 0,
+      parseInputDatesAsUTC: false,
+      statement_timeout: false,
+      lock_timeout: false,
+      idle_in_transaction_session_timeout: false,
+      query_timeout: false,
+      connect_timeout: 0,
+      keepalives: 1,
+      keepalives_idle: 0
+    };
+    var pgTypes = require_pg_types();
+    var parseBigInteger = pgTypes.getTypeParser(20, "text");
+    var parseBigIntegerArray = pgTypes.getTypeParser(1016, "text");
+    module.exports.__defineSetter__("parseInt8", function(val) {
+      pgTypes.setTypeParser(20, "text", val ? pgTypes.getTypeParser(23, "text") : parseBigInteger);
+      pgTypes.setTypeParser(1016, "text", val ? pgTypes.getTypeParser(1007, "text") : parseBigIntegerArray);
+    });
+  }
+});
+
+// node_modules/pg/lib/utils.js
+var require_utils = __commonJS({
+  "node_modules/pg/lib/utils.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var crypto2 = (init_crypto(), __toCommonJS(crypto_exports));
+    var defaults = require_defaults();
+    function escapeElement(elementRepresentation) {
+      var escaped = elementRepresentation.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      return '"' + escaped + '"';
+    }
+    function arrayString(val) {
+      var result = "{";
+      for (var i = 0; i < val.length; i++) {
+        if (i > 0) {
+          result = result + ",";
+        }
+        if (val[i] === null || typeof val[i] === "undefined") {
+          result = result + "NULL";
+        } else if (Array.isArray(val[i])) {
+          result = result + arrayString(val[i]);
+        } else if (val[i] instanceof Buffer) {
+          result += "\\\\x" + val[i].toString("hex");
+        } else {
+          result += escapeElement(prepareValue(val[i]));
+        }
+      }
+      result = result + "}";
+      return result;
+    }
+    var prepareValue = function(val, seen) {
+      if (val == null) {
+        return null;
+      }
+      if (val instanceof Buffer) {
+        return val;
+      }
+      if (ArrayBuffer.isView(val)) {
+        var buf = Buffer.from(val.buffer, val.byteOffset, val.byteLength);
+        if (buf.length === val.byteLength) {
+          return buf;
+        }
+        return buf.slice(val.byteOffset, val.byteOffset + val.byteLength);
+      }
+      if (val instanceof Date) {
+        if (defaults.parseInputDatesAsUTC) {
+          return dateToStringUTC(val);
+        } else {
+          return dateToString(val);
+        }
+      }
+      if (Array.isArray(val)) {
+        return arrayString(val);
+      }
+      if (typeof val === "object") {
+        return prepareObject(val, seen);
+      }
+      return val.toString();
+    };
+    function prepareObject(val, seen) {
+      if (val && typeof val.toPostgres === "function") {
+        seen = seen || [];
+        if (seen.indexOf(val) !== -1) {
+          throw new Error('circular reference detected while preparing "' + val + '" for query');
+        }
+        seen.push(val);
+        return prepareValue(val.toPostgres(prepareValue), seen);
+      }
+      return JSON.stringify(val);
+    }
+    function pad(number, digits) {
+      number = "" + number;
+      while (number.length < digits) {
+        number = "0" + number;
+      }
+      return number;
+    }
+    function dateToString(date) {
+      var offset = -date.getTimezoneOffset();
+      var year = date.getFullYear();
+      var isBCYear = year < 1;
+      if (isBCYear)
+        year = Math.abs(year) + 1;
+      var ret = pad(year, 4) + "-" + pad(date.getMonth() + 1, 2) + "-" + pad(date.getDate(), 2) + "T" + pad(date.getHours(), 2) + ":" + pad(date.getMinutes(), 2) + ":" + pad(date.getSeconds(), 2) + "." + pad(date.getMilliseconds(), 3);
+      if (offset < 0) {
+        ret += "-";
+        offset *= -1;
+      } else {
+        ret += "+";
+      }
+      ret += pad(Math.floor(offset / 60), 2) + ":" + pad(offset % 60, 2);
+      if (isBCYear)
+        ret += " BC";
+      return ret;
+    }
+    function dateToStringUTC(date) {
+      var year = date.getUTCFullYear();
+      var isBCYear = year < 1;
+      if (isBCYear)
+        year = Math.abs(year) + 1;
+      var ret = pad(year, 4) + "-" + pad(date.getUTCMonth() + 1, 2) + "-" + pad(date.getUTCDate(), 2) + "T" + pad(date.getUTCHours(), 2) + ":" + pad(date.getUTCMinutes(), 2) + ":" + pad(date.getUTCSeconds(), 2) + "." + pad(date.getUTCMilliseconds(), 3);
+      ret += "+00:00";
+      if (isBCYear)
+        ret += " BC";
+      return ret;
+    }
+    function normalizeQueryConfig(config, values, callback) {
+      config = typeof config === "string" ? { text: config } : config;
+      if (values) {
+        if (typeof values === "function") {
+          config.callback = values;
+        } else {
+          config.values = values;
+        }
+      }
+      if (callback) {
+        config.callback = callback;
+      }
+      return config;
+    }
+    var md5 = function(string) {
+      return crypto2.createHash("md5").update(string, "utf-8").digest("hex");
+    };
+    var postgresMd5PasswordHash = function(user, password, salt) {
+      var inner = md5(password + user);
+      var outer = md5(Buffer.concat([Buffer.from(inner), salt]));
+      return "md5" + outer;
+    };
+    module.exports = {
+      prepareValue: function prepareValueWrapper(value) {
+        return prepareValue(value);
+      },
+      normalizeQueryConfig,
+      postgresMd5PasswordHash,
+      md5
+    };
+  }
+});
+
+// node_modules/pg/lib/sasl.js
+var require_sasl = __commonJS({
+  "node_modules/pg/lib/sasl.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var crypto2 = (init_crypto(), __toCommonJS(crypto_exports));
+    function startSession(mechanisms) {
+      if (mechanisms.indexOf("SCRAM-SHA-256") === -1) {
+        throw new Error("SASL: Only mechanism SCRAM-SHA-256 is currently supported");
+      }
+      const clientNonce = crypto2.randomBytes(18).toString("base64");
+      return {
+        mechanism: "SCRAM-SHA-256",
+        clientNonce,
+        response: "n,,n=*,r=" + clientNonce,
+        message: "SASLInitialResponse"
+      };
+    }
+    function continueSession(session, password, serverData) {
+      if (session.message !== "SASLInitialResponse") {
+        throw new Error("SASL: Last message was not SASLInitialResponse");
+      }
+      if (typeof password !== "string") {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string");
+      }
+      if (typeof serverData !== "string") {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: serverData must be a string");
+      }
+      const sv = parseServerFirstMessage(serverData);
+      if (!sv.nonce.startsWith(session.clientNonce)) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce does not start with client nonce");
+      } else if (sv.nonce.length === session.clientNonce.length) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce is too short");
+      }
+      var saltBytes = Buffer.from(sv.salt, "base64");
+      var saltedPassword = Hi(password, saltBytes, sv.iteration);
+      var clientKey = hmacSha256(saltedPassword, "Client Key");
+      var storedKey = sha2562(clientKey);
+      var clientFirstMessageBare = "n=*,r=" + session.clientNonce;
+      var serverFirstMessage = "r=" + sv.nonce + ",s=" + sv.salt + ",i=" + sv.iteration;
+      var clientFinalMessageWithoutProof = "c=biws,r=" + sv.nonce;
+      var authMessage = clientFirstMessageBare + "," + serverFirstMessage + "," + clientFinalMessageWithoutProof;
+      var clientSignature = hmacSha256(storedKey, authMessage);
+      var clientProofBytes = xorBuffers(clientKey, clientSignature);
+      var clientProof = clientProofBytes.toString("base64");
+      var serverKey = hmacSha256(saltedPassword, "Server Key");
+      var serverSignatureBytes = hmacSha256(serverKey, authMessage);
+      session.message = "SASLResponse";
+      session.serverSignature = serverSignatureBytes.toString("base64");
+      session.response = clientFinalMessageWithoutProof + ",p=" + clientProof;
+    }
+    function finalizeSession(session, serverData) {
+      if (session.message !== "SASLResponse") {
+        throw new Error("SASL: Last message was not SASLResponse");
+      }
+      if (typeof serverData !== "string") {
+        throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: serverData must be a string");
+      }
+      const { serverSignature } = parseServerFinalMessage(serverData);
+      if (serverSignature !== session.serverSignature) {
+        throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature does not match");
+      }
+    }
+    function isPrintableChars(text) {
+      if (typeof text !== "string") {
+        throw new TypeError("SASL: text must be a string");
+      }
+      return text.split("").map((_, i) => text.charCodeAt(i)).every((c) => c >= 33 && c <= 43 || c >= 45 && c <= 126);
+    }
+    function isBase64(text) {
+      return /^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.test(text);
+    }
+    function parseAttributePairs(text) {
+      if (typeof text !== "string") {
+        throw new TypeError("SASL: attribute pairs text must be a string");
+      }
+      return new Map(
+        text.split(",").map((attrValue) => {
+          if (!/^.=/.test(attrValue)) {
+            throw new Error("SASL: Invalid attribute pair entry");
+          }
+          const name = attrValue[0];
+          const value = attrValue.substring(2);
+          return [name, value];
+        })
+      );
+    }
+    function parseServerFirstMessage(data) {
+      const attrPairs = parseAttributePairs(data);
+      const nonce = attrPairs.get("r");
+      if (!nonce) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce missing");
+      } else if (!isPrintableChars(nonce)) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce must only contain printable characters");
+      }
+      const salt = attrPairs.get("s");
+      if (!salt) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: salt missing");
+      } else if (!isBase64(salt)) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: salt must be base64");
+      }
+      const iterationText = attrPairs.get("i");
+      if (!iterationText) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: iteration missing");
+      } else if (!/^[1-9][0-9]*$/.test(iterationText)) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: invalid iteration count");
+      }
+      const iteration = parseInt(iterationText, 10);
+      return {
+        nonce,
+        salt,
+        iteration
+      };
+    }
+    function parseServerFinalMessage(serverData) {
+      const attrPairs = parseAttributePairs(serverData);
+      const serverSignature = attrPairs.get("v");
+      if (!serverSignature) {
+        throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature is missing");
+      } else if (!isBase64(serverSignature)) {
+        throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature must be base64");
+      }
+      return {
+        serverSignature
+      };
+    }
+    function xorBuffers(a, b) {
+      if (!Buffer.isBuffer(a)) {
+        throw new TypeError("first argument must be a Buffer");
+      }
+      if (!Buffer.isBuffer(b)) {
+        throw new TypeError("second argument must be a Buffer");
+      }
+      if (a.length !== b.length) {
+        throw new Error("Buffer lengths must match");
+      }
+      if (a.length === 0) {
+        throw new Error("Buffers cannot be empty");
+      }
+      return Buffer.from(a.map((_, i) => a[i] ^ b[i]));
+    }
+    function sha2562(text) {
+      return crypto2.createHash("sha256").update(text).digest();
+    }
+    function hmacSha256(key, msg) {
+      return crypto2.createHmac("sha256", key).update(msg).digest();
+    }
+    function Hi(password, saltBytes, iterations) {
+      var ui1 = hmacSha256(password, Buffer.concat([saltBytes, Buffer.from([0, 0, 0, 1])]));
+      var ui = ui1;
+      for (var i = 0; i < iterations - 1; i++) {
+        ui1 = hmacSha256(password, ui1);
+        ui = xorBuffers(ui, ui1);
+      }
+      return ui;
+    }
+    module.exports = {
+      startSession,
+      continueSession,
+      finalizeSession
+    };
+  }
+});
+
+// shims/path/index.js
+var path_exports = {};
+__export(path_exports, {
+  default: () => path_default
+});
+var path_default;
+var init_path = __esm({
+  "shims/path/index.js"() {
+    init_shims();
+    path_default = {};
+  }
+});
+
+// shims/fs/index.ts
+var fs_exports = {};
+__export(fs_exports, {
+  default: () => fs_default
+});
+var fs_default;
+var init_fs = __esm({
+  "shims/fs/index.ts"() {
+    init_shims();
+    fs_default = {};
+  }
+});
+
+// shims/stream/index.js
+var stream_exports = {};
+__export(stream_exports, {
+  default: () => stream_default
+});
+var stream_default;
+var init_stream = __esm({
+  "shims/stream/index.js"() {
+    init_shims();
+    stream_default = {};
+  }
+});
+
+// shims/string_decoder/index.ts
+var string_decoder_exports = {};
+__export(string_decoder_exports, {
+  StringDecoder: () => StringDecoder
+});
+var StringDecoder;
+var init_string_decoder = __esm({
+  "shims/string_decoder/index.ts"() {
+    init_shims();
+    StringDecoder = class {
+      constructor(encoding) {
+        this.td = new TextDecoder(encoding);
+      }
+      write(data) {
+        return this.td.decode(data, { stream: true });
+      }
+      end(data) {
+        return this.td.decode(data);
+      }
+    };
+  }
+});
+
+// node_modules/split2/index.js
+var require_split2 = __commonJS({
+  "node_modules/split2/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var { Transform } = (init_stream(), __toCommonJS(stream_exports));
+    var { StringDecoder: StringDecoder2 } = (init_string_decoder(), __toCommonJS(string_decoder_exports));
+    var kLast = Symbol("last");
+    var kDecoder = Symbol("decoder");
+    function transform(chunk, enc, cb) {
+      let list;
+      if (this.overflow) {
+        const buf = this[kDecoder].write(chunk);
+        list = buf.split(this.matcher);
+        if (list.length === 1)
+          return cb();
+        list.shift();
+        this.overflow = false;
+      } else {
+        this[kLast] += this[kDecoder].write(chunk);
+        list = this[kLast].split(this.matcher);
+      }
+      this[kLast] = list.pop();
+      for (let i = 0; i < list.length; i++) {
+        try {
+          push(this, this.mapper(list[i]));
+        } catch (error) {
+          return cb(error);
+        }
+      }
+      this.overflow = this[kLast].length > this.maxLength;
+      if (this.overflow && !this.skipOverflow) {
+        cb(new Error("maximum buffer reached"));
+        return;
+      }
+      cb();
+    }
+    function flush(cb) {
+      this[kLast] += this[kDecoder].end();
+      if (this[kLast]) {
+        try {
+          push(this, this.mapper(this[kLast]));
+        } catch (error) {
+          return cb(error);
+        }
+      }
+      cb();
+    }
+    function push(self3, val) {
+      if (val !== void 0) {
+        self3.push(val);
+      }
+    }
+    function noop(incoming) {
+      return incoming;
+    }
+    function split(matcher, mapper, options) {
+      matcher = matcher || /\r?\n/;
+      mapper = mapper || noop;
+      options = options || {};
+      switch (arguments.length) {
+        case 1:
+          if (typeof matcher === "function") {
+            mapper = matcher;
+            matcher = /\r?\n/;
+          } else if (typeof matcher === "object" && !(matcher instanceof RegExp)) {
+            options = matcher;
+            matcher = /\r?\n/;
+          }
+          break;
+        case 2:
+          if (typeof matcher === "function") {
+            options = mapper;
+            mapper = matcher;
+            matcher = /\r?\n/;
+          } else if (typeof mapper === "object") {
+            options = mapper;
+            mapper = noop;
+          }
+      }
+      options = Object.assign({}, options);
+      options.autoDestroy = true;
+      options.transform = transform;
+      options.flush = flush;
+      options.readableObjectMode = true;
+      const stream = new Transform(options);
+      stream[kLast] = "";
+      stream[kDecoder] = new StringDecoder2("utf8");
+      stream.matcher = matcher;
+      stream.mapper = mapper;
+      stream.maxLength = options.maxLength;
+      stream.skipOverflow = options.skipOverflow || false;
+      stream.overflow = false;
+      stream._destroy = function(err, cb) {
+        this._writableState.errorEmitted = false;
+        cb(err);
+      };
+      return stream;
+    }
+    module.exports = split;
+  }
+});
+
+// node_modules/pgpass/lib/helper.js
+var require_helper = __commonJS({
+  "node_modules/pgpass/lib/helper.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var path = (init_path(), __toCommonJS(path_exports));
+    var Stream = (init_stream(), __toCommonJS(stream_exports)).Stream;
+    var split = require_split2();
+    var util = (init_util(), __toCommonJS(util_exports));
+    var defaultPort = 5432;
+    var isWin = process.platform === "win32";
+    var warnStream = process.stderr;
+    var S_IRWXG = 56;
+    var S_IRWXO = 7;
+    var S_IFMT = 61440;
+    var S_IFREG = 32768;
+    function isRegFile(mode) {
+      return (mode & S_IFMT) == S_IFREG;
+    }
+    var fieldNames = ["host", "port", "database", "user", "password"];
+    var nrOfFields = fieldNames.length;
+    var passKey = fieldNames[nrOfFields - 1];
+    function warn() {
+      var isWritable = warnStream instanceof Stream && true === warnStream.writable;
+      if (isWritable) {
+        var args = Array.prototype.slice.call(arguments).concat("\n");
+        warnStream.write(util.format.apply(util, args));
+      }
+    }
+    Object.defineProperty(module.exports, "isWin", {
+      get: function() {
+        return isWin;
+      },
+      set: function(val) {
+        isWin = val;
+      }
+    });
+    module.exports.warnTo = function(stream) {
+      var old = warnStream;
+      warnStream = stream;
+      return old;
+    };
+    module.exports.getFileName = function(rawEnv) {
+      var env = rawEnv || process.env;
+      var file = env.PGPASSFILE || (isWin ? path.join(env.APPDATA || "./", "postgresql", "pgpass.conf") : path.join(env.HOME || "./", ".pgpass"));
+      return file;
+    };
+    module.exports.usePgPass = function(stats, fname) {
+      if (Object.prototype.hasOwnProperty.call(process.env, "PGPASSWORD")) {
+        return false;
+      }
+      if (isWin) {
+        return true;
+      }
+      fname = fname || "<unkn>";
+      if (!isRegFile(stats.mode)) {
+        warn('WARNING: password file "%s" is not a plain file', fname);
+        return false;
+      }
+      if (stats.mode & (S_IRWXG | S_IRWXO)) {
+        warn('WARNING: password file "%s" has group or world access; permissions should be u=rw (0600) or less', fname);
+        return false;
+      }
+      return true;
+    };
+    var matcher = module.exports.match = function(connInfo, entry) {
+      return fieldNames.slice(0, -1).reduce(function(prev, field, idx) {
+        if (idx == 1) {
+          if (Number(connInfo[field] || defaultPort) === Number(entry[field])) {
+            return prev && true;
+          }
+        }
+        return prev && (entry[field] === "*" || entry[field] === connInfo[field]);
+      }, true);
+    };
+    module.exports.getPassword = function(connInfo, stream, cb) {
+      var pass;
+      var lineStream = stream.pipe(split());
+      function onLine(line) {
+        var entry = parseLine(line);
+        if (entry && isValidEntry(entry) && matcher(connInfo, entry)) {
+          pass = entry[passKey];
+          lineStream.end();
+        }
+      }
+      var onEnd = function() {
+        stream.destroy();
+        cb(pass);
+      };
+      var onErr = function(err) {
+        stream.destroy();
+        warn("WARNING: error on reading file: %s", err);
+        cb(void 0);
+      };
+      stream.on("error", onErr);
+      lineStream.on("data", onLine).on("end", onEnd).on("error", onErr);
+    };
+    var parseLine = module.exports.parseLine = function(line) {
+      if (line.length < 11 || line.match(/^\s+#/)) {
+        return null;
+      }
+      var curChar = "";
+      var prevChar = "";
+      var fieldIdx = 0;
+      var startIdx = 0;
+      var endIdx = 0;
+      var obj = {};
+      var isLastField = false;
+      var addToObj = function(idx, i0, i1) {
+        var field = line.substring(i0, i1);
+        if (!Object.hasOwnProperty.call(process.env, "PGPASS_NO_DEESCAPE")) {
+          field = field.replace(/\\([:\\])/g, "$1");
+        }
+        obj[fieldNames[idx]] = field;
+      };
+      for (var i = 0; i < line.length - 1; i += 1) {
+        curChar = line.charAt(i + 1);
+        prevChar = line.charAt(i);
+        isLastField = fieldIdx == nrOfFields - 1;
+        if (isLastField) {
+          addToObj(fieldIdx, startIdx);
+          break;
+        }
+        if (i >= 0 && curChar == ":" && prevChar !== "\\") {
+          addToObj(fieldIdx, startIdx, i + 1);
+          startIdx = i + 2;
+          fieldIdx += 1;
+        }
+      }
+      obj = Object.keys(obj).length === nrOfFields ? obj : null;
+      return obj;
+    };
+    var isValidEntry = module.exports.isValidEntry = function(entry) {
+      var rules = {
+        0: function(x) {
+          return x.length > 0;
+        },
+        1: function(x) {
+          if (x === "*") {
+            return true;
+          }
+          x = Number(x);
+          return isFinite(x) && x > 0 && x < 9007199254740992 && Math.floor(x) === x;
+        },
+        2: function(x) {
+          return x.length > 0;
+        },
+        3: function(x) {
+          return x.length > 0;
+        },
+        4: function(x) {
+          return x.length > 0;
+        }
+      };
+      for (var idx = 0; idx < fieldNames.length; idx += 1) {
+        var rule = rules[idx];
+        var value = entry[fieldNames[idx]] || "";
+        var res = rule(value);
+        if (!res) {
+          return false;
+        }
+      }
+      return true;
+    };
+  }
+});
+
+// node_modules/pgpass/lib/index.js
+var require_lib = __commonJS({
+  "node_modules/pgpass/lib/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var path = (init_path(), __toCommonJS(path_exports));
+    var fs = (init_fs(), __toCommonJS(fs_exports));
+    var helper = require_helper();
+    module.exports = function(connInfo, cb) {
+      var file = helper.getFileName();
+      fs.stat(file, function(err, stat) {
+        if (err || !helper.usePgPass(stat, file)) {
+          return cb(void 0);
+        }
+        var st = fs.createReadStream(file);
+        helper.getPassword(connInfo, st, cb);
+      });
+    };
+    module.exports.warnTo = helper.warnTo;
+  }
+});
+
+// node_modules/pg/lib/type-overrides.js
+var require_type_overrides = __commonJS({
+  "node_modules/pg/lib/type-overrides.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var types = require_pg_types();
+    function TypeOverrides(userTypes) {
+      this._types = userTypes || types;
+      this.text = {};
+      this.binary = {};
+    }
+    TypeOverrides.prototype.getOverrides = function(format) {
+      switch (format) {
+        case "text":
+          return this.text;
+        case "binary":
+          return this.binary;
+        default:
+          return {};
+      }
+    };
+    TypeOverrides.prototype.setTypeParser = function(oid, format, parseFn) {
+      if (typeof format === "function") {
+        parseFn = format;
+        format = "text";
+      }
+      this.getOverrides(format)[oid] = parseFn;
+    };
+    TypeOverrides.prototype.getTypeParser = function(oid, format) {
+      format = format || "text";
+      return this.getOverrides(format)[oid] || this._types.getTypeParser(oid, format);
+    };
+    module.exports = TypeOverrides;
+  }
+});
+
+// shims/dns/index.ts
+var dns_exports = {};
+__export(dns_exports, {
+  default: () => dns_default
+});
+var dns_default;
+var init_dns = __esm({
+  "shims/dns/index.ts"() {
+    init_shims();
+    dns_default = {};
+  }
+});
+
+// shims/url/index.ts
+var url_exports = {};
+__export(url_exports, {
+  parse: () => parse
+});
+function parse(url, parseQueryString = false) {
+  const { protocol } = new URL(url);
+  const httpUrl = "http:" + url.substring(protocol.length);
+  const { username, password, hostname, port, pathname, search, searchParams, hash } = new URL(httpUrl);
+  const auth = username + ":" + password;
+  const query = parseQueryString ? Object.fromEntries(searchParams.entries()) : search;
+  return { href: url, protocol, auth, username, password, hostname, port, pathname, search, query, hash };
+}
+var init_url = __esm({
+  "shims/url/index.ts"() {
+    init_shims();
+  }
+});
+
+// node_modules/pg-connection-string/index.js
+var require_pg_connection_string = __commonJS({
+  "node_modules/pg-connection-string/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var url = (init_url(), __toCommonJS(url_exports));
+    var fs = (init_fs(), __toCommonJS(fs_exports));
+    function parse2(str) {
+      if (str.charAt(0) === "/") {
+        var config = str.split(" ");
+        return { host: config[0], database: config[1] };
+      }
+      var result = url.parse(
+        / |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.test(str) ? encodeURI(str).replace(/\%25(\d\d)/g, "%$1") : str,
+        true
+      );
+      var config = result.query;
+      for (var k in config) {
+        if (Array.isArray(config[k])) {
+          config[k] = config[k][config[k].length - 1];
+        }
+      }
+      var auth = (result.auth || ":").split(":");
+      config.user = auth[0];
+      config.password = auth.splice(1).join(":");
+      config.port = result.port;
+      if (result.protocol == "socket:") {
+        config.host = decodeURI(result.pathname);
+        config.database = result.query.db;
+        config.client_encoding = result.query.encoding;
+        return config;
+      }
+      if (!config.host) {
+        config.host = result.hostname;
+      }
+      var pathname = result.pathname;
+      if (!config.host && pathname && /^%2f/i.test(pathname)) {
+        var pathnameSplit = pathname.split("/");
+        config.host = decodeURIComponent(pathnameSplit[0]);
+        pathname = pathnameSplit.splice(1).join("/");
+      }
+      if (pathname && pathname.charAt(0) === "/") {
+        pathname = pathname.slice(1) || null;
+      }
+      config.database = pathname && decodeURI(pathname);
+      if (config.ssl === "true" || config.ssl === "1") {
+        config.ssl = true;
+      }
+      if (config.ssl === "0") {
+        config.ssl = false;
+      }
+      if (config.sslcert || config.sslkey || config.sslrootcert || config.sslmode) {
+        config.ssl = {};
+      }
+      if (config.sslcert) {
+        config.ssl.cert = fs.readFileSync(config.sslcert).toString();
+      }
+      if (config.sslkey) {
+        config.ssl.key = fs.readFileSync(config.sslkey).toString();
+      }
+      if (config.sslrootcert) {
+        config.ssl.ca = fs.readFileSync(config.sslrootcert).toString();
+      }
+      switch (config.sslmode) {
+        case "disable": {
+          config.ssl = false;
+          break;
+        }
+        case "prefer":
+        case "require":
+        case "verify-ca":
+        case "verify-full": {
+          break;
+        }
+        case "no-verify": {
+          config.ssl.rejectUnauthorized = false;
+          break;
+        }
+      }
+      return config;
+    }
+    module.exports = parse2;
+    parse2.parse = parse2;
+  }
+});
+
+// node_modules/pg/lib/connection-parameters.js
+var require_connection_parameters = __commonJS({
+  "node_modules/pg/lib/connection-parameters.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var dns = (init_dns(), __toCommonJS(dns_exports));
+    var defaults = require_defaults();
+    var parse2 = require_pg_connection_string().parse;
+    var val = function(key, config, envVar) {
+      if (envVar === void 0) {
+        envVar = process.env["PG" + key.toUpperCase()];
+      } else if (envVar === false) {
+      } else {
+        envVar = process.env[envVar];
+      }
+      return config[key] || envVar || defaults[key];
+    };
+    var readSSLConfigFromEnvironment = function() {
+      switch (process.env.PGSSLMODE) {
+        case "disable":
+          return false;
+        case "prefer":
+        case "require":
+        case "verify-ca":
+        case "verify-full":
+          return true;
+        case "no-verify":
+          return { rejectUnauthorized: false };
+      }
+      return defaults.ssl;
+    };
+    var quoteParamValue = function(value) {
+      return "'" + ("" + value).replace(/\\/g, "\\\\").replace(/'/g, "\\'") + "'";
+    };
+    var add = function(params, config, paramName) {
+      var value = config[paramName];
+      if (value !== void 0 && value !== null) {
+        params.push(paramName + "=" + quoteParamValue(value));
+      }
+    };
+    var ConnectionParameters = class {
+      constructor(config) {
+        config = typeof config === "string" ? parse2(config) : config || {};
+        if (config.connectionString) {
+          config = Object.assign({}, config, parse2(config.connectionString));
+        }
+        this.user = val("user", config);
+        this.database = val("database", config);
+        if (this.database === void 0) {
+          this.database = this.user;
+        }
+        this.port = parseInt(val("port", config), 10);
+        this.host = val("host", config);
+        Object.defineProperty(this, "password", {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: val("password", config)
+        });
+        this.binary = val("binary", config);
+        this.options = val("options", config);
+        this.ssl = typeof config.ssl === "undefined" ? readSSLConfigFromEnvironment() : config.ssl;
+        if (typeof this.ssl === "string") {
+          if (this.ssl === "true") {
+            this.ssl = true;
+          }
+        }
+        if (this.ssl === "no-verify") {
+          this.ssl = { rejectUnauthorized: false };
+        }
+        if (this.ssl && this.ssl.key) {
+          Object.defineProperty(this.ssl, "key", {
+            enumerable: false
+          });
+        }
+        this.client_encoding = val("client_encoding", config);
+        this.replication = val("replication", config);
+        this.isDomainSocket = !(this.host || "").indexOf("/");
+        this.application_name = val("application_name", config, "PGAPPNAME");
+        this.fallback_application_name = val("fallback_application_name", config, false);
+        this.statement_timeout = val("statement_timeout", config, false);
+        this.lock_timeout = val("lock_timeout", config, false);
+        this.idle_in_transaction_session_timeout = val("idle_in_transaction_session_timeout", config, false);
+        this.query_timeout = val("query_timeout", config, false);
+        if (config.connectionTimeoutMillis === void 0) {
+          this.connect_timeout = process.env.PGCONNECT_TIMEOUT || 0;
+        } else {
+          this.connect_timeout = Math.floor(config.connectionTimeoutMillis / 1e3);
+        }
+        if (config.keepAlive === false) {
+          this.keepalives = 0;
+        } else if (config.keepAlive === true) {
+          this.keepalives = 1;
+        }
+        if (typeof config.keepAliveInitialDelayMillis === "number") {
+          this.keepalives_idle = Math.floor(config.keepAliveInitialDelayMillis / 1e3);
+        }
+      }
+      getLibpqConnectionString(cb) {
+        var params = [];
+        add(params, this, "user");
+        add(params, this, "password");
+        add(params, this, "port");
+        add(params, this, "application_name");
+        add(params, this, "fallback_application_name");
+        add(params, this, "connect_timeout");
+        add(params, this, "options");
+        var ssl = typeof this.ssl === "object" ? this.ssl : this.ssl ? { sslmode: this.ssl } : {};
+        add(params, ssl, "sslmode");
+        add(params, ssl, "sslca");
+        add(params, ssl, "sslkey");
+        add(params, ssl, "sslcert");
+        add(params, ssl, "sslrootcert");
+        if (this.database) {
+          params.push("dbname=" + quoteParamValue(this.database));
+        }
+        if (this.replication) {
+          params.push("replication=" + quoteParamValue(this.replication));
+        }
+        if (this.host) {
+          params.push("host=" + quoteParamValue(this.host));
+        }
+        if (this.isDomainSocket) {
+          return cb(null, params.join(" "));
+        }
+        if (this.client_encoding) {
+          params.push("client_encoding=" + quoteParamValue(this.client_encoding));
+        }
+        dns.lookup(this.host, function(err, address) {
+          if (err)
+            return cb(err, null);
+          params.push("hostaddr=" + quoteParamValue(address));
+          return cb(null, params.join(" "));
+        });
+      }
+    };
+    module.exports = ConnectionParameters;
+  }
+});
+
+// node_modules/pg/lib/result.js
+var require_result = __commonJS({
+  "node_modules/pg/lib/result.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var types = require_pg_types();
+    var matchRegexp = /^([A-Za-z]+)(?: (\d+))?(?: (\d+))?/;
+    var Result = class {
+      constructor(rowMode, types2) {
+        this.command = null;
+        this.rowCount = null;
+        this.oid = null;
+        this.rows = [];
+        this.fields = [];
+        this._parsers = void 0;
+        this._types = types2;
+        this.RowCtor = null;
+        this.rowAsArray = rowMode === "array";
+        if (this.rowAsArray) {
+          this.parseRow = this._parseRowAsArray;
+        }
+      }
+      addCommandComplete(msg) {
+        var match;
+        if (msg.text) {
+          match = matchRegexp.exec(msg.text);
+        } else {
+          match = matchRegexp.exec(msg.command);
+        }
+        if (match) {
+          this.command = match[1];
+          if (match[3]) {
+            this.oid = parseInt(match[2], 10);
+            this.rowCount = parseInt(match[3], 10);
+          } else if (match[2]) {
+            this.rowCount = parseInt(match[2], 10);
+          }
+        }
+      }
+      _parseRowAsArray(rowData) {
+        var row = new Array(rowData.length);
+        for (var i = 0, len = rowData.length; i < len; i++) {
+          var rawValue = rowData[i];
+          if (rawValue !== null) {
+            row[i] = this._parsers[i](rawValue);
+          } else {
+            row[i] = null;
+          }
+        }
+        return row;
+      }
+      parseRow(rowData) {
+        var row = {};
+        for (var i = 0, len = rowData.length; i < len; i++) {
+          var rawValue = rowData[i];
+          var field = this.fields[i].name;
+          if (rawValue !== null) {
+            row[field] = this._parsers[i](rawValue);
+          } else {
+            row[field] = null;
+          }
+        }
+        return row;
+      }
+      addRow(row) {
+        this.rows.push(row);
+      }
+      addFields(fieldDescriptions) {
+        this.fields = fieldDescriptions;
+        if (this.fields.length) {
+          this._parsers = new Array(fieldDescriptions.length);
+        }
+        for (var i = 0; i < fieldDescriptions.length; i++) {
+          var desc = fieldDescriptions[i];
+          if (this._types) {
+            this._parsers[i] = this._types.getTypeParser(desc.dataTypeID, desc.format || "text");
+          } else {
+            this._parsers[i] = types.getTypeParser(desc.dataTypeID, desc.format || "text");
+          }
+        }
+      }
+    };
+    module.exports = Result;
+  }
+});
+
+// node_modules/pg/lib/query.js
+var require_query = __commonJS({
+  "node_modules/pg/lib/query.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var { EventEmitter: EventEmitter2 } = require_events();
+    var Result = require_result();
+    var utils = require_utils();
+    var Query = class extends EventEmitter2 {
+      constructor(config, values, callback) {
+        super();
+        config = utils.normalizeQueryConfig(config, values, callback);
+        this.text = config.text;
+        this.values = config.values;
+        this.rows = config.rows;
+        this.types = config.types;
+        this.name = config.name;
+        this.binary = config.binary;
+        this.portal = config.portal || "";
+        this.callback = config.callback;
+        this._rowMode = config.rowMode;
+        if (process.domain && config.callback) {
+          this.callback = process.domain.bind(config.callback);
+        }
+        this._result = new Result(this._rowMode, this.types);
+        this._results = this._result;
+        this.isPreparedStatement = false;
+        this._canceledDueToError = false;
+        this._promise = null;
+      }
+      requiresPreparation() {
+        if (this.name) {
+          return true;
+        }
+        if (this.rows) {
+          return true;
+        }
+        if (!this.text) {
+          return false;
+        }
+        if (!this.values) {
+          return false;
+        }
+        return this.values.length > 0;
+      }
+      _checkForMultirow() {
+        if (this._result.command) {
+          if (!Array.isArray(this._results)) {
+            this._results = [this._result];
+          }
+          this._result = new Result(this._rowMode, this.types);
+          this._results.push(this._result);
+        }
+      }
+      handleRowDescription(msg) {
+        this._checkForMultirow();
+        this._result.addFields(msg.fields);
+        this._accumulateRows = this.callback || !this.listeners("row").length;
+      }
+      handleDataRow(msg) {
+        let row;
+        if (this._canceledDueToError) {
+          return;
+        }
+        try {
+          row = this._result.parseRow(msg.fields);
+        } catch (err) {
+          this._canceledDueToError = err;
+          return;
+        }
+        this.emit("row", row, this._result);
+        if (this._accumulateRows) {
+          this._result.addRow(row);
+        }
+      }
+      handleCommandComplete(msg, connection) {
+        this._checkForMultirow();
+        this._result.addCommandComplete(msg);
+        if (this.rows) {
+          connection.sync();
+        }
+      }
+      handleEmptyQuery(connection) {
+        if (this.rows) {
+          connection.sync();
+        }
+      }
+      handleError(err, connection) {
+        if (this._canceledDueToError) {
+          err = this._canceledDueToError;
+          this._canceledDueToError = false;
+        }
+        if (this.callback) {
+          return this.callback(err);
+        }
+        this.emit("error", err);
+      }
+      handleReadyForQuery(con) {
+        if (this._canceledDueToError) {
+          return this.handleError(this._canceledDueToError, con);
+        }
+        if (this.callback) {
+          try {
+            this.callback(null, this._results);
+          } catch (err) {
+            process.nextTick(() => {
+              throw err;
+            });
+          }
+        }
+        this.emit("end", this._results);
+      }
+      submit(connection) {
+        if (typeof this.text !== "string" && typeof this.name !== "string") {
+          return new Error("A query must have either text or a name. Supplying neither is unsupported.");
+        }
+        const previous = connection.parsedStatements[this.name];
+        if (this.text && previous && this.text !== previous) {
+          return new Error(`Prepared statements must be unique - '${this.name}' was used for a different statement`);
+        }
+        if (this.values && !Array.isArray(this.values)) {
+          return new Error("Query values must be an array");
+        }
+        if (this.requiresPreparation()) {
+          this.prepare(connection);
+        } else {
+          connection.query(this.text);
+        }
+        return null;
+      }
+      hasBeenParsed(connection) {
+        return this.name && connection.parsedStatements[this.name];
+      }
+      handlePortalSuspended(connection) {
+        this._getRows(connection, this.rows);
+      }
+      _getRows(connection, rows) {
+        connection.execute({
+          portal: this.portal,
+          rows
+        });
+        if (!rows) {
+          connection.sync();
+        } else {
+          connection.flush();
+        }
+      }
+      prepare(connection) {
+        this.isPreparedStatement = true;
+        if (!this.hasBeenParsed(connection)) {
+          connection.parse({
+            text: this.text,
+            name: this.name,
+            types: this.types
+          });
+        }
+        try {
+          connection.bind({
+            portal: this.portal,
+            statement: this.name,
+            values: this.values,
+            binary: this.binary,
+            valueMapper: utils.prepareValue
+          });
+        } catch (err) {
+          this.handleError(err, connection);
+          return;
+        }
+        connection.describe({
+          type: "P",
+          name: this.portal || ""
+        });
+        this._getRows(connection, this.rows);
+      }
+      handleCopyInResponse(connection) {
+        connection.sendCopyFail("No source stream defined");
+      }
+      handleCopyData(msg, connection) {
+      }
+    };
+    module.exports = Query;
+  }
+});
+
+// shims/net/tls.js
+var tls_emscripten;
+var init_tls = __esm({
+  "shims/net/tls.js"() {
+    "use strict";
+    init_shims();
+    tls_emscripten = (() => {
+      var _scriptDir = typeof document !== "undefined" && document.currentScript ? document.currentScript.src : void 0;
+      return function(tls_emscripten2) {
+        tls_emscripten2 = tls_emscripten2 || {};
+        var Module = typeof tls_emscripten2 != "undefined" ? tls_emscripten2 : {};
+        var readyPromiseResolve, readyPromiseReject;
+        Module["ready"] = new Promise(function(resolve, reject) {
+          readyPromiseResolve = resolve;
+          readyPromiseReject = reject;
+        });
+        var moduleOverrides = Object.assign({}, Module);
+        var arguments_ = [];
+        var thisProgram = "./this.program";
+        var quit_ = (status, toThrow) => {
+          throw toThrow;
+        };
+        var ENVIRONMENT_IS_WEB = true;
+        var ENVIRONMENT_IS_WORKER = false;
+        var scriptDirectory = "";
+        function locateFile(path) {
+          if (Module["locateFile"]) {
+            return Module["locateFile"](path, scriptDirectory);
+          }
+          return scriptDirectory + path;
+        }
+        var read_, readAsync, readBinary, setWindowTitle;
+        if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
+          if (ENVIRONMENT_IS_WORKER) {
+            scriptDirectory = self.location.href;
+          } else if (typeof document != "undefined" && document.currentScript) {
+            scriptDirectory = document.currentScript.src;
+          }
+          if (_scriptDir) {
+            scriptDirectory = _scriptDir;
+          }
+          if (scriptDirectory.indexOf("blob:") !== 0) {
+            scriptDirectory = scriptDirectory.substr(0, scriptDirectory.replace(/[?#].*/, "").lastIndexOf("/") + 1);
+          } else {
+            scriptDirectory = "";
+          }
+          {
+            read_ = (url) => {
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", url, false);
+              xhr.send(null);
+              return xhr.responseText;
+            };
+            if (ENVIRONMENT_IS_WORKER) {
+              readBinary = (url) => {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", url, false);
+                xhr.responseType = "arraybuffer";
+                xhr.send(null);
+                return new Uint8Array(xhr.response);
+              };
+            }
+            readAsync = (url, onload, onerror) => {
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", url, true);
+              xhr.responseType = "arraybuffer";
+              xhr.onload = () => {
+                if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
+                  onload(xhr.response);
+                  return;
+                }
+                onerror();
+              };
+              xhr.onerror = onerror;
+              xhr.send(null);
+            };
+          }
+          setWindowTitle = (title) => document.title = title;
+        } else {
+        }
+        var out = Module["print"] || console.log.bind(console);
+        var err = Module["printErr"] || console.warn.bind(console);
+        Object.assign(Module, moduleOverrides);
+        moduleOverrides = null;
+        if (Module["arguments"])
+          arguments_ = Module["arguments"];
+        if (Module["thisProgram"])
+          thisProgram = Module["thisProgram"];
+        if (Module["quit"])
+          quit_ = Module["quit"];
+        var wasmBinary;
+        if (Module["wasmBinary"])
+          wasmBinary = Module["wasmBinary"];
+        var noExitRuntime = Module["noExitRuntime"] || true;
+        if (typeof WebAssembly != "object") {
+          abort("no native wasm support detected");
+        }
+        var wasmMemory;
+        var ABORT = false;
+        var EXITSTATUS;
+        function assert(condition, text) {
+          if (!condition) {
+            abort(text);
+          }
+        }
+        var UTF8Decoder = typeof TextDecoder != "undefined" ? new TextDecoder("utf8") : void 0;
+        function UTF8ArrayToString(heapOrArray, idx, maxBytesToRead) {
+          var endIdx = idx + maxBytesToRead;
+          var endPtr = idx;
+          while (heapOrArray[endPtr] && !(endPtr >= endIdx))
+            ++endPtr;
+          if (endPtr - idx > 16 && heapOrArray.buffer && UTF8Decoder) {
+            return UTF8Decoder.decode(heapOrArray.subarray(idx, endPtr));
+          }
+          var str = "";
+          while (idx < endPtr) {
+            var u0 = heapOrArray[idx++];
+            if (!(u0 & 128)) {
+              str += String.fromCharCode(u0);
+              continue;
+            }
+            var u1 = heapOrArray[idx++] & 63;
+            if ((u0 & 224) == 192) {
+              str += String.fromCharCode((u0 & 31) << 6 | u1);
+              continue;
+            }
+            var u2 = heapOrArray[idx++] & 63;
+            if ((u0 & 240) == 224) {
+              u0 = (u0 & 15) << 12 | u1 << 6 | u2;
+            } else {
+              u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | heapOrArray[idx++] & 63;
+            }
+            if (u0 < 65536) {
+              str += String.fromCharCode(u0);
+            } else {
+              var ch = u0 - 65536;
+              str += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
+            }
+          }
+          return str;
+        }
+        function UTF8ToString(ptr, maxBytesToRead) {
+          return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : "";
+        }
+        function stringToUTF8Array(str, heap, outIdx, maxBytesToWrite) {
+          if (!(maxBytesToWrite > 0))
+            return 0;
+          var startIdx = outIdx;
+          var endIdx = outIdx + maxBytesToWrite - 1;
+          for (var i = 0; i < str.length; ++i) {
+            var u = str.charCodeAt(i);
+            if (u >= 55296 && u <= 57343) {
+              var u1 = str.charCodeAt(++i);
+              u = 65536 + ((u & 1023) << 10) | u1 & 1023;
+            }
+            if (u <= 127) {
+              if (outIdx >= endIdx)
+                break;
+              heap[outIdx++] = u;
+            } else if (u <= 2047) {
+              if (outIdx + 1 >= endIdx)
+                break;
+              heap[outIdx++] = 192 | u >> 6;
+              heap[outIdx++] = 128 | u & 63;
+            } else if (u <= 65535) {
+              if (outIdx + 2 >= endIdx)
+                break;
+              heap[outIdx++] = 224 | u >> 12;
+              heap[outIdx++] = 128 | u >> 6 & 63;
+              heap[outIdx++] = 128 | u & 63;
+            } else {
+              if (outIdx + 3 >= endIdx)
+                break;
+              heap[outIdx++] = 240 | u >> 18;
+              heap[outIdx++] = 128 | u >> 12 & 63;
+              heap[outIdx++] = 128 | u >> 6 & 63;
+              heap[outIdx++] = 128 | u & 63;
+            }
+          }
+          heap[outIdx] = 0;
+          return outIdx - startIdx;
+        }
+        function stringToUTF8(str, outPtr, maxBytesToWrite) {
+          return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
+        }
+        function lengthBytesUTF8(str) {
+          var len = 0;
+          for (var i = 0; i < str.length; ++i) {
+            var c = str.charCodeAt(i);
+            if (c <= 127) {
+              len++;
+            } else if (c <= 2047) {
+              len += 2;
+            } else if (c >= 55296 && c <= 57343) {
+              len += 4;
+              ++i;
+            } else {
+              len += 3;
+            }
+          }
+          return len;
+        }
+        var buffer, HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
+        function updateGlobalBufferAndViews(buf) {
+          buffer = buf;
+          Module["HEAP8"] = HEAP8 = new Int8Array(buf);
+          Module["HEAP16"] = HEAP16 = new Int16Array(buf);
+          Module["HEAP32"] = HEAP32 = new Int32Array(buf);
+          Module["HEAPU8"] = HEAPU8 = new Uint8Array(buf);
+          Module["HEAPU16"] = HEAPU16 = new Uint16Array(buf);
+          Module["HEAPU32"] = HEAPU32 = new Uint32Array(buf);
+          Module["HEAPF32"] = HEAPF32 = new Float32Array(buf);
+          Module["HEAPF64"] = HEAPF64 = new Float64Array(buf);
+        }
+        var INITIAL_MEMORY = Module["INITIAL_MEMORY"] || 16777216;
+        var wasmTable;
+        var __ATPRERUN__ = [];
+        var __ATINIT__ = [];
+        var __ATPOSTRUN__ = [];
+        var runtimeInitialized = false;
+        function preRun() {
+          if (Module["preRun"]) {
+            if (typeof Module["preRun"] == "function")
+              Module["preRun"] = [Module["preRun"]];
+            while (Module["preRun"].length) {
+              addOnPreRun(Module["preRun"].shift());
+            }
+          }
+          callRuntimeCallbacks(__ATPRERUN__);
+        }
+        function initRuntime() {
+          runtimeInitialized = true;
+          callRuntimeCallbacks(__ATINIT__);
+        }
+        function postRun() {
+          if (Module["postRun"]) {
+            if (typeof Module["postRun"] == "function")
+              Module["postRun"] = [Module["postRun"]];
+            while (Module["postRun"].length) {
+              addOnPostRun(Module["postRun"].shift());
+            }
+          }
+          callRuntimeCallbacks(__ATPOSTRUN__);
+        }
+        function addOnPreRun(cb) {
+          __ATPRERUN__.unshift(cb);
+        }
+        function addOnInit(cb) {
+          __ATINIT__.unshift(cb);
+        }
+        function addOnPostRun(cb) {
+          __ATPOSTRUN__.unshift(cb);
+        }
+        var runDependencies = 0;
+        var runDependencyWatcher = null;
+        var dependenciesFulfilled = null;
+        function addRunDependency(id) {
+          runDependencies++;
+          if (Module["monitorRunDependencies"]) {
+            Module["monitorRunDependencies"](runDependencies);
+          }
+        }
+        function removeRunDependency(id) {
+          runDependencies--;
+          if (Module["monitorRunDependencies"]) {
+            Module["monitorRunDependencies"](runDependencies);
+          }
+          if (runDependencies == 0) {
+            if (runDependencyWatcher !== null) {
+              clearInterval(runDependencyWatcher);
+              runDependencyWatcher = null;
+            }
+            if (dependenciesFulfilled) {
+              var callback = dependenciesFulfilled;
+              dependenciesFulfilled = null;
+              callback();
+            }
+          }
+        }
+        function abort(what) {
+          {
+            if (Module["onAbort"]) {
+              Module["onAbort"](what);
+            }
+          }
+          what = "Aborted(" + what + ")";
+          err(what);
+          ABORT = true;
+          EXITSTATUS = 1;
+          what += ". Build with -sASSERTIONS for more info.";
+          var e = new WebAssembly.RuntimeError(what);
+          readyPromiseReject(e);
+          throw e;
+        }
+        var dataURIPrefix = "data:application/octet-stream;base64,";
+        function isDataURI(filename) {
+          return filename.startsWith(dataURIPrefix);
+        }
+        var wasmBinaryFile;
+        wasmBinaryFile = "tls.wasm";
+        if (!isDataURI(wasmBinaryFile)) {
+          wasmBinaryFile = locateFile(wasmBinaryFile);
+        }
+        function getBinary(file) {
+          try {
+            if (file == wasmBinaryFile && wasmBinary) {
+              return new Uint8Array(wasmBinary);
+            }
+            if (readBinary) {
+              return readBinary(file);
+            }
+            throw "both async and sync fetching of the wasm failed";
+          } catch (err2) {
+            abort(err2);
+          }
+        }
+        function getBinaryPromise() {
+          if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER)) {
+            if (typeof fetch == "function") {
+              return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
+                if (!response["ok"]) {
+                  throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
+                }
+                return response["arrayBuffer"]();
+              }).catch(function() {
+                return getBinary(wasmBinaryFile);
+              });
+            }
+          }
+          return Promise.resolve().then(function() {
+            return getBinary(wasmBinaryFile);
+          });
+        }
+        function createWasm() {
+          var info = { "a": asmLibraryArg };
+          function receiveInstance(instance, module) {
+            var exports2 = instance.exports;
+            exports2 = Asyncify.instrumentWasmExports(exports2);
+            Module["asm"] = exports2;
+            wasmMemory = Module["asm"]["k"];
+            updateGlobalBufferAndViews(wasmMemory.buffer);
+            wasmTable = Module["asm"]["q"];
+            addOnInit(Module["asm"]["l"]);
+            removeRunDependency("wasm-instantiate");
+          }
+          addRunDependency("wasm-instantiate");
+          function receiveInstantiationResult(result) {
+            receiveInstance(result["instance"]);
+          }
+          function instantiateArrayBuffer(receiver) {
+            return getBinaryPromise().then(function(binary) {
+              return WebAssembly.instantiate(binary, info);
+            }).then(function(instance) {
+              return instance;
+            }).then(receiver, function(reason) {
+              err("failed to asynchronously prepare wasm: " + reason);
+              abort(reason);
+            });
+          }
+          function instantiateAsync() {
+            if (!wasmBinary && typeof WebAssembly.instantiateStreaming == "function" && !isDataURI(wasmBinaryFile) && typeof fetch == "function") {
+              return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
+                var result = WebAssembly.instantiateStreaming(response, info);
+                return result.then(receiveInstantiationResult, function(reason) {
+                  err("wasm streaming compile failed: " + reason);
+                  err("falling back to ArrayBuffer instantiation");
+                  return instantiateArrayBuffer(receiveInstantiationResult);
+                });
+              });
+            } else {
+              return instantiateArrayBuffer(receiveInstantiationResult);
+            }
+          }
+          if (Module["instantiateWasm"]) {
+            try {
+              var exports = Module["instantiateWasm"](info, receiveInstance);
+              exports = Asyncify.instrumentWasmExports(exports);
+              return exports;
+            } catch (e) {
+              err("Module.instantiateWasm callback failed with error: " + e);
+              readyPromiseReject(e);
+            }
+          }
+          instantiateAsync().catch(readyPromiseReject);
+          return {};
+        }
+        function __asyncjs__jsProvideEncryptedFromNetwork(buff, sz) {
+          return Asyncify.handleAsync(async () => {
+            const bytesRead = await Module.provideEncryptedFromNetwork(buff, sz);
+            return bytesRead;
+          });
+        }
+        function jsWriteEncryptedToNetwork(buff, sz) {
+          const bytesWritten = Module.writeEncryptedToNetwork(buff, sz);
+          return bytesWritten;
+        }
+        function __asyncjs__jsSha(shaVersion, buffDataIn, sz, buffDigest) {
+          return Asyncify.handleAsync(async () => {
+            if (buffDataIn !== 0) {
+              if (Module._digestStream == null) {
+                const stream = new crypto.DigestStream(`SHA-${shaVersion}`);
+                const writer = stream.getWriter();
+                Module._digestStream = { stream, writer };
+              }
+              const arrDataIn = Module.HEAPU8.subarray(buffDataIn, buffDataIn + sz);
+              await Module._digestStream.writer.write(arrDataIn);
+            } else {
+              const { stream, writer } = Module._digestStream;
+              await writer.close();
+              const digest = await stream.digest;
+              const arrDigest = new Uint8Array(digest);
+              Module.HEAPU8.set(arrDigest, buffDigest);
+              Module._digestStream = null;
+            }
+          });
+        }
+        function __asyncjs__jsAesGcmEncrypt(dataBuff, dataSz, keyBuff, keySize, ivBuff, ivSz, authInBuff, authInSz, authTagBuff, authTagSz, outBuff) {
+          return Asyncify.handleAsync(async () => {
+            const iv = Module.HEAPU8.subarray(ivBuff, ivBuff + ivSz);
+            const tagLength = authTagSz << 3;
+            const additionalData = Module.HEAPU8.subarray(authInBuff, authInBuff + authInSz);
+            const algorithm = { name: "AES-GCM", iv, tagLength, additionalData };
+            const keyData = Module.HEAPU8.subarray(keyBuff, keyBuff + keySize);
+            const key = await crypto.subtle.importKey("raw", keyData, { name: "AES-GCM" }, false, ["encrypt"]);
+            const data = Module.HEAPU8.subarray(dataBuff, dataBuff + dataSz);
+            const resultArrBuff = await crypto.subtle.encrypt(algorithm, key, data);
+            const result = new Uint8Array(resultArrBuff);
+            const cipherText = result.subarray(0, dataSz);
+            const authTag = result.subarray(dataSz);
+            Module.HEAPU8.set(cipherText, outBuff);
+            Module.HEAPU8.set(authTag, authTagBuff);
+          });
+        }
+        function __asyncjs__jsAesGcmDecrypt(dataBuff, dataSz, keyBuff, keySize, ivBuff, ivSz, authInBuff, authInSz, authTagBuff, authTagSz, outBuff) {
+          return Asyncify.handleAsync(async () => {
+            const iv = Module.HEAPU8.subarray(ivBuff, ivBuff + ivSz);
+            const tagLength = authTagSz << 3;
+            const additionalData = Module.HEAPU8.subarray(authInBuff, authInBuff + authInSz);
+            const algorithm = { name: "AES-GCM", iv, tagLength, additionalData };
+            const keyData = Module.HEAPU8.subarray(keyBuff, keyBuff + keySize);
+            const key = await crypto.subtle.importKey("raw", keyData, { name: "AES-GCM" }, false, ["decrypt"]);
+            const data = Module.HEAPU8.subarray(dataBuff, dataBuff + dataSz);
+            const authTag = Module.HEAPU8.subarray(authTagBuff, authTagBuff + authTagSz);
+            const taggedData = new Uint8Array(dataSz + authTagSz);
+            taggedData.set(data);
+            taggedData.set(authTag, dataSz);
+            try {
+              const resultArrBuff = await crypto.subtle.decrypt(algorithm, key, taggedData);
+              const plainText = new Uint8Array(resultArrBuff);
+              Module.HEAPU8.set(plainText, outBuff);
+              return 0;
+            } catch (err2) {
+              console.log("decrypt error:", err2.message);
+              return -1;
+            }
+          });
+        }
+        function wc_GenerateSeed(os, output, sz) {
+          const entropy = Module.HEAPU8.subarray(output, output + sz);
+          crypto.getRandomValues(entropy);
+          return 0;
+        }
+        function ExitStatus(status) {
+          this.name = "ExitStatus";
+          this.message = "Program terminated with exit(" + status + ")";
+          this.status = status;
+        }
+        function callRuntimeCallbacks(callbacks) {
+          while (callbacks.length > 0) {
+            callbacks.shift()(Module);
+          }
+        }
+        function handleException(e) {
+          if (e instanceof ExitStatus || e == "unwind") {
+            return EXITSTATUS;
+          }
+          quit_(1, e);
+        }
+        function writeArrayToMemory(array, buffer2) {
+          HEAP8.set(array, buffer2);
+        }
+        function readI53FromI64(ptr) {
+          return HEAPU32[ptr >> 2] + HEAP32[ptr + 4 >> 2] * 4294967296;
+        }
+        function __gmtime_js(time, tmPtr) {
+          var date = new Date(readI53FromI64(time) * 1e3);
+          HEAP32[tmPtr >> 2] = date.getUTCSeconds();
+          HEAP32[tmPtr + 4 >> 2] = date.getUTCMinutes();
+          HEAP32[tmPtr + 8 >> 2] = date.getUTCHours();
+          HEAP32[tmPtr + 12 >> 2] = date.getUTCDate();
+          HEAP32[tmPtr + 16 >> 2] = date.getUTCMonth();
+          HEAP32[tmPtr + 20 >> 2] = date.getUTCFullYear() - 1900;
+          HEAP32[tmPtr + 24 >> 2] = date.getUTCDay();
+          var start = Date.UTC(date.getUTCFullYear(), 0, 1, 0, 0, 0, 0);
+          var yday = (date.getTime() - start) / (1e3 * 60 * 60 * 24) | 0;
+          HEAP32[tmPtr + 28 >> 2] = yday;
+        }
+        function allocateUTF8(str) {
+          var size = lengthBytesUTF8(str) + 1;
+          var ret = _malloc(size);
+          if (ret)
+            stringToUTF8Array(str, HEAP8, ret, size);
+          return ret;
+        }
+        function _tzset_impl(timezone, daylight, tzname) {
+          var currentYear = new Date().getFullYear();
+          var winter = new Date(currentYear, 0, 1);
+          var summer = new Date(currentYear, 6, 1);
+          var winterOffset = winter.getTimezoneOffset();
+          var summerOffset = summer.getTimezoneOffset();
+          var stdTimezoneOffset = Math.max(winterOffset, summerOffset);
+          HEAP32[timezone >> 2] = stdTimezoneOffset * 60;
+          HEAP32[daylight >> 2] = Number(winterOffset != summerOffset);
+          function extractZone(date) {
+            var match = date.toTimeString().match(/\(([A-Za-z ]+)\)$/);
+            return match ? match[1] : "GMT";
+          }
+          var winterName = extractZone(winter);
+          var summerName = extractZone(summer);
+          var winterNamePtr = allocateUTF8(winterName);
+          var summerNamePtr = allocateUTF8(summerName);
+          if (summerOffset < winterOffset) {
+            HEAPU32[tzname >> 2] = winterNamePtr;
+            HEAPU32[tzname + 4 >> 2] = summerNamePtr;
+          } else {
+            HEAPU32[tzname >> 2] = summerNamePtr;
+            HEAPU32[tzname + 4 >> 2] = winterNamePtr;
+          }
+        }
+        function __tzset_js(timezone, daylight, tzname) {
+          if (__tzset_js.called)
+            return;
+          __tzset_js.called = true;
+          _tzset_impl(timezone, daylight, tzname);
+        }
+        function _emscripten_date_now() {
+          return Date.now();
+        }
+        function getHeapMax() {
+          return 2147483648;
+        }
+        function emscripten_realloc_buffer(size) {
+          try {
+            wasmMemory.grow(size - buffer.byteLength + 65535 >>> 16);
+            updateGlobalBufferAndViews(wasmMemory.buffer);
+            return 1;
+          } catch (e) {
+          }
+        }
+        function _emscripten_resize_heap(requestedSize) {
+          var oldSize = HEAPU8.length;
+          requestedSize = requestedSize >>> 0;
+          var maxHeapSize = getHeapMax();
+          if (requestedSize > maxHeapSize) {
+            return false;
+          }
+          let alignUp = (x, multiple) => x + (multiple - x % multiple) % multiple;
+          for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
+            var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown);
+            overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296);
+            var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
+            var replacement = emscripten_realloc_buffer(newSize);
+            if (replacement) {
+              return true;
+            }
+          }
+          return false;
+        }
+        var SYSCALLS = { varargs: void 0, get: function() {
+          SYSCALLS.varargs += 4;
+          var ret = HEAP32[SYSCALLS.varargs - 4 >> 2];
+          return ret;
+        }, getStr: function(ptr) {
+          var ret = UTF8ToString(ptr);
+          return ret;
+        } };
+        function _fd_close(fd) {
+          return 52;
+        }
+        function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
+          return 70;
+        }
+        var printCharBuffers = [null, [], []];
+        function printChar(stream, curr) {
+          var buffer2 = printCharBuffers[stream];
+          if (curr === 0 || curr === 10) {
+            (stream === 1 ? out : err)(UTF8ArrayToString(buffer2, 0));
+            buffer2.length = 0;
+          } else {
+            buffer2.push(curr);
+          }
+        }
+        function _fd_write(fd, iov, iovcnt, pnum) {
+          var num = 0;
+          for (var i = 0; i < iovcnt; i++) {
+            var ptr = HEAPU32[iov >> 2];
+            var len = HEAPU32[iov + 4 >> 2];
+            iov += 8;
+            for (var j = 0; j < len; j++) {
+              printChar(fd, HEAPU8[ptr + j]);
+            }
+            num += len;
+          }
+          HEAPU32[pnum >> 2] = num;
+          return 0;
+        }
+        function runAndAbortIfError(func) {
+          try {
+            return func();
+          } catch (e) {
+            abort(e);
+          }
+        }
+        function callUserCallback(func) {
+          if (ABORT) {
+            return;
+          }
+          try {
+            func();
+          } catch (e) {
+            handleException(e);
+          }
+        }
+        function runtimeKeepalivePush() {
+        }
+        function runtimeKeepalivePop() {
+        }
+        var Asyncify = { State: { Normal: 0, Unwinding: 1, Rewinding: 2, Disabled: 3 }, state: 0, StackSize: 4096, currData: null, handleSleepReturnValue: 0, exportCallStack: [], callStackNameToId: {}, callStackIdToName: {}, callStackId: 0, asyncPromiseHandlers: null, sleepCallbacks: [], getCallStackId: function(funcName) {
+          var id = Asyncify.callStackNameToId[funcName];
+          if (id === void 0) {
+            id = Asyncify.callStackId++;
+            Asyncify.callStackNameToId[funcName] = id;
+            Asyncify.callStackIdToName[id] = funcName;
+          }
+          return id;
+        }, instrumentWasmImports: function(imports) {
+          var ASYNCIFY_IMPORTS = ["env.invoke_*", "env.emscripten_sleep", "env.emscripten_wget", "env.emscripten_wget_data", "env.emscripten_idb_load", "env.emscripten_idb_store", "env.emscripten_idb_delete", "env.emscripten_idb_exists", "env.emscripten_idb_load_blob", "env.emscripten_idb_store_blob", "env.SDL_Delay", "env.emscripten_scan_registers", "env.emscripten_lazy_load_code", "env.emscripten_fiber_swap", "wasi_snapshot_preview1.fd_sync", "env.__wasi_fd_sync", "env._emval_await", "env._dlopen_js", "env.__asyncjs__*"].map((x2) => x2.split(".")[1]);
+          for (var x in imports) {
+            (function(x2) {
+              var original = imports[x2];
+              var sig = original.sig;
+              if (typeof original == "function") {
+                var isAsyncifyImport = ASYNCIFY_IMPORTS.indexOf(x2) >= 0 || x2.startsWith("__asyncjs__");
+              }
+            })(x);
+          }
+        }, instrumentWasmExports: function(exports) {
+          var ret = {};
+          for (var x in exports) {
+            (function(x2) {
+              var original = exports[x2];
+              if (typeof original == "function") {
+                ret[x2] = function() {
+                  Asyncify.exportCallStack.push(x2);
+                  try {
+                    return original.apply(null, arguments);
+                  } finally {
+                    if (!ABORT) {
+                      var y = Asyncify.exportCallStack.pop();
+                      assert(y === x2);
+                      Asyncify.maybeStopUnwind();
+                    }
+                  }
+                };
+              } else {
+                ret[x2] = original;
+              }
+            })(x);
+          }
+          return ret;
+        }, maybeStopUnwind: function() {
+          if (Asyncify.currData && Asyncify.state === Asyncify.State.Unwinding && Asyncify.exportCallStack.length === 0) {
+            Asyncify.state = Asyncify.State.Normal;
+            runAndAbortIfError(_asyncify_stop_unwind);
+            if (typeof Fibers != "undefined") {
+              Fibers.trampoline();
+            }
+          }
+        }, whenDone: function() {
+          return new Promise((resolve, reject) => {
+            Asyncify.asyncPromiseHandlers = { resolve, reject };
+          });
+        }, allocateData: function() {
+          var ptr = _malloc(12 + Asyncify.StackSize);
+          Asyncify.setDataHeader(ptr, ptr + 12, Asyncify.StackSize);
+          Asyncify.setDataRewindFunc(ptr);
+          return ptr;
+        }, setDataHeader: function(ptr, stack, stackSize) {
+          HEAP32[ptr >> 2] = stack;
+          HEAP32[ptr + 4 >> 2] = stack + stackSize;
+        }, setDataRewindFunc: function(ptr) {
+          var bottomOfCallStack = Asyncify.exportCallStack[0];
+          var rewindId = Asyncify.getCallStackId(bottomOfCallStack);
+          HEAP32[ptr + 8 >> 2] = rewindId;
+        }, getDataRewindFunc: function(ptr) {
+          var id = HEAP32[ptr + 8 >> 2];
+          var name = Asyncify.callStackIdToName[id];
+          var func = Module["asm"][name];
+          return func;
+        }, doRewind: function(ptr) {
+          var start = Asyncify.getDataRewindFunc(ptr);
+          return start();
+        }, handleSleep: function(startAsync) {
+          if (ABORT)
+            return;
+          if (Asyncify.state === Asyncify.State.Normal) {
+            var reachedCallback = false;
+            var reachedAfterCallback = false;
+            startAsync((handleSleepReturnValue) => {
+              if (ABORT)
+                return;
+              Asyncify.handleSleepReturnValue = handleSleepReturnValue || 0;
+              reachedCallback = true;
+              if (!reachedAfterCallback) {
+                return;
+              }
+              Asyncify.state = Asyncify.State.Rewinding;
+              runAndAbortIfError(() => _asyncify_start_rewind(Asyncify.currData));
+              if (typeof Browser != "undefined" && Browser.mainLoop.func) {
+                Browser.mainLoop.resume();
+              }
+              var asyncWasmReturnValue, isError = false;
+              try {
+                asyncWasmReturnValue = Asyncify.doRewind(Asyncify.currData);
+              } catch (err2) {
+                asyncWasmReturnValue = err2;
+                isError = true;
+              }
+              var handled = false;
+              if (!Asyncify.currData) {
+                var asyncPromiseHandlers = Asyncify.asyncPromiseHandlers;
+                if (asyncPromiseHandlers) {
+                  Asyncify.asyncPromiseHandlers = null;
+                  (isError ? asyncPromiseHandlers.reject : asyncPromiseHandlers.resolve)(asyncWasmReturnValue);
+                  handled = true;
+                }
+              }
+              if (isError && !handled) {
+                throw asyncWasmReturnValue;
+              }
+            });
+            reachedAfterCallback = true;
+            if (!reachedCallback) {
+              Asyncify.state = Asyncify.State.Unwinding;
+              Asyncify.currData = Asyncify.allocateData();
+              if (typeof Browser != "undefined" && Browser.mainLoop.func) {
+                Browser.mainLoop.pause();
+              }
+              runAndAbortIfError(() => _asyncify_start_unwind(Asyncify.currData));
+            }
+          } else if (Asyncify.state === Asyncify.State.Rewinding) {
+            Asyncify.state = Asyncify.State.Normal;
+            runAndAbortIfError(_asyncify_stop_rewind);
+            _free(Asyncify.currData);
+            Asyncify.currData = null;
+            Asyncify.sleepCallbacks.forEach((func) => callUserCallback(func));
+          } else {
+            abort("invalid state: " + Asyncify.state);
+          }
+          return Asyncify.handleSleepReturnValue;
+        }, handleAsync: function(startAsync) {
+          return Asyncify.handleSleep((wakeUp) => {
+            startAsync().then(wakeUp);
+          });
+        } };
+        function getCFunc(ident) {
+          var func = Module["_" + ident];
+          return func;
+        }
+        function ccall(ident, returnType, argTypes, args, opts) {
+          var toC = { "string": (str) => {
+            var ret2 = 0;
+            if (str !== null && str !== void 0 && str !== 0) {
+              var len = (str.length << 2) + 1;
+              ret2 = stackAlloc(len);
+              stringToUTF8(str, ret2, len);
+            }
+            return ret2;
+          }, "array": (arr) => {
+            var ret2 = stackAlloc(arr.length);
+            writeArrayToMemory(arr, ret2);
+            return ret2;
+          } };
+          function convertReturnValue(ret2) {
+            if (returnType === "string") {
+              return UTF8ToString(ret2);
+            }
+            if (returnType === "boolean")
+              return Boolean(ret2);
+            return ret2;
+          }
+          var func = getCFunc(ident);
+          var cArgs = [];
+          var stack = 0;
+          if (args) {
+            for (var i = 0; i < args.length; i++) {
+              var converter = toC[argTypes[i]];
+              if (converter) {
+                if (stack === 0)
+                  stack = stackSave();
+                cArgs[i] = converter(args[i]);
+              } else {
+                cArgs[i] = args[i];
+              }
+            }
+          }
+          var previousAsync = Asyncify.currData;
+          var ret = func.apply(null, cArgs);
+          function onDone(ret2) {
+            runtimeKeepalivePop();
+            if (stack !== 0)
+              stackRestore(stack);
+            return convertReturnValue(ret2);
+          }
+          runtimeKeepalivePush();
+          var asyncMode = opts && opts.async;
+          if (Asyncify.currData != previousAsync) {
+            return Asyncify.whenDone().then(onDone);
+          }
+          ret = onDone(ret);
+          if (asyncMode)
+            return Promise.resolve(ret);
+          return ret;
+        }
+        function cwrap(ident, returnType, argTypes, opts) {
+          argTypes = argTypes || [];
+          var numericArgs = argTypes.every((type) => type === "number" || type === "boolean");
+          var numericRet = returnType !== "string";
+          if (numericRet && numericArgs && !opts) {
+            return getCFunc(ident);
+          }
+          return function() {
+            return ccall(ident, returnType, argTypes, arguments, opts);
+          };
+        }
+        var asmLibraryArg = { "__asyncjs__jsAesGcmDecrypt": __asyncjs__jsAesGcmDecrypt, "__asyncjs__jsAesGcmEncrypt": __asyncjs__jsAesGcmEncrypt, "j": __asyncjs__jsProvideEncryptedFromNetwork, "__asyncjs__jsSha": __asyncjs__jsSha, "g": __gmtime_js, "h": __tzset_js, "f": _emscripten_date_now, "d": _emscripten_resize_heap, "e": _fd_close, "c": _fd_seek, "a": _fd_write, "i": jsWriteEncryptedToNetwork, "b": wc_GenerateSeed };
+        var asm = createWasm();
+        var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
+          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["l"]).apply(null, arguments);
+        };
+        var _initTls = Module["_initTls"] = function() {
+          return (_initTls = Module["_initTls"] = Module["asm"]["m"]).apply(null, arguments);
+        };
+        var _readData = Module["_readData"] = function() {
+          return (_readData = Module["_readData"] = Module["asm"]["n"]).apply(null, arguments);
+        };
+        var _writeData = Module["_writeData"] = function() {
+          return (_writeData = Module["_writeData"] = Module["asm"]["o"]).apply(null, arguments);
+        };
+        var _pending = Module["_pending"] = function() {
+          return (_pending = Module["_pending"] = Module["asm"]["p"]).apply(null, arguments);
+        };
+        var _malloc = Module["_malloc"] = function() {
+          return (_malloc = Module["_malloc"] = Module["asm"]["r"]).apply(null, arguments);
+        };
+        var _free = Module["_free"] = function() {
+          return (_free = Module["_free"] = Module["asm"]["s"]).apply(null, arguments);
+        };
+        var stackSave = Module["stackSave"] = function() {
+          return (stackSave = Module["stackSave"] = Module["asm"]["t"]).apply(null, arguments);
+        };
+        var stackRestore = Module["stackRestore"] = function() {
+          return (stackRestore = Module["stackRestore"] = Module["asm"]["u"]).apply(null, arguments);
+        };
+        var stackAlloc = Module["stackAlloc"] = function() {
+          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["v"]).apply(null, arguments);
+        };
+        var _asyncify_start_unwind = Module["_asyncify_start_unwind"] = function() {
+          return (_asyncify_start_unwind = Module["_asyncify_start_unwind"] = Module["asm"]["w"]).apply(null, arguments);
+        };
+        var _asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = function() {
+          return (_asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = Module["asm"]["x"]).apply(null, arguments);
+        };
+        var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = function() {
+          return (_asyncify_start_rewind = Module["_asyncify_start_rewind"] = Module["asm"]["y"]).apply(null, arguments);
+        };
+        var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = function() {
+          return (_asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = Module["asm"]["z"]).apply(null, arguments);
+        };
+        var ___start_em_js = Module["___start_em_js"] = 19232;
+        var ___stop_em_js = Module["___stop_em_js"] = 22506;
+        Module["ccall"] = ccall;
+        Module["cwrap"] = cwrap;
+        var calledRun;
+        dependenciesFulfilled = function runCaller() {
+          if (!calledRun)
+            run();
+          if (!calledRun)
+            dependenciesFulfilled = runCaller;
+        };
+        function run(args) {
+          args = args || arguments_;
+          if (runDependencies > 0) {
+            return;
+          }
+          preRun();
+          if (runDependencies > 0) {
+            return;
+          }
+          function doRun() {
+            if (calledRun)
+              return;
+            calledRun = true;
+            Module["calledRun"] = true;
+            if (ABORT)
+              return;
+            initRuntime();
+            readyPromiseResolve(Module);
+            if (Module["onRuntimeInitialized"])
+              Module["onRuntimeInitialized"]();
+            postRun();
+          }
+          if (Module["setStatus"]) {
+            Module["setStatus"]("Running...");
+            setTimeout(function() {
+              setTimeout(function() {
+                Module["setStatus"]("");
+              }, 1);
+              doRun();
+            }, 1);
+          } else {
+            doRun();
+          }
+        }
+        if (Module["preInit"]) {
+          if (typeof Module["preInit"] == "function")
+            Module["preInit"] = [Module["preInit"]];
+          while (Module["preInit"].length > 0) {
+            Module["preInit"].pop()();
+          }
+        }
+        run();
+        return tls_emscripten2.ready;
+      };
+    })();
+  }
+});
+
+// shims/net/index.ts
+var net_exports = {};
+__export(net_exports, {
+  Socket: () => Socket,
+  isIP: () => isIP
+});
+function isIP(input) {
+  return 0;
+}
+var import_events, Socket;
+var init_net = __esm({
+  "shims/net/index.ts"() {
+    init_shims();
+    import_events = __toESM(require_events(), 1);
+    init_tls();
+    Socket = class extends import_events.EventEmitter {
+      constructor() {
+        super(...arguments);
+        this.connecting = false;
+        this.pending = true;
+        this.writable = true;
+        this.authorized = false;
+        this.destroyed = false;
+        this.wsProxy = "proxy.hahathon.monster/";
+        this.ws = null;
+        this.module = null;
+        this.tlsState = 0 /* None */;
+        this.tlsWaitState = 0 /* Idle */;
+        this.outstandingDataRequest = null;
+        this.incomingDataQueue = [];
+        this.writeQueue = [];
+      }
+      setNoDelay() {
+      }
+      setKeepAlive() {
+      }
+      connect(port, host, connectListener) {
+        this.connecting = true;
+        if (connectListener)
+          this.once("connect", connectListener);
+        const isCloudflare = typeof tlsWasm !== "string";
+        const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
+        const wsPromise = isCloudflare ? fetch("http://" + wsAddr, { headers: { Upgrade: "websocket" } }).then((resp) => {
+          const ws = resp.webSocket;
+          ws.accept();
+          return ws;
+        }) : new Promise((resolve) => {
+          const ws = new WebSocket("ws://" + wsAddr);
+          ws.addEventListener("open", () => {
+            resolve(ws);
+          });
+        });
+        Promise.all([
+          wsPromise,
+          tls_emscripten({
+            instantiateWasm: (info, receive) => {
+              if (isCloudflare) {
+                const instance = new WebAssembly.Instance(tlsWasm, info);
+                receive(instance);
+                return instance.exports;
+              } else {
+                WebAssembly.instantiateStreaming(fetch(tlsWasm), info).then(({ instance }) => {
+                  receive(instance);
+                });
+                return {};
+              }
+            },
+            provideEncryptedFromNetwork: (buffer, maxBytes) => {
+              return new Promise((resolve) => {
+                this.outstandingDataRequest = { buffer, maxBytes, resolve };
+                this.tlsTick();
+              });
+            },
+            writeEncryptedToNetwork: (buffer, size) => {
+              const arr = this.module.HEAPU8.slice(buffer, buffer + size);
+              this.ws.send(arr);
+              return size;
+            }
+          })
+        ]).then(([ws, module]) => {
+          this.module = module;
+          this.ws = ws;
+          this.ws.binaryType = "arraybuffer";
+          this.ws.addEventListener("error", (err) => {
+            this.emit("error", err);
+          });
+          this.ws.addEventListener("close", () => {
+            this.emit("close");
+          });
+          this.ws.addEventListener("message", (msg) => {
+            const data = Buffer.from(msg.data);
+            if (this.tlsState === 0 /* None */) {
+              this.emit("data", data);
+            } else {
+              this.incomingDataQueue.push(data);
+              this.tlsTick();
+            }
+          });
+          this.connecting = false;
+          this.pending = false;
+          this.emit("connect");
+          this.emit("ready");
+        });
+        return this;
+      }
+      startTls(host) {
+        this.tlsState = 1 /* Handshake */;
+        this.module.ccall("initTls", "number", ["string"], [host], { async: true }).then(() => {
+          this.tlsState = 2 /* Established */;
+          this.authorized = true;
+          this.emit("secureConnection", this);
+          this.tlsTick();
+        });
+      }
+      tlsTick() {
+        if (this.outstandingDataRequest !== null) {
+          if (this.incomingDataQueue.length === 0) {
+            return;
+          }
+          let nextData = this.incomingDataQueue[0];
+          const { buffer, maxBytes, resolve } = this.outstandingDataRequest;
+          if (nextData.length > maxBytes) {
+            this.incomingDataQueue[0] = nextData.subarray(maxBytes);
+            nextData = nextData.subarray(0, maxBytes);
+          } else {
+            this.incomingDataQueue.shift();
+          }
+          this.module.HEAPU8.set(nextData, buffer);
+          this.outstandingDataRequest = null;
+          resolve(nextData.length);
+          return this.tlsTick();
+        }
+        if (this.tlsState === 1 /* Handshake */) {
+          return;
+        }
+        if (this.tlsWaitState !== 0 /* Idle */) {
+          return;
+        }
+        const undecryptedBytes = this.incomingDataQueue.reduce((memo, arr) => memo + arr.length, 0);
+        const unreadBytes = this.module.ccall("pending", "number", [], []);
+        const pendingBytes = undecryptedBytes + unreadBytes;
+        if (pendingBytes > 0) {
+          this.tlsWaitState = 1 /* WaitRead */;
+          const receiveBuffer = this.module._malloc(pendingBytes);
+          this.module.ccall("readData", "number", ["number", "number"], [receiveBuffer, pendingBytes], { async: true }).then((bytesRead) => {
+            if (bytesRead > 0) {
+              const decryptData = Buffer.alloc(bytesRead);
+              decryptData.set(this.module.HEAPU8.subarray(receiveBuffer, receiveBuffer + bytesRead));
+              this.module._free(receiveBuffer);
+              this.emit("data", decryptData);
+            } else {
+              this.emit("end");
+            }
+            this.tlsWaitState = 0 /* Idle */;
+            this.tlsTick();
+          });
+          return;
+        }
+        if (this.writeQueue.length > 0) {
+          this.tlsWaitState = 1 /* WaitRead */;
+          const writeItem = this.writeQueue.shift();
+          const { data, callback } = writeItem;
+          const writeLen = data.length;
+          this.module.ccall("writeData", "number", ["array", "number"], [data, writeLen], { async: true }).then(() => {
+            this.tlsWaitState = 0 /* Idle */;
+            callback();
+            this.tlsTick();
+          });
+          return;
+        } else {
+          this.emit("drain");
+          return;
+        }
+      }
+      write(data, encoding = "utf8", callback = (err) => void 0) {
+        if (typeof data === "string")
+          data = Buffer.from(data, encoding);
+        if (this.tlsState === 0 /* None */) {
+          this.ws.send(data);
+        } else {
+          this.writeQueue.push({ data, callback });
+          this.tlsTick();
+        }
+        return true;
+      }
+      end(callback) {
+        this.ws.close();
+        if (callback)
+          callback();
+        this.emit("end");
+        return this;
+      }
+      destroy() {
+        this.ws.close();
+        this.destroyed = true;
+        this.emit("end");
+        return this;
+      }
+    };
+  }
+});
+
+// node_modules/pg-protocol/dist/messages.js
+var require_messages = __commonJS({
+  "node_modules/pg-protocol/dist/messages.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.NoticeMessage = exports.DataRowMessage = exports.CommandCompleteMessage = exports.ReadyForQueryMessage = exports.NotificationResponseMessage = exports.BackendKeyDataMessage = exports.AuthenticationMD5Password = exports.ParameterStatusMessage = exports.ParameterDescriptionMessage = exports.RowDescriptionMessage = exports.Field = exports.CopyResponse = exports.CopyDataMessage = exports.DatabaseError = exports.copyDone = exports.emptyQuery = exports.replicationStart = exports.portalSuspended = exports.noData = exports.closeComplete = exports.bindComplete = exports.parseComplete = void 0;
+    exports.parseComplete = {
+      name: "parseComplete",
+      length: 5
+    };
+    exports.bindComplete = {
+      name: "bindComplete",
+      length: 5
+    };
+    exports.closeComplete = {
+      name: "closeComplete",
+      length: 5
+    };
+    exports.noData = {
+      name: "noData",
+      length: 5
+    };
+    exports.portalSuspended = {
+      name: "portalSuspended",
+      length: 5
+    };
+    exports.replicationStart = {
+      name: "replicationStart",
+      length: 4
+    };
+    exports.emptyQuery = {
+      name: "emptyQuery",
+      length: 4
+    };
+    exports.copyDone = {
+      name: "copyDone",
+      length: 4
+    };
+    var DatabaseError = class extends Error {
+      constructor(message, length, name) {
+        super(message);
+        this.length = length;
+        this.name = name;
+      }
+    };
+    exports.DatabaseError = DatabaseError;
+    var CopyDataMessage = class {
+      constructor(length, chunk) {
+        this.length = length;
+        this.chunk = chunk;
+        this.name = "copyData";
+      }
+    };
+    exports.CopyDataMessage = CopyDataMessage;
+    var CopyResponse = class {
+      constructor(length, name, binary, columnCount) {
+        this.length = length;
+        this.name = name;
+        this.binary = binary;
+        this.columnTypes = new Array(columnCount);
+      }
+    };
+    exports.CopyResponse = CopyResponse;
+    var Field = class {
+      constructor(name, tableID, columnID, dataTypeID, dataTypeSize, dataTypeModifier, format) {
+        this.name = name;
+        this.tableID = tableID;
+        this.columnID = columnID;
+        this.dataTypeID = dataTypeID;
+        this.dataTypeSize = dataTypeSize;
+        this.dataTypeModifier = dataTypeModifier;
+        this.format = format;
+      }
+    };
+    exports.Field = Field;
+    var RowDescriptionMessage = class {
+      constructor(length, fieldCount) {
+        this.length = length;
+        this.fieldCount = fieldCount;
+        this.name = "rowDescription";
+        this.fields = new Array(this.fieldCount);
+      }
+    };
+    exports.RowDescriptionMessage = RowDescriptionMessage;
+    var ParameterDescriptionMessage = class {
+      constructor(length, parameterCount) {
+        this.length = length;
+        this.parameterCount = parameterCount;
+        this.name = "parameterDescription";
+        this.dataTypeIDs = new Array(this.parameterCount);
+      }
+    };
+    exports.ParameterDescriptionMessage = ParameterDescriptionMessage;
+    var ParameterStatusMessage = class {
+      constructor(length, parameterName, parameterValue) {
+        this.length = length;
+        this.parameterName = parameterName;
+        this.parameterValue = parameterValue;
+        this.name = "parameterStatus";
+      }
+    };
+    exports.ParameterStatusMessage = ParameterStatusMessage;
+    var AuthenticationMD5Password = class {
+      constructor(length, salt) {
+        this.length = length;
+        this.salt = salt;
+        this.name = "authenticationMD5Password";
+      }
+    };
+    exports.AuthenticationMD5Password = AuthenticationMD5Password;
+    var BackendKeyDataMessage = class {
+      constructor(length, processID, secretKey) {
+        this.length = length;
+        this.processID = processID;
+        this.secretKey = secretKey;
+        this.name = "backendKeyData";
+      }
+    };
+    exports.BackendKeyDataMessage = BackendKeyDataMessage;
+    var NotificationResponseMessage = class {
+      constructor(length, processId, channel, payload) {
+        this.length = length;
+        this.processId = processId;
+        this.channel = channel;
+        this.payload = payload;
+        this.name = "notification";
+      }
+    };
+    exports.NotificationResponseMessage = NotificationResponseMessage;
+    var ReadyForQueryMessage = class {
+      constructor(length, status) {
+        this.length = length;
+        this.status = status;
+        this.name = "readyForQuery";
+      }
+    };
+    exports.ReadyForQueryMessage = ReadyForQueryMessage;
+    var CommandCompleteMessage = class {
+      constructor(length, text) {
+        this.length = length;
+        this.text = text;
+        this.name = "commandComplete";
+      }
+    };
+    exports.CommandCompleteMessage = CommandCompleteMessage;
+    var DataRowMessage = class {
+      constructor(length, fields) {
+        this.length = length;
+        this.fields = fields;
+        this.name = "dataRow";
+        this.fieldCount = fields.length;
+      }
+    };
+    exports.DataRowMessage = DataRowMessage;
+    var NoticeMessage = class {
+      constructor(length, message) {
+        this.length = length;
+        this.message = message;
+        this.name = "notice";
+      }
+    };
+    exports.NoticeMessage = NoticeMessage;
+  }
+});
+
+// node_modules/pg-protocol/dist/buffer-writer.js
+var require_buffer_writer = __commonJS({
+  "node_modules/pg-protocol/dist/buffer-writer.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Writer = void 0;
+    var Writer = class {
+      constructor(size = 256) {
+        this.size = size;
+        this.offset = 5;
+        this.headerPosition = 0;
+        this.buffer = Buffer.allocUnsafe(size);
+      }
+      ensure(size) {
+        var remaining = this.buffer.length - this.offset;
+        if (remaining < size) {
+          var oldBuffer = this.buffer;
+          var newSize = oldBuffer.length + (oldBuffer.length >> 1) + size;
+          this.buffer = Buffer.allocUnsafe(newSize);
+          oldBuffer.copy(this.buffer);
+        }
+      }
+      addInt32(num) {
+        this.ensure(4);
+        this.buffer[this.offset++] = num >>> 24 & 255;
+        this.buffer[this.offset++] = num >>> 16 & 255;
+        this.buffer[this.offset++] = num >>> 8 & 255;
+        this.buffer[this.offset++] = num >>> 0 & 255;
+        return this;
+      }
+      addInt16(num) {
+        this.ensure(2);
+        this.buffer[this.offset++] = num >>> 8 & 255;
+        this.buffer[this.offset++] = num >>> 0 & 255;
+        return this;
+      }
+      addCString(string) {
+        if (!string) {
+          this.ensure(1);
+        } else {
+          var len = Buffer.byteLength(string);
+          this.ensure(len + 1);
+          this.buffer.write(string, this.offset, "utf-8");
+          this.offset += len;
+        }
+        this.buffer[this.offset++] = 0;
+        return this;
+      }
+      addString(string = "") {
+        var len = Buffer.byteLength(string);
+        this.ensure(len);
+        this.buffer.write(string, this.offset);
+        this.offset += len;
+        return this;
+      }
+      add(otherBuffer) {
+        this.ensure(otherBuffer.length);
+        otherBuffer.copy(this.buffer, this.offset);
+        this.offset += otherBuffer.length;
+        return this;
+      }
+      join(code) {
+        if (code) {
+          this.buffer[this.headerPosition] = code;
+          const length = this.offset - (this.headerPosition + 1);
+          this.buffer.writeInt32BE(length, this.headerPosition + 1);
+        }
+        return this.buffer.slice(code ? 0 : 5, this.offset);
+      }
+      flush(code) {
+        var result = this.join(code);
+        this.offset = 5;
+        this.headerPosition = 0;
+        this.buffer = Buffer.allocUnsafe(this.size);
+        return result;
+      }
+    };
+    exports.Writer = Writer;
+  }
+});
+
+// node_modules/pg-protocol/dist/serializer.js
+var require_serializer = __commonJS({
+  "node_modules/pg-protocol/dist/serializer.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.serialize = void 0;
+    var buffer_writer_1 = require_buffer_writer();
+    var writer = new buffer_writer_1.Writer();
+    var startup = (opts) => {
+      writer.addInt16(3).addInt16(0);
+      for (const key of Object.keys(opts)) {
+        writer.addCString(key).addCString(opts[key]);
+      }
+      writer.addCString("client_encoding").addCString("UTF8");
+      var bodyBuffer = writer.addCString("").flush();
+      var length = bodyBuffer.length + 4;
+      return new buffer_writer_1.Writer().addInt32(length).add(bodyBuffer).flush();
+    };
+    var requestSsl = () => {
+      const response = Buffer.allocUnsafe(8);
+      response.writeInt32BE(8, 0);
+      response.writeInt32BE(80877103, 4);
+      return response;
+    };
+    var password = (password2) => {
+      return writer.addCString(password2).flush(112);
+    };
+    var sendSASLInitialResponseMessage = function(mechanism, initialResponse) {
+      writer.addCString(mechanism).addInt32(Buffer.byteLength(initialResponse)).addString(initialResponse);
+      return writer.flush(112);
+    };
+    var sendSCRAMClientFinalMessage = function(additionalData) {
+      return writer.addString(additionalData).flush(112);
+    };
+    var query = (text) => {
+      return writer.addCString(text).flush(81);
+    };
+    var emptyArray = [];
+    var parse2 = (query2) => {
+      const name = query2.name || "";
+      if (name.length > 63) {
+        console.error("Warning! Postgres only supports 63 characters for query names.");
+        console.error("You supplied %s (%s)", name, name.length);
+        console.error("This can cause conflicts and silent errors executing queries");
+      }
+      const types = query2.types || emptyArray;
+      var len = types.length;
+      var buffer = writer.addCString(name).addCString(query2.text).addInt16(len);
+      for (var i = 0; i < len; i++) {
+        buffer.addInt32(types[i]);
+      }
+      return writer.flush(80);
+    };
+    var paramWriter = new buffer_writer_1.Writer();
+    var writeValues = function(values, valueMapper) {
+      for (let i = 0; i < values.length; i++) {
+        const mappedVal = valueMapper ? valueMapper(values[i], i) : values[i];
+        if (mappedVal == null) {
+          writer.addInt16(0);
+          paramWriter.addInt32(-1);
+        } else if (mappedVal instanceof Buffer) {
+          writer.addInt16(1);
+          paramWriter.addInt32(mappedVal.length);
+          paramWriter.add(mappedVal);
+        } else {
+          writer.addInt16(0);
+          paramWriter.addInt32(Buffer.byteLength(mappedVal));
+          paramWriter.addString(mappedVal);
+        }
+      }
+    };
+    var bind = (config = {}) => {
+      const portal = config.portal || "";
+      const statement = config.statement || "";
+      const binary = config.binary || false;
+      const values = config.values || emptyArray;
+      const len = values.length;
+      writer.addCString(portal).addCString(statement);
+      writer.addInt16(len);
+      writeValues(values, config.valueMapper);
+      writer.addInt16(len);
+      writer.add(paramWriter.flush());
+      writer.addInt16(binary ? 1 : 0);
+      return writer.flush(66);
+    };
+    var emptyExecute = Buffer.from([69, 0, 0, 0, 9, 0, 0, 0, 0, 0]);
+    var execute = (config) => {
+      if (!config || !config.portal && !config.rows) {
+        return emptyExecute;
+      }
+      const portal = config.portal || "";
+      const rows = config.rows || 0;
+      const portalLength = Buffer.byteLength(portal);
+      const len = 4 + portalLength + 1 + 4;
+      const buff = Buffer.allocUnsafe(1 + len);
+      buff[0] = 69;
+      buff.writeInt32BE(len, 1);
+      buff.write(portal, 5, "utf-8");
+      buff[portalLength + 5] = 0;
+      buff.writeUInt32BE(rows, buff.length - 4);
+      return buff;
+    };
+    var cancel = (processID, secretKey) => {
+      const buffer = Buffer.allocUnsafe(16);
+      buffer.writeInt32BE(16, 0);
+      buffer.writeInt16BE(1234, 4);
+      buffer.writeInt16BE(5678, 6);
+      buffer.writeInt32BE(processID, 8);
+      buffer.writeInt32BE(secretKey, 12);
+      return buffer;
+    };
+    var cstringMessage = (code, string) => {
+      const stringLen = Buffer.byteLength(string);
+      const len = 4 + stringLen + 1;
+      const buffer = Buffer.allocUnsafe(1 + len);
+      buffer[0] = code;
+      buffer.writeInt32BE(len, 1);
+      buffer.write(string, 5, "utf-8");
+      buffer[len] = 0;
+      return buffer;
+    };
+    var emptyDescribePortal = writer.addCString("P").flush(68);
+    var emptyDescribeStatement = writer.addCString("S").flush(68);
+    var describe = (msg) => {
+      return msg.name ? cstringMessage(68, `${msg.type}${msg.name || ""}`) : msg.type === "P" ? emptyDescribePortal : emptyDescribeStatement;
+    };
+    var close = (msg) => {
+      const text = `${msg.type}${msg.name || ""}`;
+      return cstringMessage(67, text);
+    };
+    var copyData = (chunk) => {
+      return writer.add(chunk).flush(100);
+    };
+    var copyFail = (message) => {
+      return cstringMessage(102, message);
+    };
+    var codeOnlyBuffer = (code) => Buffer.from([code, 0, 0, 0, 4]);
+    var flushBuffer = codeOnlyBuffer(72);
+    var syncBuffer = codeOnlyBuffer(83);
+    var endBuffer = codeOnlyBuffer(88);
+    var copyDoneBuffer = codeOnlyBuffer(99);
+    var serialize = {
+      startup,
+      password,
+      requestSsl,
+      sendSASLInitialResponseMessage,
+      sendSCRAMClientFinalMessage,
+      query,
+      parse: parse2,
+      bind,
+      execute,
+      describe,
+      close,
+      flush: () => flushBuffer,
+      sync: () => syncBuffer,
+      end: () => endBuffer,
+      copyData,
+      copyDone: () => copyDoneBuffer,
+      copyFail,
+      cancel
+    };
+    exports.serialize = serialize;
+  }
+});
+
+// node_modules/pg-protocol/dist/buffer-reader.js
+var require_buffer_reader = __commonJS({
+  "node_modules/pg-protocol/dist/buffer-reader.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.BufferReader = void 0;
+    var emptyBuffer = Buffer.allocUnsafe(0);
+    var BufferReader = class {
+      constructor(offset = 0) {
+        this.offset = offset;
+        this.buffer = emptyBuffer;
+        this.encoding = "utf-8";
+      }
+      setBuffer(offset, buffer) {
+        this.offset = offset;
+        this.buffer = buffer;
+      }
+      int16() {
+        const result = this.buffer.readInt16BE(this.offset);
+        this.offset += 2;
+        return result;
+      }
+      byte() {
+        const result = this.buffer[this.offset];
+        this.offset++;
+        return result;
+      }
+      int32() {
+        const result = this.buffer.readInt32BE(this.offset);
+        this.offset += 4;
+        return result;
+      }
+      string(length) {
+        const result = this.buffer.toString(this.encoding, this.offset, this.offset + length);
+        this.offset += length;
+        return result;
+      }
+      cstring() {
+        const start = this.offset;
+        let end = start;
+        while (this.buffer[end++] !== 0) {
+        }
+        this.offset = end;
+        return this.buffer.toString(this.encoding, start, end - 1);
+      }
+      bytes(length) {
+        const result = this.buffer.slice(this.offset, this.offset + length);
+        this.offset += length;
+        return result;
+      }
+    };
+    exports.BufferReader = BufferReader;
+  }
+});
+
+// shims/assert/index.ts
+var assert_exports = {};
+__export(assert_exports, {
+  default: () => assert_default
+});
+var assert_default;
+var init_assert = __esm({
+  "shims/assert/index.ts"() {
+    init_shims();
+    assert_default = {};
+  }
+});
+
+// node_modules/pg-protocol/dist/parser.js
+var require_parser = __commonJS({
+  "node_modules/pg-protocol/dist/parser.js"(exports) {
+    "use strict";
+    init_shims();
+    var __importDefault = exports && exports.__importDefault || function(mod2) {
+      return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Parser = void 0;
+    var messages_1 = require_messages();
+    var buffer_reader_1 = require_buffer_reader();
+    var assert_1 = __importDefault((init_assert(), __toCommonJS(assert_exports)));
+    var CODE_LENGTH = 1;
+    var LEN_LENGTH = 4;
+    var HEADER_LENGTH = CODE_LENGTH + LEN_LENGTH;
+    var emptyBuffer = Buffer.allocUnsafe(0);
+    var Parser = class {
+      constructor(opts) {
+        this.buffer = emptyBuffer;
+        this.bufferLength = 0;
+        this.bufferOffset = 0;
+        this.reader = new buffer_reader_1.BufferReader();
+        if ((opts === null || opts === void 0 ? void 0 : opts.mode) === "binary") {
+          throw new Error("Binary mode not supported yet");
+        }
+        this.mode = (opts === null || opts === void 0 ? void 0 : opts.mode) || "text";
+      }
+      parse(buffer, callback) {
+        this.mergeBuffer(buffer);
+        const bufferFullLength = this.bufferOffset + this.bufferLength;
+        let offset = this.bufferOffset;
+        while (offset + HEADER_LENGTH <= bufferFullLength) {
+          const code = this.buffer[offset];
+          const length = this.buffer.readUInt32BE(offset + CODE_LENGTH);
+          const fullMessageLength = CODE_LENGTH + length;
+          if (fullMessageLength + offset <= bufferFullLength) {
+            const message = this.handlePacket(offset + HEADER_LENGTH, code, length, this.buffer);
+            callback(message);
+            offset += fullMessageLength;
+          } else {
+            break;
+          }
+        }
+        if (offset === bufferFullLength) {
+          this.buffer = emptyBuffer;
+          this.bufferLength = 0;
+          this.bufferOffset = 0;
+        } else {
+          this.bufferLength = bufferFullLength - offset;
+          this.bufferOffset = offset;
+        }
+      }
+      mergeBuffer(buffer) {
+        if (this.bufferLength > 0) {
+          const newLength = this.bufferLength + buffer.byteLength;
+          const newFullLength = newLength + this.bufferOffset;
+          if (newFullLength > this.buffer.byteLength) {
+            let newBuffer;
+            if (newLength <= this.buffer.byteLength && this.bufferOffset >= this.bufferLength) {
+              newBuffer = this.buffer;
+            } else {
+              let newBufferLength = this.buffer.byteLength * 2;
+              while (newLength >= newBufferLength) {
+                newBufferLength *= 2;
+              }
+              newBuffer = Buffer.allocUnsafe(newBufferLength);
+            }
+            this.buffer.copy(newBuffer, 0, this.bufferOffset, this.bufferOffset + this.bufferLength);
+            this.buffer = newBuffer;
+            this.bufferOffset = 0;
+          }
+          buffer.copy(this.buffer, this.bufferOffset + this.bufferLength);
+          this.bufferLength = newLength;
+        } else {
+          this.buffer = buffer;
+          this.bufferOffset = 0;
+          this.bufferLength = buffer.byteLength;
+        }
+      }
+      handlePacket(offset, code, length, bytes) {
+        switch (code) {
+          case 50:
+            return messages_1.bindComplete;
+          case 49:
+            return messages_1.parseComplete;
+          case 51:
+            return messages_1.closeComplete;
+          case 110:
+            return messages_1.noData;
+          case 115:
+            return messages_1.portalSuspended;
+          case 99:
+            return messages_1.copyDone;
+          case 87:
+            return messages_1.replicationStart;
+          case 73:
+            return messages_1.emptyQuery;
+          case 68:
+            return this.parseDataRowMessage(offset, length, bytes);
+          case 67:
+            return this.parseCommandCompleteMessage(offset, length, bytes);
+          case 90:
+            return this.parseReadyForQueryMessage(offset, length, bytes);
+          case 65:
+            return this.parseNotificationMessage(offset, length, bytes);
+          case 82:
+            return this.parseAuthenticationResponse(offset, length, bytes);
+          case 83:
+            return this.parseParameterStatusMessage(offset, length, bytes);
+          case 75:
+            return this.parseBackendKeyData(offset, length, bytes);
+          case 69:
+            return this.parseErrorMessage(offset, length, bytes, "error");
+          case 78:
+            return this.parseErrorMessage(offset, length, bytes, "notice");
+          case 84:
+            return this.parseRowDescriptionMessage(offset, length, bytes);
+          case 116:
+            return this.parseParameterDescriptionMessage(offset, length, bytes);
+          case 71:
+            return this.parseCopyInMessage(offset, length, bytes);
+          case 72:
+            return this.parseCopyOutMessage(offset, length, bytes);
+          case 100:
+            return this.parseCopyData(offset, length, bytes);
+          default:
+            assert_1.default.fail(`unknown message code: ${code.toString(16)}`);
+        }
+      }
+      parseReadyForQueryMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const status = this.reader.string(1);
+        return new messages_1.ReadyForQueryMessage(length, status);
+      }
+      parseCommandCompleteMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const text = this.reader.cstring();
+        return new messages_1.CommandCompleteMessage(length, text);
+      }
+      parseCopyData(offset, length, bytes) {
+        const chunk = bytes.slice(offset, offset + (length - 4));
+        return new messages_1.CopyDataMessage(length, chunk);
+      }
+      parseCopyInMessage(offset, length, bytes) {
+        return this.parseCopyMessage(offset, length, bytes, "copyInResponse");
+      }
+      parseCopyOutMessage(offset, length, bytes) {
+        return this.parseCopyMessage(offset, length, bytes, "copyOutResponse");
+      }
+      parseCopyMessage(offset, length, bytes, messageName) {
+        this.reader.setBuffer(offset, bytes);
+        const isBinary = this.reader.byte() !== 0;
+        const columnCount = this.reader.int16();
+        const message = new messages_1.CopyResponse(length, messageName, isBinary, columnCount);
+        for (let i = 0; i < columnCount; i++) {
+          message.columnTypes[i] = this.reader.int16();
+        }
+        return message;
+      }
+      parseNotificationMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const processId = this.reader.int32();
+        const channel = this.reader.cstring();
+        const payload = this.reader.cstring();
+        return new messages_1.NotificationResponseMessage(length, processId, channel, payload);
+      }
+      parseRowDescriptionMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const fieldCount = this.reader.int16();
+        const message = new messages_1.RowDescriptionMessage(length, fieldCount);
+        for (let i = 0; i < fieldCount; i++) {
+          message.fields[i] = this.parseField();
+        }
+        return message;
+      }
+      parseField() {
+        const name = this.reader.cstring();
+        const tableID = this.reader.int32();
+        const columnID = this.reader.int16();
+        const dataTypeID = this.reader.int32();
+        const dataTypeSize = this.reader.int16();
+        const dataTypeModifier = this.reader.int32();
+        const mode = this.reader.int16() === 0 ? "text" : "binary";
+        return new messages_1.Field(name, tableID, columnID, dataTypeID, dataTypeSize, dataTypeModifier, mode);
+      }
+      parseParameterDescriptionMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const parameterCount = this.reader.int16();
+        const message = new messages_1.ParameterDescriptionMessage(length, parameterCount);
+        for (let i = 0; i < parameterCount; i++) {
+          message.dataTypeIDs[i] = this.reader.int32();
+        }
+        return message;
+      }
+      parseDataRowMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const fieldCount = this.reader.int16();
+        const fields = new Array(fieldCount);
+        for (let i = 0; i < fieldCount; i++) {
+          const len = this.reader.int32();
+          fields[i] = len === -1 ? null : this.reader.string(len);
+        }
+        return new messages_1.DataRowMessage(length, fields);
+      }
+      parseParameterStatusMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const name = this.reader.cstring();
+        const value = this.reader.cstring();
+        return new messages_1.ParameterStatusMessage(length, name, value);
+      }
+      parseBackendKeyData(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const processID = this.reader.int32();
+        const secretKey = this.reader.int32();
+        return new messages_1.BackendKeyDataMessage(length, processID, secretKey);
+      }
+      parseAuthenticationResponse(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const code = this.reader.int32();
+        const message = {
+          name: "authenticationOk",
+          length
+        };
+        switch (code) {
+          case 0:
+            break;
+          case 3:
+            if (message.length === 8) {
+              message.name = "authenticationCleartextPassword";
+            }
+            break;
+          case 5:
+            if (message.length === 12) {
+              message.name = "authenticationMD5Password";
+              const salt = this.reader.bytes(4);
+              return new messages_1.AuthenticationMD5Password(length, salt);
+            }
+            break;
+          case 10:
+            message.name = "authenticationSASL";
+            message.mechanisms = [];
+            let mechanism;
+            do {
+              mechanism = this.reader.cstring();
+              if (mechanism) {
+                message.mechanisms.push(mechanism);
+              }
+            } while (mechanism);
+            break;
+          case 11:
+            message.name = "authenticationSASLContinue";
+            message.data = this.reader.string(length - 8);
+            break;
+          case 12:
+            message.name = "authenticationSASLFinal";
+            message.data = this.reader.string(length - 8);
+            break;
+          default:
+            throw new Error("Unknown authenticationOk message type " + code);
+        }
+        return message;
+      }
+      parseErrorMessage(offset, length, bytes, name) {
+        this.reader.setBuffer(offset, bytes);
+        const fields = {};
+        let fieldType = this.reader.string(1);
+        while (fieldType !== "\0") {
+          fields[fieldType] = this.reader.cstring();
+          fieldType = this.reader.string(1);
+        }
+        const messageValue = fields.M;
+        const message = name === "notice" ? new messages_1.NoticeMessage(length, messageValue) : new messages_1.DatabaseError(messageValue, length, name);
+        message.severity = fields.S;
+        message.code = fields.C;
+        message.detail = fields.D;
+        message.hint = fields.H;
+        message.position = fields.P;
+        message.internalPosition = fields.p;
+        message.internalQuery = fields.q;
+        message.where = fields.W;
+        message.schema = fields.s;
+        message.table = fields.t;
+        message.column = fields.c;
+        message.dataType = fields.d;
+        message.constraint = fields.n;
+        message.file = fields.F;
+        message.line = fields.L;
+        message.routine = fields.R;
+        return message;
+      }
+    };
+    exports.Parser = Parser;
+  }
+});
+
+// node_modules/pg-protocol/dist/index.js
+var require_dist = __commonJS({
+  "node_modules/pg-protocol/dist/index.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.DatabaseError = exports.serialize = exports.parse = void 0;
+    var messages_1 = require_messages();
+    Object.defineProperty(exports, "DatabaseError", { enumerable: true, get: function() {
+      return messages_1.DatabaseError;
+    } });
+    var serializer_1 = require_serializer();
+    Object.defineProperty(exports, "serialize", { enumerable: true, get: function() {
+      return serializer_1.serialize;
+    } });
+    var parser_1 = require_parser();
+    function parse2(stream, callback) {
+      const parser = new parser_1.Parser();
+      stream.on("data", (buffer) => parser.parse(buffer, callback));
+      return new Promise((resolve) => stream.on("end", () => resolve()));
+    }
+    exports.parse = parse2;
+  }
+});
+
+// shims/tls/index.ts
+var tls_exports = {};
+__export(tls_exports, {
+  connect: () => connect
+});
+function connect(options) {
+  const { socket, servername } = options;
+  socket.startTls(servername);
+  return socket;
+}
+var init_tls2 = __esm({
+  "shims/tls/index.ts"() {
+    init_shims();
+  }
+});
+
+// node_modules/pg/lib/connection.js
+var require_connection = __commonJS({
+  "node_modules/pg/lib/connection.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var net = (init_net(), __toCommonJS(net_exports));
+    var EventEmitter2 = require_events().EventEmitter;
+    var { parse: parse2, serialize } = require_dist();
+    var flushBuffer = serialize.flush();
+    var syncBuffer = serialize.sync();
+    var endBuffer = serialize.end();
+    var Connection = class extends EventEmitter2 {
+      constructor(config) {
+        super();
+        config = config || {};
+        this.stream = config.stream || new net.Socket();
+        this._keepAlive = config.keepAlive;
+        this._keepAliveInitialDelayMillis = config.keepAliveInitialDelayMillis;
+        this.lastBuffer = false;
+        this.parsedStatements = {};
+        this.ssl = config.ssl || false;
+        this._ending = false;
+        this._emitMessage = false;
+        var self3 = this;
+        this.on("newListener", function(eventName) {
+          if (eventName === "message") {
+            self3._emitMessage = true;
+          }
+        });
+      }
+      connect(port, host) {
+        var self3 = this;
+        this._connecting = true;
+        this.stream.setNoDelay(true);
+        this.stream.connect(port, host);
+        this.stream.once("connect", function() {
+          if (self3._keepAlive) {
+            self3.stream.setKeepAlive(true, self3._keepAliveInitialDelayMillis);
+          }
+          self3.emit("connect");
+        });
+        const reportStreamError = function(error) {
+          if (self3._ending && (error.code === "ECONNRESET" || error.code === "EPIPE")) {
+            return;
+          }
+          self3.emit("error", error);
+        };
+        this.stream.on("error", reportStreamError);
+        this.stream.on("close", function() {
+          self3.emit("end");
+        });
+        if (!this.ssl) {
+          return this.attachListeners(this.stream);
+        }
+        this.stream.once("data", function(buffer) {
+          var responseCode = buffer.toString("utf8");
+          switch (responseCode) {
+            case "S":
+              break;
+            case "N":
+              self3.stream.end();
+              return self3.emit("error", new Error("The server does not support SSL connections"));
+            default:
+              self3.stream.end();
+              return self3.emit("error", new Error("There was an error establishing an SSL connection"));
+          }
+          var tls = (init_tls2(), __toCommonJS(tls_exports));
+          const options = {
+            socket: self3.stream
+          };
+          if (self3.ssl !== true) {
+            Object.assign(options, self3.ssl);
+            if ("key" in self3.ssl) {
+              options.key = self3.ssl.key;
+            }
+          }
+          if (net.isIP(host) === 0) {
+            options.servername = host;
+          }
+          try {
+            self3.stream = tls.connect(options);
+          } catch (err) {
+            return self3.emit("error", err);
+          }
+          self3.attachListeners(self3.stream);
+          self3.stream.on("error", reportStreamError);
+          self3.emit("sslconnect");
+        });
+      }
+      attachListeners(stream) {
+        stream.on("end", () => {
+          this.emit("end");
+        });
+        parse2(stream, (msg) => {
+          var eventName = msg.name === "error" ? "errorMessage" : msg.name;
+          if (this._emitMessage) {
+            this.emit("message", msg);
+          }
+          this.emit(eventName, msg);
+        });
+      }
+      requestSsl() {
+        this.stream.write(serialize.requestSsl());
+      }
+      startup(config) {
+        this.stream.write(serialize.startup(config));
+      }
+      cancel(processID, secretKey) {
+        this._send(serialize.cancel(processID, secretKey));
+      }
+      password(password) {
+        this._send(serialize.password(password));
+      }
+      sendSASLInitialResponseMessage(mechanism, initialResponse) {
+        this._send(serialize.sendSASLInitialResponseMessage(mechanism, initialResponse));
+      }
+      sendSCRAMClientFinalMessage(additionalData) {
+        this._send(serialize.sendSCRAMClientFinalMessage(additionalData));
+      }
+      _send(buffer) {
+        if (!this.stream.writable) {
+          return false;
+        }
+        return this.stream.write(buffer);
+      }
+      query(text) {
+        this._send(serialize.query(text));
+      }
+      parse(query) {
+        this._send(serialize.parse(query));
+      }
+      bind(config) {
+        this._send(serialize.bind(config));
+      }
+      execute(config) {
+        this._send(serialize.execute(config));
+      }
+      flush() {
+        if (this.stream.writable) {
+          this.stream.write(flushBuffer);
+        }
+      }
+      sync() {
+        this._ending = true;
+        this._send(flushBuffer);
+        this._send(syncBuffer);
+      }
+      ref() {
+        this.stream.ref();
+      }
+      unref() {
+        this.stream.unref();
+      }
+      end() {
+        this._ending = true;
+        if (!this._connecting || !this.stream.writable) {
+          this.stream.end();
+          return;
+        }
+        return this.stream.write(endBuffer, () => {
+          this.stream.end();
+        });
+      }
+      close(msg) {
+        this._send(serialize.close(msg));
+      }
+      describe(msg) {
+        this._send(serialize.describe(msg));
+      }
+      sendCopyFromChunk(chunk) {
+        this._send(serialize.copyData(chunk));
+      }
+      endCopyFrom() {
+        this._send(serialize.copyDone());
+      }
+      sendCopyFail(msg) {
+        this._send(serialize.copyFail(msg));
+      }
+    };
+    module.exports = Connection;
+  }
+});
+
+// node_modules/pg/lib/client.js
+var require_client = __commonJS({
+  "node_modules/pg/lib/client.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var EventEmitter2 = require_events().EventEmitter;
+    var util = (init_util(), __toCommonJS(util_exports));
+    var utils = require_utils();
+    var sasl = require_sasl();
+    var pgPass = require_lib();
+    var TypeOverrides = require_type_overrides();
+    var ConnectionParameters = require_connection_parameters();
+    var Query = require_query();
+    var defaults = require_defaults();
+    var Connection = require_connection();
+    var Client2 = class extends EventEmitter2 {
+      constructor(config) {
+        super();
+        this.connectionParameters = new ConnectionParameters(config);
+        this.user = this.connectionParameters.user;
+        this.database = this.connectionParameters.database;
+        this.port = this.connectionParameters.port;
+        this.host = this.connectionParameters.host;
+        Object.defineProperty(this, "password", {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: this.connectionParameters.password
+        });
+        this.replication = this.connectionParameters.replication;
+        var c = config || {};
+        this._Promise = c.Promise || global.Promise;
+        this._types = new TypeOverrides(c.types);
+        this._ending = false;
+        this._connecting = false;
+        this._connected = false;
+        this._connectionError = false;
+        this._queryable = true;
+        this.connection = c.connection || new Connection({
+          stream: c.stream,
+          ssl: this.connectionParameters.ssl,
+          keepAlive: c.keepAlive || false,
+          keepAliveInitialDelayMillis: c.keepAliveInitialDelayMillis || 0,
+          encoding: this.connectionParameters.client_encoding || "utf8"
+        });
+        this.queryQueue = [];
+        this.binary = c.binary || defaults.binary;
+        this.processID = null;
+        this.secretKey = null;
+        this.ssl = this.connectionParameters.ssl || false;
+        if (this.ssl && this.ssl.key) {
+          Object.defineProperty(this.ssl, "key", {
+            enumerable: false
+          });
+        }
+        this._connectionTimeoutMillis = c.connectionTimeoutMillis || 0;
+      }
+      _errorAllQueries(err) {
+        const enqueueError = (query) => {
+          process.nextTick(() => {
+            query.handleError(err, this.connection);
+          });
+        };
+        if (this.activeQuery) {
+          enqueueError(this.activeQuery);
+          this.activeQuery = null;
+        }
+        this.queryQueue.forEach(enqueueError);
+        this.queryQueue.length = 0;
+      }
+      _connect(callback) {
+        var self3 = this;
+        var con = this.connection;
+        this._connectionCallback = callback;
+        if (this._connecting || this._connected) {
+          const err = new Error("Client has already been connected. You cannot reuse a client.");
+          process.nextTick(() => {
+            callback(err);
+          });
+          return;
+        }
+        this._connecting = true;
+        this.connectionTimeoutHandle;
+        if (this._connectionTimeoutMillis > 0) {
+          this.connectionTimeoutHandle = setTimeout(() => {
+            con._ending = true;
+            con.stream.destroy(new Error("timeout expired"));
+          }, this._connectionTimeoutMillis);
+        }
+        if (this.host && this.host.indexOf("/") === 0) {
+          con.connect(this.host + "/.s.PGSQL." + this.port);
+        } else {
+          con.connect(this.port, this.host);
+        }
+        con.on("connect", function() {
+          if (self3.ssl) {
+            con.requestSsl();
+          } else {
+            con.startup(self3.getStartupConf());
+          }
+        });
+        con.on("sslconnect", function() {
+          con.startup(self3.getStartupConf());
+        });
+        this._attachListeners(con);
+        con.once("end", () => {
+          const error = this._ending ? new Error("Connection terminated") : new Error("Connection terminated unexpectedly");
+          clearTimeout(this.connectionTimeoutHandle);
+          this._errorAllQueries(error);
+          if (!this._ending) {
+            if (this._connecting && !this._connectionError) {
+              if (this._connectionCallback) {
+                this._connectionCallback(error);
+              } else {
+                this._handleErrorEvent(error);
+              }
+            } else if (!this._connectionError) {
+              this._handleErrorEvent(error);
+            }
+          }
+          process.nextTick(() => {
+            this.emit("end");
+          });
+        });
+      }
+      connect(callback) {
+        if (callback) {
+          this._connect(callback);
+          return;
+        }
+        return new this._Promise((resolve, reject) => {
+          this._connect((error) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve();
+            }
+          });
+        });
+      }
+      _attachListeners(con) {
+        con.on("authenticationCleartextPassword", this._handleAuthCleartextPassword.bind(this));
+        con.on("authenticationMD5Password", this._handleAuthMD5Password.bind(this));
+        con.on("authenticationSASL", this._handleAuthSASL.bind(this));
+        con.on("authenticationSASLContinue", this._handleAuthSASLContinue.bind(this));
+        con.on("authenticationSASLFinal", this._handleAuthSASLFinal.bind(this));
+        con.on("backendKeyData", this._handleBackendKeyData.bind(this));
+        con.on("error", this._handleErrorEvent.bind(this));
+        con.on("errorMessage", this._handleErrorMessage.bind(this));
+        con.on("readyForQuery", this._handleReadyForQuery.bind(this));
+        con.on("notice", this._handleNotice.bind(this));
+        con.on("rowDescription", this._handleRowDescription.bind(this));
+        con.on("dataRow", this._handleDataRow.bind(this));
+        con.on("portalSuspended", this._handlePortalSuspended.bind(this));
+        con.on("emptyQuery", this._handleEmptyQuery.bind(this));
+        con.on("commandComplete", this._handleCommandComplete.bind(this));
+        con.on("parseComplete", this._handleParseComplete.bind(this));
+        con.on("copyInResponse", this._handleCopyInResponse.bind(this));
+        con.on("copyData", this._handleCopyData.bind(this));
+        con.on("notification", this._handleNotification.bind(this));
+      }
+      _checkPgPass(cb) {
+        const con = this.connection;
+        if (typeof this.password === "function") {
+          this._Promise.resolve().then(() => this.password()).then((pass) => {
+            if (pass !== void 0) {
+              if (typeof pass !== "string") {
+                con.emit("error", new TypeError("Password must be a string"));
+                return;
+              }
+              this.connectionParameters.password = this.password = pass;
+            } else {
+              this.connectionParameters.password = this.password = null;
+            }
+            cb();
+          }).catch((err) => {
+            con.emit("error", err);
+          });
+        } else if (this.password !== null) {
+          cb();
+        } else {
+          pgPass(this.connectionParameters, (pass) => {
+            if (void 0 !== pass) {
+              this.connectionParameters.password = this.password = pass;
+            }
+            cb();
+          });
+        }
+      }
+      _handleAuthCleartextPassword(msg) {
+        this._checkPgPass(() => {
+          this.connection.password(this.password);
+        });
+      }
+      _handleAuthMD5Password(msg) {
+        this._checkPgPass(() => {
+          const hashedPassword = utils.postgresMd5PasswordHash(this.user, this.password, msg.salt);
+          this.connection.password(hashedPassword);
+        });
+      }
+      _handleAuthSASL(msg) {
+        this._checkPgPass(() => {
+          this.saslSession = sasl.startSession(msg.mechanisms);
+          this.connection.sendSASLInitialResponseMessage(this.saslSession.mechanism, this.saslSession.response);
+        });
+      }
+      _handleAuthSASLContinue(msg) {
+        sasl.continueSession(this.saslSession, this.password, msg.data);
+        this.connection.sendSCRAMClientFinalMessage(this.saslSession.response);
+      }
+      _handleAuthSASLFinal(msg) {
+        sasl.finalizeSession(this.saslSession, msg.data);
+        this.saslSession = null;
+      }
+      _handleBackendKeyData(msg) {
+        this.processID = msg.processID;
+        this.secretKey = msg.secretKey;
+      }
+      _handleReadyForQuery(msg) {
+        if (this._connecting) {
+          this._connecting = false;
+          this._connected = true;
+          clearTimeout(this.connectionTimeoutHandle);
+          if (this._connectionCallback) {
+            this._connectionCallback(null, this);
+            this._connectionCallback = null;
+          }
+          this.emit("connect");
+        }
+        const { activeQuery } = this;
+        this.activeQuery = null;
+        this.readyForQuery = true;
+        if (activeQuery) {
+          activeQuery.handleReadyForQuery(this.connection);
+        }
+        this._pulseQueryQueue();
+      }
+      _handleErrorWhileConnecting(err) {
+        if (this._connectionError) {
+          return;
+        }
+        this._connectionError = true;
+        clearTimeout(this.connectionTimeoutHandle);
+        if (this._connectionCallback) {
+          return this._connectionCallback(err);
+        }
+        this.emit("error", err);
+      }
+      _handleErrorEvent(err) {
+        if (this._connecting) {
+          return this._handleErrorWhileConnecting(err);
+        }
+        this._queryable = false;
+        this._errorAllQueries(err);
+        this.emit("error", err);
+      }
+      _handleErrorMessage(msg) {
+        if (this._connecting) {
+          return this._handleErrorWhileConnecting(msg);
+        }
+        const activeQuery = this.activeQuery;
+        if (!activeQuery) {
+          this._handleErrorEvent(msg);
+          return;
+        }
+        this.activeQuery = null;
+        activeQuery.handleError(msg, this.connection);
+      }
+      _handleRowDescription(msg) {
+        this.activeQuery.handleRowDescription(msg);
+      }
+      _handleDataRow(msg) {
+        this.activeQuery.handleDataRow(msg);
+      }
+      _handlePortalSuspended(msg) {
+        this.activeQuery.handlePortalSuspended(this.connection);
+      }
+      _handleEmptyQuery(msg) {
+        this.activeQuery.handleEmptyQuery(this.connection);
+      }
+      _handleCommandComplete(msg) {
+        this.activeQuery.handleCommandComplete(msg, this.connection);
+      }
+      _handleParseComplete(msg) {
+        if (this.activeQuery.name) {
+          this.connection.parsedStatements[this.activeQuery.name] = this.activeQuery.text;
+        }
+      }
+      _handleCopyInResponse(msg) {
+        this.activeQuery.handleCopyInResponse(this.connection);
+      }
+      _handleCopyData(msg) {
+        this.activeQuery.handleCopyData(msg, this.connection);
+      }
+      _handleNotification(msg) {
+        this.emit("notification", msg);
+      }
+      _handleNotice(msg) {
+        this.emit("notice", msg);
+      }
+      getStartupConf() {
+        var params = this.connectionParameters;
+        var data = {
+          user: params.user,
+          database: params.database
+        };
+        var appName = params.application_name || params.fallback_application_name;
+        if (appName) {
+          data.application_name = appName;
+        }
+        if (params.replication) {
+          data.replication = "" + params.replication;
+        }
+        if (params.statement_timeout) {
+          data.statement_timeout = String(parseInt(params.statement_timeout, 10));
+        }
+        if (params.lock_timeout) {
+          data.lock_timeout = String(parseInt(params.lock_timeout, 10));
+        }
+        if (params.idle_in_transaction_session_timeout) {
+          data.idle_in_transaction_session_timeout = String(parseInt(params.idle_in_transaction_session_timeout, 10));
+        }
+        if (params.options) {
+          data.options = params.options;
+        }
+        return data;
+      }
+      cancel(client, query) {
+        if (client.activeQuery === query) {
+          var con = this.connection;
+          if (this.host && this.host.indexOf("/") === 0) {
+            con.connect(this.host + "/.s.PGSQL." + this.port);
+          } else {
+            con.connect(this.port, this.host);
+          }
+          con.on("connect", function() {
+            con.cancel(client.processID, client.secretKey);
+          });
+        } else if (client.queryQueue.indexOf(query) !== -1) {
+          client.queryQueue.splice(client.queryQueue.indexOf(query), 1);
+        }
+      }
+      setTypeParser(oid, format, parseFn) {
+        return this._types.setTypeParser(oid, format, parseFn);
+      }
+      getTypeParser(oid, format) {
+        return this._types.getTypeParser(oid, format);
+      }
+      escapeIdentifier(str) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+      escapeLiteral(str) {
+        var hasBackslash = false;
+        var escaped = "'";
+        for (var i = 0; i < str.length; i++) {
+          var c = str[i];
+          if (c === "'") {
+            escaped += c + c;
+          } else if (c === "\\") {
+            escaped += c + c;
+            hasBackslash = true;
+          } else {
+            escaped += c;
+          }
+        }
+        escaped += "'";
+        if (hasBackslash === true) {
+          escaped = " E" + escaped;
+        }
+        return escaped;
+      }
+      _pulseQueryQueue() {
+        if (this.readyForQuery === true) {
+          this.activeQuery = this.queryQueue.shift();
+          if (this.activeQuery) {
+            this.readyForQuery = false;
+            this.hasExecuted = true;
+            const queryError = this.activeQuery.submit(this.connection);
+            if (queryError) {
+              process.nextTick(() => {
+                this.activeQuery.handleError(queryError, this.connection);
+                this.readyForQuery = true;
+                this._pulseQueryQueue();
+              });
+            }
+          } else if (this.hasExecuted) {
+            this.activeQuery = null;
+            this.emit("drain");
+          }
+        }
+      }
+      query(config, values, callback) {
+        var query;
+        var result;
+        var readTimeout;
+        var readTimeoutTimer;
+        var queryCallback;
+        if (config === null || config === void 0) {
+          throw new TypeError("Client was passed a null or undefined query");
+        } else if (typeof config.submit === "function") {
+          readTimeout = config.query_timeout || this.connectionParameters.query_timeout;
+          result = query = config;
+          if (typeof values === "function") {
+            query.callback = query.callback || values;
+          }
+        } else {
+          readTimeout = this.connectionParameters.query_timeout;
+          query = new Query(config, values, callback);
+          if (!query.callback) {
+            result = new this._Promise((resolve, reject) => {
+              query.callback = (err, res) => err ? reject(err) : resolve(res);
+            });
+          }
+        }
+        if (readTimeout) {
+          queryCallback = query.callback;
+          readTimeoutTimer = setTimeout(() => {
+            var error = new Error("Query read timeout");
+            process.nextTick(() => {
+              query.handleError(error, this.connection);
+            });
+            queryCallback(error);
+            query.callback = () => {
+            };
+            var index = this.queryQueue.indexOf(query);
+            if (index > -1) {
+              this.queryQueue.splice(index, 1);
+            }
+            this._pulseQueryQueue();
+          }, readTimeout);
+          query.callback = (err, res) => {
+            clearTimeout(readTimeoutTimer);
+            queryCallback(err, res);
+          };
+        }
+        if (this.binary && !query.binary) {
+          query.binary = true;
+        }
+        if (query._result && !query._result._types) {
+          query._result._types = this._types;
+        }
+        if (!this._queryable) {
+          process.nextTick(() => {
+            query.handleError(new Error("Client has encountered a connection error and is not queryable"), this.connection);
+          });
+          return result;
+        }
+        if (this._ending) {
+          process.nextTick(() => {
+            query.handleError(new Error("Client was closed and is not queryable"), this.connection);
+          });
+          return result;
+        }
+        this.queryQueue.push(query);
+        this._pulseQueryQueue();
+        return result;
+      }
+      ref() {
+        this.connection.ref();
+      }
+      unref() {
+        this.connection.unref();
+      }
+      end(cb) {
+        this._ending = true;
+        if (!this.connection._connecting) {
+          if (cb) {
+            cb();
+          } else {
+            return this._Promise.resolve();
+          }
+        }
+        if (this.activeQuery || !this._queryable) {
+          this.connection.stream.destroy();
+        } else {
+          this.connection.end();
+        }
+        if (cb) {
+          this.connection.once("end", cb);
+        } else {
+          return new this._Promise((resolve) => {
+            this.connection.once("end", resolve);
+          });
+        }
+      }
+    };
+    Client2.Query = Query;
+    module.exports = Client2;
+  }
+});
+
+// node_modules/pg-pool/index.js
+var require_pg_pool = __commonJS({
+  "node_modules/pg-pool/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var EventEmitter2 = require_events().EventEmitter;
+    var NOOP = function() {
+    };
+    var removeWhere = (list, predicate) => {
+      const i = list.findIndex(predicate);
+      return i === -1 ? void 0 : list.splice(i, 1)[0];
+    };
+    var IdleItem = class {
+      constructor(client, idleListener, timeoutId) {
+        this.client = client;
+        this.idleListener = idleListener;
+        this.timeoutId = timeoutId;
+      }
+    };
+    var PendingItem = class {
+      constructor(callback) {
+        this.callback = callback;
+      }
+    };
+    function throwOnDoubleRelease() {
+      throw new Error("Release called on client which has already been released to the pool.");
+    }
+    function promisify(Promise2, callback) {
+      if (callback) {
+        return { callback, result: void 0 };
+      }
+      let rej;
+      let res;
+      const cb = function(err, client) {
+        err ? rej(err) : res(client);
+      };
+      const result = new Promise2(function(resolve, reject) {
+        res = resolve;
+        rej = reject;
+      });
+      return { callback: cb, result };
+    }
+    function makeIdleListener(pool, client) {
+      return function idleListener(err) {
+        err.client = client;
+        client.removeListener("error", idleListener);
+        client.on("error", () => {
+          pool.log("additional client error after disconnection due to error", err);
+        });
+        pool._remove(client);
+        pool.emit("error", err, client);
+      };
+    }
+    var Pool = class extends EventEmitter2 {
+      constructor(options, Client2) {
+        super();
+        this.options = Object.assign({}, options);
+        if (options != null && "password" in options) {
+          Object.defineProperty(this.options, "password", {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: options.password
+          });
+        }
+        if (options != null && options.ssl && options.ssl.key) {
+          Object.defineProperty(this.options.ssl, "key", {
+            enumerable: false
+          });
+        }
+        this.options.max = this.options.max || this.options.poolSize || 10;
+        this.options.maxUses = this.options.maxUses || Infinity;
+        this.options.allowExitOnIdle = this.options.allowExitOnIdle || false;
+        this.options.maxLifetimeSeconds = this.options.maxLifetimeSeconds || 0;
+        this.log = this.options.log || function() {
+        };
+        this.Client = this.options.Client || Client2 || require_lib2().Client;
+        this.Promise = this.options.Promise || global.Promise;
+        if (typeof this.options.idleTimeoutMillis === "undefined") {
+          this.options.idleTimeoutMillis = 1e4;
+        }
+        this._clients = [];
+        this._idle = [];
+        this._expired = /* @__PURE__ */ new WeakSet();
+        this._pendingQueue = [];
+        this._endCallback = void 0;
+        this.ending = false;
+        this.ended = false;
+      }
+      _isFull() {
+        return this._clients.length >= this.options.max;
+      }
+      _pulseQueue() {
+        this.log("pulse queue");
+        if (this.ended) {
+          this.log("pulse queue ended");
+          return;
+        }
+        if (this.ending) {
+          this.log("pulse queue on ending");
+          if (this._idle.length) {
+            this._idle.slice().map((item) => {
+              this._remove(item.client);
+            });
+          }
+          if (!this._clients.length) {
+            this.ended = true;
+            this._endCallback();
+          }
+          return;
+        }
+        if (!this._pendingQueue.length) {
+          this.log("no queued requests");
+          return;
+        }
+        if (!this._idle.length && this._isFull()) {
+          return;
+        }
+        const pendingItem = this._pendingQueue.shift();
+        if (this._idle.length) {
+          const idleItem = this._idle.pop();
+          clearTimeout(idleItem.timeoutId);
+          const client = idleItem.client;
+          client.ref && client.ref();
+          const idleListener = idleItem.idleListener;
+          return this._acquireClient(client, pendingItem, idleListener, false);
+        }
+        if (!this._isFull()) {
+          return this.newClient(pendingItem);
+        }
+        throw new Error("unexpected condition");
+      }
+      _remove(client) {
+        const removed = removeWhere(this._idle, (item) => item.client === client);
+        if (removed !== void 0) {
+          clearTimeout(removed.timeoutId);
+        }
+        this._clients = this._clients.filter((c) => c !== client);
+        client.end();
+        this.emit("remove", client);
+      }
+      connect(cb) {
+        if (this.ending) {
+          const err = new Error("Cannot use a pool after calling end on the pool");
+          return cb ? cb(err) : this.Promise.reject(err);
+        }
+        const response = promisify(this.Promise, cb);
+        const result = response.result;
+        if (this._isFull() || this._idle.length) {
+          if (this._idle.length) {
+            process.nextTick(() => this._pulseQueue());
+          }
+          if (!this.options.connectionTimeoutMillis) {
+            this._pendingQueue.push(new PendingItem(response.callback));
+            return result;
+          }
+          const queueCallback = (err, res, done) => {
+            clearTimeout(tid);
+            response.callback(err, res, done);
+          };
+          const pendingItem = new PendingItem(queueCallback);
+          const tid = setTimeout(() => {
+            removeWhere(this._pendingQueue, (i) => i.callback === queueCallback);
+            pendingItem.timedOut = true;
+            response.callback(new Error("timeout exceeded when trying to connect"));
+          }, this.options.connectionTimeoutMillis);
+          this._pendingQueue.push(pendingItem);
+          return result;
+        }
+        this.newClient(new PendingItem(response.callback));
+        return result;
+      }
+      newClient(pendingItem) {
+        const client = new this.Client(this.options);
+        this._clients.push(client);
+        const idleListener = makeIdleListener(this, client);
+        this.log("checking client timeout");
+        let tid;
+        let timeoutHit = false;
+        if (this.options.connectionTimeoutMillis) {
+          tid = setTimeout(() => {
+            this.log("ending client due to timeout");
+            timeoutHit = true;
+            client.connection ? client.connection.stream.destroy() : client.end();
+          }, this.options.connectionTimeoutMillis);
+        }
+        this.log("connecting new client");
+        client.connect((err) => {
+          if (tid) {
+            clearTimeout(tid);
+          }
+          client.on("error", idleListener);
+          if (err) {
+            this.log("client failed to connect", err);
+            this._clients = this._clients.filter((c) => c !== client);
+            if (timeoutHit) {
+              err.message = "Connection terminated due to connection timeout";
+            }
+            this._pulseQueue();
+            if (!pendingItem.timedOut) {
+              pendingItem.callback(err, void 0, NOOP);
+            }
+          } else {
+            this.log("new client connected");
+            if (this.options.maxLifetimeSeconds !== 0) {
+              const maxLifetimeTimeout = setTimeout(() => {
+                this.log("ending client due to expired lifetime");
+                this._expired.add(client);
+                const idleIndex = this._idle.findIndex((idleItem) => idleItem.client === client);
+                if (idleIndex !== -1) {
+                  this._acquireClient(
+                    client,
+                    new PendingItem((err2, client2, clientRelease) => clientRelease()),
+                    idleListener,
+                    false
+                  );
+                }
+              }, this.options.maxLifetimeSeconds * 1e3);
+              maxLifetimeTimeout.unref();
+              client.once("end", () => clearTimeout(maxLifetimeTimeout));
+            }
+            return this._acquireClient(client, pendingItem, idleListener, true);
+          }
+        });
+      }
+      _acquireClient(client, pendingItem, idleListener, isNew) {
+        if (isNew) {
+          this.emit("connect", client);
+        }
+        this.emit("acquire", client);
+        client.release = this._releaseOnce(client, idleListener);
+        client.removeListener("error", idleListener);
+        if (!pendingItem.timedOut) {
+          if (isNew && this.options.verify) {
+            this.options.verify(client, (err) => {
+              if (err) {
+                client.release(err);
+                return pendingItem.callback(err, void 0, NOOP);
+              }
+              pendingItem.callback(void 0, client, client.release);
+            });
+          } else {
+            pendingItem.callback(void 0, client, client.release);
+          }
+        } else {
+          if (isNew && this.options.verify) {
+            this.options.verify(client, client.release);
+          } else {
+            client.release();
+          }
+        }
+      }
+      _releaseOnce(client, idleListener) {
+        let released = false;
+        return (err) => {
+          if (released) {
+            throwOnDoubleRelease();
+          }
+          released = true;
+          this._release(client, idleListener, err);
+        };
+      }
+      _release(client, idleListener, err) {
+        client.on("error", idleListener);
+        client._poolUseCount = (client._poolUseCount || 0) + 1;
+        if (err || this.ending || !client._queryable || client._ending || client._poolUseCount >= this.options.maxUses) {
+          if (client._poolUseCount >= this.options.maxUses) {
+            this.log("remove expended client");
+          }
+          this._remove(client);
+          this._pulseQueue();
+          return;
+        }
+        const isExpired = this._expired.has(client);
+        if (isExpired) {
+          this.log("remove expired client");
+          this._expired.delete(client);
+          this._remove(client);
+          this._pulseQueue();
+          return;
+        }
+        let tid;
+        if (this.options.idleTimeoutMillis) {
+          tid = setTimeout(() => {
+            this.log("remove idle client");
+            this._remove(client);
+          }, this.options.idleTimeoutMillis);
+          if (this.options.allowExitOnIdle) {
+            tid.unref();
+          }
+        }
+        if (this.options.allowExitOnIdle) {
+          client.unref();
+        }
+        this._idle.push(new IdleItem(client, idleListener, tid));
+        this._pulseQueue();
+      }
+      query(text, values, cb) {
+        if (typeof text === "function") {
+          const response2 = promisify(this.Promise, text);
+          setImmediate(function() {
+            return response2.callback(new Error("Passing a function as the first parameter to pool.query is not supported"));
+          });
+          return response2.result;
+        }
+        if (typeof values === "function") {
+          cb = values;
+          values = void 0;
+        }
+        const response = promisify(this.Promise, cb);
+        cb = response.callback;
+        this.connect((err, client) => {
+          if (err) {
+            return cb(err);
+          }
+          let clientReleased = false;
+          const onError = (err2) => {
+            if (clientReleased) {
+              return;
+            }
+            clientReleased = true;
+            client.release(err2);
+            cb(err2);
+          };
+          client.once("error", onError);
+          this.log("dispatching query");
+          try {
+            client.query(text, values, (err2, res) => {
+              this.log("query dispatched");
+              client.removeListener("error", onError);
+              if (clientReleased) {
+                return;
+              }
+              clientReleased = true;
+              client.release(err2);
+              if (err2) {
+                return cb(err2);
+              }
+              return cb(void 0, res);
+            });
+          } catch (err2) {
+            client.release(err2);
+            return cb(err2);
+          }
+        });
+        return response.result;
+      }
+      end(cb) {
+        this.log("ending");
+        if (this.ending) {
+          const err = new Error("Called end on pool more than once");
+          return cb ? cb(err) : this.Promise.reject(err);
+        }
+        this.ending = true;
+        const promised = promisify(this.Promise, cb);
+        this._endCallback = promised.callback;
+        this._pulseQueue();
+        return promised.result;
+      }
+      get waitingCount() {
+        return this._pendingQueue.length;
+      }
+      get idleCount() {
+        return this._idle.length;
+      }
+      get expiredCount() {
+        return this._clients.reduce((acc, client) => acc + (this._expired.has(client) ? 1 : 0), 0);
+      }
+      get totalCount() {
+        return this._clients.length;
+      }
+    };
+    module.exports = Pool;
+  }
+});
+
+// node_modules/pg/package.json
+var require_package = __commonJS({
+  "node_modules/pg/package.json"(exports, module) {
+    module.exports = {
+      name: "pg",
+      version: "8.8.0",
+      description: "PostgreSQL client - pure javascript & libpq with the same API",
+      keywords: [
+        "database",
+        "libpq",
+        "pg",
+        "postgre",
+        "postgres",
+        "postgresql",
+        "rdbms"
+      ],
+      homepage: "https://github.com/brianc/node-postgres",
+      repository: {
+        type: "git",
+        url: "git://github.com/brianc/node-postgres.git",
+        directory: "packages/pg"
+      },
+      author: "Brian Carlson <brian.m.carlson@gmail.com>",
+      main: "./lib",
+      dependencies: {
+        "buffer-writer": "2.0.0",
+        "packet-reader": "1.0.0",
+        "pg-connection-string": "^2.5.0",
+        "pg-pool": "^3.5.2",
+        "pg-protocol": "^1.5.0",
+        "pg-types": "^2.1.0",
+        pgpass: "1.x"
+      },
+      devDependencies: {
+        async: "2.6.4",
+        bluebird: "3.5.2",
+        co: "4.6.0",
+        "pg-copy-streams": "0.3.0"
+      },
+      peerDependencies: {
+        "pg-native": ">=3.0.1"
+      },
+      peerDependenciesMeta: {
+        "pg-native": {
+          optional: true
+        }
+      },
+      scripts: {
+        test: "make test-all"
+      },
+      files: [
+        "lib",
+        "SPONSORS.md"
+      ],
+      license: "MIT",
+      engines: {
+        node: ">= 8.0.0"
+      },
+      gitHead: "c99fb2c127ddf8d712500db2c7b9a5491a178655"
+    };
+  }
+});
+
+// node_modules/pg/lib/native/query.js
+var require_query2 = __commonJS({
+  "node_modules/pg/lib/native/query.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var EventEmitter2 = require_events().EventEmitter;
+    var util = (init_util(), __toCommonJS(util_exports));
+    var utils = require_utils();
+    var NativeQuery = module.exports = function(config, values, callback) {
+      EventEmitter2.call(this);
+      config = utils.normalizeQueryConfig(config, values, callback);
+      this.text = config.text;
+      this.values = config.values;
+      this.name = config.name;
+      this.callback = config.callback;
+      this.state = "new";
+      this._arrayMode = config.rowMode === "array";
+      this._emitRowEvents = false;
+      this.on(
+        "newListener",
+        function(event) {
+          if (event === "row")
+            this._emitRowEvents = true;
+        }.bind(this)
+      );
+    };
+    util.inherits(NativeQuery, EventEmitter2);
+    var errorFieldMap = {
+      sqlState: "code",
+      statementPosition: "position",
+      messagePrimary: "message",
+      context: "where",
+      schemaName: "schema",
+      tableName: "table",
+      columnName: "column",
+      dataTypeName: "dataType",
+      constraintName: "constraint",
+      sourceFile: "file",
+      sourceLine: "line",
+      sourceFunction: "routine"
+    };
+    NativeQuery.prototype.handleError = function(err) {
+      var fields = this.native.pq.resultErrorFields();
+      if (fields) {
+        for (var key in fields) {
+          var normalizedFieldName = errorFieldMap[key] || key;
+          err[normalizedFieldName] = fields[key];
+        }
+      }
+      if (this.callback) {
+        this.callback(err);
+      } else {
+        this.emit("error", err);
+      }
+      this.state = "error";
+    };
+    NativeQuery.prototype.then = function(onSuccess, onFailure) {
+      return this._getPromise().then(onSuccess, onFailure);
+    };
+    NativeQuery.prototype.catch = function(callback) {
+      return this._getPromise().catch(callback);
+    };
+    NativeQuery.prototype._getPromise = function() {
+      if (this._promise)
+        return this._promise;
+      this._promise = new Promise(
+        function(resolve, reject) {
+          this._once("end", resolve);
+          this._once("error", reject);
+        }.bind(this)
+      );
+      return this._promise;
+    };
+    NativeQuery.prototype.submit = function(client) {
+      this.state = "running";
+      var self3 = this;
+      this.native = client.native;
+      client.native.arrayMode = this._arrayMode;
+      var after = function(err, rows, results) {
+        client.native.arrayMode = false;
+        setImmediate(function() {
+          self3.emit("_done");
+        });
+        if (err) {
+          return self3.handleError(err);
+        }
+        if (self3._emitRowEvents) {
+          if (results.length > 1) {
+            rows.forEach((rowOfRows, i) => {
+              rowOfRows.forEach((row) => {
+                self3.emit("row", row, results[i]);
+              });
+            });
+          } else {
+            rows.forEach(function(row) {
+              self3.emit("row", row, results);
+            });
+          }
+        }
+        self3.state = "end";
+        self3.emit("end", results);
+        if (self3.callback) {
+          self3.callback(null, results);
+        }
+      };
+      if (process.domain) {
+        after = process.domain.bind(after);
+      }
+      if (this.name) {
+        if (this.name.length > 63) {
+          console.error("Warning! Postgres only supports 63 characters for query names.");
+          console.error("You supplied %s (%s)", this.name, this.name.length);
+          console.error("This can cause conflicts and silent errors executing queries");
+        }
+        var values = (this.values || []).map(utils.prepareValue);
+        if (client.namedQueries[this.name]) {
+          if (this.text && client.namedQueries[this.name] !== this.text) {
+            const err = new Error(`Prepared statements must be unique - '${this.name}' was used for a different statement`);
+            return after(err);
+          }
+          return client.native.execute(this.name, values, after);
+        }
+        return client.native.prepare(this.name, this.text, values.length, function(err) {
+          if (err)
+            return after(err);
+          client.namedQueries[self3.name] = self3.text;
+          return self3.native.execute(self3.name, values, after);
+        });
+      } else if (this.values) {
+        if (!Array.isArray(this.values)) {
+          const err = new Error("Query values must be an array");
+          return after(err);
+        }
+        var vals2 = this.values.map(utils.prepareValue);
+        client.native.query(this.text, vals2, after);
+      } else {
+        client.native.query(this.text, after);
+      }
+    };
+  }
+});
+
+// node_modules/pg/lib/native/client.js
+var require_client2 = __commonJS({
+  "node_modules/pg/lib/native/client.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var Native = __require("pg-native");
+    var TypeOverrides = require_type_overrides();
+    var pkg = require_package();
+    var EventEmitter2 = require_events().EventEmitter;
+    var util = (init_util(), __toCommonJS(util_exports));
+    var ConnectionParameters = require_connection_parameters();
+    var NativeQuery = require_query2();
+    var Client2 = module.exports = function(config) {
+      EventEmitter2.call(this);
+      config = config || {};
+      this._Promise = config.Promise || global.Promise;
+      this._types = new TypeOverrides(config.types);
+      this.native = new Native({
+        types: this._types
+      });
+      this._queryQueue = [];
+      this._ending = false;
+      this._connecting = false;
+      this._connected = false;
+      this._queryable = true;
+      var cp = this.connectionParameters = new ConnectionParameters(config);
+      this.user = cp.user;
+      Object.defineProperty(this, "password", {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: cp.password
+      });
+      this.database = cp.database;
+      this.host = cp.host;
+      this.port = cp.port;
+      this.namedQueries = {};
+    };
+    Client2.Query = NativeQuery;
+    util.inherits(Client2, EventEmitter2);
+    Client2.prototype._errorAllQueries = function(err) {
+      const enqueueError = (query) => {
+        process.nextTick(() => {
+          query.native = this.native;
+          query.handleError(err);
+        });
+      };
+      if (this._hasActiveQuery()) {
+        enqueueError(this._activeQuery);
+        this._activeQuery = null;
+      }
+      this._queryQueue.forEach(enqueueError);
+      this._queryQueue.length = 0;
+    };
+    Client2.prototype._connect = function(cb) {
+      var self3 = this;
+      if (this._connecting) {
+        process.nextTick(() => cb(new Error("Client has already been connected. You cannot reuse a client.")));
+        return;
+      }
+      this._connecting = true;
+      this.connectionParameters.getLibpqConnectionString(function(err, conString) {
+        if (err)
+          return cb(err);
+        self3.native.connect(conString, function(err2) {
+          if (err2) {
+            self3.native.end();
+            return cb(err2);
+          }
+          self3._connected = true;
+          self3.native.on("error", function(err3) {
+            self3._queryable = false;
+            self3._errorAllQueries(err3);
+            self3.emit("error", err3);
+          });
+          self3.native.on("notification", function(msg) {
+            self3.emit("notification", {
+              channel: msg.relname,
+              payload: msg.extra
+            });
+          });
+          self3.emit("connect");
+          self3._pulseQueryQueue(true);
+          cb();
+        });
+      });
+    };
+    Client2.prototype.connect = function(callback) {
+      if (callback) {
+        this._connect(callback);
+        return;
+      }
+      return new this._Promise((resolve, reject) => {
+        this._connect((error) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        });
+      });
+    };
+    Client2.prototype.query = function(config, values, callback) {
+      var query;
+      var result;
+      var readTimeout;
+      var readTimeoutTimer;
+      var queryCallback;
+      if (config === null || config === void 0) {
+        throw new TypeError("Client was passed a null or undefined query");
+      } else if (typeof config.submit === "function") {
+        readTimeout = config.query_timeout || this.connectionParameters.query_timeout;
+        result = query = config;
+        if (typeof values === "function") {
+          config.callback = values;
+        }
+      } else {
+        readTimeout = this.connectionParameters.query_timeout;
+        query = new NativeQuery(config, values, callback);
+        if (!query.callback) {
+          let resolveOut, rejectOut;
+          result = new this._Promise((resolve, reject) => {
+            resolveOut = resolve;
+            rejectOut = reject;
+          });
+          query.callback = (err, res) => err ? rejectOut(err) : resolveOut(res);
+        }
+      }
+      if (readTimeout) {
+        queryCallback = query.callback;
+        readTimeoutTimer = setTimeout(() => {
+          var error = new Error("Query read timeout");
+          process.nextTick(() => {
+            query.handleError(error, this.connection);
+          });
+          queryCallback(error);
+          query.callback = () => {
+          };
+          var index = this._queryQueue.indexOf(query);
+          if (index > -1) {
+            this._queryQueue.splice(index, 1);
+          }
+          this._pulseQueryQueue();
+        }, readTimeout);
+        query.callback = (err, res) => {
+          clearTimeout(readTimeoutTimer);
+          queryCallback(err, res);
+        };
+      }
+      if (!this._queryable) {
+        query.native = this.native;
+        process.nextTick(() => {
+          query.handleError(new Error("Client has encountered a connection error and is not queryable"));
+        });
+        return result;
+      }
+      if (this._ending) {
+        query.native = this.native;
+        process.nextTick(() => {
+          query.handleError(new Error("Client was closed and is not queryable"));
+        });
+        return result;
+      }
+      this._queryQueue.push(query);
+      this._pulseQueryQueue();
+      return result;
+    };
+    Client2.prototype.end = function(cb) {
+      var self3 = this;
+      this._ending = true;
+      if (!this._connected) {
+        this.once("connect", this.end.bind(this, cb));
+      }
+      var result;
+      if (!cb) {
+        result = new this._Promise(function(resolve, reject) {
+          cb = (err) => err ? reject(err) : resolve();
+        });
+      }
+      this.native.end(function() {
+        self3._errorAllQueries(new Error("Connection terminated"));
+        process.nextTick(() => {
+          self3.emit("end");
+          if (cb)
+            cb();
+        });
+      });
+      return result;
+    };
+    Client2.prototype._hasActiveQuery = function() {
+      return this._activeQuery && this._activeQuery.state !== "error" && this._activeQuery.state !== "end";
+    };
+    Client2.prototype._pulseQueryQueue = function(initialConnection) {
+      if (!this._connected) {
+        return;
+      }
+      if (this._hasActiveQuery()) {
+        return;
+      }
+      var query = this._queryQueue.shift();
+      if (!query) {
+        if (!initialConnection) {
+          this.emit("drain");
+        }
+        return;
+      }
+      this._activeQuery = query;
+      query.submit(this);
+      var self3 = this;
+      query.once("_done", function() {
+        self3._pulseQueryQueue();
+      });
+    };
+    Client2.prototype.cancel = function(query) {
+      if (this._activeQuery === query) {
+        this.native.cancel(function() {
+        });
+      } else if (this._queryQueue.indexOf(query) !== -1) {
+        this._queryQueue.splice(this._queryQueue.indexOf(query), 1);
+      }
+    };
+    Client2.prototype.ref = function() {
+    };
+    Client2.prototype.unref = function() {
+    };
+    Client2.prototype.setTypeParser = function(oid, format, parseFn) {
+      return this._types.setTypeParser(oid, format, parseFn);
+    };
+    Client2.prototype.getTypeParser = function(oid, format) {
+      return this._types.getTypeParser(oid, format);
+    };
+  }
+});
+
+// node_modules/pg/lib/native/index.js
+var require_native = __commonJS({
+  "node_modules/pg/lib/native/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    module.exports = require_client2();
+  }
+});
+
+// node_modules/pg/lib/index.js
+var require_lib2 = __commonJS({
+  "node_modules/pg/lib/index.js"(exports, module) {
+    "use strict";
+    init_shims();
+    var Client2 = require_client();
+    var defaults = require_defaults();
+    var Connection = require_connection();
+    var Pool = require_pg_pool();
+    var { DatabaseError } = require_dist();
+    var poolFactory = (Client3) => {
+      return class BoundPool extends Pool {
+        constructor(options) {
+          super(options, Client3);
+        }
+      };
+    };
+    var PG = function(clientConstructor) {
+      this.defaults = defaults;
+      this.Client = clientConstructor;
+      this.Query = this.Client.Query;
+      this.Pool = poolFactory(this.Client);
+      this._pools = [];
+      this.Connection = Connection;
+      this.types = require_pg_types();
+      this.DatabaseError = DatabaseError;
+    };
+    if (typeof process.env.NODE_PG_FORCE_NATIVE !== "undefined") {
+      module.exports = new PG(require_native());
+    } else {
+      module.exports = new PG(Client2);
+      Object.defineProperty(module.exports, "native", {
+        configurable: true,
+        enumerable: false,
+        get() {
+          var native = null;
+          try {
+            native = new PG(require_native());
+          } catch (err) {
+            if (err.code !== "MODULE_NOT_FOUND") {
+              throw err;
+            }
+          }
+          Object.defineProperty(module.exports, "native", {
+            value: native
+          });
+          return native;
+        }
+      });
+    }
+  }
+});
+
+// node_modules/zapatos/dist/db/canary.js
+var require_canary = __commonJS({
+  "node_modules/zapatos/dist/db/canary.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// node_modules/zapatos/dist/db/config.js
+var require_config = __commonJS({
+  "node_modules/zapatos/dist/db/config.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.setConfig = exports.getConfig = void 0;
+    var config = {
+      transactionAttemptsMax: 5,
+      transactionRetryDelay: { minMs: 25, maxMs: 250 },
+      castArrayParamsToJson: false,
+      castObjectParamsToJson: false
+    };
+    var getConfig2 = () => ({ ...config });
+    exports.getConfig = getConfig2;
+    var setConfig2 = (newConfig) => config = { ...config, ...newConfig };
+    exports.setConfig = setConfig2;
+  }
+});
+
+// shims/perf_hooks/index.ts
+var perf_hooks_exports = {};
+__export(perf_hooks_exports, {
+  performance: () => performance
+});
+var performance;
+var init_perf_hooks = __esm({
+  "shims/perf_hooks/index.ts"() {
+    init_shims();
+    performance = { now: Date.now };
+  }
+});
+
+// node_modules/zapatos/dist/db/utils.js
+var require_utils2 = __commonJS({
+  "node_modules/zapatos/dist/db/utils.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isPOJO = exports.completeKeysWithDefaultValue = exports.mapWithSeparator = exports.wait = exports.pad = void 0;
+    var pad = (n, pad2 = 2) => {
+      const s = String(n);
+      return "000".slice(s.length + 3 - pad2) + s;
+    };
+    exports.pad = pad;
+    var wait = (delayMs) => new Promise((resolve) => setTimeout(resolve, delayMs));
+    exports.wait = wait;
+    var mapWithSeparator = (arr, separator, cb) => {
+      const result = [];
+      for (let i = 0, len = arr.length; i < len; i++) {
+        if (i > 0)
+          result.push(separator);
+        result.push(cb(arr[i], i, arr));
+      }
+      return result;
+    };
+    exports.mapWithSeparator = mapWithSeparator;
+    var completeKeysWithDefaultValue = (objs, defaultValue) => {
+      const unionKeys = Object.assign({}, ...objs);
+      for (const k in unionKeys)
+        unionKeys[k] = defaultValue;
+      return objs.map((o) => ({ ...unionKeys, ...o }));
+    };
+    exports.completeKeysWithDefaultValue = completeKeysWithDefaultValue;
+    var isPOJO = (x) => typeof x === "object" && x !== null && x.constructor === Object && x.toString() === "[object Object]";
+    exports.isPOJO = isPOJO;
+  }
+});
+
+// node_modules/zapatos/dist/db/core.js
+var require_core = __commonJS({
+  "node_modules/zapatos/dist/db/core.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SQLFragment = exports.sql = exports.parent = exports.ParentColumn = exports.vals = exports.ColumnValues = exports.cols = exports.ColumnNames = exports.raw = exports.DangerousRawString = exports.param = exports.Parameter = exports.toBuffer = exports.strict = exports.all = exports.self = exports.Default = void 0;
+    var perf_hooks_1 = (init_perf_hooks(), __toCommonJS(perf_hooks_exports));
+    var config_1 = require_config();
+    var utils_1 = require_utils2();
+    exports.Default = Symbol("DEFAULT");
+    exports.self = Symbol("self");
+    exports.all = Symbol("all");
+    function strict2(fn) {
+      return function(d) {
+        return d === null ? null : fn(d);
+      };
+    }
+    exports.strict = strict2;
+    exports.toBuffer = strict2((ba) => Buffer.from(ba.slice(2), "hex"));
+    var Parameter2 = class {
+      constructor(value, cast) {
+        this.value = value;
+        this.cast = cast;
+      }
+    };
+    exports.Parameter = Parameter2;
+    function param2(x, cast) {
+      return new Parameter2(x, cast);
+    }
+    exports.param = param2;
+    var DangerousRawString2 = class {
+      constructor(value) {
+        this.value = value;
+      }
+    };
+    exports.DangerousRawString = DangerousRawString2;
+    function raw2(x) {
+      return new DangerousRawString2(x);
+    }
+    exports.raw = raw2;
+    var ColumnNames2 = class {
+      constructor(value) {
+        this.value = value;
+      }
+    };
+    exports.ColumnNames = ColumnNames2;
+    function cols2(x) {
+      return new ColumnNames2(x);
+    }
+    exports.cols = cols2;
+    var ColumnValues2 = class {
+      constructor(value) {
+        this.value = value;
+      }
+    };
+    exports.ColumnValues = ColumnValues2;
+    function vals2(x) {
+      return new ColumnValues2(x);
+    }
+    exports.vals = vals2;
+    var ParentColumn2 = class {
+      constructor(value) {
+        this.value = value;
+      }
+    };
+    exports.ParentColumn = ParentColumn2;
+    function parent2(x) {
+      return new ParentColumn2(x);
+    }
+    exports.parent = parent2;
+    function sql2(literals, ...expressions) {
+      return new SQLFragment2(Array.prototype.slice.apply(literals), expressions);
+    }
+    exports.sql = sql2;
+    var preparedNameSeq = 0;
+    var SQLFragment2 = class {
+      constructor(literals, expressions) {
+        this.literals = literals;
+        this.expressions = expressions;
+        this.runResultTransform = (qr) => qr.rows;
+        this.parentTable = void 0;
+        this.preparedName = void 0;
+        this.noop = false;
+        this.prepared = (name = `_zapatos_prepared_${preparedNameSeq++}`) => {
+          this.preparedName = name;
+          return this;
+        };
+        this.run = async (queryable, force = false) => {
+          var _a;
+          const query = this.compile(), config = (0, config_1.getConfig)(), txnId = (_a = queryable._zapatos) === null || _a === void 0 ? void 0 : _a.txnId;
+          if (config.queryListener)
+            config.queryListener(query, txnId);
+          const startMs = perf_hooks_1.performance.now();
+          let result;
+          if (!this.noop || force) {
+            const qr = await queryable.query(query);
+            result = this.runResultTransform(qr);
+          } else {
+            result = this.noopResult;
+          }
+          if (config.resultListener)
+            config.resultListener(result, txnId, perf_hooks_1.performance.now() - startMs);
+          return result;
+        };
+        this.compile = (result = { text: "", values: [] }, parentTable, currentColumn) => {
+          if (this.parentTable)
+            parentTable = this.parentTable;
+          if (this.noop)
+            result.text += "/* marked no-op: won't hit DB unless forced -> */ ";
+          result.text += this.literals[0];
+          for (let i = 1, len = this.literals.length; i < len; i++) {
+            this.compileExpression(this.expressions[i - 1], result, parentTable, currentColumn);
+            result.text += this.literals[i];
+          }
+          if (this.preparedName != null)
+            result.name = this.preparedName;
+          return result;
+        };
+        this.compileExpression = (expression, result = { text: "", values: [] }, parentTable, currentColumn) => {
+          var _a;
+          if (this.parentTable)
+            parentTable = this.parentTable;
+          if (expression instanceof SQLFragment2) {
+            expression.compile(result, parentTable, currentColumn);
+          } else if (typeof expression === "string") {
+            result.text += expression.startsWith('"') && expression.endsWith('"') ? expression : `"${expression.replace(/[.]/g, '"."')}"`;
+          } else if (expression instanceof DangerousRawString2) {
+            result.text += expression.value;
+          } else if (Array.isArray(expression)) {
+            for (let i = 0, len = expression.length; i < len; i++)
+              this.compileExpression(expression[i], result, parentTable, currentColumn);
+          } else if (expression instanceof Parameter2) {
+            const placeholder = "$" + String(result.values.length + 1), config = (0, config_1.getConfig)();
+            if (expression.cast !== false && (expression.cast === true || config.castArrayParamsToJson) && Array.isArray(expression.value) || expression.cast !== false && (expression.cast === true || config.castObjectParamsToJson) && (0, utils_1.isPOJO)(expression.value)) {
+              result.values.push(JSON.stringify(expression.value));
+              result.text += `CAST(${placeholder} AS "json")`;
+            } else if (typeof expression.cast === "string") {
+              result.values.push(expression.value);
+              result.text += `CAST(${placeholder} AS "${expression.cast}")`;
+            } else {
+              result.values.push(expression.value);
+              result.text += placeholder;
+            }
+          } else if (expression === exports.Default) {
+            result.text += "DEFAULT";
+          } else if (expression === exports.self) {
+            if (!currentColumn)
+              throw new Error(`The 'self' column alias has no meaning here`);
+            this.compileExpression(currentColumn, result);
+          } else if (expression instanceof ParentColumn2) {
+            if (!parentTable)
+              throw new Error(`The 'parent' table alias has no meaning here`);
+            this.compileExpression(parentTable, result);
+            result.text += ".";
+            this.compileExpression((_a = expression.value) !== null && _a !== void 0 ? _a : currentColumn, result);
+          } else if (expression instanceof ColumnNames2) {
+            const columnNames = Array.isArray(expression.value) ? expression.value : Object.keys(expression.value).sort();
+            for (let i = 0, len = columnNames.length; i < len; i++) {
+              if (i > 0)
+                result.text += ", ";
+              this.compileExpression(String(columnNames[i]), result);
+            }
+          } else if (expression instanceof ColumnValues2) {
+            if (Array.isArray(expression.value)) {
+              const values = expression.value;
+              for (let i = 0, len = values.length; i < len; i++) {
+                const value = values[i];
+                if (i > 0)
+                  result.text += ", ";
+                if (value instanceof SQLFragment2)
+                  this.compileExpression(value, result, parentTable);
+                else
+                  this.compileExpression(new Parameter2(value), result, parentTable);
+              }
+            } else {
+              const columnNames = Object.keys(expression.value).sort(), columnValues = columnNames.map((k) => expression.value[k]);
+              for (let i = 0, len = columnValues.length; i < len; i++) {
+                const columnName = columnNames[i], columnValue = columnValues[i];
+                if (i > 0)
+                  result.text += ", ";
+                if (columnValue instanceof SQLFragment2 || columnValue instanceof Parameter2 || columnValue === exports.Default)
+                  this.compileExpression(columnValue, result, parentTable, columnName);
+                else
+                  this.compileExpression(new Parameter2(columnValue), result, parentTable, columnName);
+              }
+            }
+          } else if (typeof expression === "object") {
+            const columnNames = Object.keys(expression).sort();
+            if (columnNames.length) {
+              result.text += "(";
+              for (let i = 0, len = columnNames.length; i < len; i++) {
+                const columnName = columnNames[i], columnValue = expression[columnName];
+                if (i > 0)
+                  result.text += " AND ";
+                if (columnValue instanceof SQLFragment2) {
+                  result.text += "(";
+                  this.compileExpression(columnValue, result, parentTable, columnName);
+                  result.text += ")";
+                } else {
+                  this.compileExpression(columnName, result);
+                  result.text += ` = `;
+                  this.compileExpression(columnValue instanceof ParentColumn2 ? columnValue : new Parameter2(columnValue), result, parentTable, columnName);
+                }
+              }
+              result.text += ")";
+            } else {
+              result.text += "TRUE";
+            }
+          } else {
+            throw new Error(`Alien object while interpolating SQL: ${expression}`);
+          }
+        };
+      }
+    };
+    exports.SQLFragment = SQLFragment2;
+  }
+});
+
+// node_modules/zapatos/dist/db/date.js
+var require_date = __commonJS({
+  "node_modules/zapatos/dist/db/date.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.toString = exports.toDate = void 0;
+    var utils_1 = require_utils2();
+    var toDate2 = function(d, tzInterpretation) {
+      let dateMatch;
+      if (d === null)
+        return null;
+      switch (tzInterpretation) {
+        case void 0:
+          return new Date(d);
+        case "UTC":
+          return new Date(d + "Z");
+        case "local":
+          if (dateMatch = d.match(/^([0-9]+)-([0-9]+)-([0-9]+)$/)) {
+            const [, y, m, d2] = dateMatch;
+            return new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d2, 10));
+          }
+          return new Date(d);
+      }
+    };
+    exports.toDate = toDate2;
+    var toString2 = function(d, stringTypeTz) {
+      if (d === null)
+        return null;
+      if (stringTypeTz === "timestamptz")
+        return d.toISOString();
+      const [stringType, tz] = stringTypeTz.split(":"), utc = tz === "UTC", year = (0, utils_1.pad)(utc ? d.getUTCFullYear() : d.getFullYear(), 4), month = (0, utils_1.pad)((utc ? d.getUTCMonth() : d.getMonth()) + 1), day = (0, utils_1.pad)(utc ? d.getUTCDate() : d.getDate());
+      if (stringType === "date")
+        return `${year}-${month}-${day}`;
+      const hour = (0, utils_1.pad)(utc ? d.getUTCHours() : d.getHours()), min2 = (0, utils_1.pad)(utc ? d.getUTCMinutes() : d.getMinutes()), sec = (0, utils_1.pad)(utc ? d.getUTCSeconds() : d.getSeconds()), ms = (0, utils_1.pad)(utc ? d.getUTCMilliseconds() : d.getMilliseconds(), 3);
+      return `${year}-${month}-${day}T${hour}:${min2}:${sec}.${ms}`;
+    };
+    exports.toString = toString2;
+  }
+});
+
+// node_modules/zapatos/dist/db/pgErrors.js
+var require_pgErrors = __commonJS({
+  "node_modules/zapatos/dist/db/pgErrors.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isDatabaseError = void 0;
+    function isDatabaseError2(err, ...types) {
+      const { code } = err;
+      if (!code || code.length !== 5)
+        return false;
+      return types.some((type) => code.startsWith(pgErrors[type]));
+    }
+    exports.isDatabaseError = isDatabaseError2;
+    var pgErrors = {
+      SuccessfulCompletion: "00",
+      Warning: "01",
+      NoData: "02",
+      SqlStatementNotYetComplete: "03",
+      ConnectionException: "08",
+      TriggeredActionException: "09",
+      FeatureNotSupported: "0A",
+      InvalidTransactionInitiation: "0B",
+      LocatorException: "0F",
+      InvalidGrantor: "0L",
+      InvalidRoleSpecification: "0P",
+      DiagnosticsException: "0Z",
+      CaseNotFound: "20",
+      CardinalityViolation: "21",
+      DataException: "22",
+      IntegrityConstraintViolation: "23",
+      InvalidCursorState: "24",
+      InvalidTransactionState: "25",
+      InvalidSqlStatementName: "26",
+      TriggeredDataChangeViolation: "27",
+      InvalidAuthorizationSpecification: "28",
+      DependentPrivilegeDescriptorsStillExist: "2B",
+      InvalidTransactionTermination: "2D",
+      SqlRoutineException: "2F",
+      InvalidCursorName: "34",
+      ExternalRoutineException: "38",
+      ExternalRoutineInvocationException: "39",
+      SavepointException: "3B",
+      InvalidCatalogName: "3D",
+      InvalidSchemaName: "3F",
+      TransactionRollback: "40",
+      SyntaxErrorOrAccessRuleViolation: "42",
+      WithCheckOptionViolation: "44",
+      InsufficientResources: "53",
+      DiskFull: "53",
+      OutOfMemory: "53",
+      TooManyConnections: "53",
+      ConfigurationLimitExceeded: "53",
+      ProgramLimitExceeded: "54",
+      ObjectNotInPrerequisiteState: "55",
+      OperatorIntervention: "57",
+      SystemError: "58",
+      SnapshotTooOld: "72",
+      ConfigFileError: "F0",
+      FdwError: "HV",
+      PlpgsqlError: "P0",
+      InternalError: "XX",
+      SuccessfulCompletion_SuccessfulCompletion: "00000",
+      Warning_Warning: "01000",
+      Warning_NullValueEliminatedInSetFunction: "01003",
+      Warning_StringDataRightTruncation: "01004",
+      Warning_PrivilegeNotRevoked: "01006",
+      Warning_PrivilegeNotGranted: "01007",
+      Warning_ImplicitZeroBitPadding: "01008",
+      Warning_DynamicResultSetsReturned: "0100C",
+      Warning_DeprecatedFeature: "01P01",
+      NoData_NoData: "02000",
+      NoData_NoAdditionalDynamicResultSetsReturned: "02001",
+      SqlStatementNotYetComplete_SqlStatementNotYetComplete: "03000",
+      ConnectionException_ConnectionException: "08000",
+      ConnectionException_SqlclientUnableToEstablishSqlconnection: "08001",
+      ConnectionException_ConnectionDoesNotExist: "08003",
+      ConnectionException_SqlserverRejectedEstablishmentOfSqlconnection: "08004",
+      ConnectionException_ConnectionFailure: "08006",
+      ConnectionException_TransactionResolutionUnknown: "08007",
+      ConnectionException_ProtocolViolation: "08P01",
+      TriggeredActionException_TriggeredActionException: "09000",
+      FeatureNotSupported_FeatureNotSupported: "0A000",
+      InvalidTransactionInitiation_InvalidTransactionInitiation: "0B000",
+      LocatorException_LocatorException: "0F000",
+      LocatorException_InvalidLocatorSpecification: "0F001",
+      InvalidGrantor_InvalidGrantor: "0L000",
+      InvalidGrantor_InvalidGrantOperation: "0LP01",
+      InvalidRoleSpecification_InvalidRoleSpecification: "0P000",
+      DiagnosticsException_DiagnosticsException: "0Z000",
+      DiagnosticsException_StackedDiagnosticsAccessedWithoutActiveHandler: "0Z002",
+      CaseNotFound_CaseNotFound: "20000",
+      CardinalityViolation_CardinalityViolation: "21000",
+      DataException_DataException: "22000",
+      DataException_StringDataRightTruncation: "22001",
+      DataException_NullValueNoIndicatorParameter: "22002",
+      DataException_NumericValueOutOfRange: "22003",
+      DataException_NullValueNotAllowed: "22004",
+      DataException_ErrorInAssignment: "22005",
+      DataException_InvalidDatetimeFormat: "22007",
+      DataException_DatetimeFieldOverflow: "22008",
+      DataException_InvalidTimeZoneDisplacementValue: "22009",
+      DataException_EscapeCharacterConflict: "2200B",
+      DataException_InvalidUseOfEscapeCharacter: "2200C",
+      DataException_InvalidEscapeOctet: "2200D",
+      DataException_ZeroLengthCharacterString: "2200F",
+      DataException_MostSpecificTypeMismatch: "2200G",
+      DataException_SequenceGeneratorLimitExceeded: "2200H",
+      DataException_NotAnXmlDocument: "2200L",
+      DataException_InvalidXmlDocument: "2200M",
+      DataException_InvalidXmlContent: "2200N",
+      DataException_InvalidXmlComment: "2200S",
+      DataException_InvalidXmlProcessingInstruction: "2200T",
+      DataException_InvalidIndicatorParameterValue: "22010",
+      DataException_SubstringError: "22011",
+      DataException_DivisionByZero: "22012",
+      DataException_InvalidPrecedingOrFollowingSize: "22013",
+      DataException_InvalidArgumentForNtileFunction: "22014",
+      DataException_IntervalFieldOverflow: "22015",
+      DataException_InvalidArgumentForNthValueFunction: "22016",
+      DataException_InvalidCharacterValueForCast: "22018",
+      DataException_InvalidEscapeCharacter: "22019",
+      DataException_InvalidRegularExpression: "2201B",
+      DataException_InvalidArgumentForLogarithm: "2201E",
+      DataException_InvalidArgumentForPowerFunction: "2201F",
+      DataException_InvalidArgumentForWidthBucketFunction: "2201G",
+      DataException_InvalidRowCountInLimitClause: "2201W",
+      DataException_InvalidRowCountInResultOffsetClause: "2201X",
+      DataException_CharacterNotInRepertoire: "22021",
+      DataException_IndicatorOverflow: "22022",
+      DataException_InvalidParameterValue: "22023",
+      DataException_UnterminatedCString: "22024",
+      DataException_InvalidEscapeSequence: "22025",
+      DataException_StringDataLengthMismatch: "22026",
+      DataException_TrimError: "22027",
+      DataException_ArraySubscriptError: "2202E",
+      DataException_InvalidTablesampleRepeat: "2202G",
+      DataException_InvalidTablesampleArgument: "2202H",
+      DataException_FloatingPointException: "22P01",
+      DataException_InvalidTextRepresentation: "22P02",
+      DataException_InvalidBinaryRepresentation: "22P03",
+      DataException_BadCopyFileFormat: "22P04",
+      DataException_UntranslatableCharacter: "22P05",
+      DataException_NonstandardUseOfEscapeCharacter: "22P06",
+      IntegrityConstraintViolation_IntegrityConstraintViolation: "23000",
+      IntegrityConstraintViolation_RestrictViolation: "23001",
+      IntegrityConstraintViolation_NotNullViolation: "23502",
+      IntegrityConstraintViolation_ForeignKeyViolation: "23503",
+      IntegrityConstraintViolation_UniqueViolation: "23505",
+      IntegrityConstraintViolation_CheckViolation: "23514",
+      IntegrityConstraintViolation_ExclusionViolation: "23P01",
+      InvalidCursorState_InvalidCursorState: "24000",
+      InvalidTransactionState_InvalidTransactionState: "25000",
+      InvalidTransactionState_ActiveSqlTransaction: "25001",
+      InvalidTransactionState_BranchTransactionAlreadyActive: "25002",
+      InvalidTransactionState_InappropriateAccessModeForBranchTransaction: "25003",
+      InvalidTransactionState_InappropriateIsolationLevelForBranchTransaction: "25004",
+      InvalidTransactionState_NoActiveSqlTransactionForBranchTransaction: "25005",
+      InvalidTransactionState_ReadOnlySqlTransaction: "25006",
+      InvalidTransactionState_SchemaAndDataStatementMixingNotSupported: "25007",
+      InvalidTransactionState_HeldCursorRequiresSameIsolationLevel: "25008",
+      InvalidTransactionState_NoActiveSqlTransaction: "25P01",
+      InvalidTransactionState_InFailedSqlTransaction: "25P02",
+      InvalidTransactionState_IdleInTransactionSessionTimeout: "25P03",
+      InvalidSqlStatementName_InvalidSqlStatementName: "26000",
+      TriggeredDataChangeViolation_TriggeredDataChangeViolation: "27000",
+      InvalidAuthorizationSpecification_InvalidAuthorizationSpecification: "28000",
+      InvalidAuthorizationSpecification_InvalidPassword: "28P01",
+      DependentPrivilegeDescriptorsStillExist_DependentPrivilegeDescriptorsStillExist: "2B000",
+      DependentPrivilegeDescriptorsStillExist_DependentObjectsStillExist: "2BP01",
+      InvalidTransactionTermination_InvalidTransactionTermination: "2D000",
+      SqlRoutineException_SqlRoutineException: "2F000",
+      SqlRoutineException_ModifyingSqlDataNotPermitted: "2F002",
+      SqlRoutineException_ProhibitedSqlStatementAttempted: "2F003",
+      SqlRoutineException_ReadingSqlDataNotPermitted: "2F004",
+      SqlRoutineException_FunctionExecutedNoReturnStatement: "2F005",
+      InvalidCursorName_InvalidCursorName: "34000",
+      ExternalRoutineException_ExternalRoutineException: "38000",
+      ExternalRoutineException_ContainingSqlNotPermitted: "38001",
+      ExternalRoutineException_ModifyingSqlDataNotPermitted: "38002",
+      ExternalRoutineException_ProhibitedSqlStatementAttempted: "38003",
+      ExternalRoutineException_ReadingSqlDataNotPermitted: "38004",
+      ExternalRoutineInvocationException_ExternalRoutineInvocationException: "39000",
+      ExternalRoutineInvocationException_InvalidSqlstateReturned: "39001",
+      ExternalRoutineInvocationException_NullValueNotAllowed: "39004",
+      ExternalRoutineInvocationException_TriggerProtocolViolated: "39P01",
+      ExternalRoutineInvocationException_SrfProtocolViolated: "39P02",
+      ExternalRoutineInvocationException_EventTriggerProtocolViolated: "39P03",
+      SavepointException_SavepointException: "3B000",
+      SavepointException_InvalidSavepointSpecification: "3B001",
+      InvalidCatalogName_InvalidCatalogName: "3D000",
+      InvalidSchemaName_InvalidSchemaName: "3F000",
+      TransactionRollback_TransactionRollback: "40000",
+      TransactionRollback_SerializationFailure: "40001",
+      TransactionRollback_TransactionIntegrityConstraintViolation: "40002",
+      TransactionRollback_StatementCompletionUnknown: "40003",
+      TransactionRollback_DeadlockDetected: "40P01",
+      SyntaxErrorOrAccessRuleViolation_SyntaxErrorOrAccessRuleViolation: "42000",
+      SyntaxErrorOrAccessRuleViolation_InsufficientPrivilege: "42501",
+      SyntaxErrorOrAccessRuleViolation_SyntaxError: "42601",
+      SyntaxErrorOrAccessRuleViolation_InvalidName: "42602",
+      SyntaxErrorOrAccessRuleViolation_InvalidColumnDefinition: "42611",
+      SyntaxErrorOrAccessRuleViolation_NameTooLong: "42622",
+      SyntaxErrorOrAccessRuleViolation_DuplicateColumn: "42701",
+      SyntaxErrorOrAccessRuleViolation_AmbiguousColumn: "42702",
+      SyntaxErrorOrAccessRuleViolation_UndefinedColumn: "42703",
+      SyntaxErrorOrAccessRuleViolation_UndefinedObject: "42704",
+      SyntaxErrorOrAccessRuleViolation_DuplicateObject: "42710",
+      SyntaxErrorOrAccessRuleViolation_DuplicateAlias: "42712",
+      SyntaxErrorOrAccessRuleViolation_DuplicateFunction: "42723",
+      SyntaxErrorOrAccessRuleViolation_AmbiguousFunction: "42725",
+      SyntaxErrorOrAccessRuleViolation_GroupingError: "42803",
+      SyntaxErrorOrAccessRuleViolation_DatatypeMismatch: "42804",
+      SyntaxErrorOrAccessRuleViolation_WrongObjectType: "42809",
+      SyntaxErrorOrAccessRuleViolation_InvalidForeignKey: "42830",
+      SyntaxErrorOrAccessRuleViolation_CannotCoerce: "42846",
+      SyntaxErrorOrAccessRuleViolation_UndefinedFunction: "42883",
+      SyntaxErrorOrAccessRuleViolation_GeneratedAlways: "428C9",
+      SyntaxErrorOrAccessRuleViolation_ReservedName: "42939",
+      SyntaxErrorOrAccessRuleViolation_UndefinedTable: "42P01",
+      SyntaxErrorOrAccessRuleViolation_UndefinedParameter: "42P02",
+      SyntaxErrorOrAccessRuleViolation_DuplicateCursor: "42P03",
+      SyntaxErrorOrAccessRuleViolation_DuplicateDatabase: "42P04",
+      SyntaxErrorOrAccessRuleViolation_DuplicatePreparedStatement: "42P05",
+      SyntaxErrorOrAccessRuleViolation_DuplicateSchema: "42P06",
+      SyntaxErrorOrAccessRuleViolation_DuplicateTable: "42P07",
+      SyntaxErrorOrAccessRuleViolation_AmbiguousParameter: "42P08",
+      SyntaxErrorOrAccessRuleViolation_AmbiguousAlias: "42P09",
+      SyntaxErrorOrAccessRuleViolation_InvalidColumnReference: "42P10",
+      SyntaxErrorOrAccessRuleViolation_InvalidCursorDefinition: "42P11",
+      SyntaxErrorOrAccessRuleViolation_InvalidDatabaseDefinition: "42P12",
+      SyntaxErrorOrAccessRuleViolation_InvalidFunctionDefinition: "42P13",
+      SyntaxErrorOrAccessRuleViolation_InvalidPreparedStatementDefinition: "42P14",
+      SyntaxErrorOrAccessRuleViolation_InvalidSchemaDefinition: "42P15",
+      SyntaxErrorOrAccessRuleViolation_InvalidTableDefinition: "42P16",
+      SyntaxErrorOrAccessRuleViolation_InvalidObjectDefinition: "42P17",
+      SyntaxErrorOrAccessRuleViolation_IndeterminateDatatype: "42P18",
+      SyntaxErrorOrAccessRuleViolation_InvalidRecursion: "42P19",
+      SyntaxErrorOrAccessRuleViolation_WindowingError: "42P20",
+      SyntaxErrorOrAccessRuleViolation_CollationMismatch: "42P21",
+      SyntaxErrorOrAccessRuleViolation_IndeterminateCollation: "42P22",
+      WithCheckOptionViolation_WithCheckOptionViolation: "44000",
+      InsufficientResources_InsufficientResources: "53000",
+      InsufficientResources_DiskFull: "53100",
+      InsufficientResources_OutOfMemory: "53200",
+      InsufficientResources_TooManyConnections: "53300",
+      InsufficientResources_ConfigurationLimitExceeded: "53400",
+      ProgramLimitExceeded_ProgramLimitExceeded: "54000",
+      ProgramLimitExceeded_StatementTooComplex: "54001",
+      ProgramLimitExceeded_TooManyColumns: "54011",
+      ProgramLimitExceeded_TooManyArguments: "54023",
+      ObjectNotInPrerequisiteState_ObjectNotInPrerequisiteState: "55000",
+      ObjectNotInPrerequisiteState_ObjectInUse: "55006",
+      ObjectNotInPrerequisiteState_CantChangeRuntimeParam: "55P02",
+      ObjectNotInPrerequisiteState_LockNotAvailable: "55P03",
+      OperatorIntervention_OperatorIntervention: "57000",
+      OperatorIntervention_QueryCanceled: "57014",
+      OperatorIntervention_AdminShutdown: "57P01",
+      OperatorIntervention_CrashShutdown: "57P02",
+      OperatorIntervention_CannotConnectNow: "57P03",
+      OperatorIntervention_DatabaseDropped: "57P04",
+      SystemError_SystemError: "58000",
+      SystemError_IoError: "58030",
+      SystemError_UndefinedFile: "58P01",
+      SystemError_DuplicateFile: "58P02",
+      SnapshotTooOld_SnapshotTooOld: "72000",
+      ConfigFileError_ConfigFileError: "F0000",
+      ConfigFileError_LockFileExists: "F0001",
+      FdwError_FdwError: "HV000",
+      FdwError_FdwOutOfMemory: "HV001",
+      FdwError_FdwDynamicParameterValueNeeded: "HV002",
+      FdwError_FdwInvalidDataType: "HV004",
+      FdwError_FdwColumnNameNotFound: "HV005",
+      FdwError_FdwInvalidDataTypeDescriptors: "HV006",
+      FdwError_FdwInvalidColumnName: "HV007",
+      FdwError_FdwInvalidColumnNumber: "HV008",
+      FdwError_FdwInvalidUseOfNullPointer: "HV009",
+      FdwError_FdwInvalidStringFormat: "HV00A",
+      FdwError_FdwInvalidHandle: "HV00B",
+      FdwError_FdwInvalidOptionIndex: "HV00C",
+      FdwError_FdwInvalidOptionName: "HV00D",
+      FdwError_FdwOptionNameNotFound: "HV00J",
+      FdwError_FdwReplyHandle: "HV00K",
+      FdwError_FdwUnableToCreateExecution: "HV00L",
+      FdwError_FdwUnableToCreateReply: "HV00M",
+      FdwError_FdwUnableToEstablishConnection: "HV00N",
+      FdwError_FdwNoSchemas: "HV00P",
+      FdwError_FdwSchemaNotFound: "HV00Q",
+      FdwError_FdwTableNotFound: "HV00R",
+      FdwError_FdwFunctionSequenceError: "HV010",
+      FdwError_FdwTooManyHandles: "HV014",
+      FdwError_FdwInconsistentDescriptorInformation: "HV021",
+      FdwError_FdwInvalidAttributeValue: "HV024",
+      FdwError_FdwInvalidStringLengthOrBufferLength: "HV090",
+      FdwError_FdwInvalidDescriptorFieldIdentifier: "HV091",
+      PlpgsqlError_PlpgsqlError: "P0000",
+      PlpgsqlError_RaiseException: "P0001",
+      PlpgsqlError_NoDataFound: "P0002",
+      PlpgsqlError_TooManyRows: "P0003",
+      PlpgsqlError_AssertFailure: "P0004",
+      InternalError_InternalError: "XX000",
+      InternalError_DataCorrupted: "XX001",
+      InternalError_IndexCorrupted: "XX002"
+    };
+  }
+});
+
+// node_modules/zapatos/dist/db/shortcuts.js
+var require_shortcuts = __commonJS({
+  "node_modules/zapatos/dist/db/shortcuts.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.max = exports.min = exports.avg = exports.sum = exports.count = exports.selectExactlyOne = exports.selectOne = exports.select = exports.NotExactlyOneError = exports.SelectResultMode = exports.truncate = exports.deletes = exports.update = exports.upsert = exports.doNothing = exports.constraint = exports.Constraint = exports.insert = void 0;
+    var core_1 = require_core();
+    var utils_1 = require_utils2();
+    function SQLForColumnsOfTable(columns, table) {
+      return columns === void 0 ? (0, core_1.sql)`to_jsonb(${table}.*)` : (0, core_1.sql)`jsonb_build_object(${(0, utils_1.mapWithSeparator)(columns, (0, core_1.sql)`, `, (c) => (0, core_1.sql)`${(0, core_1.param)(c)}::text, ${c}`)})`;
+    }
+    function SQLForExtras(extras) {
+      return extras === void 0 ? [] : (0, core_1.sql)` || jsonb_build_object(${(0, utils_1.mapWithSeparator)(Object.keys(extras), (0, core_1.sql)`, `, (k) => (0, core_1.sql)`${(0, core_1.param)(k)}::text, ${extras[k]}`)})`;
+    }
+    var insert2 = function(table, values, options) {
+      let query;
+      if (Array.isArray(values) && values.length === 0) {
+        query = (0, core_1.sql)`INSERT INTO ${table} SELECT null WHERE false`;
+        query.noop = true;
+        query.noopResult = [];
+      } else {
+        const completedValues = Array.isArray(values) ? (0, utils_1.completeKeysWithDefaultValue)(values, core_1.Default) : values, colsSQL = (0, core_1.cols)(Array.isArray(completedValues) ? completedValues[0] : completedValues), valuesSQL = Array.isArray(completedValues) ? (0, utils_1.mapWithSeparator)(completedValues, (0, core_1.sql)`, `, (v) => (0, core_1.sql)`(${(0, core_1.vals)(v)})`) : (0, core_1.sql)`(${(0, core_1.vals)(completedValues)})`, returningSQL = SQLForColumnsOfTable(options === null || options === void 0 ? void 0 : options.returning, table), extrasSQL = SQLForExtras(options === null || options === void 0 ? void 0 : options.extras);
+        query = (0, core_1.sql)`INSERT INTO ${table} (${colsSQL}) VALUES ${valuesSQL} RETURNING ${returningSQL}${extrasSQL} AS result`;
+      }
+      query.runResultTransform = Array.isArray(values) ? (qr) => qr.rows.map((r) => r.result) : (qr) => qr.rows[0].result;
+      return query;
+    };
+    exports.insert = insert2;
+    var Constraint2 = class {
+      constructor(value) {
+        this.value = value;
+      }
+    };
+    exports.Constraint = Constraint2;
+    function constraint2(x) {
+      return new Constraint2(x);
+    }
+    exports.constraint = constraint2;
+    exports.doNothing = [];
+    var upsert2 = function(table, values, conflictTarget, options) {
+      var _a, _b, _c;
+      if (Array.isArray(values) && values.length === 0)
+        return (0, exports.insert)(table, values);
+      if (typeof conflictTarget === "string")
+        conflictTarget = [conflictTarget];
+      let noNullUpdateColumns = (_a = options === null || options === void 0 ? void 0 : options.noNullUpdateColumns) !== null && _a !== void 0 ? _a : [];
+      if (!Array.isArray(noNullUpdateColumns))
+        noNullUpdateColumns = [noNullUpdateColumns];
+      let specifiedUpdateColumns = options === null || options === void 0 ? void 0 : options.updateColumns;
+      if (specifiedUpdateColumns && !Array.isArray(specifiedUpdateColumns))
+        specifiedUpdateColumns = [specifiedUpdateColumns];
+      const completedValues = Array.isArray(values) ? (0, utils_1.completeKeysWithDefaultValue)(values, core_1.Default) : [values], firstRow = completedValues[0], insertColsSQL = (0, core_1.cols)(firstRow), insertValuesSQL = (0, utils_1.mapWithSeparator)(completedValues, (0, core_1.sql)`, `, (v) => (0, core_1.sql)`(${(0, core_1.vals)(v)})`), colNames = Object.keys(firstRow), updateValues = (_b = options === null || options === void 0 ? void 0 : options.updateValues) !== null && _b !== void 0 ? _b : {}, updateColumns = [.../* @__PURE__ */ new Set(
+        [...(_c = specifiedUpdateColumns) !== null && _c !== void 0 ? _c : colNames, ...Object.keys(updateValues)]
+      )], conflictTargetSQL = Array.isArray(conflictTarget) ? (0, core_1.sql)`(${(0, utils_1.mapWithSeparator)(conflictTarget, (0, core_1.sql)`, `, (c) => c)})` : (0, core_1.sql)`ON CONSTRAINT ${conflictTarget.value}`, updateColsSQL = (0, utils_1.mapWithSeparator)(updateColumns, (0, core_1.sql)`, `, (c) => c), updateValuesSQL = (0, utils_1.mapWithSeparator)(updateColumns, (0, core_1.sql)`, `, (c) => updateValues[c] !== void 0 ? updateValues[c] : noNullUpdateColumns.includes(c) ? (0, core_1.sql)`CASE WHEN EXCLUDED.${c} IS NULL THEN ${table}.${c} ELSE EXCLUDED.${c} END` : (0, core_1.sql)`EXCLUDED.${c}`), returningSQL = SQLForColumnsOfTable(options === null || options === void 0 ? void 0 : options.returning, table), extrasSQL = SQLForExtras(options === null || options === void 0 ? void 0 : options.extras), suppressReport = (options === null || options === void 0 ? void 0 : options.reportAction) === "suppress";
+      const insertPart = (0, core_1.sql)`INSERT INTO ${table} (${insertColsSQL}) VALUES ${insertValuesSQL}`, conflictPart = (0, core_1.sql)`ON CONFLICT ${conflictTargetSQL} DO`, conflictActionPart = updateColsSQL.length > 0 ? (0, core_1.sql)`UPDATE SET (${updateColsSQL}) = ROW(${updateValuesSQL})` : (0, core_1.sql)`NOTHING`, reportPart = (0, core_1.sql)` || jsonb_build_object('$action', CASE xmax WHEN 0 THEN 'INSERT' ELSE 'UPDATE' END)`, returningPart = (0, core_1.sql)`RETURNING ${returningSQL}${extrasSQL}${suppressReport ? [] : reportPart} AS result`, query = (0, core_1.sql)`${insertPart} ${conflictPart} ${conflictActionPart} ${returningPart}`;
+      query.runResultTransform = Array.isArray(values) ? (qr) => qr.rows.map((r) => r.result) : (qr) => {
+        var _a2;
+        return (_a2 = qr.rows[0]) === null || _a2 === void 0 ? void 0 : _a2.result;
+      };
+      return query;
+    };
+    exports.upsert = upsert2;
+    var update2 = function(table, values, where, options) {
+      const returningSQL = SQLForColumnsOfTable(options === null || options === void 0 ? void 0 : options.returning, table), extrasSQL = SQLForExtras(options === null || options === void 0 ? void 0 : options.extras), query = (0, core_1.sql)`UPDATE ${table} SET (${(0, core_1.cols)(values)}) = ROW(${(0, core_1.vals)(values)}) WHERE ${where} RETURNING ${returningSQL}${extrasSQL} AS result`;
+      query.runResultTransform = (qr) => qr.rows.map((r) => r.result);
+      return query;
+    };
+    exports.update = update2;
+    var deletes2 = function(table, where, options) {
+      const returningSQL = SQLForColumnsOfTable(options === null || options === void 0 ? void 0 : options.returning, table), extrasSQL = SQLForExtras(options === null || options === void 0 ? void 0 : options.extras), query = (0, core_1.sql)`DELETE FROM ${table} WHERE ${where} RETURNING ${returningSQL}${extrasSQL} AS result`;
+      query.runResultTransform = (qr) => qr.rows.map((r) => r.result);
+      return query;
+    };
+    exports.deletes = deletes2;
+    var truncate2 = function(table, ...opts) {
+      if (!Array.isArray(table))
+        table = [table];
+      const tables = (0, utils_1.mapWithSeparator)(table, (0, core_1.sql)`, `, (t) => t), query = (0, core_1.sql)`TRUNCATE ${tables}${(0, core_1.raw)((opts.length ? " " : "") + opts.join(" "))}`;
+      return query;
+    };
+    exports.truncate = truncate2;
+    var SelectResultMode2;
+    (function(SelectResultMode3) {
+      SelectResultMode3[SelectResultMode3["Many"] = 0] = "Many";
+      SelectResultMode3[SelectResultMode3["One"] = 1] = "One";
+      SelectResultMode3[SelectResultMode3["ExactlyOne"] = 2] = "ExactlyOne";
+      SelectResultMode3[SelectResultMode3["Numeric"] = 3] = "Numeric";
+    })(SelectResultMode2 = exports.SelectResultMode || (exports.SelectResultMode = {}));
+    var NotExactlyOneError2 = class extends Error {
+      constructor(query, ...params) {
+        super(...params);
+        if (Error.captureStackTrace)
+          Error.captureStackTrace(this, NotExactlyOneError2);
+        this.name = "NotExactlyOneError";
+        this.query = query;
+      }
+    };
+    exports.NotExactlyOneError = NotExactlyOneError2;
+    var select2 = function(table, where = core_1.all, options = {}, mode = SelectResultMode2.Many, aggregate = "count") {
+      const limit1 = mode === SelectResultMode2.One || mode === SelectResultMode2.ExactlyOne, allOptions = limit1 ? { ...options, limit: 1 } : options, alias = allOptions.alias || table, { distinct, groupBy, having, lateral, columns, extras } = allOptions, lock = allOptions.lock === void 0 || Array.isArray(allOptions.lock) ? allOptions.lock : [allOptions.lock], order = allOptions.order === void 0 || Array.isArray(allOptions.order) ? allOptions.order : [allOptions.order], tableAliasSQL = alias === table ? [] : (0, core_1.sql)` AS ${alias}`, distinctSQL = !distinct ? [] : (0, core_1.sql)` DISTINCT${distinct instanceof core_1.SQLFragment || typeof distinct === "string" ? (0, core_1.sql)` ON (${distinct})` : Array.isArray(distinct) ? (0, core_1.sql)` ON (${(0, core_1.cols)(distinct)})` : []}`, colsSQL = lateral instanceof core_1.SQLFragment ? [] : mode === SelectResultMode2.Numeric ? columns ? (0, core_1.sql)`${(0, core_1.raw)(aggregate)}(${(0, core_1.cols)(columns)})` : (0, core_1.sql)`${(0, core_1.raw)(aggregate)}(${alias}.*)` : SQLForColumnsOfTable(columns, alias), colsExtraSQL = lateral instanceof core_1.SQLFragment || mode === SelectResultMode2.Numeric ? [] : SQLForExtras(extras), colsLateralSQL = lateral === void 0 || mode === SelectResultMode2.Numeric ? [] : lateral instanceof core_1.SQLFragment ? (0, core_1.sql)`"lateral_passthru".result` : (0, core_1.sql)` || jsonb_build_object(${(0, utils_1.mapWithSeparator)(Object.keys(lateral).sort(), (0, core_1.sql)`, `, (k) => (0, core_1.sql)`${(0, core_1.param)(k)}::text, "lateral_${(0, core_1.raw)(k)}".result`)})`, allColsSQL = (0, core_1.sql)`${colsSQL}${colsExtraSQL}${colsLateralSQL}`, whereSQL = where === core_1.all ? [] : (0, core_1.sql)` WHERE ${where}`, groupBySQL = !groupBy ? [] : (0, core_1.sql)` GROUP BY ${groupBy instanceof core_1.SQLFragment || typeof groupBy === "string" ? groupBy : (0, core_1.cols)(groupBy)}`, havingSQL = !having ? [] : (0, core_1.sql)` HAVING ${having}`, orderSQL = order === void 0 ? [] : (0, core_1.sql)` ORDER BY ${(0, utils_1.mapWithSeparator)(order, (0, core_1.sql)`, `, (o) => {
+        if (!["ASC", "DESC"].includes(o.direction))
+          throw new Error(`Direction must be ASC/DESC, not '${o.direction}'`);
+        if (o.nulls && !["FIRST", "LAST"].includes(o.nulls))
+          throw new Error(`Nulls must be FIRST/LAST/undefined, not '${o.nulls}'`);
+        return (0, core_1.sql)`${o.by} ${(0, core_1.raw)(o.direction)}${o.nulls ? (0, core_1.sql)` NULLS ${(0, core_1.raw)(o.nulls)}` : []}`;
+      })}`, limitSQL = allOptions.limit === void 0 ? [] : allOptions.withTies ? (0, core_1.sql)` FETCH FIRST ${(0, core_1.param)(allOptions.limit)} ROWS WITH TIES` : (0, core_1.sql)` LIMIT ${(0, core_1.param)(allOptions.limit)}`, offsetSQL = allOptions.offset === void 0 ? [] : (0, core_1.sql)` OFFSET ${(0, core_1.param)(allOptions.offset)}`, lockSQL = lock === void 0 ? [] : lock.map((lock2) => {
+        const ofTables = lock2.of === void 0 || Array.isArray(lock2.of) ? lock2.of : [lock2.of], ofClause = ofTables === void 0 ? [] : (0, core_1.sql)` OF ${(0, utils_1.mapWithSeparator)(ofTables, (0, core_1.sql)`, `, (t) => t)}`;
+        return (0, core_1.sql)` FOR ${(0, core_1.raw)(lock2.for)}${ofClause}${lock2.wait ? (0, core_1.sql)` ${(0, core_1.raw)(lock2.wait)}` : []}`;
+      }), lateralSQL = lateral === void 0 ? [] : lateral instanceof core_1.SQLFragment ? (() => {
+        lateral.parentTable = alias;
+        return (0, core_1.sql)` LEFT JOIN LATERAL (${lateral}) AS "lateral_passthru" ON true`;
+      })() : Object.keys(lateral).sort().map((k) => {
+        const subQ = lateral[k];
+        subQ.parentTable = alias;
+        return (0, core_1.sql)` LEFT JOIN LATERAL (${subQ}) AS "lateral_${(0, core_1.raw)(k)}" ON true`;
+      });
+      const rowsQuery = (0, core_1.sql)`SELECT${distinctSQL} ${allColsSQL} AS result FROM ${table}${tableAliasSQL}${lateralSQL}${whereSQL}${groupBySQL}${havingSQL}${orderSQL}${limitSQL}${offsetSQL}${lockSQL}`, query = mode !== SelectResultMode2.Many ? rowsQuery : (0, core_1.sql)`SELECT coalesce(jsonb_agg(result), '[]') AS result FROM (${rowsQuery}) AS ${(0, core_1.raw)(`"sq_${alias}"`)}`;
+      query.runResultTransform = mode === SelectResultMode2.Numeric ? (qr) => Number(qr.rows[0].result) : mode === SelectResultMode2.ExactlyOne ? (qr) => {
+        var _a;
+        const result = (_a = qr.rows[0]) === null || _a === void 0 ? void 0 : _a.result;
+        if (result === void 0)
+          throw new NotExactlyOneError2(query, "One result expected but none returned (hint: check `.query.compile()` on this Error)");
+        return result;
+      } : (qr) => {
+        var _a;
+        return (_a = qr.rows[0]) === null || _a === void 0 ? void 0 : _a.result;
+      };
+      return query;
+    };
+    exports.select = select2;
+    var selectOne2 = function(table, where, options = {}) {
+      return (0, exports.select)(table, where, options, SelectResultMode2.One);
+    };
+    exports.selectOne = selectOne2;
+    var selectExactlyOne2 = function(table, where, options = {}) {
+      return (0, exports.select)(table, where, options, SelectResultMode2.ExactlyOne);
+    };
+    exports.selectExactlyOne = selectExactlyOne2;
+    var count2 = function(table, where, options) {
+      return (0, exports.select)(table, where, options, SelectResultMode2.Numeric);
+    };
+    exports.count = count2;
+    var sum2 = function(table, where, options) {
+      return (0, exports.select)(table, where, options, SelectResultMode2.Numeric, "sum");
+    };
+    exports.sum = sum2;
+    var avg2 = function(table, where, options) {
+      return (0, exports.select)(table, where, options, SelectResultMode2.Numeric, "avg");
+    };
+    exports.avg = avg2;
+    var min2 = function(table, where, options) {
+      return (0, exports.select)(table, where, options, SelectResultMode2.Numeric, "min");
+    };
+    exports.min = min2;
+    var max2 = function(table, where, options) {
+      return (0, exports.select)(table, where, options, SelectResultMode2.Numeric, "max");
+    };
+    exports.max = max2;
+  }
+});
+
+// node_modules/zapatos/dist/db/transaction.js
+var require_transaction = __commonJS({
+  "node_modules/zapatos/dist/db/transaction.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.serializableRODeferrable = exports.readCommittedRO = exports.repeatableReadRO = exports.serializableRO = exports.readCommitted = exports.repeatableRead = exports.serializable = exports.transaction = exports.IsolationLevel = void 0;
+    var pg = require_lib2();
+    var pgErrors_1 = require_pgErrors();
+    var utils_1 = require_utils2();
+    var core_1 = require_core();
+    var config_1 = require_config();
+    var IsolationLevel2;
+    (function(IsolationLevel3) {
+      IsolationLevel3["Serializable"] = "SERIALIZABLE";
+      IsolationLevel3["RepeatableRead"] = "REPEATABLE READ";
+      IsolationLevel3["ReadCommitted"] = "READ COMMITTED";
+      IsolationLevel3["SerializableRO"] = "SERIALIZABLE, READ ONLY";
+      IsolationLevel3["RepeatableReadRO"] = "REPEATABLE READ, READ ONLY";
+      IsolationLevel3["ReadCommittedRO"] = "READ COMMITTED, READ ONLY";
+      IsolationLevel3["SerializableRODeferrable"] = "SERIALIZABLE, READ ONLY, DEFERRABLE";
+    })(IsolationLevel2 = exports.IsolationLevel || (exports.IsolationLevel = {}));
+    function typeofQueryable(queryable) {
+      if (queryable instanceof pg.Pool)
+        return "pool";
+      if (queryable instanceof pg.Client)
+        return "client";
+      if (pg.native !== null && queryable instanceof pg.native.Pool)
+        return "pool";
+      if (pg.native !== null && queryable instanceof pg.native.Client)
+        return "client";
+      if (queryable._connected === void 0)
+        return "pool";
+      return "client";
+    }
+    var txnSeq = 0;
+    async function transaction2(txnClientOrQueryable, isolationLevel, callback) {
+      if (Object.prototype.hasOwnProperty.call(txnClientOrQueryable, "_zapatos")) {
+        return callback(txnClientOrQueryable);
+      }
+      if (txnSeq >= Number.MAX_SAFE_INTEGER - 1)
+        txnSeq = 0;
+      const txnId = txnSeq++, clientIsOurs = typeofQueryable(txnClientOrQueryable) === "pool", txnClient = clientIsOurs ? await txnClientOrQueryable.connect() : txnClientOrQueryable;
+      txnClient._zapatos = { isolationLevel, txnId };
+      const config = (0, config_1.getConfig)(), { transactionListener } = config, maxAttempts = config.transactionAttemptsMax, { minMs, maxMs } = config.transactionRetryDelay;
+      try {
+        for (let attempt = 1; ; attempt++) {
+          try {
+            if (attempt > 1 && transactionListener)
+              transactionListener(`Retrying transaction, attempt ${attempt} of ${maxAttempts}`, txnId);
+            await (0, core_1.sql)`START TRANSACTION ISOLATION LEVEL ${(0, core_1.raw)(isolationLevel)}`.run(txnClient);
+            const result = await callback(txnClient);
+            await (0, core_1.sql)`COMMIT`.run(txnClient);
+            return result;
+          } catch (err) {
+            await (0, core_1.sql)`ROLLBACK`.run(txnClient);
+            if ((0, pgErrors_1.isDatabaseError)(err, "TransactionRollback_SerializationFailure", "TransactionRollback_DeadlockDetected")) {
+              if (attempt < maxAttempts) {
+                const delayBeforeRetry = Math.round(minMs + (maxMs - minMs) * Math.random());
+                if (transactionListener)
+                  transactionListener(`Transaction rollback (code ${err.code}) on attempt ${attempt} of ${maxAttempts}, retrying in ${delayBeforeRetry}ms`, txnId);
+                await (0, utils_1.wait)(delayBeforeRetry);
+              } else {
+                if (transactionListener)
+                  transactionListener(`Transaction rollback (code ${err.code}) on attempt ${attempt} of ${maxAttempts}, giving up`, txnId);
+                throw err;
+              }
+            } else {
+              throw err;
+            }
+          }
+        }
+      } finally {
+        delete txnClient._zapatos;
+        if (clientIsOurs)
+          txnClient.release();
+      }
+    }
+    exports.transaction = transaction2;
+    async function serializable2(txnClientOrQueryable, callback) {
+      return transaction2(txnClientOrQueryable, IsolationLevel2.Serializable, callback);
+    }
+    exports.serializable = serializable2;
+    async function repeatableRead2(txnClientOrQueryable, callback) {
+      return transaction2(txnClientOrQueryable, IsolationLevel2.RepeatableRead, callback);
+    }
+    exports.repeatableRead = repeatableRead2;
+    async function readCommitted2(txnClientOrQueryable, callback) {
+      return transaction2(txnClientOrQueryable, IsolationLevel2.ReadCommitted, callback);
+    }
+    exports.readCommitted = readCommitted2;
+    async function serializableRO2(txnClientOrQueryable, callback) {
+      return transaction2(txnClientOrQueryable, IsolationLevel2.SerializableRO, callback);
+    }
+    exports.serializableRO = serializableRO2;
+    async function repeatableReadRO2(txnClientOrQueryable, callback) {
+      return transaction2(txnClientOrQueryable, IsolationLevel2.RepeatableReadRO, callback);
+    }
+    exports.repeatableReadRO = repeatableReadRO2;
+    async function readCommittedRO2(txnClientOrQueryable, callback) {
+      return transaction2(txnClientOrQueryable, IsolationLevel2.ReadCommittedRO, callback);
+    }
+    exports.readCommittedRO = readCommittedRO2;
+    async function serializableRODeferrable2(txnClientOrQueryable, callback) {
+      return transaction2(txnClientOrQueryable, IsolationLevel2.SerializableRODeferrable, callback);
+    }
+    exports.serializableRODeferrable = serializableRODeferrable2;
+  }
+});
+
+// node_modules/zapatos/dist/db/conditions.js
+var require_conditions = __commonJS({
+  "node_modules/zapatos/dist/db/conditions.js"(exports) {
+    "use strict";
+    init_shims();
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.subtract = exports.add = exports.now = exports.before = exports.after = exports.fromNow = exports.not = exports.and = exports.or = exports.isNotIn = exports.isIn = exports.notReImatch = exports.notReMatch = exports.reImatch = exports.reMatch = exports.notSimilarTo = exports.similarTo = exports.notIlike = exports.ilike = exports.notLike = exports.like = exports.notBetweenSymmetric = exports.notBetween = exports.betweenSymmetric = exports.between = exports.lte = exports.lt = exports.gte = exports.gt = exports.ne = exports.eq = exports.isNotDistinctFrom = exports.isDistinctFrom = exports.isNotUnknown = exports.isUnknown = exports.isNotFalse = exports.isFalse = exports.isNotTrue = exports.isTrue = exports.isNotNull = exports.isNull = void 0;
+    var core_1 = require_core();
+    var utils_1 = require_utils2();
+    var conditionalParam = (a) => a instanceof core_1.SQLFragment || a instanceof core_1.ParentColumn || a instanceof core_1.Parameter ? a : (0, core_1.param)(a);
+    exports.isNull = (0, core_1.sql)`${core_1.self} IS NULL`;
+    exports.isNotNull = (0, core_1.sql)`${core_1.self} IS NOT NULL`;
+    exports.isTrue = (0, core_1.sql)`${core_1.self} IS TRUE`;
+    exports.isNotTrue = (0, core_1.sql)`${core_1.self} IS NOT TRUE`;
+    exports.isFalse = (0, core_1.sql)`${core_1.self} IS FALSE`;
+    exports.isNotFalse = (0, core_1.sql)`${core_1.self} IS NOT FALSE`;
+    exports.isUnknown = (0, core_1.sql)`${core_1.self} IS UNKNOWN`;
+    exports.isNotUnknown = (0, core_1.sql)`${core_1.self} IS NOT UNKNOWN`;
+    var isDistinctFrom = (a) => (0, core_1.sql)`${core_1.self} IS DISTINCT FROM ${conditionalParam(a)}`;
+    exports.isDistinctFrom = isDistinctFrom;
+    var isNotDistinctFrom = (a) => (0, core_1.sql)`${core_1.self} IS NOT DISTINCT FROM ${conditionalParam(a)}`;
+    exports.isNotDistinctFrom = isNotDistinctFrom;
+    var eq = (a) => (0, core_1.sql)`${core_1.self} = ${conditionalParam(a)}`;
+    exports.eq = eq;
+    var ne = (a) => (0, core_1.sql)`${core_1.self} <> ${conditionalParam(a)}`;
+    exports.ne = ne;
+    var gt = (a) => (0, core_1.sql)`${core_1.self} > ${conditionalParam(a)}`;
+    exports.gt = gt;
+    var gte = (a) => (0, core_1.sql)`${core_1.self} >= ${conditionalParam(a)}`;
+    exports.gte = gte;
+    var lt = (a) => (0, core_1.sql)`${core_1.self} < ${conditionalParam(a)}`;
+    exports.lt = lt;
+    var lte = (a) => (0, core_1.sql)`${core_1.self} <= ${conditionalParam(a)}`;
+    exports.lte = lte;
+    var between = (a, b) => (0, core_1.sql)`${core_1.self} BETWEEN (${conditionalParam(a)}) AND (${conditionalParam(b)})`;
+    exports.between = between;
+    var betweenSymmetric = (a, b) => (0, core_1.sql)`${core_1.self} BETWEEN SYMMETRIC (${conditionalParam(a)}) AND (${conditionalParam(b)})`;
+    exports.betweenSymmetric = betweenSymmetric;
+    var notBetween = (a, b) => (0, core_1.sql)`${core_1.self} NOT BETWEEN (${conditionalParam(a)}) AND (${conditionalParam(b)})`;
+    exports.notBetween = notBetween;
+    var notBetweenSymmetric = (a, b) => (0, core_1.sql)`${core_1.self} NOT BETWEEN SYMMETRIC (${conditionalParam(a)}) AND (${conditionalParam(b)})`;
+    exports.notBetweenSymmetric = notBetweenSymmetric;
+    var like = (a) => (0, core_1.sql)`${core_1.self} LIKE ${conditionalParam(a)}`;
+    exports.like = like;
+    var notLike = (a) => (0, core_1.sql)`${core_1.self} NOT LIKE ${conditionalParam(a)}`;
+    exports.notLike = notLike;
+    var ilike = (a) => (0, core_1.sql)`${core_1.self} ILIKE ${conditionalParam(a)}`;
+    exports.ilike = ilike;
+    var notIlike = (a) => (0, core_1.sql)`${core_1.self} NOT ILIKE ${conditionalParam(a)}`;
+    exports.notIlike = notIlike;
+    var similarTo = (a) => (0, core_1.sql)`${core_1.self} SIMILAR TO ${conditionalParam(a)}`;
+    exports.similarTo = similarTo;
+    var notSimilarTo = (a) => (0, core_1.sql)`${core_1.self} NOT SIMILAR TO ${conditionalParam(a)}`;
+    exports.notSimilarTo = notSimilarTo;
+    var reMatch = (a) => (0, core_1.sql)`${core_1.self} ~ ${conditionalParam(a)}`;
+    exports.reMatch = reMatch;
+    var reImatch = (a) => (0, core_1.sql)`${core_1.self} ~* ${conditionalParam(a)}`;
+    exports.reImatch = reImatch;
+    var notReMatch = (a) => (0, core_1.sql)`${core_1.self} !~ ${conditionalParam(a)}`;
+    exports.notReMatch = notReMatch;
+    var notReImatch = (a) => (0, core_1.sql)`${core_1.self} !~* ${conditionalParam(a)}`;
+    exports.notReImatch = notReImatch;
+    var isIn = (a) => a.length > 0 ? (0, core_1.sql)`${core_1.self} IN (${(0, core_1.vals)(a)})` : (0, core_1.sql)`false`;
+    exports.isIn = isIn;
+    var isNotIn = (a) => a.length > 0 ? (0, core_1.sql)`${core_1.self} NOT IN (${(0, core_1.vals)(a)})` : (0, core_1.sql)`true`;
+    exports.isNotIn = isNotIn;
+    var or = (...conditions2) => (0, core_1.sql)`(${(0, utils_1.mapWithSeparator)(conditions2, (0, core_1.sql)` OR `, (c) => c)})`;
+    exports.or = or;
+    var and = (...conditions2) => (0, core_1.sql)`(${(0, utils_1.mapWithSeparator)(conditions2, (0, core_1.sql)` AND `, (c) => c)})`;
+    exports.and = and;
+    var not = (condition) => (0, core_1.sql)`(NOT ${condition})`;
+    exports.not = not;
+    var fromNow = (n, unit = "millisecond") => (0, core_1.sql)`now() + ${(0, core_1.param)(String(n) + " " + unit)}`;
+    exports.fromNow = fromNow;
+    exports.after = exports.gt;
+    exports.before = exports.lt;
+    exports.now = (0, core_1.sql)`now()`;
+    var add = (a) => (0, core_1.sql)`${core_1.self} + ${conditionalParam(a)}`;
+    exports.add = add;
+    var subtract = (a) => (0, core_1.sql)`${core_1.self} - ${conditionalParam(a)}`;
+    exports.subtract = subtract;
+  }
+});
+
+// node_modules/zapatos/dist/db/index.js
+var require_db = __commonJS({
+  "node_modules/zapatos/dist/db/index.js"(exports) {
+    "use strict";
+    init_shims();
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __exportStar = exports && exports.__exportStar || function(m, exports2) {
+      for (var p in m)
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
+          __createBinding(exports2, m, p);
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.conditions = void 0;
+    __exportStar(require_canary(), exports);
+    __exportStar(require_config(), exports);
+    __exportStar(require_core(), exports);
+    __exportStar(require_date(), exports);
+    __exportStar(require_pgErrors(), exports);
+    __exportStar(require_shortcuts(), exports);
+    __exportStar(require_transaction(), exports);
+    exports.conditions = require_conditions();
+  }
+});
+
+// node_modules/zapatos/db.js
+var require_db2 = __commonJS({
+  "node_modules/zapatos/db.js"(exports) {
+    "use strict";
+    init_shims();
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m[k];
+      } });
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __exportStar = exports && exports.__exportStar || function(m, exports2) {
+      for (var p in m)
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
+          __createBinding(exports2, m, p);
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    __exportStar(require_db(), exports);
+  }
+});
+
+// index.ts
+init_shims();
+var import_pg = __toESM(require_lib2());
+
+// node_modules/zapatos/db.mjs
+init_shims();
+var import_db = __toESM(require_db2(), 1);
+var ColumnNames = import_db.default.ColumnNames;
+var ColumnValues = import_db.default.ColumnValues;
+var Constraint = import_db.default.Constraint;
+var DangerousRawString = import_db.default.DangerousRawString;
+var Default = import_db.default.Default;
+var IsolationLevel = import_db.default.IsolationLevel;
+var NotExactlyOneError = import_db.default.NotExactlyOneError;
+var Parameter = import_db.default.Parameter;
+var ParentColumn = import_db.default.ParentColumn;
+var SQLFragment = import_db.default.SQLFragment;
+var SelectResultMode = import_db.default.SelectResultMode;
+var all = import_db.default.all;
+var avg = import_db.default.avg;
+var cols = import_db.default.cols;
+var conditions = import_db.default.conditions;
+var constraint = import_db.default.constraint;
+var count = import_db.default.count;
+var deletes = import_db.default.deletes;
+var doNothing = import_db.default.doNothing;
+var getConfig = import_db.default.getConfig;
+var insert = import_db.default.insert;
+var isDatabaseError = import_db.default.isDatabaseError;
+var max = import_db.default.max;
+var min = import_db.default.min;
+var param = import_db.default.param;
+var parent = import_db.default.parent;
+var raw = import_db.default.raw;
+var readCommitted = import_db.default.readCommitted;
+var readCommittedRO = import_db.default.readCommittedRO;
+var repeatableRead = import_db.default.repeatableRead;
+var repeatableReadRO = import_db.default.repeatableReadRO;
+var select = import_db.default.select;
+var selectExactlyOne = import_db.default.selectExactlyOne;
+var selectOne = import_db.default.selectOne;
+var self2 = import_db.default.self;
+var serializable = import_db.default.serializable;
+var serializableRO = import_db.default.serializableRO;
+var serializableRODeferrable = import_db.default.serializableRODeferrable;
+var setConfig = import_db.default.setConfig;
+var sql = import_db.default.sql;
+var strict = import_db.default.strict;
+var sum = import_db.default.sum;
+var toBuffer = import_db.default.toBuffer;
+var toDate = import_db.default.toDate;
+var toString = import_db.default.toString;
+var transaction = import_db.default.transaction;
+var truncate = import_db.default.truncate;
+var update = import_db.default.update;
+var upsert = import_db.default.upsert;
+var vals = import_db.default.vals;
+
+// index.ts
+var pgshims_default = {
+  async fetch(request, env, ctx) {
+    const client = new import_pg.Client({ connectionString: env.DATABASE_URL });
+    await client.connect();
+    const result1 = await select("whc_sites_2021", all, { columns: ["name_en"] }).run(client);
+    await client.end();
+    return new Response(JSON.stringify(result1));
+  }
+};
+export {
+  pgshims_default as default
+};
 /*!
  * The buffer module from node.js, for the browser.
  *
