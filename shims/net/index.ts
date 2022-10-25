@@ -3,7 +3,7 @@
  * implementing net.Socket and tls.connect() on top of WebSockets and WolfSSL 
  * compiled to WebAssembly with emscripten. It's designed to work both in 
  * browsers and in Cloudflare Workers (where WebSockets and WebAssembly work a
- * bit differently).
+ * bit differently). The calling client is assumed to be pg (node-postgres).
  * 
  * - This diagram represents data flow once the TLS handshake has completed.
  *   Data flow is complicated by the need to prevent re-entrancy: emscripten's
@@ -111,8 +111,8 @@ export class Socket extends EventEmitter {
   incomingDataQueue: Buffer[] = [];
   writeQueue: { data: Buffer, callback: (err?: any) => void }[] = [];
 
-  setNoDelay() { debug && log('setNoDelay'); }
-  setKeepAlive() { debug && log('setKeepAlive'); }
+  setNoDelay() { debug && log('setNoDelay (no-op)'); }
+  setKeepAlive() { debug && log('setKeepAlive (no-op)'); }
 
   connect(port: number | string, host: string, connectListener?: () => void) {
     this.connecting = true;
@@ -358,6 +358,7 @@ export class Socket extends EventEmitter {
   }
 
   destroy() {
+    this.destroyed = true;
     return this.end();
   }
 }
