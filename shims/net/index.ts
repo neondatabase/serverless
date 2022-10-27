@@ -224,7 +224,7 @@ export class Socket extends EventEmitter {
   startTls(host: string) {
     debug && log(`starting TLS`);
     this.tlsState = TlsState.Handshake;
-    this.module.ccall('initTls', 'number', ['string'], [host], { async: true })
+    this.module.ccall('initTls', 'number', ['string', 'number'], [host, 1], { async: true })
       .then(() => {
         debug && log(`TLS connection established`);
         this.tlsState = TlsState.Established;
