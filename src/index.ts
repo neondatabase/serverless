@@ -1,6 +1,7 @@
 import { Client } from 'pg';
 import * as db from 'zapatos/db';
 import * as s from 'zapatos/schema';
+import patchPgClient from './patchPgClient';
 
 export interface Env {
   DATABASE_URL: string;
@@ -16,10 +17,11 @@ export default {
     const city = cf.city ?? 'Unknown location (assuming San Francisco)';
     const country = cf.country ?? 'Earth';
 
-    const client = new Client({ connectionString: env.DATABASE_URL });
+    const client = patchPgClient(new Client({ connectionString: env.DATABASE_URL }));
     await client.connect();
-    const distance = db.sql<s.whc_sites_2021.SQL>`
-      ${"location"} <-> st_makepoint(${db.param(lng)}, ${db.param(lat)})`;
+    // const distance = db.sql<s.whc_sites_2021.SQL>`
+    //   ${"location"} <-> st_makepoint(${db.param(lng)}, ${db.param(lat)})`;
+    const distance = db.sql<s.whc_sites_2021.SQL>`length(${"name_en"})`;
     const nearestSites = await db.select('whc_sites_2021', db.all, {
       columns: ['name_en', 'id_no', 'category'],
       extras: { distance },
