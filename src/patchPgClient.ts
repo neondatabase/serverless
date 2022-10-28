@@ -1,4 +1,6 @@
 
+// here, we patch a pg Client instance to use SubtleCrypto for SCRAM-SHA-256 
+
 export default function (client: any) {
   client._handleAuthSASLContinue = async function (msg: any) {
     const session = this.saslSession;
