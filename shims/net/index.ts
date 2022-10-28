@@ -7,14 +7,14 @@
  * 
  * - This diagram represents data flow once the TLS handshake has completed.
  *   Data flow is complicated by the need to prevent re-entrancy: emscripten's
- *   ASYNCIFY feature enables async JS calls, but we mustn't call back into JS
+ *   ASYNCIFY feature enables async JS calls, but we mustn't call back into C
  *   while we wait.
  * 
  * - The data queues contain encrypted incoming data from the network and
- *   unencrypted outgoing data from pg. 
+ *   unencrypted outgoing data from pg.
  * 
  * - Prior to the handshake, pg writes are passed straight to the network and
- *   network data events lead directly to pg data events. 
+ *   network data events lead directly to pg data events.
  * 
  * - During the handshake, the TLS engine spontaneously calls into JS to read
  *   and write, and outgoing writes (which pg issues early) are queued.
@@ -54,6 +54,7 @@ import { tls_emscripten } from './tls';
 declare global {
   const debug: boolean;  // e.g. --define:debug=false in esbuild command
   const tlsWasm: any;    // we'll add this import back in later (see above)
+
   // WebAssembly is currently missing from @cloudflare/worker-types
   namespace WebAssembly {
     interface Instance { }
@@ -69,7 +70,7 @@ declare global {
 }
 
 interface DataRequest {
-  buffer: number /* pointer */;
+  buffer: number /* emscripten pointer */;
   maxBytes: number;
   resolve: (bytesProvided: number) => void;
 }
@@ -111,7 +112,7 @@ export class Socket extends EventEmitter {
   destroyed = false;
   wsProxy = 'proxy.hahathon.monster/';
 
-  // private
+  // theoretically private
   ws: WebSocket | null = null;
   module: any = null;
   tlsState = TlsState.None;
@@ -224,7 +225,7 @@ export class Socket extends EventEmitter {
   startTls(host: string) {
     debug && log(`starting TLS`);
     this.tlsState = TlsState.Handshake;
-    this.module.ccall('initTls', 'number', ['string', 'number'], [host, 1], { async: true })
+    this.module.ccall('initTls', 'number', ['string', 'number'], [host, 1], { async: true })  // second arg: 0 = use SNI, 1 = disable SNI
       .then(() => {
         debug && log(`TLS connection established`);
         this.tlsState = TlsState.Established;
@@ -315,7 +316,7 @@ export class Socket extends EventEmitter {
 
     // else if data needs writing, write it
     if (this.writeQueue.length > 0) {
-      this.tlsWaitState = TlsWaitState.WaitRead;
+      this.tlsWaitState = TlsWaitState.WaitWrite;
       const writeItem = this.writeQueue.shift()!;
       const { data, callback } = writeItem;
       const writeLen = data.length;
