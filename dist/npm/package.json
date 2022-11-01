@@ -1,0 +1,14 @@
+{
+  "name": "neon-cf-pg",
+  "version": "0.1.0",
+  "author": "Neon",
+  "description": "node-postgres via a WebSocket TCP proxy for Cloudflare Workers",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "tls.wasm"
+  ]
+}

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "author": "George MacKerron",
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "updateSchema": "env $(grep -v '^#' .dev.vars) npx zapatos"
   },
