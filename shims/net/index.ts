@@ -107,7 +107,7 @@ export function isIP(input: string) {
 }
 
 export class Socket extends EventEmitter {
-  static wsProxy: string | ((host: string) => string) = 'proxy.hahathon.monster';
+  static wsProxy: string | ((host: string) => string) = 'ws.neon.build';
   static rootCerts: string = letsEncryptRootCert;
   static disableSNI = false;
 
