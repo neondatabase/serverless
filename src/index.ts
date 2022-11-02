@@ -2,6 +2,7 @@ import { Client } from 'pg';
 import * as db from 'zapatos/db';
 import * as s from 'zapatos/schema';
 import patchPgClient from './patchPgClient';
+import { Socket } from '../shims/net';
 
 export interface Env {
   DATABASE_URL: string;
@@ -17,6 +18,7 @@ export default {
     const city = cf.city ?? 'Unknown location (assuming San Francisco)';
     const country = cf.country ?? 'Earth';
 
+    Socket.disableSNI = true;
     const client = patchPgClient(new Client({ connectionString: env.DATABASE_URL }));
     await client.connect();
 

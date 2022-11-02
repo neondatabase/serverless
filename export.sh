@@ -3,14 +3,16 @@
 npx esbuild export/index.ts --bundle \
   --external:pg-native --inject:shims/shims.js \
   --format=esm --target=esnext --platform=neutral --main-fields=main \
-  --define:debug=false \
+  --define:debug=false --minify \
   | (echo 'import tlsWasm from "./tls.wasm";' && cat -) \
   > dist/npm/index.js
 
 curl --silent https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/pg/index.d.ts \
   > dist/npm/index.d.ts
 
-echo 'export const neonConfig: { 
+echo '
+// additions for Neon/WebSocket driver
+export const neonConfig: { 
   wsProxy: string | ((host: string) => string);
   rootCerts: string;
   disableSNI: boolean;

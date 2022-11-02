@@ -299,6 +299,8 @@ import * as Pg from '.';
 export const native: typeof Pg | null;
 
 export { DatabaseError } from 'pg-protocol';
+
+// additions for Neon/WebSocket driver
 export const neonConfig: { 
   wsProxy: string | ((host: string) => string);
   rootCerts: string;
