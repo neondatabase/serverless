@@ -7,3 +7,7 @@ export {
   defaults,
   types,
 } from 'pg';
+
+export {
+  Socket as neonConfig
+} from '../shims/net';

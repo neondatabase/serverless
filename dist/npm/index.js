@@ -5,6 +5,7 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
   get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
 }) : x)(function(x) {
@@ -35,6 +36,10 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 
 // node_modules/base64-js/index.js
 var require_base64_js = __commonJS({
@@ -5117,10 +5122,10 @@ var init_tls = __esm({
             var exports2 = instance.exports;
             exports2 = Asyncify.instrumentWasmExports(exports2);
             Module["asm"] = exports2;
-            wasmMemory = Module["asm"]["k"];
+            wasmMemory = Module["asm"]["n"];
             updateGlobalBufferAndViews(wasmMemory.buffer);
-            wasmTable = Module["asm"]["t"];
-            addOnInit(Module["asm"]["l"]);
+            wasmTable = Module["asm"]["w"];
+            addOnInit(Module["asm"]["o"]);
             removeRunDependency("wasm-instantiate");
           }
           addRunDependency("wasm-instantiate");
@@ -5613,55 +5618,55 @@ var init_tls = __esm({
             return ccall(ident, returnType, argTypes, arguments, opts);
           };
         }
-        var asmLibraryArg = { "__asyncjs__jsAesGcmDecrypt": __asyncjs__jsAesGcmDecrypt, "__asyncjs__jsAesGcmEncrypt": __asyncjs__jsAesGcmEncrypt, "j": __asyncjs__jsProvideEncryptedFromNetwork, "__asyncjs__jsSha": __asyncjs__jsSha, "g": __gmtime_js, "h": __tzset_js, "f": _emscripten_date_now, "c": _emscripten_resize_heap, "e": _fd_close, "b": _fd_seek, "d": _fd_write, "i": jsWriteEncryptedToNetwork, "a": wc_GenerateSeed };
+        var asmLibraryArg = { "g": __asyncjs__jsAesGcmDecrypt, "h": __asyncjs__jsAesGcmEncrypt, "m": __asyncjs__jsProvideEncryptedFromNetwork, "f": __asyncjs__jsSha, "d": __gmtime_js, "e": __tzset_js, "c": _emscripten_date_now, "j": _emscripten_resize_heap, "b": _fd_close, "i": _fd_seek, "k": _fd_write, "l": jsWriteEncryptedToNetwork, "a": wc_GenerateSeed };
         var asm = createWasm();
         var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
-          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["l"]).apply(null, arguments);
+          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["o"]).apply(null, arguments);
         };
         var _initTls = Module["_initTls"] = function() {
-          return (_initTls = Module["_initTls"] = Module["asm"]["m"]).apply(null, arguments);
+          return (_initTls = Module["_initTls"] = Module["asm"]["p"]).apply(null, arguments);
         };
         var _readData = Module["_readData"] = function() {
-          return (_readData = Module["_readData"] = Module["asm"]["n"]).apply(null, arguments);
+          return (_readData = Module["_readData"] = Module["asm"]["q"]).apply(null, arguments);
         };
         var _writeData = Module["_writeData"] = function() {
-          return (_writeData = Module["_writeData"] = Module["asm"]["o"]).apply(null, arguments);
+          return (_writeData = Module["_writeData"] = Module["asm"]["r"]).apply(null, arguments);
         };
         var _pending = Module["_pending"] = function() {
-          return (_pending = Module["_pending"] = Module["asm"]["p"]).apply(null, arguments);
+          return (_pending = Module["_pending"] = Module["asm"]["s"]).apply(null, arguments);
         };
         var _shutdown = Module["_shutdown"] = function() {
-          return (_shutdown = Module["_shutdown"] = Module["asm"]["q"]).apply(null, arguments);
+          return (_shutdown = Module["_shutdown"] = Module["asm"]["t"]).apply(null, arguments);
         };
         var _malloc = Module["_malloc"] = function() {
-          return (_malloc = Module["_malloc"] = Module["asm"]["r"]).apply(null, arguments);
+          return (_malloc = Module["_malloc"] = Module["asm"]["u"]).apply(null, arguments);
         };
         var _free = Module["_free"] = function() {
-          return (_free = Module["_free"] = Module["asm"]["s"]).apply(null, arguments);
+          return (_free = Module["_free"] = Module["asm"]["v"]).apply(null, arguments);
         };
         var stackSave = Module["stackSave"] = function() {
-          return (stackSave = Module["stackSave"] = Module["asm"]["u"]).apply(null, arguments);
+          return (stackSave = Module["stackSave"] = Module["asm"]["x"]).apply(null, arguments);
         };
         var stackRestore = Module["stackRestore"] = function() {
-          return (stackRestore = Module["stackRestore"] = Module["asm"]["v"]).apply(null, arguments);
+          return (stackRestore = Module["stackRestore"] = Module["asm"]["y"]).apply(null, arguments);
         };
         var stackAlloc = Module["stackAlloc"] = function() {
-          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["w"]).apply(null, arguments);
+          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["z"]).apply(null, arguments);
         };
         var _asyncify_start_unwind = Module["_asyncify_start_unwind"] = function() {
-          return (_asyncify_start_unwind = Module["_asyncify_start_unwind"] = Module["asm"]["x"]).apply(null, arguments);
+          return (_asyncify_start_unwind = Module["_asyncify_start_unwind"] = Module["asm"]["A"]).apply(null, arguments);
         };
         var _asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = function() {
-          return (_asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = Module["asm"]["y"]).apply(null, arguments);
+          return (_asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = Module["asm"]["B"]).apply(null, arguments);
         };
         var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = function() {
-          return (_asyncify_start_rewind = Module["_asyncify_start_rewind"] = Module["asm"]["z"]).apply(null, arguments);
+          return (_asyncify_start_rewind = Module["_asyncify_start_rewind"] = Module["asm"]["C"]).apply(null, arguments);
         };
         var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = function() {
-          return (_asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = Module["asm"]["A"]).apply(null, arguments);
+          return (_asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = Module["asm"]["D"]).apply(null, arguments);
         };
-        var ___start_em_js = Module["___start_em_js"] = 19216;
-        var ___stop_em_js = Module["___stop_em_js"] = 22490;
+        var ___start_em_js = Module["___start_em_js"] = 17392;
+        var ___stop_em_js = Module["___stop_em_js"] = 20666;
         Module["ccall"] = ccall;
         Module["cwrap"] = cwrap;
         var calledRun;
@@ -5719,6 +5724,14 @@ var init_tls = __esm({
   }
 });
 
+// shims/net/isrgrootx1.pem.txt
+var isrgrootx1_pem_default;
+var init_isrgrootx1_pem = __esm({
+  "shims/net/isrgrootx1.pem.txt"() {
+    isrgrootx1_pem_default = "-----BEGIN CERTIFICATE-----\nMIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw\nTzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh\ncmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMTUwNjA0MTEwNDM4\nWhcNMzUwNjA0MTEwNDM4WjBPMQswCQYDVQQGEwJVUzEpMCcGA1UEChMgSW50ZXJu\nZXQgU2VjdXJpdHkgUmVzZWFyY2ggR3JvdXAxFTATBgNVBAMTDElTUkcgUm9vdCBY\nMTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAK3oJHP0FDfzm54rVygc\nh77ct984kIxuPOZXoHj3dcKi/vVqbvYATyjb3miGbESTtrFj/RQSa78f0uoxmyF+\n0TM8ukj13Xnfs7j/EvEhmkvBioZxaUpmZmyPfjxwv60pIgbz5MDmgK7iS4+3mX6U\nA5/TR5d8mUgjU+g4rk8Kb4Mu0UlXjIB0ttov0DiNewNwIRt18jA8+o+u3dpjq+sW\nT8KOEUt+zwvo/7V3LvSye0rgTBIlDHCNAymg4VMk7BPZ7hm/ELNKjD+Jo2FR3qyH\nB5T0Y3HsLuJvW5iB4YlcNHlsdu87kGJ55tukmi8mxdAQ4Q7e2RCOFvu396j3x+UC\nB5iPNgiV5+I3lg02dZ77DnKxHZu8A/lJBdiB3QW0KtZB6awBdpUKD9jf1b0SHzUv\nKBds0pjBqAlkd25HN7rOrFleaJ1/ctaJxQZBKT5ZPt0m9STJEadao0xAH0ahmbWn\nOlFuhjuefXKnEgV4We0+UXgVCwOPjdAvBbI+e0ocS3MFEvzG6uBQE3xDk3SzynTn\njh8BCNAw1FtxNrQHusEwMFxIt4I7mKZ9YIqioymCzLq9gwQbooMDQaHWBfEbwrbw\nqHyGO0aoSCqI3Haadr8faqU9GY/rOPNk3sgrDQoo//fb4hVC1CLQJ13hef4Y53CI\nrU7m2Ys6xt0nUW7/vGT1M0NPAgMBAAGjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNV\nHRMBAf8EBTADAQH/MB0GA1UdDgQWBBR5tFnme7bl5AFzgAiIyBpY9umbbjANBgkq\nhkiG9w0BAQsFAAOCAgEAVR9YqbyyqFDQDLHYGmkgJykIrGF1XIpu+ILlaS/V9lZL\nubhzEFnTIZd+50xx+7LSYK05qAvqFyFWhfFQDlnrzuBZ6brJFe+GnY+EgPbk6ZGQ\n3BebYhtF8GaV0nxvwuo77x/Py9auJ/GpsMiu/X1+mvoiBOv/2X/qkSsisRcOj/KK\nNFtY2PwByVS5uCbMiogziUwthDyC3+6WVwW6LLv3xLfHTjuCvjHIInNzktHCgKQ5\nORAzI4JMPJ+GslWYHb4phowim57iaztXOoJwTdwJx4nLCgdNbOhdjsnvzqvHu7Ur\nTkXWStAmzOVyyghqpZXjFaH3pO3JLF+l+/+sKAIuvtd7u+Nxe5AW0wdeRlN8NwdC\njNPElpzVmbUq4JUagEiuTDkHzsxHpFKVK7q4+63SM1N95R1NbdWhscdCb+ZAJzVc\noyi3B43njTOQ5yOf+1CceWxG1bQVs5ZufpsMljq4Ui0/1lvh+wjChP4kqKOJ2qxq\n4RgqsahDYVvTH9w7jXbyLeiNdd8XM2w9U/t7y0Ff/9yi0GE44Za4rF2LN9d11TPA\nmRGunUHBcnWEvgJBQl9nJEiU0Zsnvgc/ubhPgXRR4Xq37Z0j4r7g1SgEEzwxA57d\nemyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=\n-----END CERTIFICATE-----\n";
+  }
+});
+
 // shims/net/index.ts
 var net_exports = {};
 __export(net_exports, {
@@ -5728,20 +5741,21 @@ __export(net_exports, {
 function isIP(input) {
   return 0;
 }
-var import_events, Socket;
+var import_events, _Socket, Socket;
 var init_net = __esm({
   "shims/net/index.ts"() {
+    "use strict";
     init_shims();
     import_events = __toESM(require_events(), 1);
     init_tls();
-    Socket = class extends import_events.EventEmitter {
+    init_isrgrootx1_pem();
+    _Socket = class extends import_events.EventEmitter {
       connecting = false;
       pending = true;
       writable = true;
       encrypted = false;
       authorized = false;
       destroyed = false;
-      wsProxy = "proxy.hahathon.monster/";
       ws = null;
       module = null;
       tlsState = 0 /* None */;
@@ -5758,7 +5772,8 @@ var init_net = __esm({
         if (connectListener)
           this.once("connect", connectListener);
         const isCloudflare = typeof tlsWasm !== "string";
-        const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
+        const wsProxy = typeof _Socket.wsProxy === "string" ? _Socket.wsProxy : _Socket.wsProxy(host);
+        const wsAddr = `${wsProxy}/v1?address=${host}:${port}`;
         const wsPromise = isCloudflare ? fetch("http://" + wsAddr, { headers: { Upgrade: "websocket" } }).then((resp) => {
           const ws = resp.webSocket;
           if (ws === null)
@@ -5826,7 +5841,13 @@ var init_net = __esm({
       }
       startTls(host) {
         this.tlsState = 1 /* Handshake */;
-        this.module.ccall("initTls", "number", ["string", "number"], [host, 1], { async: true }).then(() => {
+        this.module.ccall(
+          "initTls",
+          "number",
+          ["string", "string", "number", "number"],
+          [host, _Socket.rootCerts, _Socket.rootCerts.length, _Socket.disableSNI ? 1 : 0],
+          { async: true }
+        ).then(() => {
           this.tlsState = 2 /* Established */;
           this.encrypted = true;
           this.authorized = true;
@@ -5926,6 +5947,10 @@ var init_net = __esm({
         return this.end();
       }
     };
+    Socket = _Socket;
+    __publicField(Socket, "wsProxy", "proxy.hahathon.monster");
+    __publicField(Socket, "rootCerts", isrgrootx1_pem_default);
+    __publicField(Socket, "disableSNI", false);
   }
 });
 
@@ -8303,6 +8328,7 @@ var require_lib2 = __commonJS({
 // export/index.ts
 init_shims();
 var import_pg = __toESM(require_lib2());
+init_net();
 var export_Client = import_pg.Client;
 var export_Connection = import_pg.Connection;
 var export_DatabaseError = import_pg.DatabaseError;
@@ -8317,6 +8343,7 @@ export {
   export_Pool as Pool,
   export_Query as Query,
   export_defaults as defaults,
+  Socket as neonConfig,
   export_types as types
 };
 /*!

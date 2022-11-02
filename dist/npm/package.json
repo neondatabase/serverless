@@ -1,5 +1,5 @@
 {
-  "name": "neon-cf-pg",
+  "name": "@jawj/tmp-neon-cf-pg",
   "version": "0.1.0",
   "author": "Neon",
   "description": "node-postgres via a WebSocket TCP proxy for Cloudflare Workers",

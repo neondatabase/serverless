@@ -299,3 +299,8 @@ import * as Pg from '.';
 export const native: typeof Pg | null;
 
 export { DatabaseError } from 'pg-protocol';
+export const neonConfig: { 
+  wsProxy: string | ((host: string) => string);
+  rootCerts: string;
+  disableSNI: boolean;
+}

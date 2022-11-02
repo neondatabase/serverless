@@ -10,4 +10,10 @@ npx esbuild export/index.ts --bundle \
 curl --silent https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/pg/index.d.ts \
   > dist/npm/index.d.ts
 
+echo 'export const neonConfig: { 
+  wsProxy: string | ((host: string) => string);
+  rootCerts: string;
+  disableSNI: boolean;
+}' >> dist/npm/index.d.ts
+
 cp shims/net/tls.wasm dist/npm/

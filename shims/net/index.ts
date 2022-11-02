@@ -51,6 +51,9 @@
 import { EventEmitter } from 'events';
 import { tls_emscripten } from './tls';
 
+// @ts-ignore - esbuild knows how to deal with this
+import letsEncryptRootCert from './isrgrootx1.pem.txt';
+
 declare global {
   const debug: boolean;  // e.g. --define:debug=false in esbuild command
   const tlsWasm: any;    // we'll add this import back in later (see above)
@@ -104,13 +107,16 @@ export function isIP(input: string) {
 }
 
 export class Socket extends EventEmitter {
+  static wsProxy: string | ((host: string) => string) = 'proxy.hahathon.monster';
+  static rootCerts: string = letsEncryptRootCert;
+  static disableSNI = false;
+
   connecting = false;
   pending = true;
   writable = true;
   encrypted = false;
   authorized = false;
   destroyed = false;
-  wsProxy = 'proxy.hahathon.monster/';
 
   // theoretically private
   ws: WebSocket | null = null;
@@ -130,7 +136,8 @@ export class Socket extends EventEmitter {
     if (connectListener) this.once('connect', connectListener);
 
     const isCloudflare = typeof tlsWasm !== 'string';
-    const wsAddr = `${this.wsProxy}?name=${host}:${port}`;
+    const wsProxy = typeof Socket.wsProxy === 'string' ? Socket.wsProxy : Socket.wsProxy(host);
+    const wsAddr = `${wsProxy}/v1?address=${host}:${port}`;
     const wsPromise = isCloudflare ?
       fetch('http://' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
         debug && log('Cloudflare WebSocket opened');
@@ -225,7 +232,12 @@ export class Socket extends EventEmitter {
   startTls(host: string) {
     debug && log(`starting TLS`);
     this.tlsState = TlsState.Handshake;
-    this.module.ccall('initTls', 'number', ['string', 'number'], [host, 1], { async: true })  // second arg: 0 = use SNI, 1 = disable SNI
+
+    this.module.ccall('initTls', 'number',
+      ['string', 'string', 'number', 'number'],
+      [host, Socket.rootCerts, Socket.rootCerts.length, Socket.disableSNI ? 1 : 0],
+      { async: true }
+    )
       .then(() => {
         debug && log(`TLS connection established`);
         this.tlsState = TlsState.Established;

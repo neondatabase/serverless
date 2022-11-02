@@ -19,14 +19,17 @@ export default {
 
     const client = patchPgClient(new Client({ connectionString: env.DATABASE_URL }));
     await client.connect();
+
     const distance = db.sql<s.whc_sites_2021.SQL>`
       ${"location"} <-> st_makepoint(${db.param(lng)}, ${db.param(lat)})`;
+
     const nearestSites = await db.select('whc_sites_2021', db.all, {
       columns: ['name_en', 'id_no', 'category'],
       extras: { distance },
       order: { by: distance, direction: 'ASC' },
       limit: 10,
     }).run(client);
+
     ctx.waitUntil(client.end());
 
     return new Response(JSON.stringify({ lat, lng, city, country, nearestSites }, null, 2),
