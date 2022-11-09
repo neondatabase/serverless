@@ -1,8 +1,9 @@
 import { Client } from 'pg';
 import * as db from 'zapatos/db';
 import * as s from 'zapatos/schema';
-import patchPgClient from './patchPgClient';
-import { Socket } from '../shims/net';
+import { neonConfig } from '../export';
+import patchPgClient from '../shims/patchPgClient';
+import rewritePgConfig from '../shims/rewritePgConfig';
 
 export interface Env {
   DATABASE_URL: string;
@@ -18,7 +19,8 @@ export default {
     const city = cf.city ?? 'Unknown location (assuming San Francisco)';
     const country = cf.country ?? 'Earth';
 
-    Socket.disableSNI = true;
+    //const client = new Client(rewritePgConfig({ connectionString: env.DATABASE_URL }));  // OR: patchPgClient
+    neonConfig.disableSCRAM = false;
     const client = patchPgClient(new Client({ connectionString: env.DATABASE_URL }));
     await client.connect();
 

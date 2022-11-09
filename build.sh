@@ -9,7 +9,7 @@ else
 fi
 
 npx esbuild src/index.ts \
-  --external:pg-native --inject:shims/shims.js \
+  --external:pg-native --inject:shims/shims.js --loader:.pem=text \
   --bundle --format=esm \
   $DEBUG_ARG $MINIFY_ARG | \
 tee >((echo 'const tlsWasm = "../tls.wasm";' && cat -) > dist/browser/index.js) | \

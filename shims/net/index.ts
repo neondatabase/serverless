@@ -52,7 +52,7 @@ import { EventEmitter } from 'events';
 import { tls_emscripten } from './tls';
 
 // @ts-ignore - esbuild knows how to deal with this
-import letsEncryptRootCert from './isrgrootx1.pem.txt';
+import letsEncryptRootCert from './isrgrootx1.pem';
 
 declare global {
   const debug: boolean;  // e.g. --define:debug=false in esbuild command
@@ -109,7 +109,7 @@ export function isIP(input: string) {
 export class Socket extends EventEmitter {
   static wsProxy: string | ((host: string) => string) = 'ws.neon.build';
   static rootCerts: string = letsEncryptRootCert;
-  static disableSNI = false;
+  static disableSCRAM = true;
 
   connecting = false;
   pending = true;
@@ -235,7 +235,7 @@ export class Socket extends EventEmitter {
 
     this.module.ccall('initTls', 'number',
       ['string', 'string', 'number', 'number'],
-      [host, Socket.rootCerts, Socket.rootCerts.length, Socket.disableSNI ? 1 : 0],
+      [host, Socket.rootCerts, Socket.rootCerts.length, Socket.disableSCRAM ? 1 : 0],
       { async: true }
     )
       .then(() => {

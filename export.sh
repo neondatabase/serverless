@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 npx esbuild export/index.ts --bundle \
-  --external:pg-native --inject:shims/shims.js \
+  --external:pg-native --inject:shims/shims.js --loader:.pem=text \
   --format=esm --target=esnext --platform=neutral --main-fields=main \
   --define:debug=false --minify \
   | (echo 'import tlsWasm from "./tls.wasm";' && cat -) \
