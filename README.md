@@ -4,4 +4,4 @@ Most of the code is in `shims/net/index.ts`. Alongside that file, `tls.js` and `
 
 To run or deploy on Cloudflare: `npx wrangler dev --local` or `npx wrangler publish`.
 
-To run in a browser, start a local server at the repo root and visit http://localhost:$PORT/dist/browser/.
+To run in a browser, start a local server at the repo root and visit http://localhost:$PORT/dist/deploy/.
