@@ -1,8 +1,8 @@
 {
-  "name": "@jawj/tmp-cfworker-pg",
+  "name": "@neondatabase/serverless",
   "version": "0.1.3",
   "author": "Neon",
-  "description": "node-postgres via a WebSocket TCP proxy for Cloudflare Workers",
+  "description": "node-postgres via a WebSocket TCP proxy from neon.tech",
   "main": "./index.js",
   "types": "./index.d.ts",
   "license": "MIT"
