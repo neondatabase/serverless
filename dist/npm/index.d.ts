@@ -301,8 +301,33 @@ export const native: typeof Pg | null;
 export { DatabaseError } from 'pg-protocol';
 
 // additions for Neon/WebSocket driver
-export const neonConfig: { 
+export const neonConfig: {
+  /**
+   * Set `wsProxy` to use your own WebSocket proxy server. 
+   * Provide either the proxy server’s domain name, or a function that takes 
+   * the database host address and returns proxy server’s domain name.
+   * The default is Neon’s proxy, which will forward only to Neon databases.
+  */
   wsProxy: string | ((host: string) => string);
+
+  /**
+   * Set `rootCerts` to a string comprising one or more PEM files. 
+   * These are the trusted root certificates for a TLS connection to Postgres.
+   * The default is the ISRG Root X1 certificate used by Let’s Encrypt.
+   */
   rootCerts: string;
+  
+  /**
+   * When `disableSNI` is `true` and the Neon project name is included in the 
+   * password, we avoid CPU-intensive SCRAM authentication.
+   * The default is `true`.
+   */
   disableSNI: boolean;
+
+  /**
+   * When using from a browser or other environment where we can’t simply
+   * import a WebAssembly (.wasm) file, set `wasmPath` to the path to fetch it
+   * from. For example: `"./tls.wasm"`.
+   */
+  wasmPath: string | undefined;
 }

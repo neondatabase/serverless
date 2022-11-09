@@ -8,11 +8,9 @@ else
   MINIFY_ARG="--minify"
 fi
 
-npx esbuild src/index.ts \
-  --external:pg-native --inject:shims/shims.js --loader:.pem=text \
-  --bundle --format=esm \
-  $DEBUG_ARG $MINIFY_ARG | \
-tee >((echo 'const tlsWasm = "../tls.wasm";' && cat -) > dist/browser/index.js) | \
-  (echo 'import tlsWasm from "../tls.wasm";' && cat -) > dist/cf/index.js
+npx esbuild src/index.ts --bundle \
+  --external:pg-native --external:./tls.wasm --inject:shims/shims.js --loader:.pem=text \
+  --splitting --format=esm --outdir=dist/deploy \
+  $DEBUG_ARG $MINIFY_ARG
 
-cp shims/net/tls.wasm dist/
+cp shims/net/tls.wasm dist/deploy/

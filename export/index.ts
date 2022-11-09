@@ -29,7 +29,9 @@ class NeonClient extends Client {
   }
 
   async _handleAuthSASLContinue(msg: any) {
-    console.log('SCRAM optimised');
+    // *** NOTE: the same code is also found in shims/patchPgClient.ts ***
+
+    // console.log('SCRAM optimised');
 
     // @ts-ignore - this.saslSession does exist
     const session = this.saslSession;

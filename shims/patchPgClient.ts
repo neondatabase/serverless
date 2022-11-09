@@ -3,7 +3,9 @@
 
 export default function (client: any) {
   client._handleAuthSASLContinue = async function (msg: any) {
-    console.log('SCRAM optimised');
+    // *** NOTE: the same code is also found in export/index.ts ***
+
+    // console.log('SCRAM optimised');
 
     const session = this.saslSession;
     const password = this.password;

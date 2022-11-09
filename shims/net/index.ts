@@ -56,7 +56,6 @@ import letsEncryptRootCert from './isrgrootx1.pem';
 
 declare global {
   const debug: boolean;  // e.g. --define:debug=false in esbuild command
-  const tlsWasm: any;    // we'll add this import back in later (see above)
 
   // WebAssembly is currently missing from @cloudflare/worker-types
   namespace WebAssembly {
@@ -109,6 +108,7 @@ export function isIP(input: string) {
 export class Socket extends EventEmitter {
   static wsProxy: string | ((host: string) => string) = 'ws.neon.build';
   static rootCerts: string = letsEncryptRootCert;
+  static wasmPath: string | undefined;
   static disableSCRAM = true;
 
   connecting = false;
@@ -135,44 +135,47 @@ export class Socket extends EventEmitter {
     this.connecting = true;
     if (connectListener) this.once('connect', connectListener);
 
-    const isCloudflare = typeof tlsWasm !== 'string';
     const wsProxy = typeof Socket.wsProxy === 'string' ? Socket.wsProxy : Socket.wsProxy(host);
     const wsAddr = `${wsProxy}/v1?address=${host}:${port}`;
-    const wsPromise = isCloudflare ?
-      fetch('http://' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
-        debug && log('Cloudflare WebSocket opened');
-        const ws = resp.webSocket;
-        if (ws === null) throw new Error('missing webSocket property');
-        ws.accept();
-        return ws;
-      }) :
-      new Promise<WebSocket>(resolve => {
+    const wsPromise = new Promise<WebSocket>(resolve => {
+      try {
+        // ordinary/browser path
         const ws = new WebSocket('ws://' + wsAddr);
         ws.addEventListener('open', () => {
           debug && log('native WebSocket opened');
           resolve(ws);
         });
-      });
+
+      } catch (err) {
+        // Cloudflare Workers alternative
+        fetch('http://' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
+          debug && log('Cloudflare WebSocket opened');
+          const ws = resp.webSocket;
+          if (ws === null) throw new Error('Assumed Cloudflare Worker, but missing webSocket property on Response');
+          ws.accept();
+          resolve(ws);
+        })
+      }
+    });
 
     Promise.all([
       wsPromise,
       tls_emscripten({
         instantiateWasm: (info: WebAssembly.Imports, receive: (instance: WebAssembly.Instance) => void) => {
-          if (isCloudflare) {
+          if (Socket.wasmPath === undefined) {
             debug && log('creating wasm instance');
-            const instance = new WebAssembly.Instance(tlsWasm, info);
-            receive(instance);
-            return instance.exports;
+            import('./tlsImport')
+              .then(tlsImport => receive(tlsImport.getWasmInstance(info)));
 
           } else {
             debug && log('streaming wasm ...');
-            WebAssembly.instantiateStreaming(fetch(tlsWasm), info)
+            WebAssembly.instantiateStreaming(fetch(Socket.wasmPath), info)
               .then(({ instance }) => {
                 debug && log('wasm instantiated');
                 receive(instance);
               });
-            return {};
           }
+          return {};
         },
         provideEncryptedFromNetwork: (buffer: number, maxBytes: number) => {
           debug && log(`provideEncryptedFromNetwork: providing up to ${maxBytes} bytes`);

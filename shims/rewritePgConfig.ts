@@ -26,7 +26,7 @@ export default function rewritePgConfig(config: any) {
         const project = projectMatch[1];
         const originalPassword = newConfig.password ?? process.env.PGPASSWORD ?? process.env.password;
         if (typeof originalPassword === 'string') {
-          console.log('SCRAM bypass implemented');
+          // console.log('SCRAM bypass implemented');
           newConfig.password = `project=${project};${originalPassword}`;
           config = newConfig;
         }
