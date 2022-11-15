@@ -2,7 +2,7 @@
 
 This package from [Neon](https://neon.tech) shims the [node-postgres](https://node-postgres.com/) `pg` library to work on edge runtimes such as Cloudflare Workers — places where TCP sockets are not available — via a WebSocket proxy.
 
-**Note: this package also works in web browsers, but in most cases it's not appropriate to publicly deploy that way, since it would reveal your Postgres credentials**.
+**Please note: this package also works in web browsers, but in most cases it's not appropriate to publicly deploy that way because it would reveal your Postgres credentials.**
 
 
 ## How to use it
@@ -25,6 +25,7 @@ async function whatsTheTimeMrPostgres() {
 
 For a complete usage example on Cloudflare Workers, see https://github.com/neondatabase/serverless-cfworker-demo.
 
+*Please note: brief queries such as this one can generally be run on Cloudflare’s free plan. Queries with larger result sets will typically exceed the 10ms CPU time available to Workers on the free plan: in that case you’ll see a Cloudflare error page and will need to upgrade your Cloudflare service.*
 
 ## Run your own WebSocket proxy
 

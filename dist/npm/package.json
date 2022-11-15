@@ -1,6 +1,6 @@
 {
   "name": "@neondatabase/serverless",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "author": "Neon",
   "description": "node-postgres via a WebSocket TCP proxy from neon.tech",
   "main": "./index.js",
