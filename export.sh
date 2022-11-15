@@ -44,3 +44,4 @@ export const neonConfig: {
 }' >> dist/npm/index.d.ts
 
 cp shims/net/tls.wasm dist/npm/
+cp README.md dist/npm/
