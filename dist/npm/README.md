@@ -4,6 +4,7 @@ This package from [Neon](https://neon.tech) shims the [node-postgres](https://no
 
 **Note: this package also works in web browsers, but in most cases it's not appropriate to publicly deploy that way, since it would reveal your Postgres credentials**.
 
+
 ## How to use it
 
 Where you'd otherwise install `pg` and `@types/pg`, instead run `npm install @neondatabase/serverless`.
@@ -21,6 +22,8 @@ async function whatsTheTimeMrPostgres() {
   return now;
 }
 ```
+
+For a complete usage example on Cloudflare Workers, see https://github.com/neondatabase/serverless-cfworker-demo.
 
 
 ## Run your own WebSocket proxy
