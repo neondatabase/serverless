@@ -73,7 +73,7 @@ neonConfig.wsProxy = (dbHost) =>
 
 ### `rootCerts`
 
-We bundle our own TLS implementation, which needs to know what root (certificate authority) certificates to trust. The default value of `rootCerts` is the [ISRG Root X1](https://letsencrypt.org/certificates/) certificate, which is appropriate for servers secured with [Let’s Encrypt](https://letsencrypt.org/) certificates.
+We bundle our own TLS implementation, which needs to know what root (certificate authority) certificates to trust. The default value of `rootCerts` is the [ISRG Root X1](https://letsencrypt.org/certificates/) certificate, which is appropriate for servers secured with [Let’s Encrypt](https://letsencrypt.org/).
 
 If you're using any other certificate authority to secure Postgres connections, provide the root certificate(s) in PEM format to the `rootCerts` option.
 
@@ -91,4 +91,4 @@ The code is at https://github.com/neondatabase/serverless. Most of it is in `shi
 
 * To run or deploy the test app on Cloudflare, create a `.dev.vars` file containing `DATABASE_URL=postgres://connection_string`, run `npx wrangler dev --local` or `npx wrangler publish`.
 
-* To run the test app in a browser, create a `.dev.vars` file, run `./build.sh`, start a local server at the repo root, and visit `http://localhost:8080/dist/deploy/` (replacing the port number as appropriate).
+* To run the test app in a browser, create a `.dev.vars` file as above, run `./build.sh`, start a local server at the repo root, and visit `http://localhost:8080/dist/deploy/` (replacing the port number as appropriate).

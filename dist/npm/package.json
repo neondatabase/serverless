@@ -1,6 +1,6 @@
 {
   "name": "@neondatabase/serverless",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "author": "Neon",
   "description": "node-postgres via a WebSocket TCP proxy from neon.tech",
   "main": "./index.js",
@@ -10,5 +10,20 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/neondatabase/serverless"
-  }
+  },
+  "keywords": [
+    "Neon",
+    "serverless",
+    "Postgres",
+    "PostgreSQL",
+    "pg",
+    "database",
+    "SQL",
+    "RDBMS",
+    "WebSocket",
+    "edge",
+    "workers",
+    "Cloudflare",
+    "Vercel"
+  ]
 }
