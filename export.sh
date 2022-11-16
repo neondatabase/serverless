@@ -1,15 +1,44 @@
 #!/usr/bin/env zsh
 
+if [ "$1" = "debug" ]; then
+  DEBUG_ARG="--define:debug=true"
+  MINIFY_ARG=""
+else 
+  DEBUG_ARG="--define:debug=false"
+  MINIFY_ARG="--minify"
+fi
+
+# delete old esbuild chunks with unique (hash-based) names
+rm -r dist/npm/*.js
+
+# rebuild
 npx esbuild export/index.ts --bundle \
   --external:pg-native --external:./tls.wasm --inject:shims/shims.js --loader:.pem=text \
-  --splitting --format=esm \
-  --outdir=dist/npm \
+  --splitting --format=esm --outdir=dist/npm \
   --target=esnext --platform=neutral --main-fields=main \
-  --define:debug=false --minify
+  $DEBUG_ARG $MINIFY_ARG
 
+# the next bit is a bit hacky: Vercel Edge functions seem to require our shims to be defined globally and up-front, so ...
+
+# (1) identify the possibly-minified form of `init_shims()`, as what comes straight after the first `"use strict";`
+INIT_SHIMS=$(cat dist/npm/index.js | tr '\n' ' ' | grep -Eo '"use strict";[^;]+;' | head -1 | cut -d ';' -f 2 | sed -e 's/^[[:space:]]*//')
+
+# (2) insert a call to `init_shims()` (which defines shims on `globalThis`), then assign to top-level variables
+sed -i '' "s|.js\";|.js\";\n\
+\n\
+/* for Vercel Edge functions: BEGIN */\n\
+${INIT_SHIMS};\n\
+var Buffer = globalThis['Buffer'];\n\
+var global = globalThis;\n\
+try { if (!process.nextTick) process.nextTick = fn => setTimeout(fn, 0); } catch (err) { }\n\
+/* for Vercel Edge functions: END */\n\
+\n|" dist/npm/index.js
+
+# add pg types
 curl --silent https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/pg/index.d.ts \
   > dist/npm/index.d.ts
 
+# supplement pg types with Neon config
 echo '
 // additions for Neon/WebSocket driver
 export const neonConfig: {
@@ -43,5 +72,6 @@ export const neonConfig: {
   wasmPath: string | undefined;
 }' >> dist/npm/index.d.ts
 
+# copy static assets: WebAssembly code and README
 cp shims/net/tls.wasm dist/npm/
 cp README.md dist/npm/

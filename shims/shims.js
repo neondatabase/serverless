@@ -1,6 +1,6 @@
-globalThis.Buffer = require('buffer/').Buffer;
-globalThis.process = {
+if (!globalThis.Buffer) globalThis.Buffer = require('buffer/').Buffer;
+if (!globalThis.process) globalThis.process = {
   env: {},
   nextTick: fn => setTimeout(fn, 0),
 };
-globalThis.global = globalThis;
+if (!globalThis.global) globalThis.global = globalThis;
