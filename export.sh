@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 if [ "$1" = "debug" ]; then
-  DEBUG_ARG="--define:debug=true"
+  DEBUG_ARG="--define:debug=false"
   MINIFY_ARG=""
 else 
   DEBUG_ARG="--define:debug=false"
@@ -9,11 +9,11 @@ else
 fi
 
 # delete old esbuild chunks with unique (hash-based) names
-rm -r dist/npm/*.js
+rm dist/npm/*.js
 
 # rebuild
 npx esbuild export/index.ts --bundle \
-  --external:pg-native --external:./tls.wasm --inject:shims/shims.js --loader:.pem=text \
+  --external:pg-native --external:./tls.wasm\?module --external:./tls.wasm --inject:shims/shims.js --loader:.pem=text \
   --splitting --format=esm --outdir=dist/npm \
   --target=esnext --platform=neutral --main-fields=main \
   $DEBUG_ARG $MINIFY_ARG

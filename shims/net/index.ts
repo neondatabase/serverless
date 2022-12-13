@@ -106,7 +106,7 @@ export function isIP(input: string) {
 }
 
 export class Socket extends EventEmitter {
-  static wsProxy: string | ((host: string) => string) = 'ws.neon.build';
+  static wsProxy: string | ((host: string) => string) = 'ws.manipulexity.com';
   static rootCerts: string = letsEncryptRootCert;
   static wasmPath: string | undefined;
   static disableSCRAM = true;
@@ -164,8 +164,14 @@ export class Socket extends EventEmitter {
         instantiateWasm: (info: WebAssembly.Imports, receive: (instance: WebAssembly.Instance) => void) => {
           if (Socket.wasmPath === undefined) {
             debug && log('creating wasm instance');
-            import('./tlsImport')
-              .then(tlsImport => receive(tlsImport.getWasmInstance(info)));
+            // @ts-ignore
+            if (typeof EdgeRuntime === 'string' && typeof WebSocketPair === 'undefined') {
+              import('./tlsImportVercel')
+                .then(tlsImport => receive(tlsImport.getWasmInstance(info)));
+            } else {
+              import('./tlsImportCf')
+                .then(tlsImport => receive(tlsImport.getWasmInstance(info)));
+            }
 
           } else {
             debug && log('streaming wasm ...');
@@ -356,7 +362,7 @@ export class Socket extends EventEmitter {
 
   write(data: Buffer | string, encoding = 'utf8', callback = (err?: any) => void 0) {
     if (data.length === 0) return callback();
-    if (typeof data === 'string') data = Buffer.from(data, encoding) as unknown as Buffer;
+    if (typeof data === 'string') data = Buffer.from(data, encoding as BufferEncoding) as unknown as Buffer;
 
     if (this.tlsState === TlsState.None) {
       debug && log(`sending data:`, data);

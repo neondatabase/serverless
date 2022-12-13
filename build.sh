@@ -8,8 +8,10 @@ else
   MINIFY_ARG="--minify"
 fi
 
+rm dist/deploy/*.js
+
 npx esbuild src/index.ts --bundle \
-  --external:pg-native --external:./tls.wasm --inject:shims/shims.js --loader:.pem=text \
+  --external:pg-native --external:./tls.wasm\?module --external:./tls.wasm --inject:shims/shims.js --loader:.pem=text \
   --splitting --format=esm --outdir=dist/deploy \
   $DEBUG_ARG $MINIFY_ARG
 
