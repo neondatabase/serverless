@@ -356,7 +356,7 @@ export class Socket extends EventEmitter {
 
   write(data: Buffer | string, encoding = 'utf8', callback = (err?: any) => void 0) {
     if (data.length === 0) return callback();
-    if (typeof data === 'string') data = Buffer.from(data, encoding) as unknown as Buffer;
+    if (typeof data === 'string') data = Buffer.from(data, encoding as BufferEncoding) as unknown as Buffer;
 
     if (this.tlsState === TlsState.None) {
       debug && log(`sending data:`, data);
