@@ -316,18 +316,24 @@ export const neonConfig: {
    * The default is the ISRG Root X1 certificate used by Let’s Encrypt.
    */
   rootCerts: string;
+
+  /**
+   * Use a secure wss: connection to the WebSocket proxy. Default: `true`. 
+   */
+  useSecureWebSocket: boolean;
+
+  /**
+   * Ignore requests to encrypt the pg session, for use with secure WebSockets.
+   * Default: `true`. 
+   */
+  disableTLS: boolean;
   
   /**
-   * When `disableSNI` is `true` and the Neon project name is included in the 
-   * password, we avoid CPU-intensive SCRAM authentication.
-   * The default is `true`.
+   * When `disableSNI` is `true` we send no SNI data in the TLS handshake. 
+   * On Neon, disabling SNI and including the Neon project name in the 
+   * password avoids CPU-intensive SCRAM authentication. This is always `true`
+   * for Neon hosts; it defaults to `false` otherwise.
    */
   disableSNI: boolean;
 
-  /**
-   * When using from a browser or other environment where we can’t simply
-   * import a WebAssembly (.wasm) file, set `wasmPath` to the path to fetch it
-   * from. For example: `"./tls.wasm"`.
-   */
-  wasmPath: string | undefined;
 }
