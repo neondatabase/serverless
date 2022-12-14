@@ -16,22 +16,22 @@ export default function rewritePgConfig(config: any) {
   if (newConfig.connectionString) newConfig = Object.assign({}, newConfig, parse(newConfig.connectionString));
   delete newConfig.connectionString;  // because this still has the bare password and would be re-parsed by pg
 
-  if (Socket.disableSCRAM) {
-    const host = newConfig.host ?? process.env.PGHOST ?? process.env.host;
-    if (typeof host === 'string' && /[.]neon[.]tech(:|$)/.test(host)) {  // apply SCRAM changes only to Neon hosts
-      const projectMatch = host.match(/^([^.]+)[.]/);
-      if (projectMatch !== null) {
-        const project = projectMatch[1];
-        const originalPassword = newConfig.password ?? process.env.PGPASSWORD ?? process.env.password;
-        if (typeof originalPassword === 'string') {
-          // console.log('SCRAM bypass implemented');
-          newConfig.password = `project=${project};${originalPassword}`;
-        }
+  const host = newConfig.host ?? process.env.PGHOST ?? process.env.host;
+  if (typeof host === 'string' && /[.]neon[.]tech(:|$)/.test(host)) {  // apply changes only to Neon hosts
+    Socket.disableTLS = false;  // TODO: make this true before release
+    Socket.useSecureWebSocket = false;  // TODO: make this true before release
+
+    Socket.disableSNI = true;  // disables SCRAM, in conjunction with the shenanigans below
+    const projectMatch = host.match(/^([^.]+)[.]/);
+    if (projectMatch !== null) {
+      const project = projectMatch[1];
+      const originalPassword = newConfig.password ?? process.env.PGPASSWORD ?? process.env.password;
+      if (typeof originalPassword === 'string') {
+        newConfig.password = `project=${project};${originalPassword}`;
       }
     }
   }
 
-  if (Socket.disableTLS) newConfig.ssl = false;
-
+  newConfig.ssl = !Socket.disableTLS;
   return newConfig;
 }

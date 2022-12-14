@@ -1,12 +1,9 @@
-import { Client } from '../export';
+import { Client, Pool } from '../export';
 import * as db from 'zapatos/db';
 import * as s from 'zapatos/schema';
 import { Socket } from '../shims/net';
 
-export interface Env {
-  DATABASE_URL: string;
-  WASM_PATH: string | undefined;
-}
+export interface Env { DATABASE_URL: string; }
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -19,9 +16,9 @@ export default {
     const city = cf.city ?? 'Unknown location (assuming San Francisco)';
     const country = cf.country ?? 'Earth';
 
-    Socket.useSecureWebSocket = true;  // true or false
+    // note that for Neon DB host addresses, these settings will be overridden
+    Socket.useSecureWebSocket = true;  // true to use wss + cleartext pg, false to use ws + subtls pg
     Socket.disableTLS = Socket.useSecureWebSocket;
-    Socket.disableSCRAM = false;
 
     const client = new Client(env.DATABASE_URL);
     await client.connect();

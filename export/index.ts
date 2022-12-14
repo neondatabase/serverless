@@ -1,13 +1,12 @@
 export {
   Connection,
   DatabaseError,
-  Pool,
   Query,
   defaults,
   types,
 } from 'pg';
 
-import { Client } from 'pg';
+import { Client, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import rewritePgConfig from '../shims/rewritePgConfig';
 
@@ -22,6 +21,12 @@ import rewritePgConfig from '../shims/rewritePgConfig';
  * implementation with one that uses SubtleCrypto for the repeated SHA-256 
  * digests. This saves significant CPU time over our pure JS SHA-256 shim.
 */
+
+class NeonPool extends Pool {
+  constructor(config: any) {
+    super(rewritePgConfig(config));
+  }
+}
 
 class NeonClient extends Client {
   constructor(config: any) {
@@ -102,5 +107,6 @@ class NeonClient extends Client {
 
 export {
   Socket as neonConfig,
+  NeonPool as Pool,
   NeonClient as Client,
 };

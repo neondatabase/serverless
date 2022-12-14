@@ -8,10 +8,6 @@ else
   MINIFY_ARG="--minify"
 fi
 
-# delete old esbuild chunks with unique (hash-based) names
-rm -r dist/npm/*.js
-
-# rebuild
 npx esbuild export/index.ts --bundle \
   --external:pg-native --inject:shims/shims.js --loader:.pem=text \
   --format=esm --outdir=dist/npm --platform=neutral --main-fields=main \
@@ -55,19 +51,26 @@ export const neonConfig: {
    * The default is the ISRG Root X1 certificate used by Let’s Encrypt.
    */
   rootCerts: string;
-  
-  /**
-   * When `disableSCRAM` is `true` we disable SNI and include the Neon project
-   * name in the password; this avoids CPU-intensive SCRAM authentication.
-   * The default is `true`.
-   */
-  disableSCRAM: boolean;
 
   /**
-   * If encryption mode is "wss" (the default), we tunnel an unencerypted pg 
-   * session over a secure WebSocket. If encryption mode is "subtls"
+   * Use a secure wss: connection to the WebSocket proxy. Default: `true`. 
    */
-  encryptionMode: "wss" | "subtls";
+  useSecureWebSocket: boolean;
+
+  /**
+   * Ignore requests to encrypt the pg session, for use with secure WebSockets.
+   * Default: `true`. 
+   */
+  disableTLS: boolean;
+  
+  /**
+   * When `disableSNI` is `true` we send no SNI data in the TLS handshake. 
+   * On Neon, disabling SNI and including the Neon project name in the 
+   * password avoids CPU-intensive SCRAM authentication. This is always `true`
+   * for Neon hosts; it defaults to `false` otherwise.
+   */
+  disableSNI: boolean;
+
 }' >> dist/npm/index.d.ts
 
 # copy static asset: README

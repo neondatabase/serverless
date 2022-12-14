@@ -47,9 +47,9 @@ export function isIP(input: string) {
 export class Socket extends EventEmitter {
   static wsProxy: string | ((host: string) => string) = 'ws.manipulexity.com';
   static rootCerts: string = letsEncryptRootCert;
-  static disableSCRAM = true;
   static useSecureWebSocket = true;
   static disableTLS = true;
+  static disableSNI = false;
 
   connecting = false;
   pending = true;
@@ -139,7 +139,7 @@ export class Socket extends EventEmitter {
       const networkWrite = this.ws!.send.bind(this.ws!);
 
       const rootCerts = TrustedCert.fromPEM(letsEncryptRootCert);
-      const [tlsRead, tlsWrite] = await startTls(host, rootCerts, networkRead, networkWrite, !Socket.disableSCRAM);
+      const [tlsRead, tlsWrite] = await startTls(host, rootCerts, networkRead, networkWrite, !Socket.disableSNI);
       this.tlsRead = tlsRead;
       this.tlsWrite = tlsWrite;
 
@@ -180,6 +180,7 @@ export class Socket extends EventEmitter {
       this.ws!.send(data);
 
     } else if (this.tlsState === TlsState.Handshake) {
+      // pg starts sending without waiting for the handshake to complete
       debug && log('TLS handshake in progress, queueing data:', data);
       this.once('secureConnection', () => this.write(data, encoding, callback));
 
