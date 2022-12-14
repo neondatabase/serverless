@@ -25,7 +25,7 @@ import rewritePgConfig from '../shims/rewritePgConfig';
 
 class NeonClient extends Client {
   constructor(config: any) {
-    super(Socket.disableSCRAM ? rewritePgConfig(config) : config);
+    super(rewritePgConfig(config));
   }
 
   async _handleAuthSASLContinue(msg: any) {

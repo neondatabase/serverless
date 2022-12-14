@@ -1,9 +1,7 @@
-import { Client } from 'pg';
+import { Client } from '../export';
 import * as db from 'zapatos/db';
 import * as s from 'zapatos/schema';
 import { Socket } from '../shims/net';
-import patchPgClient from '../shims/patchPgClient';
-import rewritePgConfig from '../shims/rewritePgConfig';
 
 export interface Env {
   DATABASE_URL: string;
@@ -12,6 +10,7 @@ export interface Env {
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const t0 = Date.now();
 
     // note: there are some places where DOM lib types clobber Cloudflare ones
     const cf = (request as any).cf ?? {} as any;
@@ -20,16 +19,13 @@ export default {
     const city = cf.city ?? 'Unknown location (assuming San Francisco)';
     const country = cf.country ?? 'Earth';
 
-    Socket.wasmPath = env.WASM_PATH;  // must be set on browsers, undefined on Cloudflare
+    Socket.useSecureWebSocket = true;  // true or false
+    Socket.disableTLS = Socket.useSecureWebSocket;
+    Socket.disableSCRAM = false;
 
-    // EITHER: disable SCRAM
-    const client = new Client(rewritePgConfig(env.DATABASE_URL));
-
-    // OR: optimise SCRAM
-    // neonConfig.disableSCRAM = false;
-    // const client = patchPgClient(new Client({ connectionString: env.DATABASE_URL }));
-
+    const client = new Client(env.DATABASE_URL);
     await client.connect();
+    // const client = new Pool({ connectionString: env.DATABASE_URL });
 
     const distance = db.sql<s.whc_sites_2021.SQL>`
       ${"location"} <-> st_makepoint(${db.param(lng)}, ${db.param(lat)})`;
@@ -38,12 +34,13 @@ export default {
       columns: ['name_en', 'id_no', 'category'],
       extras: { distance },
       order: { by: distance, direction: 'ASC' },
-      limit: 10,
+      limit: 3,
     }).run(client);
 
     ctx.waitUntil(client.end());
 
-    return new Response(JSON.stringify({ lat, lng, city, country, nearestSites }, null, 2),
+    const t = Date.now() - t0;
+    return new Response(JSON.stringify({ t, lat, lng, city, country, nearestSites }, null, 2),
       { headers: { 'Content-Type': 'application/json' } });
   }
 }

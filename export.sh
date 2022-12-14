@@ -13,9 +13,8 @@ rm -r dist/npm/*.js
 
 # rebuild
 npx esbuild export/index.ts --bundle \
-  --external:pg-native --external:./tls.wasm --inject:shims/shims.js --loader:.pem=text \
-  --splitting --format=esm --outdir=dist/npm \
-  --target=esnext --platform=neutral --main-fields=main \
+  --external:pg-native --inject:shims/shims.js --loader:.pem=text \
+  --format=esm --outdir=dist/npm --platform=neutral --main-fields=main \
   $DEBUG_ARG $MINIFY_ARG
 
 # the next bit is a bit hacky: Vercel Edge functions seem to require our shims to be defined globally and up-front, so ...
@@ -58,20 +57,18 @@ export const neonConfig: {
   rootCerts: string;
   
   /**
-   * When `disableSNI` is `true` and the Neon project name is included in the 
-   * password, we avoid CPU-intensive SCRAM authentication.
+   * When `disableSCRAM` is `true` we disable SNI and include the Neon project
+   * name in the password; this avoids CPU-intensive SCRAM authentication.
    * The default is `true`.
    */
-  disableSNI: boolean;
+  disableSCRAM: boolean;
 
   /**
-   * When using from a browser or other environment where we can’t simply
-   * import a WebAssembly (.wasm) file, set `wasmPath` to the path to fetch it
-   * from. For example: `"./tls.wasm"`.
+   * If encryption mode is "wss" (the default), we tunnel an unencerypted pg 
+   * session over a secure WebSocket. If encryption mode is "subtls"
    */
-  wasmPath: string | undefined;
+  encryptionMode: "wss" | "subtls";
 }' >> dist/npm/index.d.ts
 
-# copy static assets: WebAssembly code and README
-cp shims/net/tls.wasm dist/npm/
+# copy static asset: README
 cp README.md dist/npm/

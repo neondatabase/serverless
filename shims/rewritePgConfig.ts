@@ -11,14 +11,14 @@ import { Socket } from './net';
 */
 
 export default function rewritePgConfig(config: any) {
-  if (Socket.disableSCRAM) {
-    let newConfig = config;
-    if (typeof newConfig === 'string') newConfig = parse(newConfig);
-    if (newConfig.connectionString) newConfig = Object.assign({}, newConfig, parse(newConfig.connectionString));
-    delete newConfig.connectionString;  // because this still has the bare password and would be re-parsed by pg
+  let newConfig = config;
+  if (typeof newConfig === 'string') newConfig = parse(newConfig);
+  if (newConfig.connectionString) newConfig = Object.assign({}, newConfig, parse(newConfig.connectionString));
+  delete newConfig.connectionString;  // because this still has the bare password and would be re-parsed by pg
 
+  if (Socket.disableSCRAM) {
     const host = newConfig.host ?? process.env.PGHOST ?? process.env.host;
-    if (typeof host === 'string' && /[.]neon[.]tech(:|$)/.test(host)) {  // apply changes only to Neon hosts
+    if (typeof host === 'string' && /[.]neon[.]tech(:|$)/.test(host)) {  // apply SCRAM changes only to Neon hosts
       const projectMatch = host.match(/^([^.]+)[.]/);
       if (projectMatch !== null) {
         const project = projectMatch[1];
@@ -26,12 +26,12 @@ export default function rewritePgConfig(config: any) {
         if (typeof originalPassword === 'string') {
           // console.log('SCRAM bypass implemented');
           newConfig.password = `project=${project};${originalPassword}`;
-          newConfig.ssl = true;  // turn on SSL, since Neon won't connect without it
-          config = newConfig;
         }
       }
     }
   }
 
-  return config;
+  if (Socket.disableTLS) newConfig.ssl = false;
+
+  return newConfig;
 }

@@ -9,8 +9,5 @@ else
 fi
 
 npx esbuild src/index.ts --bundle \
-  --external:pg-native --external:./tls.wasm --inject:shims/shims.js --loader:.pem=text \
-  --splitting --format=esm --outdir=dist/deploy \
+  --external:pg-native --inject:shims/shims.js --loader:.pem=text --format=esm --outdir=dist/deploy \
   $DEBUG_ARG $MINIFY_ARG
-
-cp shims/net/tls.wasm dist/deploy/
