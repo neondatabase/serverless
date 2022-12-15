@@ -9,25 +9,9 @@ else
 fi
 
 npx esbuild export/index.ts --bundle \
-  --external:pg-native --inject:shims/shims.js --loader:.pem=text \
-  --format=esm --outdir=dist/npm --platform=neutral --main-fields=main \
+  --inject:shims/shims.js --loader:.pem=text \
+  --format=esm --target=es2022 --outfile=dist/npm/index.js \
   $DEBUG_ARG $MINIFY_ARG
-
-# the next bit is a bit hacky: Vercel Edge functions seem to require our shims to be defined globally and up-front, so ...
-
-# (1) identify the possibly-minified form of `init_shims()`, as what comes straight after the first `"use strict";`
-INIT_SHIMS=$(cat dist/npm/index.js | tr '\n' ' ' | grep -Eo '"use strict";[^;]+;' | head -1 | cut -d ';' -f 2 | sed -e 's/^[[:space:]]*//')
-
-# (2) insert a call to `init_shims()` (which defines shims on `globalThis`), then assign to top-level variables
-sed -i '' "s|.js\";|.js\";\n\
-\n\
-/* for Vercel Edge functions: BEGIN */\n\
-${INIT_SHIMS};\n\
-var Buffer = globalThis['Buffer'];\n\
-var global = globalThis;\n\
-try { if (!process.nextTick) process.nextTick = fn => setTimeout(fn, 0); } catch (err) { }\n\
-/* for Vercel Edge functions: END */\n\
-\n|" dist/npm/index.js
 
 # add pg types
 curl --silent https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/pg/index.d.ts \

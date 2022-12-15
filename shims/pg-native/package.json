@@ -1,0 +1,9 @@
+{
+  "name": "pg-native",
+  "version": "3.0.1",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "author": "George MacKerron",
+  "license": "ISC"
+}
