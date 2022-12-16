@@ -85,7 +85,7 @@ Please note that the library requires your Postgres installation to support TLS 
 
 ## Orientation
 
-The code is at https://github.com/neondatabase/serverless. Most of it is in `shims/net/index.ts`. Alongside that file, `tls.js` and `tls.wasm` come from `https://github.com/jawj/cloudflare-pg-client` (where we patch `deno-postgres` for a similar purpose, and compile [WolfSSL](https://www.wolfssl.com/) with [emscripten](https://emscripten.org/) along the way).
+The code is at https://github.com/neondatabase/serverless. Most of it is in `shims/net/index.ts`.
 
 * To update the npm package, run `./export.sh`, then `cd dist/npm` and `npm publish`.
 

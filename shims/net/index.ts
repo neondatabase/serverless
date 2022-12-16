@@ -45,11 +45,12 @@ export function isIP(input: string) {
 }
 
 export class Socket extends EventEmitter {
-  static wsProxy: string | ((host: string) => string) = 'ws.manipulexity.com';
+  static wsProxy: string | ((host: string) => string) = 'ws.manipulexity.com/v1';
   static rootCerts: string = letsEncryptRootCert;
   static useSecureWebSocket = true;
   static disableTLS = true;
   static disableSNI = false;
+  static fastStart = true;
 
   connecting = false;
   pending = true;
@@ -71,7 +72,7 @@ export class Socket extends EventEmitter {
     if (connectListener) this.once('connect', connectListener);
 
     const wsProxy = typeof Socket.wsProxy === 'string' ? Socket.wsProxy : Socket.wsProxy(host);
-    const wsAddr = `${wsProxy}/v1?address=${host}:${port}`;
+    const wsAddr = `${wsProxy}?address=${host}:${port}`;
 
     this.ws = await new Promise<WebSocket>(resolve => {
       try {

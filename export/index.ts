@@ -7,6 +7,7 @@ export {
 } from 'pg';
 
 import { Client, Pool } from 'pg';
+import type { QueryArrayConfig, QueryArrayResult, QueryConfig, QueryResult, QueryResultRow, Submittable } from 'pg';
 import { Socket } from '../shims/net';
 import rewritePgConfig from '../shims/rewritePgConfig';
 
@@ -31,6 +32,32 @@ class NeonPool extends Pool {
 class NeonClient extends Client {
   constructor(config: any) {
     super(rewritePgConfig(config));
+
+    if (Socket.fastStart) {
+      this.connect = () => Promise.resolve();
+      this.query = (...args: any[]) => {
+        // @ts-ignore
+        if (!this._connecting && !this._connected) return new Promise(resolve => {
+          super.connect();
+          // @ts-ignore
+          const con = this.connection;
+          con.removeAllListeners('authenticationCleartextPassword');
+          con.removeAllListeners('readyForQuery');
+          // @ts-ignore
+          con.once('readyForQuery', () => con.on('readyForQuery', this._handleReadyForQuery.bind(this)));
+          con.on('connect', () => {
+            // @ts-ignore
+            this._handleAuthCleartextPassword();
+            // @ts-ignore
+            this._handleReadyForQuery();
+            // @ts-ignore
+            super.query(...args).then(resolve);
+          })
+        })
+
+        return super.query(...args);
+      }
+    }
   }
 
   async _handleAuthSASLContinue(msg: any) {

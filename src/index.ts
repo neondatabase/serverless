@@ -24,6 +24,7 @@ export default {
     await client.connect();
     // const client = new Pool({ connectionString: env.DATABASE_URL });
 
+
     const distance = db.sql<s.whc_sites_2021.SQL>`
       ${"location"} <-> st_makepoint(${db.param(lng)}, ${db.param(lat)})`;
 
@@ -31,7 +32,7 @@ export default {
       columns: ['name_en', 'id_no', 'category'],
       extras: { distance },
       order: { by: distance, direction: 'ASC' },
-      limit: 3,
+      limit: 10,
     }).run(client);
 
     ctx.waitUntil(client.end());
