@@ -7,21 +7,26 @@ export {
 } from 'pg';
 
 import { Client, Pool } from 'pg';
-import type { QueryArrayConfig, QueryArrayResult, QueryConfig, QueryResult, QueryResultRow, Submittable } from 'pg';
 import { Socket } from '../shims/net';
 import rewritePgConfig from '../shims/rewritePgConfig';
 
 /**
- * We largely export the pg library unchanged, but we do make two tweaks, both 
- * relating to authentication. The problem is that SCRAM auth is deliberately
- * CPU-intensive, and this is not appropriate for a serverless environment.
- * We address this two ways. First, we disable SNI in the TLS library and use
- * the fallback of putting the Neon project name in the password field. As a
- * side effect, this prevents SCRAM authentication being used. Second, in case
- * SCRAM authentication does still get used, we replace the standard pg 
- * implementation with one that uses SubtleCrypto for the repeated SHA-256 
- * digests. This saves significant CPU time over our pure JS SHA-256 shim.
-*/
+ * We largely export the pg library unchanged, but we do make a few tweaks.
+ * 
+ * (1) SCRAM auth is deliberately CPU-intensive, and this is not appropriate
+ * for a serverless environment. We address this two ways. First, we replace 
+ * the standard pg implementation with one that uses SubtleCrypto for repeated
+ * SHA-256 digests. This saves some time and CPU. Second, we disable SCRAM on
+ * Neon hosts by using a Neon-specific workaround: we disable SNI in the TLS 
+ * library and use the fallback of putting the Neon project name in the 
+ * password field.
+ * 
+ * (2) Querying can require a lot of network round-trips. We provide a shortcut
+ * option that saves two round-trips by combining the startup message, password
+ * message and first query in one shot. This only works for cleartext password
+ * auth over an unecrypted connection (which is safe as long as the connection
+ * is made over a secure WebSocket).
+ * */
 
 class NeonPool extends Pool {
   constructor(config: any) {
@@ -36,26 +41,36 @@ class NeonClient extends Client {
     if (Socket.fastStart) {
       this.connect = () => Promise.resolve();
       this.query = (...args: any[]) => {
-        // @ts-ignore
-        if (!this._connecting && !this._connected) return new Promise(resolve => {
+        // @ts-ignore: _connecting and _connected do exist, just not advertised
+        if (this._connecting || this._connected) return super.query(...args);
+
+        return new Promise(resolve => {
           super.connect();
-          // @ts-ignore
+
+          // @ts-ignore: connection does exist, just not advertised
           const con = this.connection;
+
+          // (1) don't respond to this event, because we 'respond' ahead of time, below
           con.removeAllListeners('authenticationCleartextPassword');
+
+          // (2) don't respond to this event *this time only*, for the same reason
           con.removeAllListeners('readyForQuery');
-          // @ts-ignore
+
+          // @ts-ignore: _handleReadyForQuery does exist, just not advertised
           con.once('readyForQuery', () => con.on('readyForQuery', this._handleReadyForQuery.bind(this)));
+
+          // (3) once connected (and sent startup message), immediately send password + query too
           con.on('connect', () => {
-            // @ts-ignore
+            // @ts-ignore: _handleAuthCleartextPassword does exist, just not advertised
             this._handleAuthCleartextPassword();
-            // @ts-ignore
+
+            // @ts-ignore: _handleReadyForQuery does exist, just not advertised
             this._handleReadyForQuery();
-            // @ts-ignore
+
+            // @ts-ignore: this is clearly fine, but I haven't figured out how to persuade TS of that
             super.query(...args).then(resolve);
           })
-        })
-
-        return super.query(...args);
+        });
       }
     }
   }

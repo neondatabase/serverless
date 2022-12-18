@@ -18,10 +18,10 @@ export default function rewritePgConfig(config: any) {
 
   const host = newConfig.host ?? process.env.PGHOST ?? process.env.host;
   if (typeof host === 'string' && /[.]neon[.]tech(:|$)/.test(host)) {  // apply changes only to Neon hosts
-    Socket.disableTLS = false;  // TODO: make this true before release
-    Socket.useSecureWebSocket = false;  // TODO: make this true before release
+    Socket.disableTLS = false;  // TODO: remove before release
+    Socket.useSecureWebSocket = false;  // TODO: remove before release
 
-    Socket.disableSNI = true;  // disables SCRAM, in conjunction with the shenanigans below
+    Socket.disableSNI = true;  // disables SCRAM, in conjunction with the shenanigans below; TODO: re-evaluate before release
     const projectMatch = host.match(/^([^.]+)[.]/);
     if (projectMatch !== null) {
       const project = projectMatch[1];
