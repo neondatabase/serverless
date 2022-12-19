@@ -51,7 +51,7 @@ export class Socket extends EventEmitter {
   static disableTLS = true;
   static disableSNI = false;
   static fastStart = true;
-  static coalesceWrites = true;
+  static coalesceWrites = false;
 
   connecting = false;
   pending = true;

@@ -333,6 +333,12 @@ export const neonConfig: {
    * Default: `true`. 
    */
   fastStart: boolean;
+
+  /**
+   * Batch multiple network writes per run-loop into one WebSocket message.
+   * Default: `true`. 
+   */
+  coalesceWrites: boolean;
   
   /**
    * When `disableSNI` is `true` we send no SNI data in the TLS handshake. 
