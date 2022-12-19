@@ -51,6 +51,7 @@ export class Socket extends EventEmitter {
   static disableTLS = true;
   static disableSNI = false;
   static fastStart = true;
+  static coalesceWrites = true;
 
   connecting = false;
   pending = true;
@@ -60,6 +61,7 @@ export class Socket extends EventEmitter {
   destroyed = false;
 
   private ws: WebSocket | null = null;
+  private writeBuffer: Uint8Array | undefined;  // used only if coalesceWrites === true;
   private tlsState = TlsState.None;
   private tlsRead: undefined | (() => Promise<Uint8Array | undefined>);
   private tlsWrite: undefined | ((data: Uint8Array) => Promise<void>);
@@ -137,7 +139,7 @@ export class Socket extends EventEmitter {
 
       const readQueue = new ReadQueue(this.ws!);
       const networkRead = readQueue.read.bind(readQueue);
-      const networkWrite = this.ws!.send.bind(this.ws!);
+      const networkWrite = this.rawWrite.bind(this);
 
       const rootCerts = TrustedCert.fromPEM(letsEncryptRootCert);
       const [tlsRead, tlsWrite] = await startTls(host, rootCerts, networkRead, networkWrite, !Socket.disableSNI);
@@ -150,15 +152,14 @@ export class Socket extends EventEmitter {
       this.authorized = true;
       this.emit('secureConnection', this);
 
-      this.readLoop();
+      this.tlsReadLoop();
     }
   }
 
-  async readLoop() {
-    let data;
+  async tlsReadLoop() {  // intended NOT to be awaited
     while (true) {
       debug && log('awaiting TLS data ...');
-      data = await this.tlsRead!();
+      const data = await this.tlsRead!();
 
       if (data === undefined) {
         debug && log('no TLS data, breaking loop');
@@ -172,13 +173,34 @@ export class Socket extends EventEmitter {
     }
   }
 
+  rawWrite(data: Uint8Array) {
+    if (!Socket.coalesceWrites) {
+      this.ws!.send(data);
+      return;
+    }
+
+    if (this.writeBuffer === undefined) {
+      this.writeBuffer = data;
+      setTimeout(() => {
+        this.ws!.send(this.writeBuffer!);
+        this.writeBuffer = undefined;
+      }, 0);
+
+    } else {
+      const newBuffer = new Uint8Array(this.writeBuffer.length + data.length);
+      newBuffer.set(this.writeBuffer);
+      newBuffer.set(data, this.writeBuffer.length);
+      this.writeBuffer = newBuffer;
+    }
+  }
+
   write(data: Buffer | string, encoding = 'utf8', callback = (err?: any) => { }) {
     if (data.length === 0) return callback();
     if (typeof data === 'string') data = Buffer.from(data, encoding as BufferEncoding) as unknown as Buffer;
 
     if (this.tlsState === TlsState.None) {
       debug && log('sending data direct:', data);
-      this.ws!.send(data);
+      this.rawWrite(data);
 
     } else if (this.tlsState === TlsState.Handshake) {
       // pg starts sending without waiting for the handshake to complete

@@ -46,6 +46,12 @@ export const neonConfig: {
    * Default: `true`. 
    */
   disableTLS: boolean;
+
+  /**
+   * Pipeline startup message, cleartext password message and first query.
+   * Default: `true`. 
+   */
+  fastStart: boolean;
   
   /**
    * When `disableSNI` is `true` we send no SNI data in the TLS handshake. 
