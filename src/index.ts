@@ -19,6 +19,7 @@ export default {
     // note that for Neon DB host addresses, these settings will be overridden
     Socket.useSecureWebSocket = true;  // true to use wss + cleartext pg, false to use ws + subtls pg
     Socket.disableTLS = Socket.useSecureWebSocket;
+    Socket.fastStart = Socket.useSecureWebSocket;
 
     const client = new Client(env.DATABASE_URL);
     await client.connect();
