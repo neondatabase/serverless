@@ -50,8 +50,10 @@ export class Socket extends EventEmitter {
   static useSecureWebSocket = true;
   static disableTLS = true;
   static disableSNI = false;
-  static fastStart = true;
-  static coalesceWrites = false;
+
+  static quickConnect = true;
+  static quickTLS = true;  // only has an effect if quickConnect is also true
+  static coalesceWrites = true;
 
   connecting = false;
   pending = true;
@@ -142,7 +144,18 @@ export class Socket extends EventEmitter {
       const networkWrite = this.rawWrite.bind(this);
 
       const rootCerts = TrustedCert.fromPEM(letsEncryptRootCert);
-      const [tlsRead, tlsWrite] = await startTls(host, rootCerts, networkRead, networkWrite, !Socket.disableSNI);
+
+      const [tlsRead, tlsWrite] = await startTls(
+        host,
+        rootCerts,
+        networkRead,
+        networkWrite,
+        !Socket.disableSNI,
+        undefined,
+        // expect (and discard) an 'S' before the TLS response if quickTLS is set
+        Socket.quickConnect && Socket.quickTLS ? new Uint8Array([0x53]) : undefined
+      );
+
       this.tlsRead = tlsRead;
       this.tlsWrite = tlsWrite;
 

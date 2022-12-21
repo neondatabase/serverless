@@ -38,40 +38,43 @@ class NeonClient extends Client {
   constructor(config: any) {
     super(rewritePgConfig(config));
 
-    if (Socket.fastStart) {
-      this.connect = () => Promise.resolve();
-      this.query = (...args: any[]) => {
-        // @ts-ignore: _connecting and _connected do exist, just not advertised
-        if (this._connecting || this._connected) return super.query(...args);
+    if (Socket.quickConnect) {
+      this.connect = (...args: any[]) => new Promise(resolve => {
+        // @ts-ignore: this is clearly just fine, but I haven't figured out how to persuade TS of that
+        super.connect(...args);
 
-        return new Promise(resolve => {
-          super.connect();
+        // @ts-ignore: connection does exist, just not advertised
+        const con = this.connection;
 
-          // @ts-ignore: connection does exist, just not advertised
-          const con = this.connection;
+        // (1) don't respond to authenticationCleartextPassword, because we send the password ahead of time, below
+        con.removeAllListeners('authenticationCleartextPassword');
 
-          // (1) don't respond to this event, because we 'respond' ahead of time, below
-          con.removeAllListeners('authenticationCleartextPassword');
+        // (2) don't respond to readyForQuery *this time only*, again because we assumed it was true already
+        con.removeAllListeners('readyForQuery');
+        // @ts-ignore: _handleReadyForQuery does exist, just not advertised
+        con.once('readyForQuery', () => con.on('readyForQuery', this._handleReadyForQuery.bind(this)));
 
-          // (2) don't respond to this event *this time only*, for the same reason
-          con.removeAllListeners('readyForQuery');
+        // (3) for an SSL connection, fake the SSL support message from the server and remove the listener for it
+        // (the server's actual 'S' response is ignored via the expectPreData argument to startTls in shims/net/index.ts)
+        if (this.ssl && Socket.quickTLS) {
+          con.removeAllListeners('sslconnect');
+          con.on('connect', () => con.stream.emit('data', 'S'));
+        }
 
+        // (3) once connected, immediately send startup message (for ssl queries, which won't have sent it yet) and password
+        const connectEvent = this.ssl && Socket.quickTLS ? 'sslconnect' : 'connect';
+        con.on(connectEvent, () => {
+          if (this.ssl && Socket.quickTLS) {
+            // @ts-ignore: getStartupConf does exist, just not advertised
+            con.startup(this.getStartupConf());
+          }
+          // @ts-ignore: _handleAuthCleartextPassword does exist, just not advertised
+          this._handleAuthCleartextPassword();
           // @ts-ignore: _handleReadyForQuery does exist, just not advertised
-          con.once('readyForQuery', () => con.on('readyForQuery', this._handleReadyForQuery.bind(this)));
-
-          // (3) once connected (and sent startup message), immediately send password + query too
-          con.on('connect', () => {
-            // @ts-ignore: _handleAuthCleartextPassword does exist, just not advertised
-            this._handleAuthCleartextPassword();
-
-            // @ts-ignore: _handleReadyForQuery does exist, just not advertised
-            this._handleReadyForQuery();
-
-            // @ts-ignore: this is clearly fine, but I haven't figured out how to persuade TS of that
-            super.query(...args).then(resolve);
-          })
-        });
-      }
+          this._handleReadyForQuery();
+          resolve();
+        })
+      });
     }
   }
 

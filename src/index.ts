@@ -19,7 +19,8 @@ export default {
     // note that for Neon DB host addresses, these settings will be overridden
     Socket.useSecureWebSocket = true;  // true to use wss + cleartext pg, false to use ws + subtls pg
     Socket.disableTLS = Socket.useSecureWebSocket;
-    Socket.fastStart = Socket.useSecureWebSocket;
+    Socket.quickConnect = true;
+    Socket.quickTLS = true;
 
     const client = new Client(env.DATABASE_URL);
     await client.connect();
@@ -29,17 +30,20 @@ export default {
     const distance = db.sql<s.whc_sites_2021.SQL>`
       ${"location"} <-> st_makepoint(${db.param(lng)}, ${db.param(lat)})`;
 
-    const nearestSites = await db.select('whc_sites_2021', db.all, {
-      columns: ['name_en', 'id_no', 'category'],
-      extras: { distance },
-      order: { by: distance, direction: 'ASC' },
-      limit: 10,
-    }).run(client);
+    const [nearestSites, [{ now }]] = await Promise.all([
+      db.select('whc_sites_2021', db.all, {
+        columns: ['name_en', 'id_no', 'category'],
+        extras: { distance },
+        order: { by: distance, direction: 'ASC' },
+        limit: 10,
+      }).run(client),
+      db.sql`SELECT now()`.run(client),
+    ]);
 
     ctx.waitUntil(client.end());
 
     const t = Date.now() - t0;
-    return new Response(JSON.stringify({ t, lat, lng, city, country, nearestSites }, null, 2),
+    return new Response(JSON.stringify({ t, lat, lng, city, country, nearestSites, now }, null, 2),
       { headers: { 'Content-Type': 'application/json' } });
   }
 }
