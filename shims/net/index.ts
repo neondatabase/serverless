@@ -45,43 +45,43 @@ export function isIP(input: string) {
 }
 
 export interface SocketDefaults {
-  rootCerts: string;
   wsProxy: string | ((host: string) => string) | undefined;
-  coalesceWrites: boolean;
   useSecureWebSocket: boolean;
   disableTLS: boolean;
+  coalesceWrites: boolean;
   disableSNI: boolean;
   pipelineConnect: 'passwordAuth' | false;
-  pipelineTLS: boolean;
+  rootCerts: string;  // relevant only when useSecureWebSocket == false
+  pipelineTLS: boolean;  // ditto
 }
 
 export class Socket extends EventEmitter {
+  static addNeonProjectToPassword = true;  // this can only be set globally
+
   static defaults: Record<'neon' | 'other', SocketDefaults> = {
     neon: {
-      rootCerts: letsEncryptRootCert as string,
       wsProxy: 'ws.manipulexity.com/v1',
-      coalesceWrites: true,
       useSecureWebSocket: true,
       disableTLS: true,
+      coalesceWrites: true,
       disableSNI: true,
       pipelineConnect: 'passwordAuth',
+      rootCerts: letsEncryptRootCert as string,
       pipelineTLS: true,
     },
     other: {
-      rootCerts: letsEncryptRootCert as string,
       wsProxy: undefined,
-      coalesceWrites: true,
       useSecureWebSocket: true,
       disableTLS: true,
+      coalesceWrites: true,
       disableSNI: false,
-      pipelineTLS: false,
       pipelineConnect: false,
+      rootCerts: letsEncryptRootCert as string,
+      pipelineTLS: false,
     },
   };
 
   defaultsKey: keyof typeof Socket.defaults = 'other';  // default to using the 'other' defaults
-
-  static addNeonProjectToPassword = true;  // this can only be set globally
 
   static rootCerts: SocketDefaults['rootCerts'];
   private _rootCerts: typeof Socket.rootCerts | undefined;
