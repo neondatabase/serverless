@@ -1,5 +1,5 @@
-import { parse } from 'pg-connection-string';
 import { Socket } from './net';
+import { parse } from 'pg-connection-string';
 
 /*
  * When disabling SNI, we need to add the project to the password. 
@@ -11,27 +11,24 @@ import { Socket } from './net';
 */
 
 export default function rewritePgConfig(config: any) {
+  if (!Socket.addNeonProjectToPassword) return config;
+
   let newConfig = config;
   if (typeof newConfig === 'string') newConfig = parse(newConfig);
   if (newConfig.connectionString) newConfig = Object.assign({}, newConfig, parse(newConfig.connectionString));
   delete newConfig.connectionString;  // because this still has the bare password and would be re-parsed by pg
 
   const host = newConfig.host ?? process.env.PGHOST ?? process.env.host;
-  if (typeof host === 'string' && /[.]neon[.]tech(:|$)/.test(host)) {  // apply changes only to Neon hosts
-    Socket.disableTLS = false;  // TODO: remove before release
-    Socket.useSecureWebSocket = false;  // TODO: remove before release
+  if (typeof host !== 'string' || !/[.]neon[.]tech(:|$)/.test(host)) return config;
 
-    Socket.disableSNI = true;  // disables SCRAM, in conjunction with the shenanigans below; TODO: re-evaluate before release
-    const projectMatch = host.match(/^([^.]+)[.]/);
-    if (projectMatch !== null) {
-      const project = projectMatch[1];
-      const originalPassword = newConfig.password ?? process.env.PGPASSWORD ?? process.env.password;
-      if (typeof originalPassword === 'string') {
-        newConfig.password = `project=${project};${originalPassword}`;
-      }
-    }
-  }
+  const projectMatch = host.match(/^([^.]+)[.]/);
+  if (projectMatch === null) return config;
 
-  newConfig.ssl = !Socket.disableTLS;
+  const project = projectMatch[1];
+  const originalPassword = newConfig.password ?? process.env.PGPASSWORD ?? process.env.password;
+  if (typeof originalPassword !== 'string') return config;
+
+  newConfig.password = `project=${project};${originalPassword}`;
+  newConfig.ssl = true;
   return newConfig;
 }

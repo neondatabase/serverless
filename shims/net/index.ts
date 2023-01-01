@@ -44,16 +44,90 @@ export function isIP(input: string) {
   return 0;
 }
 
-export class Socket extends EventEmitter {
-  static wsProxy: string | ((host: string) => string) = 'ws.manipulexity.com/v1';
-  static rootCerts: string = letsEncryptRootCert;
-  static useSecureWebSocket = true;
-  static disableTLS = true;
-  static disableSNI = false;
+export interface SocketDefaults {
+  rootCerts: string;
+  wsProxy: string | ((host: string) => string) | undefined;
+  coalesceWrites: boolean;
+  useSecureWebSocket: boolean;
+  disableTLS: boolean;
+  disableSNI: boolean;
+  pipelineConnect: 'passwordAuth' | false;
+  pipelineTLS: boolean;
+}
 
-  static quickConnect = true;
-  static quickTLS = true;  // only has an effect if quickConnect is also true
-  static coalesceWrites = true;
+export class Socket extends EventEmitter {
+  static defaults: Record<'neon' | 'other', SocketDefaults> = {
+    neon: {
+      rootCerts: letsEncryptRootCert as string,
+      wsProxy: 'ws.manipulexity.com/v1',
+      coalesceWrites: true,
+      useSecureWebSocket: true,
+      disableTLS: true,
+      disableSNI: true,
+      pipelineConnect: 'passwordAuth',
+      pipelineTLS: true,
+    },
+    other: {
+      rootCerts: letsEncryptRootCert as string,
+      wsProxy: undefined,
+      coalesceWrites: true,
+      useSecureWebSocket: true,
+      disableTLS: true,
+      disableSNI: false,
+      pipelineTLS: false,
+      pipelineConnect: false,
+    },
+  };
+
+  defaultsKey: keyof typeof Socket.defaults = 'other';  // default to using the 'other' defaults
+
+  static addNeonProjectToPassword = true;  // this can only be set globally
+
+  static rootCerts: SocketDefaults['rootCerts'];
+  private _rootCerts: typeof Socket.rootCerts | undefined;
+  get rootCerts() { return this._rootCerts ?? Socket.rootCerts ?? Socket.defaults[this.defaultsKey].rootCerts; }
+  set rootCerts(rootCerts: typeof Socket.rootCerts) { this._rootCerts = rootCerts; }
+
+  static wsProxy: SocketDefaults['wsProxy'];
+  private _wsProxy: typeof Socket.wsProxy | undefined;
+  get wsProxy() { return this._wsProxy ?? Socket.wsProxy ?? Socket.defaults[this.defaultsKey].wsProxy; }
+  set wsProxy(wsProxy: typeof Socket.wsProxy) { this._wsProxy = wsProxy; }
+
+  static coalesceWrites: SocketDefaults['coalesceWrites'];
+  private _coalesceWrites: typeof Socket.coalesceWrites | undefined;
+  get coalesceWrites() { return this._coalesceWrites ?? Socket.coalesceWrites ?? Socket.defaults[this.defaultsKey].coalesceWrites; }
+  set coalesceWrites(coalesceWrites: typeof Socket.coalesceWrites) { this._coalesceWrites = coalesceWrites; }
+
+  static useSecureWebSocket: SocketDefaults['useSecureWebSocket'];
+  private _useSecureWebSocket: typeof Socket.useSecureWebSocket | undefined;
+  get useSecureWebSocket() { return this._useSecureWebSocket ?? Socket.useSecureWebSocket ?? Socket.defaults[this.defaultsKey].useSecureWebSocket; }
+  set useSecureWebSocket(useSecureWebSocket: typeof Socket.useSecureWebSocket) { this._useSecureWebSocket = useSecureWebSocket; }
+
+  static disableTLS: SocketDefaults['disableTLS'];
+  private _disableTLS: typeof Socket.disableTLS | undefined;
+  get disableTLS() { return this._disableTLS ?? Socket.disableTLS ?? Socket.defaults[this.defaultsKey].disableTLS; }
+  set disableTLS(disableTLS: typeof Socket.disableTLS) { this._disableTLS = disableTLS; }
+
+  static disableSNI: SocketDefaults['disableSNI'];
+  private _disableSNI: typeof Socket.disableSNI | undefined;
+  get disableSNI() { return this._disableSNI ?? Socket.disableSNI ?? Socket.defaults[this.defaultsKey].disableSNI; }
+  set disableSNI(disableSNI: typeof Socket.disableSNI) { this._disableSNI = disableSNI; }
+
+  static pipelineConnect: SocketDefaults['pipelineConnect'];
+  private _pipelineConnect: typeof Socket.pipelineConnect | undefined;
+  get pipelineConnect() { return this._pipelineConnect ?? Socket.pipelineConnect ?? Socket.defaults[this.defaultsKey].pipelineConnect; }
+  set pipelineConnect(pipelineConnect: typeof Socket.pipelineConnect) { this._pipelineConnect = pipelineConnect; }
+
+  static pipelineTLS: SocketDefaults['pipelineTLS'];
+  private _pipelineTLS: typeof Socket.pipelineTLS | undefined;
+  get pipelineTLS() { return this._pipelineTLS ?? Socket.pipelineTLS ?? Socket.defaults[this.defaultsKey].pipelineTLS; }
+  set pipelineTLS(pipelineTLS: typeof Socket.pipelineTLS) { this._pipelineTLS = pipelineTLS; }
+
+  wsProxyForHost(host: string) {
+    const wsProxy = this.wsProxy;
+    if (wsProxy === undefined) throw new Error('WebSocket proxy (`wsProxy` option) for Neon serverless driver is not configured');
+    return typeof wsProxy === 'function' ? wsProxy(host) : wsProxy;
+  }
 
   connecting = false;
   pending = true;
@@ -63,7 +137,7 @@ export class Socket extends EventEmitter {
   destroyed = false;
 
   private ws: WebSocket | null = null;
-  private writeBuffer: Uint8Array | undefined;  // used only if coalesceWrites === true;
+  private writeBuffer: Uint8Array | undefined;  // used only if coalesceWrites === true
   private tlsState = TlsState.None;
   private tlsRead: undefined | (() => Promise<Uint8Array | undefined>);
   private tlsWrite: undefined | ((data: Uint8Array) => Promise<void>);
@@ -72,16 +146,18 @@ export class Socket extends EventEmitter {
   setKeepAlive() { debug && log('setKeepAlive (no-op)'); }
 
   async connect(port: number | string, host: string, connectListener?: () => void) {
+    if (/[.]neon[.]tech(:|$)/.test(host)) this.defaultsKey = 'neon';  // switch to Neon defaults if connecting to a Neon host
+
     this.connecting = true;
     if (connectListener) this.once('connect', connectListener);
 
-    const wsProxy = typeof Socket.wsProxy === 'string' ? Socket.wsProxy : Socket.wsProxy(host);
+    const wsProxy = this.wsProxyForHost(host);
     const wsAddr = `${wsProxy}?address=${host}:${port}`;
 
     this.ws = await new Promise<WebSocket>(resolve => {
       try {
         // ordinary/browser path
-        const wsProtocol = Socket.useSecureWebSocket ? 'wss:' : 'ws:';
+        const wsProtocol = this.useSecureWebSocket ? 'wss:' : 'ws:';
         const ws = new WebSocket(wsProtocol + '//' + wsAddr);
         ws.addEventListener('open', () => {
           debug && log('native WebSocket opened');
@@ -90,10 +166,10 @@ export class Socket extends EventEmitter {
 
       } catch (err) {
         // Cloudflare Workers alternative
-        const wsProtocol = Socket.useSecureWebSocket ? 'https:' : 'http:';
+        const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
         fetch(wsProtocol + '//' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
           const ws = resp.webSocket;
-          if (ws === null) throw new Error('Attempted Cloudflare-style WebSocket connection, but missing webSocket property on Response');
+          if (ws === null) throw new Error('Attempted Cloudflare-style WebSocket connection, but Response lacks webSocket property');
           ws.accept();
           debug && log('Cloudflare WebSocket opened');
           resolve(ws);
@@ -132,8 +208,8 @@ export class Socket extends EventEmitter {
   }
 
   async startTls(host: string) {
-    if (Socket.disableTLS) {
-      debug && log('not starting TLS (using secure WebSocket instead)');
+    if (this.disableTLS) {
+      debug && log('not starting TLS despite request');
 
     } else {
       debug && log('starting TLS');
@@ -150,10 +226,9 @@ export class Socket extends EventEmitter {
         rootCerts,
         networkRead,
         networkWrite,
-        !Socket.disableSNI,
-        undefined,
-        // expect (and discard) an 'S' before the TLS response if quickTLS is set
-        Socket.quickConnect && Socket.quickTLS ? new Uint8Array([0x53]) : undefined
+        !this.disableSNI,
+        undefined,  // nothing to pre-write (pg handles the SSLRequest message)
+        this.pipelineTLS ? new Uint8Array([0x53]) : undefined,  // expect (and discard) an 'S' before the TLS response if quickTLS is set
       );
 
       this.tlsRead = tlsRead;
@@ -187,7 +262,7 @@ export class Socket extends EventEmitter {
   }
 
   rawWrite(data: Uint8Array) {
-    if (!Socket.coalesceWrites) {
+    if (!this.coalesceWrites) {
       this.ws!.send(data);
       return;
     }

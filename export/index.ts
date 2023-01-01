@@ -6,7 +6,7 @@ export {
   types,
 } from 'pg';
 
-import { Client, Pool } from 'pg';
+import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import rewritePgConfig from '../shims/rewritePgConfig';
 
@@ -34,48 +34,65 @@ class NeonPool extends Pool {
   }
 }
 
+declare interface NeonClient {
+  // these types suppress type errors in this file, but do not carry over to the npm package
+  connection: Connection & { stream: Socket };
+  _handleReadyForQuery: any;
+  _handleAuthCleartextPassword: any;
+  startup: any;
+  getStartupConf: any;
+}
+
 class NeonClient extends Client {
   constructor(config: any) {
     super(rewritePgConfig(config));
+  }
 
-    if (Socket.quickConnect) {
-      this.connect = (...args: any[]) => new Promise(resolve => {
-        // @ts-ignore: this is clearly just fine, but I haven't figured out how to persuade TS of that
-        super.connect(...args);
+  get neonConfig() { return this.connection.stream; }
 
-        // @ts-ignore: connection does exist, just not advertised
-        const con = this.connection;
+  connect(): Promise<void>;
+  connect(callback: (err?: Error) => void): void;
+  connect(callback?: (err?: Error) => void) {
+    if (this.neonConfig.disableTLS) this.ssl = false;
 
-        // (1) don't respond to authenticationCleartextPassword, because we send the password ahead of time, below
-        con.removeAllListeners('authenticationCleartextPassword');
+    const result = super.connect(callback as any) as void | Promise<void>;
+    const pipelineTLS = this.neonConfig.pipelineTLS && this.ssl;
+    const pipelineConnect = this.neonConfig.pipelineConnect === 'passwordAuth';
 
-        // (2) don't respond to readyForQuery *this time only*, again because we assumed it was true already
-        con.removeAllListeners('readyForQuery');
-        // @ts-ignore: _handleReadyForQuery does exist, just not advertised
-        con.once('readyForQuery', () => con.on('readyForQuery', this._handleReadyForQuery.bind(this)));
+    if (!pipelineTLS && !this.neonConfig.pipelineConnect) return result;
 
-        // (3) for an SSL connection, fake the SSL support message from the server and remove the listener for it
-        // (the server's actual 'S' response is ignored via the expectPreData argument to startTls in shims/net/index.ts)
-        if (this.ssl && Socket.quickTLS) {
-          con.removeAllListeners('sslconnect');
-          con.on('connect', () => con.stream.emit('data', 'S'));
-        }
+    const con = this.connection;
 
-        // (3) once connected, immediately send startup message (for ssl queries, which won't have sent it yet) and password
-        const connectEvent = this.ssl && Socket.quickTLS ? 'sslconnect' : 'connect';
-        con.on(connectEvent, () => {
-          if (this.ssl && Socket.quickTLS) {
-            // @ts-ignore: getStartupConf does exist, just not advertised
-            con.startup(this.getStartupConf());
-          }
-          // @ts-ignore: _handleAuthCleartextPassword does exist, just not advertised
-          this._handleAuthCleartextPassword();
-          // @ts-ignore: _handleReadyForQuery does exist, just not advertised
-          this._handleReadyForQuery();
-          resolve();
-        })
-      });
+    if (pipelineTLS) {
+      // for a pipelined SSL connection, fake the SSL support message from the server
+      // (the server's actual 'S' response is ignored via the expectPreData argument to startTls in shims/net/index.ts)
+      con.on('connect', () => con.stream.emit('data', 'S'));  // prompts call to tls.connect and immediate 'sslconnect' event
     }
+
+    if (!pipelineConnect) return result;
+
+    // const promise = new Promise<void>(resolve => {
+
+    // for a pipelined startup:
+    // (1) don't respond to authenticationCleartextPassword; instead, send the password ahead of time
+    // (2)  *one time only*, don't respond to readyForQuery; instead, assume it's already true
+    con.removeAllListeners('authenticationCleartextPassword');
+    con.removeAllListeners('readyForQuery');
+    con.once('readyForQuery', () => con.on('readyForQuery', this._handleReadyForQuery.bind(this)));
+
+    const connectEvent = this.ssl ? 'sslconnect' : 'connect';
+    con.on(connectEvent, () => {
+      this._handleAuthCleartextPassword();
+      this._handleReadyForQuery();
+      // resolve();
+    });
+
+    // });
+
+    // if (callback !== undefined) promise.then(() => callback());
+    // else return promise;
+
+    return result;
   }
 
   async _handleAuthSASLContinue(msg: any) {

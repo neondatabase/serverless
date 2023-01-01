@@ -23,7 +23,6 @@ export interface ClientConfig {
     keepAlive?: boolean | undefined;
     stream?: stream.Duplex | undefined;
     statement_timeout?: false | number | undefined;
-    parseInputDatesAsUTC?: boolean | undefined;
     ssl?: boolean | ConnectionOptions | undefined;
     query_timeout?: number | undefined;
     keepAliveInitialDelayMillis?: number | undefined;
@@ -301,19 +300,20 @@ export const native: typeof Pg | null;
 export { DatabaseError } from 'pg-protocol';
 
 // additions for Neon/WebSocket driver
-export const neonConfig: {
+
+interface NeonConfig {
   /**
    * Set `wsProxy` to use your own WebSocket proxy server. 
    * Provide either the proxy server’s domain name, or a function that takes 
-   * the database host address and returns proxy server’s domain name.
-   * The default is Neon’s proxy, which will forward only to Neon databases.
+   * the database host address and returns the proxy server’s domain name.
+   * Default: Neon’s proxy for Neon hosts, otherwise undefined.
   */
   wsProxy: string | ((host: string) => string);
 
   /**
    * Set `rootCerts` to a string comprising one or more PEM files. 
    * These are the trusted root certificates for a TLS connection to Postgres.
-   * The default is the ISRG Root X1 certificate used by Let’s Encrypt.
+   * Default: the ISRG Root X1 certificate used by Let’s Encrypt.
    */
   rootCerts: string;
 
@@ -330,9 +330,15 @@ export const neonConfig: {
 
   /**
    * Pipeline startup message, cleartext password message and first query.
-   * Default: `true`. 
+   * Default: `true` for Neon hosts, `false` otherwise. 
    */
-  fastStart: boolean;
+  pipelineConnect: boolean;
+
+  /**
+   * Pipeline pg SSL request and TLS handshake. Compatible only with Neon.
+   * Default: `true` for Neon hosts, `false` otherwise.  
+   */
+  pipelineTLS: boolean;
 
   /**
    * Batch multiple network writes per run-loop into one WebSocket message.
@@ -343,9 +349,16 @@ export const neonConfig: {
   /**
    * When `disableSNI` is `true` we send no SNI data in the TLS handshake. 
    * On Neon, disabling SNI and including the Neon project name in the 
-   * password avoids CPU-intensive SCRAM authentication. This is always `true`
-   * for Neon hosts; it defaults to `false` otherwise.
+   * password avoids CPU-intensive SCRAM authentication.
+   * Default: `true` for Neon hosts, `false` otherwise. 
    */
   disableSNI: boolean;
-
 }
+
+export interface ClientBase {
+  neonConfig: NeonConfig;
+}
+
+export const neonConfig: NeonConfig;
+
+
