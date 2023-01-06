@@ -57,7 +57,7 @@ class NeonClient extends Client {
 
     const result = super.connect(callback as any) as void | Promise<void>;
     const pipelineTLS = this.neonConfig.pipelineTLS && this.ssl;
-    const pipelineConnect = this.neonConfig.pipelineConnect === 'passwordAuth';
+    const pipelineConnect = this.neonConfig.pipelineConnect === 'password';
 
     if (!pipelineTLS && !this.neonConfig.pipelineConnect) return result;
 
@@ -71,8 +71,6 @@ class NeonClient extends Client {
 
     if (!pipelineConnect) return result;
 
-    // const promise = new Promise<void>(resolve => {
-
     // for a pipelined startup:
     // (1) don't respond to authenticationCleartextPassword; instead, send the password ahead of time
     // (2)  *one time only*, don't respond to readyForQuery; instead, assume it's already true
@@ -84,13 +82,7 @@ class NeonClient extends Client {
     con.on(connectEvent, () => {
       this._handleAuthCleartextPassword();
       this._handleReadyForQuery();
-      // resolve();
     });
-
-    // });
-
-    // if (callback !== undefined) promise.then(() => callback());
-    // else return promise;
 
     return result;
   }

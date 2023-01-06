@@ -50,7 +50,7 @@ export interface SocketDefaults {
   disableTLS: boolean;
   coalesceWrites: boolean;
   disableSNI: boolean;
-  pipelineConnect: 'passwordAuth' | false;
+  pipelineConnect: 'password' | false;
   rootCerts: string;  // relevant only when useSecureWebSocket == false
   pipelineTLS: boolean;  // ditto
 }
@@ -65,7 +65,7 @@ export class Socket extends EventEmitter {
       disableTLS: true,
       coalesceWrites: true,
       disableSNI: true,
-      pipelineConnect: 'passwordAuth',
+      pipelineConnect: 'password',
       rootCerts: letsEncryptRootCert as string,
       pipelineTLS: true,
     },

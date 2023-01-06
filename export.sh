@@ -50,9 +50,9 @@ interface NeonConfig {
 
   /**
    * Pipeline startup message, cleartext password message and first query.
-   * Default: `"passwordAuth"` for Neon hosts, `false` otherwise. 
+   * Default: `"password"` for Neon hosts, `false` otherwise. 
    */
-  pipelineConnect: "passwordAuth" | false;
+  pipelineConnect: "password" | false;
 
   /**
    * Pipeline pg SSL request and TLS handshake. Compatible only with Neon.
