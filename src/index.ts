@@ -38,6 +38,7 @@ export default {
     const city = cf.city ?? 'Unknown location (assuming San Francisco)';
     const country = cf.country ?? 'Earth';
 
+    // TODO: tidy up these variable names (ta, tb, nearesSites5, etc.)
 
     console.log('=== wss, pipelined connect (my DB only) ===')
     let client = new Client(env.MY_DB_URL);
