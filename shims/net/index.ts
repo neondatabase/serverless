@@ -60,7 +60,7 @@ export class Socket extends EventEmitter {
 
   static defaults: Record<'neon' | 'other', SocketDefaults> = {
     neon: {
-      wsProxy: 'ws.manipulexity.com/v1',
+      wsProxy: undefined,
       useSecureWebSocket: true,
       disableTLS: true,
       coalesceWrites: true,
@@ -125,7 +125,10 @@ export class Socket extends EventEmitter {
 
   wsProxyForHost(host: string) {
     const wsProxy = this.wsProxy;
-    if (wsProxy === undefined) throw new Error('WebSocket proxy (`wsProxy` option) for Neon serverless driver is not configured');
+    if (wsProxy === undefined) {
+      // default option is to connect with websockets to the same database host, e.g. `wss://ep-abc-xyz-123.xx-central-1.aws.neon.tech/v2`
+      return host + '/v2';
+    }
     return typeof wsProxy === 'function' ? wsProxy(host) : wsProxy;
   }
 
@@ -152,13 +155,11 @@ export class Socket extends EventEmitter {
     if (connectListener) this.once('connect', connectListener);
 
     const wsProxy = this.wsProxyForHost(host);
-    const wsAddr = `${wsProxy}?address=${host}:${port}`;
-
     this.ws = await new Promise<WebSocket>(resolve => {
       try {
         // ordinary/browser path
         const wsProtocol = this.useSecureWebSocket ? 'wss:' : 'ws:';
-        const ws = new WebSocket(wsProtocol + '//' + wsAddr);
+        const ws = new WebSocket(wsProtocol + '//' + wsProxy);
         ws.addEventListener('open', () => {
           debug && log('native WebSocket opened');
           resolve(ws);
@@ -167,7 +168,7 @@ export class Socket extends EventEmitter {
       } catch (err) {
         // Cloudflare Workers alternative
         const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
-        fetch(wsProtocol + '//' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
+        fetch(wsProtocol + '//' + wsProxy, { headers: { Upgrade: 'websocket' } }).then(resp => {
           const ws = resp.webSocket;
           if (ws === null) throw new Error('Attempted Cloudflare-style WebSocket connection, but Response lacks webSocket property');
           ws.accept();

@@ -42,7 +42,6 @@ export default {
 
     console.log('=== wss, pipelined connect (my DB only) ===')
     let client = new Client(env.MY_DB_URL);
-    client.neonConfig.wsProxy = 'ws.manipulexity.com/v1';
     client.neonConfig.useSecureWebSocket = true;  // true to use wss + cleartext pg, false to use ws + subtls pg
     client.neonConfig.disableTLS = client.neonConfig.useSecureWebSocket;
     client.neonConfig.pipelineConnect = 'password';
@@ -54,7 +53,6 @@ export default {
 
     console.log('=== wss, no pipelining (my DB only) ===')
     client = new Client(env.MY_DB_URL);
-    client.neonConfig.wsProxy = 'ws.manipulexity.com/v1';
     client.neonConfig.useSecureWebSocket = true;  // true to use wss + cleartext pg, false to use ws + subtls pg
     client.neonConfig.disableTLS = client.neonConfig.useSecureWebSocket;
     client.neonConfig.pipelineConnect = false;
@@ -66,9 +64,8 @@ export default {
 
 
     console.log('=== subtls, fully pipelined (Neon only) ===')
-    client = new Client(env.MY_DB_URL + '?sslmode=verify-full');
-    client.neonConfig.wsProxy = 'ws.manipulexity.com/v1';
-    client.neonConfig.useSecureWebSocket = false;  // true to use wss + cleartext pg, false to use ws + subtls pg
+    client = new Client(env.MY_DB_URL);
+    client.neonConfig.useSecureWebSocket = true;  // true to use wss + cleartext pg, false to use ws + subtls pg
     client.neonConfig.disableTLS = client.neonConfig.useSecureWebSocket;
     client.neonConfig.pipelineConnect = 'password';
     client.neonConfig.pipelineTLS = true;
@@ -79,9 +76,8 @@ export default {
 
 
     console.log('=== subtls, pipelined TLS only (Neon only) ===')
-    client = new Client(env.NEON_DB_URL + '?sslmode=verify-full');
-    client.neonConfig.wsProxy = 'ws.manipulexity.com/v1';
-    client.neonConfig.useSecureWebSocket = false;  // true to use wss + cleartext pg, false to use ws + subtls pg
+    client = new Client(env.NEON_DB_URL);
+    client.neonConfig.useSecureWebSocket = true;  // true to use wss + cleartext pg, false to use ws + subtls pg
     client.neonConfig.disableTLS = client.neonConfig.useSecureWebSocket;
     client.neonConfig.pipelineConnect = false;
     client.neonConfig.pipelineTLS = true;
@@ -92,9 +88,8 @@ export default {
 
 
     console.log('=== subtls, pipelined connect only ===')
-    client = new Client(env.MY_DB_URL + '?sslmode=verify-full');
-    client.neonConfig.wsProxy = 'ws.manipulexity.com/v1';
-    client.neonConfig.useSecureWebSocket = false;  // true to use wss + cleartext pg, false to use ws + subtls pg
+    client = new Client(env.MY_DB_URL);
+    client.neonConfig.useSecureWebSocket = true;  // true to use wss + cleartext pg, false to use ws + subtls pg
     client.neonConfig.disableTLS = client.neonConfig.useSecureWebSocket;
     client.neonConfig.pipelineConnect = 'password';
     client.neonConfig.pipelineTLS = false;
@@ -104,9 +99,8 @@ export default {
     let td = Date.now() - t0;
 
     console.log('=== subtls, no pipelining ===')
-    client = new Client(env.MY_DB_URL + '?sslmode=verify-full');
-    client.neonConfig.wsProxy = 'ws.manipulexity.com/v1';
-    client.neonConfig.useSecureWebSocket = false;  // true to use wss + cleartext pg, false to use ws + subtls pg
+    client = new Client(env.MY_DB_URL);
+    client.neonConfig.useSecureWebSocket = true;  // true to use wss + cleartext pg, false to use ws + subtls pg
     client.neonConfig.disableTLS = client.neonConfig.useSecureWebSocket;
     client.neonConfig.pipelineConnect = false;
     client.neonConfig.pipelineTLS = false;
@@ -114,7 +108,6 @@ export default {
     t0 = Date.now();
     const { nearestSites: nearestSites6, now: now6 } = await query(lng, lat, client, ctx);
     let tf = Date.now() - t0;
-
 
     return new Response(JSON.stringify({ ta, te, tb, tc, td, tf, lat, lng, city, country, nearestSites1, now1, nearestSites2, now2, nearestSites3, now3, nearestSites4, now4, nearestSites5, now5, nearestSites6, now6 }, null, 2),
       { headers: { 'Content-Type': 'application/json' } });
