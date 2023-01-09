@@ -62,7 +62,7 @@ export class Socket extends EventEmitter {
       wsProxy: host => host + '/v2',
       useSecureWebSocket: true,
       coalesceWrites: true,
-      disableSNI: true,
+      disableSNI: false,
       pipelineConnect: 'password',
       pipelineTLS: true,
       rootCerts: letsEncryptRootCert as string,
@@ -148,7 +148,16 @@ export class Socket extends EventEmitter {
       try {
         // ordinary/browser path
         const wsProtocol = this.useSecureWebSocket ? 'wss:' : 'ws:';
-        const ws = new WebSocket(wsProtocol + '//' + wsAddr);
+        const wsAddrFull = wsProtocol + '//' + wsAddr;
+
+        let ws: WebSocket;
+        try {
+          // @ts-ignore -- this is for Vercel
+          ws = new __unstable_WebSocket(wsAddrFull);
+        } catch (err) {
+          ws = new WebSocket(wsAddrFull);
+        }
+
         ws.addEventListener('open', () => {
           debug && log('native WebSocket opened');
           resolve(ws);
@@ -159,7 +168,7 @@ export class Socket extends EventEmitter {
         const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
         fetch(wsProtocol + '//' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
           const ws = resp.webSocket;
-          if (ws === null) throw new Error('Attempted Cloudflare-style WebSocket connection, but Response lacks webSocket property');
+          if (ws === null) throw err;  // if this also fails, report the original error
           ws.accept();
           debug && log('Cloudflare WebSocket opened');
           resolve(ws);
