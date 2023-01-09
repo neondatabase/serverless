@@ -13,7 +13,12 @@ npx esbuild export/index.ts --bundle \
   --format=esm --target=es2022 --outfile=dist/npm/index.js \
   $DEBUG_ARG $MINIFY_ARG
 
+# copy static asset: README
+
+cp README.md dist/npm/
+
 # add pg types
+
 curl --silent https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/pg/index.d.ts \
   > dist/npm/index.d.ts
 
@@ -42,6 +47,3 @@ export const neonConfig: NeonConfig & {
   addNeonProjectToPassword: boolean;
 };
 ' >> dist/npm/index.d.ts
-
-# copy static asset: README
-cp README.md dist/npm/
