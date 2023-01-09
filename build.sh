@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 if [ "$1" = "debug" ]; then
   DEBUG_ARG="--define:debug=true"
