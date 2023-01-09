@@ -13,7 +13,7 @@
       memo[line.substring(0, eqIndex)] = line.substring(eqIndex + 1);
     }
     return memo;
-  }, { WASM_PATH: './tls.wasm' });
+  }, {});
 
   // shim ctx
   const ctx = { waitUntil(promise) { } };  // browser always waits!

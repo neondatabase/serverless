@@ -23,7 +23,7 @@ async function query(lng: number, lat: number, client: Client | Pool, ctx: Execu
     db.sql`SELECT now()`.run(client),
   ]);
 
-  client.end();
+  ctx.waitUntil(client.end());
   return { nearestSites, now };
 }
 
