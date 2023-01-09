@@ -11,24 +11,25 @@ import { parse } from 'pg-connection-string';
 */
 
 export default function rewritePgConfig(config: any) {
-  if (!Socket.addNeonProjectToPassword) return config;
-
   let newConfig = config;
   if (typeof newConfig === 'string') newConfig = parse(newConfig);
   if (newConfig.connectionString) newConfig = Object.assign({}, newConfig, parse(newConfig.connectionString));
   delete newConfig.connectionString;  // because this still has the bare password and would be re-parsed by pg
 
   const host = newConfig.host ?? process.env.PGHOST ?? process.env.host;
-  if (typeof host !== 'string' || !/[.]neon[.]tech(:|$)/.test(host)) return config;
+  if (typeof host !== 'string' || !/[.]neon[.](tech|build)(:|$)/.test(host)) return config;
+
+  newConfig.ssl = false;  // Neon connections are always over `wss:` instead
+
+  if (!Socket.addNeonProjectToPassword) return newConfig;
 
   const projectMatch = host.match(/^([^.]+)[.]/);
-  if (projectMatch === null) return config;
+  if (projectMatch === null) return newConfig;
 
   const project = projectMatch[1];
   const originalPassword = newConfig.password ?? process.env.PGPASSWORD ?? process.env.password;
-  if (typeof originalPassword !== 'string') return config;
+  if (typeof originalPassword !== 'string') return newConfig;
 
   newConfig.password = `project=${project};${originalPassword}`;
-  newConfig.ssl = true;
   return newConfig;
 }

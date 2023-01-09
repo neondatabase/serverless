@@ -53,8 +53,6 @@ class NeonClient extends Client {
   connect(): Promise<void>;
   connect(callback: (err?: Error) => void): void;
   connect(callback?: (err?: Error) => void) {
-    if (this.neonConfig.disableTLS) this.ssl = false;
-
     const result = super.connect(callback as any) as void | Promise<void>;
     const pipelineTLS = this.neonConfig.pipelineTLS && this.ssl;
     const pipelineConnect = this.neonConfig.pipelineConnect === 'password';
@@ -66,23 +64,25 @@ class NeonClient extends Client {
     if (pipelineTLS) {
       // for a pipelined SSL connection, fake the SSL support message from the server
       // (the server's actual 'S' response is ignored via the expectPreData argument to startTls in shims/net/index.ts)
+
       con.on('connect', () => con.stream.emit('data', 'S'));  // prompts call to tls.connect and immediate 'sslconnect' event
     }
 
-    if (!pipelineConnect) return result;
+    if (pipelineConnect) {
+      // for a pipelined startup:
+      // (1) don't respond to authenticationCleartextPassword; instead, send the password ahead of time
+      // (2)  *one time only*, don't respond to readyForQuery; instead, assume it's already true
 
-    // for a pipelined startup:
-    // (1) don't respond to authenticationCleartextPassword; instead, send the password ahead of time
-    // (2)  *one time only*, don't respond to readyForQuery; instead, assume it's already true
-    con.removeAllListeners('authenticationCleartextPassword');
-    con.removeAllListeners('readyForQuery');
-    con.once('readyForQuery', () => con.on('readyForQuery', this._handleReadyForQuery.bind(this)));
+      con.removeAllListeners('authenticationCleartextPassword');
+      con.removeAllListeners('readyForQuery');
+      con.once('readyForQuery', () => con.on('readyForQuery', this._handleReadyForQuery.bind(this)));
 
-    const connectEvent = this.ssl ? 'sslconnect' : 'connect';
-    con.on(connectEvent, () => {
-      this._handleAuthCleartextPassword();
-      this._handleReadyForQuery();
-    });
+      const connectEvent = this.ssl ? 'sslconnect' : 'connect';
+      con.on(connectEvent, () => {
+        this._handleAuthCleartextPassword();
+        this._handleReadyForQuery();
+      });
+    }
 
     return result;
   }

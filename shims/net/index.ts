@@ -45,39 +45,36 @@ export function isIP(input: string) {
 }
 
 export interface SocketDefaults {
-  wsProxy: string | ((host: string) => string) | undefined;
+  wsProxy: string | ((host: string, port: number | string) => string) | undefined;
   useSecureWebSocket: boolean;
-  disableTLS: boolean;
   coalesceWrites: boolean;
   disableSNI: boolean;
   pipelineConnect: 'password' | false;
-  rootCerts: string;  // relevant only when useSecureWebSocket == false
-  pipelineTLS: boolean;  // ditto
+  pipelineTLS: boolean;  // relevant only when useSecureWebSocket == false
+  rootCerts: string;  // ditto
 }
 
 export class Socket extends EventEmitter {
-  static addNeonProjectToPassword = true;  // this can only be set globally
+  static addNeonProjectToPassword = false;  // this can only be set globally
 
   static defaults: Record<'neon' | 'other', SocketDefaults> = {
     neon: {
-      wsProxy: 'ws.manipulexity.com/v1',
+      wsProxy: host => host + '/v2',
       useSecureWebSocket: true,
-      disableTLS: true,
       coalesceWrites: true,
       disableSNI: true,
       pipelineConnect: 'password',
-      rootCerts: letsEncryptRootCert as string,
       pipelineTLS: true,
+      rootCerts: letsEncryptRootCert as string,
     },
     other: {
       wsProxy: undefined,
       useSecureWebSocket: true,
-      disableTLS: true,
       coalesceWrites: true,
       disableSNI: false,
       pipelineConnect: false,
-      rootCerts: letsEncryptRootCert as string,
       pipelineTLS: false,
+      rootCerts: letsEncryptRootCert as string,
     },
   };
 
@@ -103,11 +100,6 @@ export class Socket extends EventEmitter {
   get useSecureWebSocket() { return this._useSecureWebSocket ?? Socket.useSecureWebSocket ?? Socket.defaults[this.defaultsKey].useSecureWebSocket; }
   set useSecureWebSocket(useSecureWebSocket: typeof Socket.useSecureWebSocket) { this._useSecureWebSocket = useSecureWebSocket; }
 
-  static disableTLS: SocketDefaults['disableTLS'];
-  private _disableTLS: typeof Socket.disableTLS | undefined;
-  get disableTLS() { return this._disableTLS ?? Socket.disableTLS ?? Socket.defaults[this.defaultsKey].disableTLS; }
-  set disableTLS(disableTLS: typeof Socket.disableTLS) { this._disableTLS = disableTLS; }
-
   static disableSNI: SocketDefaults['disableSNI'];
   private _disableSNI: typeof Socket.disableSNI | undefined;
   get disableSNI() { return this._disableSNI ?? Socket.disableSNI ?? Socket.defaults[this.defaultsKey].disableSNI; }
@@ -123,10 +115,10 @@ export class Socket extends EventEmitter {
   get pipelineTLS() { return this._pipelineTLS ?? Socket.pipelineTLS ?? Socket.defaults[this.defaultsKey].pipelineTLS; }
   set pipelineTLS(pipelineTLS: typeof Socket.pipelineTLS) { this._pipelineTLS = pipelineTLS; }
 
-  wsProxyForHost(host: string) {
+  wsProxyAddrForHost(host: string, port: number) {
     const wsProxy = this.wsProxy;
     if (wsProxy === undefined) throw new Error('WebSocket proxy (`wsProxy` option) for Neon serverless driver is not configured');
-    return typeof wsProxy === 'function' ? wsProxy(host) : wsProxy;
+    return typeof wsProxy === 'function' ? wsProxy(host, port) : wsProxy;
   }
 
   connecting = false;
@@ -146,14 +138,12 @@ export class Socket extends EventEmitter {
   setKeepAlive() { debug && log('setKeepAlive (no-op)'); }
 
   async connect(port: number | string, host: string, connectListener?: () => void) {
-    if (/[.]neon[.]tech(:|$)/.test(host)) this.defaultsKey = 'neon';  // switch to Neon defaults if connecting to a Neon host
+    if (/[.]neon[.](tech|build)(:|$)/.test(host)) this.defaultsKey = 'neon';  // switch to Neon defaults if connecting to a Neon host
 
     this.connecting = true;
     if (connectListener) this.once('connect', connectListener);
 
-    const wsProxy = this.wsProxyForHost(host);
-    const wsAddr = `${wsProxy}?address=${host}:${port}`;
-
+    const wsAddr = this.wsProxyAddrForHost(host, typeof port === 'string' ? parseInt(port, 10) : port);
     this.ws = await new Promise<WebSocket>(resolve => {
       try {
         // ordinary/browser path
@@ -208,40 +198,34 @@ export class Socket extends EventEmitter {
   }
 
   async startTls(host: string) {
-    if (this.disableTLS) {
-      debug && log('not starting TLS despite request');
+    debug && log('starting TLS');
+    this.tlsState = TlsState.Handshake;
 
-    } else {
-      debug && log('starting TLS');
-      this.tlsState = TlsState.Handshake;
+    const rootCerts = TrustedCert.fromPEM(letsEncryptRootCert);
+    const readQueue = new ReadQueue(this.ws!);
+    const networkRead = readQueue.read.bind(readQueue);
+    const networkWrite = this.rawWrite.bind(this);
 
-      const readQueue = new ReadQueue(this.ws!);
-      const networkRead = readQueue.read.bind(readQueue);
-      const networkWrite = this.rawWrite.bind(this);
+    const [tlsRead, tlsWrite] = await startTls(
+      host,
+      rootCerts,
+      networkRead,
+      networkWrite,
+      !this.disableSNI,
+      undefined,  // nothing to pre-write (pg handles the SSLRequest message)
+      this.pipelineTLS ? new Uint8Array([0x53]) : undefined,  // expect (and discard) an 'S' before the TLS response if quickTLS is set
+    );
 
-      const rootCerts = TrustedCert.fromPEM(letsEncryptRootCert);
+    this.tlsRead = tlsRead;
+    this.tlsWrite = tlsWrite;
 
-      const [tlsRead, tlsWrite] = await startTls(
-        host,
-        rootCerts,
-        networkRead,
-        networkWrite,
-        !this.disableSNI,
-        undefined,  // nothing to pre-write (pg handles the SSLRequest message)
-        this.pipelineTLS ? new Uint8Array([0x53]) : undefined,  // expect (and discard) an 'S' before the TLS response if quickTLS is set
-      );
+    debug && log('TLS connection established');
+    this.tlsState = TlsState.Established;
+    this.encrypted = true;
+    this.authorized = true;
+    this.emit('secureConnection', this);
 
-      this.tlsRead = tlsRead;
-      this.tlsWrite = tlsWrite;
-
-      debug && log('TLS connection established');
-      this.tlsState = TlsState.Established;
-      this.encrypted = true;
-      this.authorized = true;
-      this.emit('secureConnection', this);
-
-      this.tlsReadLoop();
-    }
+    this.tlsReadLoop();
   }
 
   async tlsReadLoop() {  // intended NOT to be awaited
