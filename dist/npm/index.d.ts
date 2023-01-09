@@ -299,9 +299,10 @@ export const native: typeof Pg | null;
 
 export { DatabaseError } from 'pg-protocol';
 
-// additions for Neon/WebSocket driver
 
-interface NeonConfig {
+// @neondatabase/serverless driver configuration options follow
+
+export interface NeonConfig {
   /**
    * Set `wsProxy` to use your own WebSocket proxy server. 
    * Provide either the proxy server’s domain name, or a function that takes
@@ -310,16 +311,17 @@ interface NeonConfig {
    * Example: (host, port) => `myproxy.example.net?address=${host}:${port}`
    * Default: Neon’s proxy for Neon hosts, `undefined` otherwise.
   */
-  wsProxy: string | ((host: string, port: number | string) => string);
+  wsProxy: string | ((host: string, port: number | string) => string) | undefined;
 
   /**
-   * Use a secure wss: connection to the WebSocket proxy. 
+   * Use a secure (`wss:`) connection to the WebSocket proxy. 
    * Default: `true`.
    */
   useSecureWebSocket: boolean;
 
   /**
-   * Pipeline startup message, cleartext password message and first query.
+   * Pipelines the startup message, cleartext password message and first query
+   * when set to `"password"`. This works only for cleartext password auth.
    * Default: `"password"` for Neon hosts, `false` otherwise.
    */
   pipelineConnect: "password" | false;
@@ -344,14 +346,14 @@ interface NeonConfig {
    * Default: `true`.
    */
   coalesceWrites: boolean;
-  
+
   /**
    * When `disableSNI` is `true` and `useSecureWebSocket` is `false` we send no
    * SNI data in the TLS handshake. On Neon, disabling SNI and including the
    * Neon project name in the password avoids CPU-intensive SCRAM
    * authentication, but this is only relevant for earlier iterations of Neon 
    * WebSocket support.
-   * Default: `true` for Neon hosts, `false` otherwise.
+   * Default: `false`.
    */
   disableSNI: boolean;
 }
@@ -369,5 +371,4 @@ export const neonConfig: NeonConfig & {
    */
   addNeonProjectToPassword: boolean;
 };
-
 

@@ -32,6 +32,7 @@ For a complete usage example on Cloudflare Workers, see https://github.com/neond
 
 * **Cloudflare**: brief queries such as the one shown above can generally be run on Cloudflare’s free plan. Queries with larger result sets will typically exceed the 10ms CPU time available to Workers on the free plan: in that case you’ll see a Cloudflare error page and will need to upgrade your Cloudflare service.
 
+
 ## Run your own WebSocket proxy
 
 The package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket.
@@ -42,58 +43,71 @@ First, you'll need to set up the proxy itself somewhere public-facing (or on `lo
 
 There are two ways you can secure this.
 
-1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve this are in [DEPLOY.md](DEPLOY.md). Onward traffic to Postgres is not secured this way, so Postgres should be running either on the same machine or on one that's reached over a private network.
+1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve this are in [DEPLOY.md](DEPLOY.md). Onward traffic to Postgres is not secured this way, so Postgres should be running on the same machine, or be reached over a private network.
 
-2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. However, **please note that subtls is experimental software and this configuration is therefore not suitable for use in production**. You get this form of encryption if you set `neonConfig.useSecureWebSocket` to `false` and use `?sslmode=verify-full` (or similar) in your connection string.
+2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. However, **please note that subtls is experimental software and this configuration is therefore not suitable for use in production**. You get this form of encryption if you set `neonConfig.useSecureWebSocket` to `false` and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end.
 
-### Configuration
+Second, you'll need to some configuration options on this package, including at a minimum the `wsProxy` option (details below).
+
+
+## Configuration
 
 There are two ways to set configuration options:
 
-1. You can import `neonConfig` from the package and set global default options on that. 
-2. You can also set options per `Client` instance, using the `neonConfig` property exposed by the client.
+1. You can import `neonConfig` from the package and use it to set global default options. 
+2. You can also set options on individual `Client` instances using the `neonConfig` property.
 
 For example:
 
 ```javascript
 import { Client, neonConfig } from '@neondatabase/serverless';
 
-// set default options
+// set default options for all clients
 neonConfig.wsProxy = (host, port) => `my-wsproxy.example.com/v1?address=${host}:${port}`;
 neonConfig.rootCerts = `
 -----BEGIN CERTIFICATE-----
 MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw ...
------END CERTIFICATE-----`;
+-----END CERTIFICATE-----
+`;
 
-// override default options on individual clients
+// override default options on an individual client
 const client = new Client(env.DATABASE_URL);
 client.neonConfig.wsProxy = (host, port) => `my-other-wsproxy.example.com/v1?address=${host}:${port}`;
 ```
 
-Then you'll need to set two options on this package — `wsProxy` and `rootCerts`. You can do this globally by importing the `neonConfig` object. For example:
+### `wsProxy: string | (host: string, port: number | string) => string`
 
-#### `wsProxy`
-
-The `wsProxy` setting should point to the WebSocket proxy you just set up. Usually that will just be a URL host string, but if you want to run different proxies depending on the database host (e.g. to match regions) you can also pass a function with the signature `(dbHost: string) => string`. For example:
+The `wsProxy` option should point to the WebSocket proxy you just set up. That can be a simple string, but usually it will be a function with the signature `(host: string, port: number | string) => string`. The protocol must not be included, because this can vary based on other options. For example, when using `wsproxy`, it should look something like this:
 
 ```javascript
-neonConfig.wsProxy = (dbHost) => 
-  /[.]eu[.]db[.]example[.]com$/.test(dbHost) ? 
-    'my-wsproxy.eu.example.com' : 
-      'my-wsproxy.us.example.com';
+neonConfig.wsProxy = (dbHost) => `my-wsproxy.example.com/v1?address=${host}:${port}`
 ```
 
+### `useSecureWebSocket: boolean`
 
-#### `rootCerts`
+This option switches between secure (the default) and insecure WebSockets. To use experimental pure-JS encryption, set this to `false` and append `?sslmode=verify-full` to your connection string.
 
-We bundle our own TLS implementation, which needs to know what root (certificate authority) certificates to trust. The default value of `rootCerts` is the [ISRG Root X1](https://letsencrypt.org/certificates/) certificate, which is appropriate for servers secured with [Let’s Encrypt](https://letsencrypt.org/).
+### `rootCerts: string /* PEM format */`
+
+When using experimental pure-JS TLS implementation, this option determines what root (certificate authority) certificates are trusted. The default value of `rootCerts` is the [ISRG Root X1](https://letsencrypt.org/certificates/) certificate, which is appropriate for servers secured with [Let’s Encrypt](https://letsencrypt.org/).
 
 If you're using any other certificate authority to secure Postgres connections, provide the root certificate(s) in PEM format to the `rootCerts` option.
 
+### `pipelineConnect: "password" | false`
 
-### TLS version
+To speed up connection times, the driver will pipeline the first three messages to the database (startup, authentication and first query) if `pipelineConnect` is set to `"password"`. Note that this will only work if you've configured cleartext password authentication for the relevant user and database. 
 
-Please note that the library requires your Postgres installation to support TLS 1.3.
+The default is `"password"` for Neon hosts and `false` for others.
+
+### `pipelineTLS: boolean`
+
+Only when using experimental pure-JS encryption, the driver will pipeline the SSL request message and TLS Client Hello if `pipelineTLS` is set to `true`. Currently, this is only supported by Neon database hosts, and will fail when communicating with an ordinary Postgres or pgbouncer back-end.
+
+The default is `true` for Neon hosts, `false` for others.
+
+### `coalesceWrites: boolean`
+
+When this option is `true`, multiple network writes generated in a single iteration of JavaScript run-loop are coalesced into a single WebSocket message. Since node-postgres tends to send lots of very short messages, this may reduce TCP/IP overhead. It defaults to `true`.
 
 
 ## Orientation

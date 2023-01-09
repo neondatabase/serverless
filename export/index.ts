@@ -8,24 +8,22 @@ export {
 
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
+import { NeonConfig } from './neonConfig';
 import rewritePgConfig from '../shims/rewritePgConfig';
 
 /**
- * We largely export the pg library unchanged, but we do make a few tweaks.
+ * We export the pg library largely unchanged, but we do make a few tweaks.
  * 
  * (1) SCRAM auth is deliberately CPU-intensive, and this is not appropriate
- * for a serverless environment. We address this two ways. First, we replace 
- * the standard pg implementation with one that uses SubtleCrypto for repeated
- * SHA-256 digests. This saves some time and CPU. Second, we disable SCRAM on
- * Neon hosts by using a Neon-specific workaround: we disable SNI in the TLS 
- * library and use the fallback of putting the Neon project name in the 
- * password field.
+ * for a serverless environment. In case it is still used, however, we replace
+ * the standard (synchronous) pg implementation with one that uses SubtleCrypto
+ * for repeated SHA-256 digests. This saves some time and CPU.
  * 
- * (2) Querying can require a lot of network round-trips. We provide a shortcut
- * option that saves two round-trips by combining the startup message, password
- * message and first query in one shot. This only works for cleartext password
- * auth over an unecrypted connection (which is safe as long as the connection
- * is made over a secure WebSocket).
+ * (2) Connecting and querying can require a lot of network round-trips. We
+ * add a pipelining option for the connection (startup + auth + first query),
+ * but this works with cleartext password auth only. We can also pipeline TLS
+ * startup, but currently this works only with Neon hosts (not vanilla pg or
+ * pgbouncer).
  * */
 
 class NeonPool extends Pool {
@@ -48,7 +46,7 @@ class NeonClient extends Client {
     super(rewritePgConfig(config));
   }
 
-  get neonConfig() { return this.connection.stream; }
+  get neonConfig(): NeonConfig { return this.connection.stream; }
 
   connect(): Promise<void>;
   connect(callback: (err?: Error) => void): void;
