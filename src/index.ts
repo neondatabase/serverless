@@ -49,15 +49,18 @@ export default {
     console.log('=== Neon/wss, pipelined connect (default) ===')
     client = new Client(env.NEON_DB_URL);
     const [tNeonPipelined, { nearestSites, now }] = await timed(() => query(lng, lat, client, ctx));
+    console.log(tNeonPipelined);
 
     console.log('=== Neon/wss, no pipelining ===')
     client = new Client(env.NEON_DB_URL);
     client.neonConfig.pipelineConnect = false;
     const [tNeonUnpipelined] = await timed(() => query(lng, lat, client, ctx));
+    console.log(tNeonUnpipelined);
 
-    console.log('=== Neon/wss, pipelined connect using Pool (default) ===')
+    console.log('=== Neon/wss, pipelined connect using Pool ===')
     client = new Pool({ connectionString: env.NEON_DB_URL });
     const [tNeonPipelinedPool] = await timed(() => query(lng, lat, client, ctx));
+    console.log(tNeonPipelinedPool);
 
     console.log('=== Patched pg/subtls, no pipelining ===')
     client = new Client(env.MY_DB_URL);
@@ -66,6 +69,7 @@ export default {
     client.neonConfig.pipelineTLS = false;
     client.neonConfig.pipelineConnect = false;
     const [tSubtlsUnpipelined] = await timed(() => query(lng, lat, client, ctx));
+    console.log(tSubtlsUnpipelined);
 
     console.log('=== Patched pg/subtls, pipelined TLS ===')
     client = new Client(env.MY_DB_URL);
@@ -74,6 +78,7 @@ export default {
     client.neonConfig.pipelineTLS = true;
     client.neonConfig.pipelineConnect = false;
     const [tSubtlsPipelinedTLS] = await timed(() => query(lng, lat, client, ctx));
+    console.log(tSubtlsPipelinedTLS);
 
     console.log('=== Patched pg/subtls, pipelined connect ===')
     client = new Client(env.MY_DB_URL);
@@ -82,6 +87,7 @@ export default {
     client.neonConfig.pipelineTLS = false;
     client.neonConfig.pipelineConnect = 'password';
     const [tSubtlsPipelinedConnect] = await timed(() => query(lng, lat, client, ctx));
+    console.log(tSubtlsPipelinedConnect);
 
     console.log('=== Patched pg/subtls, pipelined all ===')
     client = new Client(env.MY_DB_URL);
@@ -90,6 +96,7 @@ export default {
     client.neonConfig.pipelineTLS = true;
     client.neonConfig.pipelineConnect = 'password';
     const [tSubtlsPipelinedAll] = await timed(() => query(lng, lat, client, ctx));
+    console.log(tSubtlsPipelinedAll);
 
     return new Response(
       JSON.stringify({

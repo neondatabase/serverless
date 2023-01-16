@@ -118,7 +118,7 @@ export class Socket extends EventEmitter {
   wsProxyAddrForHost(host: string, port: number) {
     const wsProxy = this.wsProxy;
     if (wsProxy === undefined) throw new Error('WebSocket proxy (`wsProxy` option) for Neon serverless driver is not configured');
-    return typeof wsProxy === 'function' ? wsProxy(host, port) : wsProxy;
+    return typeof wsProxy === 'function' ? wsProxy(host, port) : `${wsProxy}?address=${host}:${port}`;
   }
 
   connecting = false;
