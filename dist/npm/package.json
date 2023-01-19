@@ -1,8 +1,8 @@
 {
-  "name": "@jawj/test-serverless",
-  "version": "0.1.25",
+  "name": "@neondatabase/serverless",
+  "version": "0.2.0",
   "author": "Neon",
-  "description": "node-postgres via a WebSocket TCP proxy from neon.tech",
+  "description": "node-postgres via WebSockets from neon.tech",
   "main": "./index.js",
   "types": "./index.d.ts",
   "license": "MIT",
