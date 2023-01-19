@@ -35,13 +35,6 @@ export default {
     const [tNeonPipelined] = await timed(() => query(client, ctx));
     console.log(tNeonPipelined);
 
-    console.log('=== Patched pg/wss, pipelined connect ===')
-    client = new Client(env.MY_DB_URL);
-    client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
-    client.neonConfig.pipelineConnect = 'password';
-    const [tPgWssPipelined] = await timed(() => query(client, ctx));
-    console.log(tPgWssPipelined);
-
     console.log('=== Neon/wss, no pipelining ===')
     client = new Client(env.NEON_DB_URL);
     client.neonConfig.pipelineConnect = false;
@@ -52,6 +45,13 @@ export default {
     client = new Pool({ connectionString: env.NEON_DB_URL });
     const [tNeonPipelinedPool] = await timed(() => query(client, ctx));
     console.log(tNeonPipelinedPool);
+
+    console.log('=== Patched pg/wss, pipelined connect ===')
+    client = new Client(env.MY_DB_URL);
+    client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
+    client.neonConfig.pipelineConnect = 'password';
+    const [tPgWssPipelined] = await timed(() => query(client, ctx));
+    console.log(tPgWssPipelined);
 
     console.log('=== Patched pg/subtls, no pipelining ===')
     client = new Client(env.MY_DB_URL + '?sslmode=verify-full');
@@ -93,9 +93,9 @@ export default {
       JSON.stringify({
         tNeonWarmUp,
         tNeonPipelined,
-        tPgWssPipelined,
         tNeonUnpipelined,
         tNeonPipelinedPool,
+        tPgWssPipelined,
         tSubtlsUnpipelined,
         tSubtlsPipelinedTLS,
         tSubtlsPipelinedConnect,
