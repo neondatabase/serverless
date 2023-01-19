@@ -52,6 +52,7 @@ class NeonClient extends Client {
   connect(callback: (err?: Error) => void): void;
   connect(callback?: (err?: Error) => void) {
     const result = super.connect(callback as any) as void | Promise<void>;
+
     const pipelineTLS = this.neonConfig.pipelineTLS && this.ssl;
     const pipelineConnect = this.neonConfig.pipelineConnect === 'password';
 

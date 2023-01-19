@@ -168,7 +168,7 @@ export class Socket extends EventEmitter {
         const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
         fetch(wsProtocol + '//' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
           const ws = resp.webSocket;
-          if (ws === null) throw err;  // if this also fails, report the original error
+          if (ws == undefined) throw err;  // deliberate loose equality; if this also fails, report the original error
           ws.accept();
           debug && log('Cloudflare WebSocket opened');
           resolve(ws);
