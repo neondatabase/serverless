@@ -1,32 +1,27 @@
 {
   "name": "pgshims",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "author": "George MacKerron",
   "license": "MIT",
-  "scripts": {
-    "updateSchema": "env $(grep -v '^#' .dev.vars) npx zapatos"
-  },
   "dependencies": {
-    "buffer": "^6.0.3",
-    "events": "^3.3.0",
-    "pg": "^8.8.0",
-    "subtls": "^0.1.3",
-    "zapatos": "^6.1.1",
     "assert": "file:shims/assert",
     "crypto": "file:shims/crypto",
     "dns": "file:shims/dns",
     "fs": "file:shims/fs",
     "net": "file:shims/net",
     "path": "file:shims/path",
-    "perf_hooks": "file:shims/perf_hooks",
     "pg-native": "file:shims/pg-native",
     "stream": "file:shims/stream",
     "string_decoder": "file:shims/string_decoder",
     "tls": "file:shims/tls",
     "url": "file:shims/url",
-    "util": "file:shims/util"
+    "util": "file:shims/util",
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
+    "pg": "^8.8.0",
+    "subtls": "^0.1.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.17.0",

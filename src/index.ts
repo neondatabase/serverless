@@ -43,10 +43,10 @@ export default {
     const [tNeonUnpipelined] = await timed(() => query(client, ctx));
     console.log(tNeonUnpipelined);
 
-    // console.log('=== Neon/wss, pipelined connect using Pool ===')
-    // client = new Pool({ connectionString: env.NEON_DB_URL });
-    // const [tNeonPipelinedPool] = await timed(() => query(lng, lat, client, ctx));
-    // console.log(tNeonPipelinedPool);
+    console.log('=== Neon/wss, pipelined connect using Pool ===')
+    client = new Pool({ connectionString: env.NEON_DB_URL });
+    const [tNeonPipelinedPool] = await timed(() => query(client, ctx));
+    console.log(tNeonPipelinedPool);
 
     console.log('=== Patched pg/subtls, no pipelining ===')
     client = new Client(env.MY_DB_URL + '?sslmode=verify-full');
@@ -89,7 +89,7 @@ export default {
         tNeonPipelined,
         tPgWssPipelined,
         tNeonUnpipelined,
-        // tNeonPipelinedPool,
+        tNeonPipelinedPool,
         tSubtlsUnpipelined,
         tSubtlsPipelinedTLS,
         tSubtlsPipelinedConnect,
