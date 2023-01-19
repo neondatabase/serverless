@@ -25,9 +25,14 @@ export default {
 
     let client: Client | Pool;
 
+    console.log('=== Warm-up: Neon/wss, pipelined connect (default) ===');
+    client = new Client(env.NEON_DB_URL);
+    const [tNeonWarmUp, { now1, now2 }] = await timed(() => query(client, ctx));
+    console.log(tNeonWarmUp);
+
     console.log('=== Neon/wss, pipelined connect (default) ===');
     client = new Client(env.NEON_DB_URL);
-    const [tNeonPipelined, { now1, now2 }] = await timed(() => query(client, ctx));
+    const [tNeonPipelined] = await timed(() => query(client, ctx));
     console.log(tNeonPipelined);
 
     console.log('=== Patched pg/wss, pipelined connect ===')
@@ -86,6 +91,7 @@ export default {
 
     return new Response(
       JSON.stringify({
+        tNeonWarmUp,
         tNeonPipelined,
         tPgWssPipelined,
         tNeonUnpipelined,
