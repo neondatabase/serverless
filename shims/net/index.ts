@@ -134,8 +134,22 @@ export class Socket extends EventEmitter {
   private tlsRead: undefined | (() => Promise<Uint8Array | undefined>);
   private tlsWrite: undefined | ((data: Uint8Array) => Promise<void>);
 
-  setNoDelay() { debug && log('setNoDelay (no-op)'); }
-  setKeepAlive() { debug && log('setKeepAlive (no-op)'); }
+  setNoDelay() {
+    debug && log('setNoDelay (no-op)');
+    return this;
+  }
+  setKeepAlive() {
+    debug && log('setKeepAlive (no-op)');
+    return this;
+  }
+  ref() {
+    debug && log('ref (no-op)');
+    return this;
+  }
+  unref() {
+    debug && log('unref (no-op)');
+    return this;
+  }
 
   async connect(port: number | string, host: string, connectListener?: () => void) {
     if (/[.]neon[.](tech|build)(:|$)/.test(host)) this.defaultsKey = 'neon';  // switch to Neon defaults if connecting to a Neon host

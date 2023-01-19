@@ -5822,9 +5822,19 @@ var init_net = __esm({
       tlsWrite;
       setNoDelay() {
         log("setNoDelay (no-op)");
+        return this;
       }
       setKeepAlive() {
         log("setKeepAlive (no-op)");
+        return this;
+      }
+      ref() {
+        log("ref (no-op)");
+        return this;
+      }
+      unref() {
+        log("unref (no-op)");
+        return this;
       }
       async connect(port, host, connectListener) {
         if (/[.]neon[.](tech|build)(:|$)/.test(host))
