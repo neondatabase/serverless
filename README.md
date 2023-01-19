@@ -43,7 +43,7 @@ First, you'll need to set up the proxy itself somewhere public-facing (or on `lo
 
 There are two ways you can secure this.
 
-1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve this can be found in [DEPLOY.md](DEPLOY.md). Onward traffic to Postgres is not secured by this method, so Postgres should be running on the same machine or be reached over a private network.
+1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve this can be found in [DEPLOY.sh](DEPLOY.sh). Onward traffic to Postgres is not secured by this method, so Postgres should be running on the same machine or be reached over a private network.
 
 2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). **Please note that subtls is experimental software and this configuration is not suitable for use in production**. There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. You get this form of encryption if you set `neonConfig.useSecureWebSocket` to `false` and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end.
 
