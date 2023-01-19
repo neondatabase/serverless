@@ -43,11 +43,11 @@ First, you'll need to set up the proxy itself somewhere public-facing (or on `lo
 
 There are two ways you can secure this.
 
-1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve can be found in [DEPLOY.md](DEPLOY.md). Onward traffic to Postgres is not secured by this method, so Postgres should be running on the same machine or be reached over a private network.
+1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve this can be found in [DEPLOY.md](DEPLOY.md). Onward traffic to Postgres is not secured by this method, so Postgres should be running on the same machine or be reached over a private network.
 
 2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). **Please note that subtls is experimental software and this configuration is not suitable for use in production**. There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. You get this form of encryption if you set `neonConfig.useSecureWebSocket` to `false` and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end.
 
-Second, you'll need to some configuration options on this package, including at a minimum the `wsProxy` option (details below).
+Second, you'll need to set some configuration options on this package, including at a minimum the `wsProxy` option (details below).
 
 
 ## Configuration
@@ -118,8 +118,8 @@ The default is `true` for Neon hosts, `false` for others.
 
 The code is at https://github.com/neondatabase/serverless. Most of the interesting parts are in `shims/net/index.ts`.
 
-* To update the npm package, run `./export.sh`, then `cd dist/npm` and `npm publish`.
+* To update the npm package, run `npm run export`, then `cd dist/npm` and `npm publish`.
 
 * To run or deploy the test app on Cloudflare, create a `.dev.vars` file containing `DATABASE_URL=postgres://connection_string`, run `npx wrangler dev --local` or `npx wrangler publish`.
 
-* To run the test app in a browser, create a `.dev.vars` file as above, run `./build.sh`, start a local server at the repo root, and visit `http://localhost:8080/dist/deploy/` (replacing the port number as appropriate).
+* To run the test app in a browser, create a `.dev.vars` file as above, run `npm run start` and visit `http://localhost:7070/dist/deploy/` (to include debug output and avoid minification, use `npm run startDebug` instead).

@@ -19,7 +19,7 @@ export default function rewritePgConfig(config: any) {
   const host = newConfig.host ?? process.env.PGHOST ?? process.env.host;
   if (typeof host !== 'string' || !/[.]neon[.](tech|build)(:|$)/.test(host)) return config;
 
-  newConfig.ssl = false;  // Neon connections are always over `wss:` instead
+  newConfig.ssl = false;  // because Neon connections are always over `wss:` instead
 
   if (!Socket.addNeonProjectToPassword) return newConfig;
 

@@ -1,7 +1,7 @@
 export class StringDecoder {
   td: TextDecoder;
 
-  constructor(encoding: string) {
+  constructor(encoding: ConstructorParameters<typeof TextDecoder>[0]) {
     this.td = new TextDecoder(encoding);
   }
 
