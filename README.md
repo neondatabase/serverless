@@ -2,7 +2,7 @@
 
 This package from [Neon](https://neon.tech) shims the [node-postgres](https://node-postgres.com/) `pg` library to work on serverless runtimes such as Cloudflare Workers and Vercel Edge Functions — places where TCP sockets are not available — via a WebSocket proxy.
 
-**Please note: this package also works in web browsers, but in most cases it's not appropriate to publicly deploy that way because it would reveal your Postgres credentials.**
+The package also works in web browsers, but in most cases it's not appropriate to publicly deploy that way because it would reveal your Postgres credentials.
 
 
 ## How to use it
@@ -114,7 +114,7 @@ Only when using experimental pure-JS encryption, the driver will pipeline the SS
 
 The default is `true` for Neon hosts, `false` for others.
 
-## Orientation
+## Development
 
 The code is at https://github.com/neondatabase/serverless. Most of the interesting parts are in `shims/net/index.ts`.
 

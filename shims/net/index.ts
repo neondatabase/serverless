@@ -45,6 +45,7 @@ export function isIP(input: string) {
 }
 
 export interface SocketDefaults {
+  webSocketConstructor: typeof WebSocket | undefined;
   wsProxy: string | ((host: string, port: number | string) => string) | undefined;
   useSecureWebSocket: boolean;
   coalesceWrites: boolean;
@@ -59,6 +60,7 @@ export class Socket extends EventEmitter {
 
   static defaults: Record<'neon' | 'other', SocketDefaults> = {
     neon: {
+      webSocketConstructor: undefined,
       wsProxy: host => host + '/v2',
       useSecureWebSocket: true,
       coalesceWrites: true,
@@ -68,6 +70,7 @@ export class Socket extends EventEmitter {
       rootCerts: letsEncryptRootCert as string,
     },
     other: {
+      webSocketConstructor: undefined,
       wsProxy: undefined,
       useSecureWebSocket: true,
       coalesceWrites: true,
@@ -80,10 +83,10 @@ export class Socket extends EventEmitter {
 
   defaultsKey: keyof typeof Socket.defaults = 'other';  // default to using the 'other' defaults
 
-  static rootCerts: SocketDefaults['rootCerts'];
-  private _rootCerts: typeof Socket.rootCerts | undefined;
-  get rootCerts() { return this._rootCerts ?? Socket.rootCerts ?? Socket.defaults[this.defaultsKey].rootCerts; }
-  set rootCerts(rootCerts: typeof Socket.rootCerts) { this._rootCerts = rootCerts; }
+  static webSocketConstructor: SocketDefaults['webSocketConstructor'];
+  private _webSocketConstructor: typeof Socket.webSocketConstructor | undefined;
+  get webSocketConstructor() { return this._webSocketConstructor ?? Socket.webSocketConstructor ?? Socket.defaults[this.defaultsKey].webSocketConstructor; }
+  set webSocketConstructor(webSocketConstructor: typeof Socket.webSocketConstructor) { this._webSocketConstructor = webSocketConstructor; }
 
   static wsProxy: SocketDefaults['wsProxy'];
   private _wsProxy: typeof Socket.wsProxy | undefined;
@@ -114,6 +117,12 @@ export class Socket extends EventEmitter {
   private _pipelineTLS: typeof Socket.pipelineTLS | undefined;
   get pipelineTLS() { return this._pipelineTLS ?? Socket.pipelineTLS ?? Socket.defaults[this.defaultsKey].pipelineTLS; }
   set pipelineTLS(pipelineTLS: typeof Socket.pipelineTLS) { this._pipelineTLS = pipelineTLS; }
+
+  static rootCerts: SocketDefaults['rootCerts'];
+  private _rootCerts: typeof Socket.rootCerts | undefined;
+  get rootCerts() { return this._rootCerts ?? Socket.rootCerts ?? Socket.defaults[this.defaultsKey].rootCerts; }
+  set rootCerts(rootCerts: typeof Socket.rootCerts) { this._rootCerts = rootCerts; }
+
 
   wsProxyAddrForHost(host: string, port: number) {
     const wsProxy = this.wsProxy;
@@ -165,11 +174,16 @@ export class Socket extends EventEmitter {
         const wsAddrFull = wsProtocol + '//' + wsAddr;
 
         let ws: WebSocket;
-        try {
-          // @ts-ignore -- this is for Vercel
-          ws = new __unstable_WebSocket(wsAddrFull);
-        } catch (err) {
-          ws = new WebSocket(wsAddrFull);
+        if (this.webSocketConstructor !== undefined) {
+          ws = new this.webSocketConstructor(wsAddrFull);
+
+        } else {
+          try {
+            // @ts-ignore -- this is for Vercel
+            ws = new __unstable_WebSocket(wsAddrFull);
+          } catch (err) {
+            ws = new WebSocket(wsAddrFull);
+          }
         }
 
         ws.addEventListener('open', () => {
