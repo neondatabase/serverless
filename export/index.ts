@@ -2,6 +2,7 @@ export {
   Connection,
   DatabaseError,
   Query,
+  ClientBase,
   defaults,
   types,
 } from 'pg';
@@ -25,12 +26,6 @@ import rewritePgConfig from '../shims/rewritePgConfig';
  * startup, but currently this works only with Neon hosts (not vanilla pg or
  * pgbouncer).
  * */
-
-class NeonPool extends Pool {
-  constructor(config: any) {
-    super(rewritePgConfig(config));
-  }
-}
 
 declare interface NeonClient {
   // these types suppress type errors in this file, but do not carry over to the npm package
@@ -152,6 +147,14 @@ class NeonClient extends Client {
     // @ts-ignore - this.connection and this.saslSession do exist
     this.connection.sendSCRAMClientFinalMessage(this.saslSession.response);
   };
+}
+
+class NeonPool extends Pool {
+  Client = NeonClient;
+
+  constructor(config: any) {
+    super(rewritePgConfig(config));
+  }
 }
 
 export {
