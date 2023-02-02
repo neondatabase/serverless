@@ -250,7 +250,7 @@ export class Socket extends EventEmitter {
       networkWrite,
       !this.disableSNI,
       undefined,  // nothing to pre-write (pg handles the SSLRequest message)
-      this.pipelineTLS ? new Uint8Array([0x53]) : undefined,  // expect (and discard) an 'S' before the TLS response if quickTLS is set
+      this.pipelineTLS ? new Uint8Array([0x53]) : undefined,  // expect (and discard) an 'S' before the TLS response if pipelineTLS is set
     );
 
     this.tlsRead = tlsRead;
