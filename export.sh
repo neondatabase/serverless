@@ -10,8 +10,10 @@ fi
 
 npx esbuild export/index.ts --bundle \
   --inject:shims/shims.js --loader:.pem=text \
-  --format=esm --target=es2022 --outfile=dist/npm/index.js \
+  --format=cjs --target=es2020 --outfile=dist/npm/index.js \
   $DEBUG_ARG $MINIFY_ARG
+
+npx gen-esm-wrapper dist/npm/index.js dist/npm/index.mjs
 
 # copy static asset: README
 

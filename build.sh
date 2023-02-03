@@ -16,5 +16,5 @@ fi
 
 npx esbuild src/index.ts --bundle \
   --external:pg-native --inject:shims/shims.js --loader:.pem=text \
-  --format=esm --outdir=dist/deploy --platform=neutral --main-fields=main \
+  --format=esm --target=es2020 --platform=neutral --main-fields=main --outdir=dist/deploy \
   $DEBUG_ARG $WATCH_ARG $MINIFY_ARG
