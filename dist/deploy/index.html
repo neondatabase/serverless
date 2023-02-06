@@ -1,3 +1,18 @@
+<style>
+  pre {
+    font: 13px Monaco, Menlo, monospace;
+  }
+
+  .live {
+    color: #aaa;
+  }
+
+  .median {
+    color: #fff;
+    background: #000;
+    ;
+  }
+</style>
 <script type="module">
   import main from './index.js';
 
@@ -18,12 +33,16 @@
   // shim ctx
   const ctx = { waitUntil(promise) { } };  // browser always waits!
 
+  const pre = document.querySelector('pre');
+
   // shim the Response object
   globalThis.Response = function (data) {
-    document.querySelector('pre').innerText = data;
+    // pre.innerText = data;
   }
 
+  const log = (s) => pre.innerHTML += s;
+
   // run the worker
-  main.fetch(req, env, ctx);
+  main.fetch(req, env, ctx, log);
 </script>
 <pre></pre>
