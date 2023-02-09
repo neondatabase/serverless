@@ -1,8 +1,13 @@
-import { Client, ClientBase, neonConfig, Pool } from '../export';
+import { Client, ClientBase, Pool } from '../export';
 
 export interface Env {
   NEON_DB_URL: string;
   MY_DB_URL: string;
+}
+
+interface Query {
+  sql: string;
+  test: (rows: any[]) => boolean,
 }
 
 async function timed(f: () => Promise<any>) {
@@ -24,45 +29,51 @@ async function timedRepeats(n: number, f: () => Promise<any>, timeListener = (ms
   return [total, results] as const;
 }
 
-async function runQuery(queryable: ClientBase | Pool, query: string) {
-  const { rows } = await queryable.query(query);
+async function runQuery(queryable: ClientBase | Pool, query: Query) {
+  const { sql, test } = query;
+  const { rows } = await queryable.query(sql);
+  if (!test(rows)) throw new Error(`Result fails test\nQuery: ${sql}\nResult: ${JSON.stringify(rows)}`);
   return rows;
 }
 
-async function clientQuery(n: number, client: Client, ctx: ExecutionContext, query: string) {
+async function clientRunQuery(n: number, client: Client, ctx: ExecutionContext, query: Query) {
   await client.connect();
   const tPlusResults = await timedRepeats(n, () => runQuery(client, query));
   ctx.waitUntil(client.end());
   return tPlusResults;
 }
 
-async function poolQuery(n: number, dbUrl: string, ctx: ExecutionContext, query: string) {
+async function poolRunQuery(n: number, dbUrl: string, ctx: ExecutionContext, query: Query) {
   const pool = new Pool(dbUrl);
   const tPlusResults = await timedRepeats(n, () => runQuery(pool, query));
   ctx.waitUntil(pool.end());
   return tPlusResults;
 }
 
-
-
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext, log = (s: string) => { }): Promise<Response> {
     const queryRepeats = [1, 3];
     const connectRepeats = 15;
 
-    const queries = [
-      'SELECT * FROM employees LIMIT 10',
-      'SELECT now()',
-    ];
+    const queries: Query[] = [{
+      sql: 'SELECT * FROM employees LIMIT 10',
+      test: (rows) => rows.length > 1 && typeof rows[0].first_name === 'string',
+    },
+    {
+      sql: 'SELECT now()',
+      test: (rows) => /^2\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+Z$/.test(rows[0].now.toISOString()),
+    }];
 
     let counter = 0;
 
     for (const query of queries) {
-      log(`\n===== ${query} =====\n\n`);
+      log(`\n===== ${query.sql} =====\n\n`);
 
       async function section(queryRepeat: number, f: (n: number) => Promise<void>) {
-        const marker = String.fromCharCode(65 + counter);
+        const marker = String.fromCharCode(counter + (counter > 25 ? 49 - 26 : 65));  // A - Z, 1 - 9
         log(`${marker}\n`);
+
+        // this will error, but makes for a handy heading in the dev tools Network pane (or Wireshark)
         try { await fetch(`http://localhost:443/${marker}`); } catch { }
 
         log(`<span class="live">Live:</span>    `)
@@ -92,30 +103,29 @@ export default {
         }
       }
 
-
       log('Warm-up ...\n\n');
       const client = new Client(env.NEON_DB_URL);
-      await clientQuery(1, client, ctx, query);
+      await clientRunQuery(1, client, ctx, query);
 
       await sections('Neon/wss, no pipelining', async n => {
         const client = new Client(env.NEON_DB_URL);
         client.neonConfig.pipelineConnect = false;
-        await clientQuery(n, client, ctx, query);
+        await clientRunQuery(n, client, ctx, query);
       });
 
       await sections('Neon/wss, pipelined connect (default)', async n => {
         const client = new Client(env.NEON_DB_URL);
-        await clientQuery(n, client, ctx, query);
+        await clientRunQuery(n, client, ctx, query);
       });
 
       await sections('Neon/wss, pipelined connect, no coalescing', async n => {
         const client = new Client(env.NEON_DB_URL);
         client.neonConfig.coalesceWrites = false;
-        await clientQuery(n, client, ctx, query);
+        await clientRunQuery(n, client, ctx, query);
       });
 
       await sections('Neon/wss, pipelined connect using Pool.query', async n => {
-        await poolQuery(n, env.NEON_DB_URL, ctx, query);
+        await poolRunQuery(n, env.NEON_DB_URL, ctx, query);
       });
 
       await sections('Neon/wss, pipelined connect using Pool.connect', async n => {
@@ -129,7 +139,7 @@ export default {
         const client = new Client(env.MY_DB_URL);
         client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
         client.neonConfig.pipelineConnect = 'password';
-        await clientQuery(n, client, ctx, query);
+        await clientRunQuery(n, client, ctx, query);
       });
 
       await sections('Patched pg/subtls, pipelined TLS + connect', async n => {
@@ -138,7 +148,7 @@ export default {
         client.neonConfig.useSecureWebSocket = false;  // true to use wss + cleartext pg, false to use ws + subtls pg
         client.neonConfig.pipelineTLS = true;
         client.neonConfig.pipelineConnect = 'password';
-        await clientQuery(n, client, ctx, query);
+        await clientRunQuery(n, client, ctx, query);
       });
 
     };
