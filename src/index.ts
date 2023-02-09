@@ -32,8 +32,8 @@ const ctx = {
 };
 
 export async function latencies(env: Env, subtls: boolean, log = (s: string) => { }): Promise<void> {
-  const queryRepeats = [1, 3];
-  const connectRepeats = 15;
+  const queryRepeats = [1];
+  const connectRepeats = 1;
 
   let counter = 0;
 
@@ -89,40 +89,40 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
       await clientRunQuery(n, client, ctx, query);
     });
 
-    await sections('Neon/wss, pipelined connect, no coalescing', async n => {
-      const client = new Client(env.NEON_DB_URL);
-      client.neonConfig.coalesceWrites = false;
-      await clientRunQuery(n, client, ctx, query);
-    });
+    // await sections('Neon/wss, pipelined connect, no coalescing', async n => {
+    //   const client = new Client(env.NEON_DB_URL);
+    //   client.neonConfig.coalesceWrites = false;
+    //   await clientRunQuery(n, client, ctx, query);
+    // });
 
-    await sections('Neon/wss, pipelined connect using Pool.query', async n => {
-      await poolRunQuery(n, env.NEON_DB_URL, ctx, query);
-    });
+    // await sections('Neon/wss, pipelined connect using Pool.query', async n => {
+    //   await poolRunQuery(n, env.NEON_DB_URL, ctx, query);
+    // });
 
-    await sections('Neon/wss, pipelined connect using Pool.connect', async n => {
-      const pool = new Pool(env.NEON_DB_URL);
-      const poolClient = await pool.connect();
-      await timedRepeats(n, () => runQuery(poolClient, query));
-      poolClient.release();
-      ctx.waitUntil(pool.end());
-    });
+    // await sections('Neon/wss, pipelined connect using Pool.connect', async n => {
+    //   const pool = new Pool(env.NEON_DB_URL);
+    //   const poolClient = await pool.connect();
+    //   await timedRepeats(n, () => runQuery(poolClient, query));
+    //   poolClient.release();
+    //   ctx.waitUntil(pool.end());
+    // });
 
-    await sections('Patched pg/wss, pipelined connect', async n => {
-      const client = new Client(env.MY_DB_URL);
-      client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
-      client.neonConfig.pipelineConnect = 'password';
-      await clientRunQuery(n, client, ctx, query);
-    });
+    // await sections('Patched pg/wss, pipelined connect', async n => {
+    //   const client = new Client(env.MY_DB_URL);
+    //   client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
+    //   client.neonConfig.pipelineConnect = 'password';
+    //   await clientRunQuery(n, client, ctx, query);
+    // });
 
-    if (subtls) {
-      await sections('Patched pg/subtls, pipelined TLS + connect', async n => {
-        const client = new Client(env.MY_DB_URL + '?sslmode=verify-full');
-        client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
-        client.neonConfig.useSecureWebSocket = false;  // true to use wss + cleartext pg, false to use ws + subtls pg
-        client.neonConfig.pipelineTLS = true;
-        client.neonConfig.pipelineConnect = 'password';
-        await clientRunQuery(n, client, ctx, query);
-      });
-    }
+    // if (subtls) {
+    //   await sections('Patched pg/subtls, pipelined TLS + connect', async n => {
+    //     const client = new Client(env.MY_DB_URL + '?sslmode=verify-full');
+    //     client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
+    //     client.neonConfig.useSecureWebSocket = false;  // true to use wss + cleartext pg, false to use ws + subtls pg
+    //     client.neonConfig.pipelineTLS = true;
+    //     client.neonConfig.pipelineConnect = 'password';
+    //     await clientRunQuery(n, client, ctx, query);
+    //   });
+    // }
   };
 }

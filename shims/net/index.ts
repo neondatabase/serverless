@@ -33,7 +33,15 @@ function hexDump(data: Uint8Array) {
 }
 
 function log(...args: any[]) {
-  console.log(...args.map(arg =>
+  var d = new Date();
+  var datetime = d.getFullYear() + ":" + 
+                (d.getMonth()+1) + ":" +
+                d.getDate() + ":" + 
+                d.getHours() + ":" + 
+                d.getMinutes() + ":" + 
+              d.getSeconds() + "." +
+              d.getMilliseconds();
+  console.log(datetime, ...args.map(arg =>
     arg instanceof Uint8Array ? hexDump(arg) :
       arg instanceof ArrayBuffer ? hexDump(new Uint8Array(arg)) :
         arg));
