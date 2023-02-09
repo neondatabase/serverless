@@ -1,39 +1,36 @@
-export {
-  Connection,
-  DatabaseError,
-  Query,
-  ClientBase,
-  defaults,
-  types,
-} from 'pg';
-
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { NeonConfig } from './neonConfig';
 import rewritePgConfig from '../shims/rewritePgConfig';
 
 /**
- * We export the pg library largely unchanged, but we do make a few tweaks.
+ * We export the pg library mostly unchanged, but we do make a few tweaks.
  * 
- * (1) SCRAM auth is deliberately CPU-intensive, and this is not appropriate
- * for a serverless environment. In case it is still used, however, we replace
- * the standard (synchronous) pg implementation with one that uses SubtleCrypto
- * for repeated SHA-256 digests. This saves some time and CPU.
- * 
- * (2) Connecting and querying can require a lot of network round-trips. We
+ * (1) Connecting and querying can require a lot of network round-trips. We
  * add a pipelining option for the connection (startup + auth + first query),
  * but this works with cleartext password auth only. We can also pipeline TLS
  * startup, but currently this works only with Neon hosts (not vanilla pg or
  * pgbouncer).
- * */
+ * 
+ * (2) SCRAM auth is deliberately CPU-intensive, and this is not appropriate
+ * for a serverless environment. In case it is still used, however, we replace
+ * the standard (synchronous) pg implementation with one that uses SubtleCrypto
+ * for repeated SHA-256 digests. This saves some time and CPU.
+ */
 
 declare interface NeonClient {
-  // these types suppress type errors in this file, but do not carry over to the npm package
-  connection: Connection & { stream: Socket };
+  // these types suppress type errors in this file, but do not carry over to
+  // the npm package
+
+  connection: Connection & {
+    stream: Socket;
+    sendSCRAMClientFinalMessage: (response: any) => void;
+  };
   _handleReadyForQuery: any;
   _handleAuthCleartextPassword: any;
   startup: any;
   getStartupConf: any;
+  saslSession: any;
 }
 
 class NeonClient extends Client {
@@ -56,16 +53,20 @@ class NeonClient extends Client {
     const con = this.connection;
 
     if (pipelineTLS) {
-      // for a pipelined SSL connection, fake the SSL support message from the server
-      // (the server's actual 'S' response is ignored via the expectPreData argument to startTls in shims/net/index.ts)
+      // for a pipelined SSL connection, fake the SSL support message from the
+      // server (the server's actual 'S' response is ignored via the 
+      // expectPreData argument to startTls in shims / net / index.ts)
 
-      con.on('connect', () => con.stream.emit('data', 'S'));  // prompts call to tls.connect and immediate 'sslconnect' event
+      con.on('connect', () => con.stream.emit('data', 'S'));
+      // -> prompts call to tls.connect and immediate 'sslconnect' event
     }
 
     if (pipelineConnect) {
       // for a pipelined startup:
-      // (1) don't respond to authenticationCleartextPassword; instead, send the password ahead of time
-      // (2)  *one time only*, don't respond to readyForQuery; instead, assume it's already true
+      // (1) don't respond to authenticationCleartextPassword; instead, send
+      // the password ahead of time
+      // (2) *one time only*, don't respond to readyForQuery; instead, assume
+      // it's already true
 
       con.removeAllListeners('authenticationCleartextPassword');
       con.removeAllListeners('readyForQuery');
@@ -82,7 +83,6 @@ class NeonClient extends Client {
   }
 
   async _handleAuthSASLContinue(msg: any) {
-    // @ts-ignore - this.saslSession DOES exist
     const session = this.saslSession;
     const password = this.password;
     const serverData = msg.data;
@@ -144,7 +144,6 @@ class NeonClient extends Client {
     session.serverSignature = serverSignatureBytes.toString('base64');
     session.response = clientFinalMessageWithoutProof + ',p=' + clientProof;
 
-    // @ts-ignore - this.connection and this.saslSession do exist
     this.connection.sendSCRAMClientFinalMessage(this.saslSession.response);
   };
 }
@@ -162,3 +161,13 @@ export {
   NeonPool as Pool,
   NeonClient as Client,
 };
+
+export {
+  Connection,
+  DatabaseError,
+  Query,
+  ClientBase,
+  defaults,
+  types,
+} from 'pg';
+

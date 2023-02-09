@@ -48,7 +48,7 @@ async function poolQuery(n: number, dbUrl: string, ctx: ExecutionContext, query:
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext, log = (s: string) => { }): Promise<Response> {
     const queryRepeats = [1, 3];
-    const connectRepeats = 9;
+    const connectRepeats = 15;
 
     const queries = [
       'SELECT * FROM employees LIMIT 10',
