@@ -169,6 +169,8 @@ export class Socket extends EventEmitter {
   }
 
   async connect(port: number | string, host: string, connectListener?: () => void) {
+    debug && log('connect started', port, host);
+
     if (host === undefined) throw new Error('No database host specified (are you missing an environment variable?)');
     if (/[.]neon[.](tech|build)(:|$)/.test(host)) this.defaultsKey = 'neon';  // switch to Neon defaults if connecting to a Neon host
 
