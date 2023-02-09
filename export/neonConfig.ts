@@ -11,7 +11,7 @@ export interface NeonConfig {
    * implementation. You might use this if, for example, you're using Node.js
    * in a WebContainer and have imported a third-party WebSocket library.
    */
-  webSocketConstructor: typeof CustomWebSocket | undefined;
+  webSocketConstructor: any; //typeof CustomWebSocket | undefined;
 
   /**
    * Set `wsProxy` to use your own WebSocket proxy server. 

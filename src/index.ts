@@ -1,147 +1,120 @@
-import { Client, ClientBase, Pool } from '../export';
+import { Client, Pool } from '../export';
+import { timedRepeats, runQuery, clientRunQuery, poolRunQuery } from './util';
+import { queries } from './queries';
+
+export { neonConfig } from '../export';
 
 export interface Env {
   NEON_DB_URL: string;
   MY_DB_URL: string;
 }
 
-interface Query {
-  sql: string;
-  test: (rows: any[]) => boolean,
-}
+// simple tests for Cloudflare Workers
 
-async function timed(f: () => Promise<any>) {
-  const t0 = Date.now();
-  const result = await f();
-  const t = Date.now() - t0;
-  return [t, result] as const;
-}
-
-async function timedRepeats(n: number, f: () => Promise<any>, timeListener = (ms: number, result: any) => { }) {
-  const results = [];
-  for (let i = 0; i < n; i++) {
-    const tPlusResult = await timed(f);
-    const [t, result] = tPlusResult;
-    timeListener(t, result);
-    results.push(tPlusResult);
+export async function cf(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  let results: any[] = [];
+  for (const query of queries) {
+    const [, [[, result]]] = await poolRunQuery(1, env.NEON_DB_URL, ctx, query);
+    results.push(result);
   }
-  const total = results.reduce((memo, [t]) => memo + t, 0);
-  return [total, results] as const;
+
+  return new Response(
+    JSON.stringify(results, null, 2),
+    { headers: { 'Content-Type': 'application/json' } },
+  );
 }
 
-async function runQuery(queryable: ClientBase | Pool, query: Query) {
-  const { sql, test } = query;
-  const { rows } = await queryable.query(sql);
-  if (!test(rows)) throw new Error(`Result fails test\nQuery: ${sql}\nResult: ${JSON.stringify(rows)}`);
-  return rows;
-}
+// latency tests for browsers and node
 
-async function clientRunQuery(n: number, client: Client, ctx: ExecutionContext, query: Query) {
-  await client.connect();
-  const tPlusResults = await timedRepeats(n, () => runQuery(client, query));
-  ctx.waitUntil(client.end());
-  return tPlusResults;
-}
+const ctx = {
+  waitUntil(promise: Promise<any>) { },
+  passThroughOnException() { },
+};
 
-async function poolRunQuery(n: number, dbUrl: string, ctx: ExecutionContext, query: Query) {
-  const pool = new Pool(dbUrl);
-  const tPlusResults = await timedRepeats(n, () => runQuery(pool, query));
-  ctx.waitUntil(pool.end());
-  return tPlusResults;
-}
+export async function latencies(env: Env, subtls: boolean, log = (s: string) => { }): Promise<void> {
+  const queryRepeats = [1, 3];
+  const connectRepeats = 15;
 
-export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext, log = (s: string) => { }): Promise<Response> {
-    const queryRepeats = [1, 3];
-    const connectRepeats = 15;
+  let counter = 0;
 
-    const queries: Query[] = [{
-      sql: 'SELECT * FROM employees LIMIT 10',
-      test: (rows) => rows.length > 1 && typeof rows[0].first_name === 'string',
-    },
-    {
-      sql: 'SELECT now()',
-      test: (rows) => /^2\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+Z$/.test(rows[0].now.toISOString()),
-    }];
+  for (const query of queries) {
+    log(`\n===== ${query.sql} =====\n\n`);
 
-    let counter = 0;
+    async function section(queryRepeat: number, f: (n: number) => Promise<void>) {
+      const marker = String.fromCharCode(counter + (counter > 25 ? 49 - 26 : 65));  // A - Z, 1 - 9
+      log(`${marker}\n`);
 
-    for (const query of queries) {
-      log(`\n===== ${query.sql} =====\n\n`);
+      // this will error, but makes for a handy heading in the dev tools Network pane (or Wireshark)
+      try { await fetch(`http://localhost:443/${marker}`); } catch { }
 
-      async function section(queryRepeat: number, f: (n: number) => Promise<void>) {
-        const marker = String.fromCharCode(counter + (counter > 25 ? 49 - 26 : 65));  // A - Z, 1 - 9
-        log(`${marker}\n`);
+      log(`<span class="live">Live:</span>    `)
+      const [, results] = await timedRepeats(
+        connectRepeats,
+        () => f(queryRepeat),
+        t => log(`<span class="live">${t.toFixed()}ms</span> `)
+      );
+      log('\nSorted:  ');
 
-        // this will error, but makes for a handy heading in the dev tools Network pane (or Wireshark)
-        try { await fetch(`http://localhost:443/${marker}`); } catch { }
+      // sort
+      results.map(([t]) => t).sort((a, b) => a - b)
+        .forEach((t, i) => {
+          log(i === (connectRepeats - 1) / 2 ?
+            `<span class="median">${t.toFixed()}ms</span> ` :
+            `${t.toFixed()}ms `);
+        });
+      log('\n\n');
+      counter += 1;
+    }
 
-        log(`<span class="live">Live:</span>    `)
-        const [, results] = await timedRepeats(
-          connectRepeats,
-          () => f(queryRepeat),
-          t => log(`<span class="live">${t.toFixed()}ms</span> `)
-        );
-        log('\nSorted:  ');
-
-        // sort
-        results.map(([t]) => t).sort((a, b) => a - b)
-          .forEach((t, i) => {
-            log(i === (connectRepeats - 1) / 2 ?
-              `<span class="median">${t.toFixed()}ms</span> ` :
-              `${t.toFixed()}ms `);
-          });
-        log('\n\n');
-        counter += 1;
+    async function sections(title: string, f: (n: number) => Promise<void>) {
+      log(`----- ${title} -----\n\n`);
+      for (let queryRepeat of queryRepeats) {
+        log(`${queryRepeat} quer${queryRepeat === 1 ? 'y' : 'ies'} – `)
+        await section(queryRepeat, f);
       }
+    }
 
-      async function sections(title: string, f: (n: number) => Promise<void>) {
-        log(`----- ${title} -----\n\n`);
-        for (let queryRepeat of queryRepeats) {
-          log(`${queryRepeat} quer${queryRepeat === 1 ? 'y' : 'ies'} – `)
-          await section(queryRepeat, f);
-        }
-      }
+    log('Warm-up ...\n\n');
+    const client = new Client(env.NEON_DB_URL);
+    await clientRunQuery(1, client, ctx, query);
 
-      log('Warm-up ...\n\n');
+    await sections('Neon/wss, no pipelining', async n => {
       const client = new Client(env.NEON_DB_URL);
-      await clientRunQuery(1, client, ctx, query);
+      client.neonConfig.pipelineConnect = false;
+      await clientRunQuery(n, client, ctx, query);
+    });
 
-      await sections('Neon/wss, no pipelining', async n => {
-        const client = new Client(env.NEON_DB_URL);
-        client.neonConfig.pipelineConnect = false;
-        await clientRunQuery(n, client, ctx, query);
-      });
+    await sections('Neon/wss, pipelined connect (default)', async n => {
+      const client = new Client(env.NEON_DB_URL);
+      await clientRunQuery(n, client, ctx, query);
+    });
 
-      await sections('Neon/wss, pipelined connect (default)', async n => {
-        const client = new Client(env.NEON_DB_URL);
-        await clientRunQuery(n, client, ctx, query);
-      });
+    await sections('Neon/wss, pipelined connect, no coalescing', async n => {
+      const client = new Client(env.NEON_DB_URL);
+      client.neonConfig.coalesceWrites = false;
+      await clientRunQuery(n, client, ctx, query);
+    });
 
-      await sections('Neon/wss, pipelined connect, no coalescing', async n => {
-        const client = new Client(env.NEON_DB_URL);
-        client.neonConfig.coalesceWrites = false;
-        await clientRunQuery(n, client, ctx, query);
-      });
+    await sections('Neon/wss, pipelined connect using Pool.query', async n => {
+      await poolRunQuery(n, env.NEON_DB_URL, ctx, query);
+    });
 
-      await sections('Neon/wss, pipelined connect using Pool.query', async n => {
-        await poolRunQuery(n, env.NEON_DB_URL, ctx, query);
-      });
+    await sections('Neon/wss, pipelined connect using Pool.connect', async n => {
+      const pool = new Pool(env.NEON_DB_URL);
+      const poolClient = await pool.connect();
+      await timedRepeats(n, () => runQuery(poolClient, query));
+      poolClient.release();
+      ctx.waitUntil(pool.end());
+    });
 
-      await sections('Neon/wss, pipelined connect using Pool.connect', async n => {
-        const pool = new Pool(env.NEON_DB_URL);
-        const poolClient = await pool.connect();
-        await timedRepeats(n, () => runQuery(poolClient, query));
-        poolClient.release();
-      });
+    await sections('Patched pg/wss, pipelined connect', async n => {
+      const client = new Client(env.MY_DB_URL);
+      client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
+      client.neonConfig.pipelineConnect = 'password';
+      await clientRunQuery(n, client, ctx, query);
+    });
 
-      await sections('Patched pg/wss, pipelined connect', async n => {
-        const client = new Client(env.MY_DB_URL);
-        client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
-        client.neonConfig.pipelineConnect = 'password';
-        await clientRunQuery(n, client, ctx, query);
-      });
-
+    if (subtls) {
       await sections('Patched pg/subtls, pipelined TLS + connect', async n => {
         const client = new Client(env.MY_DB_URL + '?sslmode=verify-full');
         client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
@@ -150,25 +123,6 @@ export default {
         client.neonConfig.pipelineConnect = 'password';
         await clientRunQuery(n, client, ctx, query);
       });
-
-    };
-
-    return new Response(
-      JSON.stringify({
-        x: 'x'
-        // tNeonWarmUp,
-        // tNeonUnpipelined,
-        // tNeonPipelined,
-        // tNeonPipelinedPoolQuery,
-        // tNeonPipelinedPoolConnect,
-        // tPgWssPipelined,
-        // tSubtlsUnpipelined,
-        // tSubtlsPipelinedTLS,
-        // tSubtlsPipelinedConnect,
-        // tSubtlsPipelinedAll,
-        // now1, now2,
-      }, null, 2),
-      { headers: { 'Content-Type': 'application/json' } }
-    );
-  }
+    }
+  };
 }
