@@ -232,6 +232,7 @@ export class Socket extends EventEmitter {
       if (this.tlsState === TlsState.None) {
         debug && log('emitting received data');
         const buffer = Buffer.from(msg.data as ArrayBuffer);
+        debug && log('emitting data', buffer);
         this.emit('data', buffer);
       }
     });
