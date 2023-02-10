@@ -35,7 +35,7 @@
     "serve": "serve -p 7070 --no-clipboard",
     "browser": "npm-run-all --parallel --race watch serve",
     "browserDebug": "npm-run-all --parallel --race watchDebug serve",
-    "launch": "DOTENV_CONFIG_PATH=.dev.vars node -r dotenv/config --no-warnings dist/node/index.mjs",
+    "launch": "DOTENV_CONFIG_PATH=.dev.vars node  --tls-keylog ssl.log -r dotenv/config --no-warnings dist/node/index.mjs",
     "node": "npm run build && npm run launch",
     "nodeDebug": "npm run buildDebug && npm run launch"
   },
