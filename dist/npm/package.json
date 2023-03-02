@@ -1,5 +1,5 @@
 {
-  "name": "@jawj/test-serverless",
+  "name": "@neondatabase/serverless",
   "version": "0.2.6",
   "author": "Neon",
   "description": "node-postgres via WebSockets from neon.tech",
