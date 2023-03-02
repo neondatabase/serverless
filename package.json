@@ -37,7 +37,11 @@
     "browserDebug": "npm-run-all --parallel --race watchDebug serve",
     "launch": "DOTENV_CONFIG_PATH=.dev.vars node -r dotenv/config --no-warnings dist/node/index.mjs",
     "node": "npm run build && npm run launch",
-    "nodeDebug": "npm run buildDebug && npm run launch"
+    "nodeDebug": "npm run buildDebug && npm run launch",
+    "cfDev": "npm run build && wrangler dev",
+    "cfDevLocal": "npm run build && wrangler dev --local",
+    "cfDeploy": "npm run build && wrangler publish",
+    "vercelDeploy": "npm run build && cp dist/serverless.mjs dist/vercel/serverless.mjs && (cd dist/vercel && npx vercel deploy)"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230115.0",
@@ -47,6 +51,6 @@
     "gen-esm-wrapper": "^1.1.3",
     "typescript": "^4.8.4",
     "wrangler": "^2.1.12",
-    "ws": "^8.12.0"
+    "ws": "^8.12.1"
   }
 }

@@ -35,7 +35,7 @@ export async function clientRunQuery(n: number, client: Client, ctx: ExecutionCo
 }
 
 export async function poolRunQuery(n: number, dbUrl: string, ctx: ExecutionContext, query: Query) {
-  const pool = new Pool(dbUrl);
+  const pool = new Pool({ connectionString: dbUrl });
   const tPlusResults = await timedRepeats(n, () => runQuery(pool, query));
   ctx.waitUntil(pool.end());
   return tPlusResults;

@@ -9,9 +9,14 @@ export interface Env {
   MY_DB_URL: string;
 }
 
-// simple tests for Cloudflare Workers
+// simple tests for Cloudflare Workers and Vercel
 
-export async function cf(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+export async function fetchHandler(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  return new Response(
+    JSON.stringify({ x: 1, env: typeof env, ctx: typeof ctx, db: env.NEON_DB_URL }),
+    { headers: { 'Content-Type': 'application/json' } },
+  );
+
   let results: any[] = [];
   for (const query of queries) {
     const [, [[, result]]] = await poolRunQuery(1, env.NEON_DB_URL, ctx, query);
@@ -77,6 +82,32 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
     log('Warm-up ...\n\n');
     const client = new Client(env.NEON_DB_URL);
     await clientRunQuery(1, client, ctx, query);
+
+    log('Check error propagation ...\n\n');
+    let caughtErr;
+    const errQuery = {
+      sql: `SELECT '0000-00-00T00:00Z'::timestamptz;`,
+      test: () => true,
+    };
+
+    caughtErr = false;
+    try {
+      await poolRunQuery(1, env.NEON_DB_URL, ctx, errQuery);
+    } catch (err) {
+      caughtErr = err;
+    } finally {
+      if (caughtErr === false) throw new Error('No error was caught from Pool, but one should have been');
+    }
+
+    caughtErr = false;
+    try {
+      const errClient = new Client(env.NEON_DB_URL);
+      await clientRunQuery(1, errClient, ctx, errQuery);
+    } catch (err) {
+      caughtErr = err;
+    } finally {
+      if (caughtErr === false) throw new Error('No error was caught from Client, but one should have been');
+    }
 
     await sections('Neon/wss, no pipelining', async n => {
       const client = new Client(env.NEON_DB_URL);

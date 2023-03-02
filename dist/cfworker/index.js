@@ -1,2 +1,2 @@
-import { cf } from '../serverless.mjs';
-export default { fetch: cf };
+import { fetchHandler } from '../serverless.mjs';
+export default { fetch: fetchHandler };
