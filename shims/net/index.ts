@@ -126,7 +126,16 @@ export class Socket extends EventEmitter {
 
   wsProxyAddrForHost(host: string, port: number) {
     const wsProxy = this.wsProxy;
-    if (wsProxy === undefined) throw new Error('WebSocket proxy (`wsProxy` option) for Neon serverless driver is not configured');
+
+    if (wsProxy === undefined) {
+      const baseErrMsg = `No WebSocket proxy is configured on the Neon serverless driver for database host "${host}". `;
+      const localhostErrMsg = `That's the fallback host when none is specified, so perhaps an environment variable (such as DATABASE_URL) is missing? `;
+      const configErrMsg = `If "${host}" is the host you expected, then you'll need to set the 'wsProxy' option on the driver (see: https://github.com/neondatabase/serverless#run-your-own-websocket-proxy).`
+      const errMsg = baseErrMsg + (host === 'localhost' ? localhostErrMsg : '') + configErrMsg;
+
+      throw new Error(errMsg);
+    }
+
     return typeof wsProxy === 'function' ? wsProxy(host, port) : `${wsProxy}?address=${host}:${port}`;
   }
 
@@ -161,14 +170,14 @@ export class Socket extends EventEmitter {
   }
 
   async connect(port: number | string, host: string, connectListener?: () => void) {
-    if (host === undefined) throw new Error('No database host specified (are you missing an environment variable?)');
+    // note: if no host was given, pg sets it to "localhost"
     if (/[.]neon[.](tech|build)(:|$)/.test(host)) this.defaultsKey = 'neon';  // switch to Neon defaults if connecting to a Neon host
 
     this.connecting = true;
     if (connectListener) this.once('connect', connectListener);
 
     const wsAddr = this.wsProxyAddrForHost(host, typeof port === 'string' ? parseInt(port, 10) : port);
-    this.ws = await new Promise<WebSocket>(resolve => {
+    this.ws = await new Promise<WebSocket>(async resolve => {
       try {
         // ordinary/browser path
         const wsProtocol = this.useSecureWebSocket ? 'wss:' : 'ws:';
@@ -180,28 +189,48 @@ export class Socket extends EventEmitter {
 
         } else {
           try {
-            // @ts-ignore -- this is for Vercel
-            ws = new __unstable_WebSocket(wsAddrFull);
-          } catch (err) {
+            // first, try a common-or-garden WebSocket, e.g. in a web browser
             ws = new WebSocket(wsAddrFull);
+
+          } catch (err) {
+            debug && log('new WebSocket() failed');
+            try {
+              // @ts-ignore -- second, how about a Vercel Edge Functions __unstable_WebSocket (as at early 2023?)
+              ws = new __unstable_WebSocket(wsAddrFull);
+
+            } catch (err) {
+              debug && log('new __unstable_WebSocket() failed');
+
+              // third, perhaps we're on Node.js, and the `ws` library is available?
+              const { default: NodeWebSocket } = await import('ws');
+              ws = new NodeWebSocket(wsAddrFull) as any;
+            }
           }
         }
 
         ws.addEventListener('open', () => {
-          debug && log('native WebSocket opened');
+          debug && log('WebSocket opened');
           resolve(ws);
         });
 
       } catch (err) {
-        // Cloudflare Workers alternative
-        const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
-        fetch(wsProtocol + '//' + wsAddr, { headers: { Upgrade: 'websocket' } }).then(resp => {
-          const ws = resp.webSocket;
-          if (ws == undefined) throw err;  // deliberate loose equality; if this also fails, report the original error
-          ws.accept();
-          debug && log('Cloudflare WebSocket opened');
-          resolve(ws);
-        })
+        debug && log('import("ws") failed');
+        try {
+          // fourth and finally, let's try the Cloudflare Workers method ...
+          const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
+          const fetchAddrFull = wsProtocol + '//' + wsAddr;
+          await fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } }).then(resp => {
+            const ws = resp.webSocket;
+            if (ws == undefined) throw err;  // deliberate loose equality
+            ws.accept();
+            debug && log('Cloudflare WebSocket opened');
+            resolve(ws);
+          });
+
+        } catch (err) {
+          debug && log('fetch() with { Upgrade: "websocket" } failed');
+          throw new Error('All attempts to open a WebSocket to connect to the database failed. If using Node, please install the `ws` package (or simply use the `pg` package instead).');
+        }
       }
     });
 

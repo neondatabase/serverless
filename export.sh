@@ -8,9 +8,14 @@ else
   MINIFY_ARG="--minify"
 fi
 
-npx esbuild export/index.ts --bundle \
-  --inject:shims/shims.js --loader:.pem=text \
-  --format=cjs --target=es2020 --outfile=dist/npm/index.js \
+npx esbuild export/index.ts \
+  --bundle \
+  --external:ws \
+  --inject:shims/shims.js \
+  --loader:.pem=text \
+  --format=cjs \
+  --target=es2020 \
+  --outfile=dist/npm/index.js \
   $DEBUG_ARG $MINIFY_ARG
 
 npx gen-esm-wrapper dist/npm/index.js dist/npm/index.mjs

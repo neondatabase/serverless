@@ -15,6 +15,7 @@ fi
 
 npx esbuild src/index.ts \
   --bundle \
+  --external:ws \
   --inject:shims/shims.js \
   --loader:.pem=text \
   --format=esm \
