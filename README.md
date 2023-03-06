@@ -9,17 +9,18 @@ The package also works in web browsers, but in most cases it's not appropriate t
 
 Where you'd otherwise install `pg` and `@types/pg`, instead run `npm install @neondatabase/serverless`.
 
-Then use it the same way you'd use `pg`. For example, with your Neon database connection string available in `env.DATABASE_URL`:
+Then use it the same way you'd use `pg`. For example, with your Neon database connection string available as `DATABASE_URL`:
 
 ```javascript
-import { Client } from '@neondatabase/serverless';
+import { Pool } from '@neondatabase/serverless';
 
-async function whatsTheTimeMrPostgres() {
-  const client = new Client(env.DATABASE_URL);
-  await client.connect();
-  const { rows: [{ now }] } = await client.query('select now();');
-  await client.end();
-  return now;
+export default {
+  async fetch(req, env, ctx) {
+    const pool = new Pool({ connectionString: env.DATABASE_URL });
+    const { rows: [{ now }] } = await pool.query('SELECT now()');
+    ctx.waitUntil(pool.end());
+    return new Response(now);
+  }
 }
 ```
 
@@ -28,9 +29,9 @@ For a complete usage example on Cloudflare Workers, see https://github.com/neond
 
 ## Notes
 
-* **Pooling**: in general, serverless platforms don't keep WebSocket connections alive between requests. So it won't generally work to connect a database client (or establish a connection pool) outside of the function that's run on each request. The driver does expose a `Pool` class, but at this point it is likely to be slower than using `Client` directly.
+* **Pooling**: in general, serverless platforms don't keep WebSocket connections alive between requests. So it won't generally work to connect a database client (or establish a connection pool) outside of the function that's run on each request. You can of course use a `Pool` within your request handler as a slightly terser way to acquire and connect a `Client`.
 
-* **Cloudflare**: brief queries such as the one shown above can generally be run on Cloudflare’s free plan. Queries with larger result sets will typically exceed the 10ms CPU time available to Workers on the free plan: in that case you’ll see a Cloudflare error page and will need to upgrade your Cloudflare service.
+* **Cloudflare**: brief queries such as the one shown above can generally be run on Cloudflare’s free plan. Queries with larger result sets may exceed the 10ms CPU time available to Workers on the free plan: in that case you’ll see a Cloudflare error page and will need to upgrade your Cloudflare service.
 
 
 ## Run your own WebSocket proxy
