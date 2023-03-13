@@ -203,7 +203,7 @@ export class Socket extends EventEmitter {
 
               // third, perhaps we're on Node.js, and the `ws` library is available?
               // note: we make the package name 'dynamic' here to ward off nosy bundlers (e.g. Next.js) 
-              const { default: NodeWebSocket } = await import('w' + 's');
+              const { default: NodeWebSocket } = await import(String.fromCharCode(119) + String.fromCharCode(115));
               ws = new NodeWebSocket(wsAddrFull) as any;
             }
           }
