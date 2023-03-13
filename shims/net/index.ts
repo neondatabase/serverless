@@ -202,7 +202,8 @@ export class Socket extends EventEmitter {
               debug && log('new __unstable_WebSocket() failed');
 
               // third, perhaps we're on Node.js, and the `ws` library is available?
-              const { default: NodeWebSocket } = await import('ws');
+              // note: we make the package name 'dynamic' here to ward off nosy bundlers (e.g. Next.js) 
+              const { default: NodeWebSocket } = await import('w' + 's');
               ws = new NodeWebSocket(wsAddrFull) as any;
             }
           }
