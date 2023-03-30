@@ -5,13 +5,13 @@ import rewritePgConfig from '../shims/rewritePgConfig';
 
 /**
  * We export the pg library mostly unchanged, but we do make a few tweaks.
- * 
+ *
  * (1) Connecting and querying can require a lot of network round-trips. We
  * add a pipelining option for the connection (startup + auth + first query),
  * but this works with cleartext password auth only. We can also pipeline TLS
  * startup, but currently this works only with Neon hosts (not vanilla pg or
  * pgbouncer).
- * 
+ *
  * (2) SCRAM auth is deliberately CPU-intensive, and this is not appropriate
  * for a serverless environment. In case it is still used, however, we replace
  * the standard (synchronous) pg implementation with one that uses SubtleCrypto
@@ -54,7 +54,7 @@ class NeonClient extends Client {
 
     if (pipelineTLS) {
       // for a pipelined SSL connection, fake the SSL support message from the
-      // server (the server's actual 'S' response is ignored via the 
+      // server (the server's actual 'S' response is ignored via the
       // expectPreData argument to startTls in shims / net / index.ts)
 
       con.on('connect', () => con.stream.emit('data', 'S'));
@@ -170,4 +170,3 @@ export {
   defaults,
   types,
 } from 'pg';
-

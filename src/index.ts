@@ -75,8 +75,7 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
     }
 
     log('Warm-up ...\n\n');
-    const client = new Client(env.NEON_DB_URL);
-    await clientRunQuery(1, client, ctx, query);
+    await poolRunQuery(1, env.NEON_DB_URL, ctx, query);
 
     await sections('Neon/wss, no pipelining', async n => {
       const client = new Client(env.NEON_DB_URL);
