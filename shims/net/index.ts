@@ -176,7 +176,16 @@ export class Socket extends EventEmitter {
     this.connecting = true;
     if (connectListener) this.once('connect', connectListener);
 
-    const wsAddr = this.wsProxyAddrForHost(host, typeof port === 'string' ? parseInt(port, 10) : port);
+    let wsAddr: string;
+    try {
+      wsAddr = this.wsProxyAddrForHost(host, typeof port === 'string' ? parseInt(port, 10) : port);
+
+    } catch (err) {
+      this.emit('error', err);
+      this.emit('close');
+      return;
+    }
+
     this.ws = await new Promise<WebSocket>(async resolve => {
       try {
         // ordinary/browser path
@@ -230,7 +239,9 @@ export class Socket extends EventEmitter {
 
         } catch (err) {
           debug && log('fetch() with { Upgrade: "websocket" } failed');
-          throw new Error('All attempts to open a WebSocket to connect to the database failed. If using Node, please install the `ws` package (or simply use the `pg` package instead).');
+          this.emit('error', new Error('All attempts to open a WebSocket to connect to the database failed. If using Node, please install the `ws` package (or simply use the `pg` package instead).'));
+          this.emit('close');
+          return;
         }
       }
     });
@@ -240,6 +251,7 @@ export class Socket extends EventEmitter {
     this.ws.addEventListener('error', (err) => {
       debug && log('websocket error', err);
       this.emit('error', err);
+      this.emit('close');
     });
 
     this.ws.addEventListener('close', () => {
