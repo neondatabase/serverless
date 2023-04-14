@@ -99,7 +99,7 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
     });
 
     await sections('Neon/wss, pipelined connect using Pool.connect', async n => {
-      const pool = new Pool(env.NEON_DB_URL);
+      const pool = new Pool({ connectionString: env.NEON_DB_URL });
       const poolClient = await pool.connect();
       await timedRepeats(n, () => runQuery(poolClient, query));
       poolClient.release();

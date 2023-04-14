@@ -1,7 +1,6 @@
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { NeonConfig } from './neonConfig';
-import rewritePgConfig from '../shims/rewritePgConfig';
 
 /**
  * We export the pg library mostly unchanged, but we do make a few tweaks.
@@ -34,15 +33,19 @@ declare interface NeonClient {
 }
 
 class NeonClient extends Client {
-  constructor(config: any) {
-    super(rewritePgConfig(config));
-  }
 
   get neonConfig(): NeonConfig { return this.connection.stream; }
 
   connect(): Promise<void>;
   connect(callback: (err?: Error) => void): void;
   connect(callback?: (err?: Error) => void) {
+    if (this.ssl && this.neonConfig.useSecureWebSocket) {
+      console.warn(`SSL is enabled for both Postgres (e.g. ?sslmode=true in the connection string) and the WebSocket tunnel (useSecureWebSocket = true). Double encryption will increase latency and CPU usage. Please disable SSL on the Postgres connection.`);
+    }
+    if (this.host === 'localhost') {
+      console.warn(`The database host is 'localhost', which is the default host when none is set. If that's intentional, please ignore this warning. If not, perhaps an environment variable has not been set, or has not been passed to the library?`);
+    }
+
     const result = super.connect(callback as any) as void | Promise<void>;
 
     const pipelineTLS = this.neonConfig.pipelineTLS && this.ssl;
@@ -150,10 +153,6 @@ class NeonClient extends Client {
 
 class NeonPool extends Pool {
   Client = NeonClient;
-
-  constructor(config: any) {
-    super(rewritePgConfig(config));
-  }
 }
 
 export {

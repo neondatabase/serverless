@@ -97,7 +97,7 @@ To use experimental pure-JS encryption, set this to `false` and append `?sslmode
 
 To speed up connection times, the driver will pipeline the first three messages to the database (startup, authentication and first query) if `pipelineConnect` is set to `"password"`. Note that this will only work if you've configured cleartext password authentication for the relevant user and database. 
 
-The default is `"password"` for Neon hosts and `false` for others.
+The default is `"password"`. If your connection doesn't support password authentication, set it to `false` instead.
 
 ### `coalesceWrites: boolean`
 
@@ -113,7 +113,7 @@ If you're using any other certificate authority to secure Postgres connections, 
 
 Only when using experimental pure-JS encryption, the driver will pipeline the SSL request message and TLS Client Hello if `pipelineTLS` is set to `true`. Currently, this is only supported by Neon database hosts, and will fail when communicating with an ordinary Postgres or pgbouncer back-end.
 
-The default is `true` for Neon hosts, `false` for others.
+The default is `true`. For non-Neon hosts, set it to `false` instead.
 
 ## Development
 

@@ -56,71 +56,55 @@ export interface SocketDefaults {
 }
 
 export class Socket extends EventEmitter {
-  static addNeonProjectToPassword = false;  // this can only be set globally
-
-  static defaults: Record<'neon' | 'other', SocketDefaults> = {
-    neon: {
-      webSocketConstructor: undefined,
-      wsProxy: host => host + '/v2',
-      useSecureWebSocket: true,
-      coalesceWrites: true,
-      disableSNI: false,
-      pipelineConnect: 'password',
-      pipelineTLS: true,
-      rootCerts: letsEncryptRootCert as string,
-    },
-    other: {
-      webSocketConstructor: undefined,
-      wsProxy: undefined,
-      useSecureWebSocket: true,
-      coalesceWrites: true,
-      disableSNI: false,
-      pipelineConnect: false,
-      pipelineTLS: false,
-      rootCerts: letsEncryptRootCert as string,
-    },
+  static defaults: SocketDefaults = {
+    webSocketConstructor: undefined,
+    wsProxy: host => host + '/v2',
+    useSecureWebSocket: true,
+    coalesceWrites: true,
+    disableSNI: false,
+    pipelineConnect: 'password',
+    pipelineTLS: true,
+    rootCerts: letsEncryptRootCert as string,
   };
-
-  defaultsKey: keyof typeof Socket.defaults = 'other';  // default to using the 'other' defaults
 
   static webSocketConstructor: SocketDefaults['webSocketConstructor'];
   private _webSocketConstructor: typeof Socket.webSocketConstructor | undefined;
-  get webSocketConstructor() { return this._webSocketConstructor ?? Socket.webSocketConstructor ?? Socket.defaults[this.defaultsKey].webSocketConstructor; }
+  get webSocketConstructor() { return this._webSocketConstructor ?? Socket.webSocketConstructor ?? Socket.defaults.webSocketConstructor; }
   set webSocketConstructor(webSocketConstructor: typeof Socket.webSocketConstructor) { this._webSocketConstructor = webSocketConstructor; }
 
   static wsProxy: SocketDefaults['wsProxy'];
   private _wsProxy: typeof Socket.wsProxy | undefined;
-  get wsProxy() { return this._wsProxy ?? Socket.wsProxy ?? Socket.defaults[this.defaultsKey].wsProxy; }
+  get wsProxy() { return this._wsProxy ?? Socket.wsProxy ?? Socket.defaults.wsProxy; }
   set wsProxy(wsProxy: typeof Socket.wsProxy) { this._wsProxy = wsProxy; }
 
   static coalesceWrites: SocketDefaults['coalesceWrites'];
   private _coalesceWrites: typeof Socket.coalesceWrites | undefined;
-  get coalesceWrites() { return this._coalesceWrites ?? Socket.coalesceWrites ?? Socket.defaults[this.defaultsKey].coalesceWrites; }
+  get coalesceWrites() { return this._coalesceWrites ?? Socket.coalesceWrites ?? Socket.defaults.coalesceWrites; }
   set coalesceWrites(coalesceWrites: typeof Socket.coalesceWrites) { this._coalesceWrites = coalesceWrites; }
 
   static useSecureWebSocket: SocketDefaults['useSecureWebSocket'];
   private _useSecureWebSocket: typeof Socket.useSecureWebSocket | undefined;
-  get useSecureWebSocket() { return this._useSecureWebSocket ?? Socket.useSecureWebSocket ?? Socket.defaults[this.defaultsKey].useSecureWebSocket; }
+  get useSecureWebSocket() { return this._useSecureWebSocket ?? Socket.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket; }
   set useSecureWebSocket(useSecureWebSocket: typeof Socket.useSecureWebSocket) { this._useSecureWebSocket = useSecureWebSocket; }
 
   static disableSNI: SocketDefaults['disableSNI'];
   private _disableSNI: typeof Socket.disableSNI | undefined;
-  get disableSNI() { return this._disableSNI ?? Socket.disableSNI ?? Socket.defaults[this.defaultsKey].disableSNI; }
+  get disableSNI() { return this._disableSNI ?? Socket.disableSNI ?? Socket.defaults.disableSNI; }
   set disableSNI(disableSNI: typeof Socket.disableSNI) { this._disableSNI = disableSNI; }
 
   static pipelineConnect: SocketDefaults['pipelineConnect'];
   private _pipelineConnect: typeof Socket.pipelineConnect | undefined;
-  get pipelineConnect() { return this._pipelineConnect ?? Socket.pipelineConnect ?? Socket.defaults[this.defaultsKey].pipelineConnect; }
+  get pipelineConnect() { return this._pipelineConnect ?? Socket.pipelineConnect ?? Socket.defaults.pipelineConnect; }
   set pipelineConnect(pipelineConnect: typeof Socket.pipelineConnect) { this._pipelineConnect = pipelineConnect; }
 
   static pipelineTLS: SocketDefaults['pipelineTLS'];
   private _pipelineTLS: typeof Socket.pipelineTLS | undefined;
-  get pipelineTLS() { return this._pipelineTLS ?? Socket.pipelineTLS ?? Socket.defaults[this.defaultsKey].pipelineTLS; }
+  get pipelineTLS() { return this._pipelineTLS ?? Socket.pipelineTLS ?? Socket.defaults.pipelineTLS; }
   set pipelineTLS(pipelineTLS: typeof Socket.pipelineTLS) { this._pipelineTLS = pipelineTLS; }
 
   static rootCerts: SocketDefaults['rootCerts'];
   private _rootCerts: typeof Socket.rootCerts | undefined;
-  get rootCerts() { return this._rootCerts ?? Socket.rootCerts ?? Socket.defaults[this.defaultsKey].rootCerts; }
+  get rootCerts() { return this._rootCerts ?? Socket.rootCerts ?? Socket.defaults.rootCerts; }
   set rootCerts(rootCerts: typeof Socket.rootCerts) { this._rootCerts = rootCerts; }
 
 
@@ -170,8 +154,6 @@ export class Socket extends EventEmitter {
   }
 
   async connect(port: number | string, host: string, connectListener?: () => void) {
-    // note: if no host was given, pg sets it to "localhost"
-    if (/[.]neon[.](tech|build)(:|$)/.test(host)) this.defaultsKey = 'neon';  // switch to Neon defaults if connecting to a Neon host
 
     this.connecting = true;
     if (connectListener) this.once('connect', connectListener);
