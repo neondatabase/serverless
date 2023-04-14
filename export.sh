@@ -44,13 +44,6 @@ export interface ClientBase {
   neonConfig: NeonConfig;
 }
 
-export const neonConfig: NeonConfig & { 
-  /**
-   * On Neon, disabling SNI and including the Neon project name in the password
-   * (per this option) avoids CPU-intensive SCRAM authentication, but this is
-   * only relevant for earlier iterations of Neon WebSocket support.
-   * Default: `false`.
-   */
-  addNeonProjectToPassword: boolean;
-};
+export const neonConfig: NeonConfig
+
 ' >> dist/npm/index.d.ts
