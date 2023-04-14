@@ -26,8 +26,29 @@ cp README.md dist/npm/
 
 # add pg types
 
-curl --silent https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/pg/index.d.ts \
-  > dist/npm/index.d.ts
+echo '
+// shim additional type dependencies
+declare class EventEmitter {}
+declare const events: { EventEmitter }
+declare namespace stream {
+  type Duplex = any;
+  type Readable = any;
+  type Writable = any;
+}
+declare const pgTypes: any;
+type NoticeMessage = any;
+type ConnectionOptions = any;
+declare const Pg: never;
+' > dist/npm/index.d.ts
+
+cat node_modules/@types/pg/index.d.ts \
+  >> dist/npm/index.d.ts
+
+# delete external imports/exports
+
+sed -i '' '/^import/d' dist/npm/index.d.ts
+sed -i '' '/^export { DatabaseError }/d' dist/npm/index.d.ts
+
 
 # supplement pg types with Neon config
 

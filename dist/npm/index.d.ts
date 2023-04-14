@@ -1,3 +1,17 @@
+
+// shim additional type dependencies
+declare class EventEmitter {}
+declare const events: { EventEmitter }
+declare namespace stream {
+  type Duplex = any;
+  type Readable = any;
+  type Writable = any;
+}
+declare const pgTypes: any;
+type NoticeMessage = any;
+type ConnectionOptions = any;
+declare const Pg: never;
+
 // Type definitions for pg 8.6
 // Project: https://github.com/brianc/node-postgres
 // Definitions by: Phips Peter <https://github.com/pspeter3>, Ravi van Rooijen <https://github.com/HoldYourWaffle>
@@ -6,12 +20,7 @@
 
 /// <reference types="node" />
 
-import events = require('events');
-import stream = require('stream');
-import pgTypes = require('pg-types');
-import { NoticeMessage } from 'pg-protocol/dist/messages';
 
-import { ConnectionOptions } from 'tls';
 
 export interface ClientConfig {
     user?: string | undefined;
@@ -293,11 +302,9 @@ export const types: typeof pgTypes;
 
 export const defaults: Defaults & ClientConfig;
 
-import * as Pg from '.';
 
 export const native: typeof Pg | null;
 
-export { DatabaseError } from 'pg-protocol';
 
 
 // @neondatabase/serverless driver configuration options follow
@@ -376,13 +383,6 @@ export interface ClientBase {
   neonConfig: NeonConfig;
 }
 
-export const neonConfig: NeonConfig & { 
-  /**
-   * On Neon, disabling SNI and including the Neon project name in the password
-   * (per this option) avoids CPU-intensive SCRAM authentication, but this is
-   * only relevant for earlier iterations of Neon WebSocket support.
-   * Default: `false`.
-   */
-  addNeonProjectToPassword: boolean;
-};
+export const neonConfig: NeonConfig
+
 
