@@ -27,44 +27,50 @@ cp README.md dist/npm/
 # add pg types
 
 echo '
-// shim additional type dependencies
-declare class EventEmitter {}
-declare const events: { EventEmitter }
-declare namespace stream {
-  type Duplex = any;
-  type Readable = any;
-  type Writable = any;
-}
-declare const pgTypes: any;
-type NoticeMessage = any;
-type ConnectionOptions = any;
-declare const Pg: never;
+// @neondatabase/serverless driver types, mimicking pg
+
+import { ClientBase as PgClientBase } from "pg";
+export { DatabaseError } from "pg-protocol";
+export {
+  ClientConfig,
+  ConnectionConfig,
+  Defaults,
+  PoolConfig,
+  QueryConfig,
+  CustomTypesConfig,
+  Submittable,
+  QueryArrayConfig,
+  FieldDef,
+  QueryResultBase,
+  QueryResultRow,
+  QueryResult,
+  QueryArrayResult,
+  Notification,
+  ResultBuilder,
+  QueryParse,
+  BindConfig,
+  ExecuteConfig,
+  MessageConfig,
+  Connection,
+  Pool,
+  Client,
+  PoolClient,
+  Query,
+  Events,
+  types,
+  defaults,
+  native,
+} from "pg";
 ' > dist/npm/index.d.ts
 
-cat node_modules/@types/pg/index.d.ts \
-  >> dist/npm/index.d.ts
-
-# delete external imports/exports
-
-sed -i '' '/^import/d' dist/npm/index.d.ts
-sed -i '' '/^export { DatabaseError }/d' dist/npm/index.d.ts
-
-
 # supplement pg types with Neon config
-
-echo '
-
-// @neondatabase/serverless driver configuration options follow
-' >> dist/npm/index.d.ts
 
 cat export/neonConfig.ts >> dist/npm/index.d.ts
 
 echo '
-
-export interface ClientBase {
+export interface ClientBase extends PgClientBase {
   neonConfig: NeonConfig;
 }
 
-export const neonConfig: NeonConfig
-
+export const neonConfig: NeonConfig;
 ' >> dist/npm/index.d.ts

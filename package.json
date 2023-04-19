@@ -6,6 +6,7 @@
   "author": "George MacKerron",
   "license": "MIT",
   "dependencies": {
+    "@types/events": "^3.0.0",
     "assert": "file:shims/assert",
     "buffer": "^6.0.3",
     "crypto": "file:shims/crypto",

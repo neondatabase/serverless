@@ -34,6 +34,21 @@ For a complete usage example on Cloudflare Workers, see https://github.com/neond
 * **Cloudflare**: brief queries such as the one shown above can generally be run on Cloudflare’s free plan. Queries with larger result sets may exceed the 10ms CPU time available to Workers on the free plan: in that case you’ll see a Cloudflare error page and will need to upgrade your Cloudflare service.
 
 
+## Run on Node
+
+If you're running on Node, or anywhere else where a TCP connection can be made via `net.Socket`, you could just use [node-postgres](https://node-postgres.com/).
+
+Alternatively, you can use this library by providing a WebSocket constructor, like so:
+
+```javascript
+import ws from 'ws';
+import { neonConfig, Pool } from '@neondatabase/serverless';
+neonConfig.webSocketConstructor = ws; 
+
+const pool = new Pool({ connectionString: 'postgres://...' });
+```
+
+
 ## Run your own WebSocket proxy
 
 The package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket.
@@ -74,6 +89,18 @@ MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw ...
 // override default options on an individual client
 const client = new Client(env.DATABASE_URL);
 client.neonConfig.wsProxy = (host, port) => `my-other-wsproxy.example.com/v1?address=${host}:${port}`;
+```
+
+### `webSocketContructor: typeof WebSocket | undefined`
+
+Set this parameter if you're using the driver in an environment where `globalThis.WebSocket` is not defined, such as Node.js.
+
+For example:
+
+```javascript
+import ws from 'ws';
+import { neonConfig } from '@neondatabase/serverless';
+neonConfig.webSocketConstructor = ws; 
 ```
 
 ### `wsProxy: string | (host: string, port: number | string) => string`

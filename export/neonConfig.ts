@@ -1,17 +1,10 @@
-declare class CustomWebSocket {  // just enough to be fairly sure it's a WebSocket ...
-  constructor(url: string | URL, protocols?: string | string[]);
-  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void;
-  close(code?: number, reason?: string): void;
-  binaryType: string;
-}
-
 export interface NeonConfig {
   /**
    * Set `webSocketConstructor` to the constructor for a custom WebSocket
    * implementation. You might use this if, for example, you're using Node.js
    * in a WebContainer and have imported a third-party WebSocket library.
    */
-  webSocketConstructor: any; //typeof CustomWebSocket | undefined;
+  webSocketConstructor: any;
 
   /**
    * Set `wsProxy` to use your own WebSocket proxy server. 
