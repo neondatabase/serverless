@@ -110,16 +110,9 @@ export class Socket extends EventEmitter {
 
   wsProxyAddrForHost(host: string, port: number) {
     const wsProxy = this.wsProxy;
-
     if (wsProxy === undefined) {
-      const baseErrMsg = `No WebSocket proxy is configured on the Neon serverless driver for database host "${host}". `;
-      const localhostErrMsg = `That's the fallback host when none is specified, so perhaps an environment variable (such as DATABASE_URL) is missing? `;
-      const configErrMsg = `If "${host}" is the host you expected, then you'll need to set the 'wsProxy' option on the driver (see: https://github.com/neondatabase/serverless#run-your-own-websocket-proxy).`
-      const errMsg = baseErrMsg + (host === 'localhost' ? localhostErrMsg : '') + configErrMsg;
-
-      throw new Error(errMsg);
+      throw new Error(`No WebSocket proxy is configured. Please refer to https://github.com/neondatabase/serverless#run-your-own-websocket-proxy`);
     }
-
     return typeof wsProxy === 'function' ? wsProxy(host, port) : `${wsProxy}?address=${host}:${port}`;
   }
 
@@ -154,7 +147,6 @@ export class Socket extends EventEmitter {
   }
 
   async connect(port: number | string, host: string, connectListener?: () => void) {
-
     this.connecting = true;
     if (connectListener) this.once('connect', connectListener);
 
@@ -185,18 +177,9 @@ export class Socket extends EventEmitter {
 
           } catch (err) {
             debug && log('new WebSocket() failed');
-            try {
-              // @ts-ignore -- second, how about a Vercel Edge Functions __unstable_WebSocket (as at early 2023?)
-              ws = new __unstable_WebSocket(wsAddrFull);
 
-            } catch (err) {
-              debug && log('new __unstable_WebSocket() failed');
-
-              // third, perhaps we're on Node.js, and the `ws` library is available?
-              // note: we make the package name 'dynamic' here to ward off nosy bundlers (e.g. Next.js) 
-              const { default: NodeWebSocket } = await import(String.fromCharCode(119) + String.fromCharCode(115));
-              ws = new NodeWebSocket(wsAddrFull) as any;
-            }
+            // @ts-ignore -- second, how about a Vercel Edge Functions __unstable_WebSocket (as at early 2023?)
+            ws = new __unstable_WebSocket(wsAddrFull);
           }
         }
 
@@ -206,7 +189,7 @@ export class Socket extends EventEmitter {
         });
 
       } catch (err) {
-        debug && log('import("ws") failed');
+        debug && log('new __unstable_WebSocket() failed');
         try {
           // fourth and finally, let's try the Cloudflare Workers method ...
           const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
@@ -221,7 +204,7 @@ export class Socket extends EventEmitter {
 
         } catch (err) {
           debug && log('fetch() with { Upgrade: "websocket" } failed');
-          this.emit('error', new Error('All attempts to open a WebSocket to connect to the database failed. If using Node, please install the `ws` package (or simply use the `pg` package instead).'));
+          this.emit('error', new Error('All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless#run-on-node'));
           this.emit('close');
           return;
         }
