@@ -29,7 +29,7 @@
     "Cloudflare",
     "Vercel"
   ],
-  "devDependencies": {
+  "dependencies": {
     "@types/pg": "^8.6.6"
   }
 }
