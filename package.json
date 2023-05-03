@@ -23,6 +23,7 @@
     "string_decoder": "file:shims/string_decoder",
     "subtls": "^0.1.5",
     "tls": "file:shims/tls",
+    "undici": "^5.22.0",
     "url": "file:shims/url",
     "util": "file:shims/util",
     "ws": "^8.12.1"
