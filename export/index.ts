@@ -1,3 +1,5 @@
+export { default } from './httpQuery';
+
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { NeonConfig } from './neonConfig';

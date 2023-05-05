@@ -31,7 +31,16 @@ const ctx = {
   passThroughOnException() { },
 };
 
+import postgres from '../export';
+
 export async function latencies(env: Env, subtls: boolean, log = (s: string) => { }): Promise<void> {
+
+  const sql = postgres(process.env.LOCAL_DB_URL!);
+  const name = 'HELEN';
+  const result = await sql`SELECT * FROM "actor" WHERE "first_name" = ${name}`;
+  return log(result);
+
+
   const queryRepeats = [1, 3];
   const connectRepeats = 15;
 
