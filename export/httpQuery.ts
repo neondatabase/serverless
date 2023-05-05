@@ -6,7 +6,7 @@ export default function sqlTemplate(connectionString: string) {
   const db = parse(connectionString);
   const { protocol, username, password, host, pathname } = db;
 
-  if ((protocol !== 'postgres' && protocol !== 'postgresql') || !host || !username || !password || !pathname) {
+  if ((protocol !== 'postgres:' && protocol !== 'postgresql:') || !host || !username || !password || !pathname) {
     throw new Error('Database connection string format should be: postgres://user:password@host.tld/dbname?option=value');
   }
 
@@ -14,23 +14,27 @@ export default function sqlTemplate(connectionString: string) {
     let query = '';
     for (let i = 0; i < strings.length; i++) {
       query += strings[i];
-      if (i < params.length) query += `$${i + 1}`;
 
-      const value = params[i];
-      if (value instanceof Date) {
-        query += `::timestamptz`;
-        params[i] = value.toISOString();
+      if (i < params.length) {
+        query += `$${i + 1}`;
 
-      } else {
-        const type = typeof value;
-        if (type !== 'string' && type !== 'number' && type !== 'boolean' && value !== null) {
-          throw new Error(`Invalid SQL parameter type for object: ${value}`);
+        const param = params[i];
+        if (param instanceof Date) {
+          query += `::timestamptz`;
+          params[i] = param.toISOString();
+
+        } else {
+          const type = typeof param;
+          if (type !== 'string' && type !== 'number' && type !== 'boolean' && param !== null) {
+            throw new Error(`Invalid SQL parameter type for param: ${param}`);
+          }
         }
       }
     }
 
     try {
       const url = `https://${host}/sql`;
+      console.log(url);
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'X-Neon-Database': connectionString },
