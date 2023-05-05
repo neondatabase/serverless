@@ -35,10 +35,9 @@ import postgres from '../export';
 
 export async function latencies(env: Env, subtls: boolean, log = (s: string) => { }): Promise<void> {
 
-  log(process.env.LOCAL_DB_URL!);
   const sql = postgres(process.env.LOCAL_DB_URL!);
-  const name = 'HELEN';
-  const result = await sql`SELECT * FROM "actor" WHERE "first_name" = ${name}`;
+  const name = 'neon';
+  const result = await sql`SELECT ${name} as param`;
   return log(result);
 
 

@@ -34,10 +34,9 @@ export default function sqlTemplate(connectionString: string) {
 
     try {
       const url = `https://${host}/sql`;
-      console.log(url);
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'X-Neon-Database': connectionString },
+        headers: { 'X-Neon-ConnectionString': connectionString },
         body: JSON.stringify({ query, params }),
       });
 
@@ -47,9 +46,8 @@ export default function sqlTemplate(connectionString: string) {
       } else {
         const { status } = response;
         if (status == 400) {
-          const code = response.headers.get('X-Neon-Postgres-Error-Code') ?? 'n/a';
-          const { message } = await response.json() as any;
-          throw new Error(`Database error (Postgres code ${code}): ${message}`);
+          let message = await response.text() as any;
+          throw new Error(`Database error: ${message}`);
 
         } else {
           throw new Error(`Database error (HTTP status ${status})`);
