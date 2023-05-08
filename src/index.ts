@@ -35,10 +35,15 @@ import postgres from '../export';
 
 export async function latencies(env: Env, subtls: boolean, log = (s: string) => { }): Promise<void> {
 
+  // const pool = new Pool({ connectionString: env.NEON_DB_URL });
+  // const { rows } = await pool.query('SELECT * FROM pokemon');
+  // await pool.end();
+  // return log(JSON.stringify(rows));
+
   const sql = postgres(process.env.LOCAL_DB_URL!);
-  const name = 'neon';
-  const result = await sql`SELECT ${name} as param`;
-  return log(result);
+  const name = 'neon', number = 2, nowt = null, bool = true;
+  const result = await sql`SELECT ${name} AS name, ${number} AS number, ${nowt} AS nowt, ${bool} AS bool, now() AS now, now()::timestamp AS now_ts, now()::date AS now_date`;
+  return console.log(result);
 
 
   const queryRepeats = [1, 3];

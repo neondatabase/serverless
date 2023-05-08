@@ -10,24 +10,35 @@ export default function sqlTemplate(connectionString: string) {
     throw new Error('Database connection string format should be: postgres://user:password@host.tld/dbname?option=value');
   }
 
-  return async function (strings: TemplateStringsArray, ...params: SQLParam[]): Promise<any> {
+  return async function (strings: TemplateStringsArray, ...inParams: SQLParam[]): Promise<any> {
     let query = '';
+    let outParams = [];
+
     for (let i = 0; i < strings.length; i++) {
       query += strings[i];
 
-      if (i < params.length) {
-        query += `$${i + 1}`;
-
-        const param = params[i];
-        if (param instanceof Date) {
-          query += `::timestamptz`;
-          params[i] = param.toISOString();
+      if (i < inParams.length) {
+        const inParam = inParams[i];
+        if (inParam === null) {
+          query += 'NULL';
 
         } else {
-          const type = typeof param;
-          if (type !== 'string' && type !== 'number' && type !== 'boolean' && param !== null) {
-            throw new Error(`Invalid SQL parameter type for param: ${param}`);
-          }
+          const inParamType = typeof inParam;
+          const inParamDate = inParam instanceof Date;
+
+          const cast =
+            inParamType === 'string' ? '' :  // text is the default
+              inParamType === 'number' ? '::float8' :
+                inParamType === 'boolean' ? '::boolean' :
+                  inParamDate ? '::timestamptz' :
+                    null;
+
+          if (cast === null) throw new Error(`Invalid SQL parameter type for param: ${inParam}`);
+
+          const outParam = inParamDate ? inParam.toISOString() : inParam;
+          outParams.push(outParam);
+
+          query += '$' + outParams.length + cast;
         }
       }
     }
@@ -37,7 +48,7 @@ export default function sqlTemplate(connectionString: string) {
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'X-Neon-ConnectionString': connectionString },
-        body: JSON.stringify({ query, params }),
+        body: JSON.stringify({ query, params: outParams }),
       });
 
       if (response.ok) {
