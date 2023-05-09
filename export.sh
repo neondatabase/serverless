@@ -10,6 +10,7 @@ fi
 
 npx esbuild export/index.ts \
   --bundle \
+  --keep-names \
   --external:ws \
   --inject:shims/shims.js \
   --loader:.pem=text \

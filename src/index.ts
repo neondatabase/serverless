@@ -41,8 +41,19 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
   // return log(JSON.stringify(rows));
 
   const sql = postgres(process.env.LOCAL_DB_URL!);
-  const name = 'neon', number = 2, nowt = null, bool = true;
-  const result = await sql`SELECT ${name} AS name, ${number} AS number, ${nowt} AS nowt, ${bool} AS bool, now() AS now, now()::timestamp AS now_ts, now()::date AS now_date`;
+  const name = 'neon', number = 2, nowt = null, bool = true, t = new Date();
+  const result = await sql`
+    SELECTx
+      ${name} AS name, 
+      ${number} AS number, 
+      ${nowt} AS nowt, 
+      ${bool} AS bool, 
+      ${t} AS then,
+      now() AS now_timestamptz,
+      now()::timestamp AS now_timestamp,
+      now()::date AS now_date,
+      now()::time AS now_time
+    `;
   return console.log(result);
 
 

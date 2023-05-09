@@ -2,6 +2,11 @@ import { parse } from '../shims/url';
 
 type SQLParam = string | number | boolean | Date | null;
 
+export class NeonDbError extends Error {
+  code: string | null = null;
+  name = 'NeonDbError';
+}
+
 export default function sqlTemplate(connectionString: string) {
   const db = parse(connectionString);
   const { protocol, username, password, host, pathname } = db;
@@ -23,14 +28,14 @@ export default function sqlTemplate(connectionString: string) {
           query += 'NULL';
 
         } else {
-          const inParamType = typeof inParam;
           const inParamDate = inParam instanceof Date;
+          const inParamType = typeof inParam;
 
           const cast =
-            inParamType === 'string' ? '' :  // text is the default
-              inParamType === 'number' ? '::float8' :
-                inParamType === 'boolean' ? '::boolean' :
-                  inParamDate ? '::timestamptz' :
+            inParamDate ? '::text::timestamptz' :
+              inParamType === 'string' ? '::text' :
+                inParamType === 'number' ? '::float8' :
+                  inParamType === 'boolean' ? '::boolean' :
                     null;
 
           if (cast === null) throw new Error(`Invalid SQL parameter type for param: ${inParam}`);
@@ -43,30 +48,36 @@ export default function sqlTemplate(connectionString: string) {
       }
     }
 
+    console.log(query, outParams);
+
+    let response;
     try {
       const url = `https://${host}/sql`;
-      const response = await fetch(url, {
+      response = await fetch(url, {
         method: 'POST',
         headers: { 'X-Neon-ConnectionString': connectionString },
         body: JSON.stringify({ query, params: outParams }),
       });
 
-      if (response.ok) {
-        return response.json();
+    } catch (err: any) {
+      throw new NeonDbError(`Error connecting to database: ${err.message}`)
+    }
+
+    if (response.ok) {
+      return response.json();
+
+    } else {
+      const { status } = response;
+      if (status == 400) {
+        const { message, code } = await response.json() as any;
+        const dbError = new NeonDbError(message);
+        dbError.code = code;
+        throw dbError;
 
       } else {
-        const { status } = response;
-        if (status == 400) {
-          let message = await response.text() as any;
-          throw new Error(`Database error: ${message}`);
-
-        } else {
-          throw new Error(`Database error (HTTP status ${status})`);
-        }
+        const text = await response.text();
+        throw new NeonDbError(`Database error (HTTP status ${status}): ${text}`);
       }
-
-    } catch (err: any) {
-      throw new Error(`Error connecting to database: ${err.message}`)
     }
   }
 }
