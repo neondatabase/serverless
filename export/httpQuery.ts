@@ -48,8 +48,6 @@ export default function sqlTemplate(connectionString: string) {
       }
     }
 
-    console.log(query, outParams);
-
     let response;
     try {
       const url = `https://${host}/sql`;
