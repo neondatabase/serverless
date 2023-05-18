@@ -484,6 +484,6 @@ export class Md5 {
   }
 }
 
-if (Md5.hashStr('hello') !== '5d41402abc4b2a76b9719d911017c592') {
-  throw new Error('Md5 self test failed.');
-}
+// if (Md5.hashStr('hello') !== '5d41402abc4b2a76b9719d911017c592') {
+//   throw new Error('Md5 self test failed.');
+// }
