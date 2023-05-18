@@ -1,4 +1,5 @@
 import { sha256 } from './sha256';
+import { Md5 } from './md5';
 
 export function randomBytes(length: number) {
   return crypto.getRandomValues(Buffer.alloc(length));
@@ -6,11 +7,10 @@ export function randomBytes(length: number) {
 
 // hash/hmac notes:
 // (1) we can't use crypto.subtle here because the returns must be synchronous
-// (2) these are very limited implementations: SHA-256 only, and you can only call `update` once!
+// (2) these are very limited implementations: SHA-256/MD5 only, and you can only call `update` once!
 
 export function createHash(type: 'sha256') {
-  if (type !== 'sha256') throw new Error('Only sha256 is supported');
-  return {
+  if (type === 'sha256') return {
     update: function (data: string | Buffer | Uint8Array) {
       return {
         digest: function () {
@@ -19,10 +19,20 @@ export function createHash(type: 'sha256') {
       }
     }
   }
+  if (type === 'md5') return {
+    update: function (data: string | Buffer | Uint8Array) {
+      return {
+        digest: function () {
+          return typeof data === 'string' ? Md5.hashStr(data) : Md5.hashByteArray(data);
+        }
+      }
+    }
+  }
+  throw new Error(`Hash type '${type}' not supported`);
 }
 
 export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
-  if (type !== 'sha256') throw new Error('Only sha256 is supported');
+  if (type !== 'sha256') throw new Error(`Only sha256 is supported (requested: '${type}')`);
   return {
     update: function (data: string | Buffer | Uint8Array) {
       return {
