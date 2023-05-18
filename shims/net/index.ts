@@ -63,7 +63,7 @@ export class Socket extends EventEmitter {
     coalesceWrites: true,
     disableSNI: false,
     pipelineConnect: 'password',
-    pipelineTLS: true,
+    pipelineTLS: false,
     rootCerts: letsEncryptRootCert as string,
   };
 

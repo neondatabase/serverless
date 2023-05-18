@@ -43,32 +43,32 @@ export interface NeonConfig {
   webSocketConstructor: any;
 
   /**
-   * Set `wsProxy` to use your own WebSocket proxy server. 
-   * Provide either the proxy server’s domain name, or a function that takes
-   * the database host address and port and returns the proxy server URL
-   * (without protocol).
-   * Example: (host, port) => `myproxy.example.net?address=${host}:${port}`
-   * Default: Neon’s proxy for Neon hosts, `undefined` otherwise.
+   * Provide either the proxy server’s domain name and path, or a function 
+   * that takes the database host address and port and returns the proxy server
+   * URL (without protocol).
+   * Example 1: (host, port) => `myproxy.example.net/v1?address=${host}:${port}`
+   * Example 2: 'myproxy.example.net/v1'
+   * Default: (host, port) => host + (port ? `:${port}` : '') + '/v2'
   */
   wsProxy: string | ((host: string, port: number | string) => string) | undefined;
 
   /**
    * Use a secure (`wss:`) connection to the WebSocket proxy. 
-   * Default: `true`.
+   * Default: `true`
    */
   useSecureWebSocket: boolean;
 
   /**
    * Pipelines the startup message, cleartext password message and first query
    * when set to `"password"`. This works only for cleartext password auth.
-   * Default: `"password"` for Neon hosts, `false` otherwise.
+   * Default: `"password"`
    */
   pipelineConnect: "password" | false;
 
   /**
-   * Pipeline pg SSL request and TLS handshake when `useSecureWebSocket` is
-   * `false`. Currently compatible only with Neon hosts.
-   * Default: `true` for Neon hosts, `false` otherwise.
+   * Pipeline pg SSL request and TLS handshake when using JS TLS encryption.
+   * Currently compatible only with Neon hosts.
+   * Default: `false`
    */
   pipelineTLS: boolean;
 
@@ -76,13 +76,13 @@ export interface NeonConfig {
    * Set `rootCerts` to a string comprising one or more PEM files. These are
    * the trusted root certificates for a TLS connection to Postgres when
    * `useSecureWebSocket` is `false`.
-   * Default: the ISRG Root X1 certificate used by Let’s Encrypt.
+   * Default: the ISRG Root X1 certificate used by Let’s Encrypt
    */
   rootCerts: string;
 
   /**
    * Batch multiple network writes per run-loop into one WebSocket message.
-   * Default: `true`.
+   * Default: `true`
    */
   coalesceWrites: boolean;
 
@@ -92,7 +92,7 @@ export interface NeonConfig {
    * Neon project name in the password avoids CPU-intensive SCRAM
    * authentication, but this is only relevant for earlier iterations of Neon 
    * WebSocket support.
-   * Default: `false`.
+   * Default: `false`
    */
   disableSNI: boolean;
 }
