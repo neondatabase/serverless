@@ -4,7 +4,7 @@ export interface Query {
 }
 
 export const queries: Query[] = [{
-  sql: 'SELECT * FROM employees LIMIT 10',
+  sql: 'SELECT * FROM actor LIMIT 10',
   test: (rows) => rows.length > 1 && typeof rows[0].first_name === 'string',
 },
 {

@@ -40,21 +40,21 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
   // await pool.end();
   // return log(JSON.stringify(rows));
 
-  const sql = postgres(process.env.LOCAL_DB_URL!);
-  const name = 'neon', number = 2, nowt = null, bool = true, t = new Date();
-  const result = await sql`
-    SELECTx
-      ${name} AS name, 
-      ${number} AS number, 
-      ${nowt} AS nowt, 
-      ${bool} AS bool, 
-      ${t} AS then,
-      now() AS now_timestamptz,
-      now()::timestamp AS now_timestamp,
-      now()::date AS now_date,
-      now()::time AS now_time
-    `;
-  return console.log(result);
+  // const sql = postgres(process.env.LOCAL_DB_URL!);
+  // const name = 'neon', number = 2, nowt = null, bool = true, t = new Date();
+  // const result = await sql`
+  //   SELECT
+  //     ${name} AS name, 
+  //     ${number} AS number, 
+  //     ${nowt} AS nowt, 
+  //     ${bool} AS bool, 
+  //     ${t} AS then,
+  //     now() AS now_timestamptz,
+  //     now()::timestamp AS now_timestamp,
+  //     now()::date AS now_date,
+  //     now()::time AS now_time
+  //   `;
+  // return console.log(result);
 
 
   const queryRepeats = [1, 3];

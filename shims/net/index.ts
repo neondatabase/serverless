@@ -58,7 +58,7 @@ export interface SocketDefaults {
 export class Socket extends EventEmitter {
   static defaults: SocketDefaults = {
     webSocketConstructor: undefined,
-    wsProxy: host => host + '/v2',
+    wsProxy: (host, port) => host + (port ? `:${port}` : '') + '/v2',
     useSecureWebSocket: true,
     coalesceWrites: true,
     disableSNI: false,
@@ -116,6 +116,11 @@ export class Socket extends EventEmitter {
     return typeof wsProxy === 'function' ? wsProxy(host, port) : `${wsProxy}?address=${host}:${port}`;
   }
 
+  written = false;
+  reallyConnected = false;
+  port?: number | string;
+  host?: string;
+
   connecting = false;
   pending = true;
   writable = true;
@@ -147,12 +152,25 @@ export class Socket extends EventEmitter {
   }
 
   async connect(port: number | string, host: string, connectListener?: () => void) {
-    this.connecting = true;
+    this.port = port;
+    this.host = host;
     if (connectListener) this.once('connect', connectListener);
 
+    process.nextTick(() => {
+      this.connecting = false;
+      this.pending = false;
+      this.emit('connect');
+      this.emit('ready');
+    })
+
+    return this;
+  }
+
+  async reallyConnect(data: Uint8Array) {
+    const { port, host } = this;
     let wsAddr: string;
     try {
-      wsAddr = this.wsProxyAddrForHost(host, typeof port === 'string' ? parseInt(port, 10) : port);
+      wsAddr = this.wsProxyAddrForHost(host!, typeof port === 'string' ? parseInt(port, 10) : port!);
 
     } catch (err) {
       this.emit('error', err);
@@ -164,7 +182,7 @@ export class Socket extends EventEmitter {
       try {
         // ordinary/browser path
         const wsProtocol = this.useSecureWebSocket ? 'wss:' : 'ws:';
-        const wsAddrFull = wsProtocol + '//' + wsAddr;
+        const wsAddrFull = wsProtocol + '//' + wsAddr + '?' + Buffer.from(data).toString('base64');
 
         let ws: WebSocket;
         if (this.webSocketConstructor !== undefined) {
@@ -234,10 +252,13 @@ export class Socket extends EventEmitter {
     });
 
     debug && log('socket ready');
-    this.connecting = false;
-    this.pending = false;
-    this.emit('connect');
-    this.emit('ready');
+    // this.connecting = false;
+    // this.pending = false;
+    // this.emit('connect');
+    // this.emit('ready');
+
+    this.reallyConnected = true;
+    this.emit('reallyConnect');
 
     return this;
   }
@@ -292,14 +313,40 @@ export class Socket extends EventEmitter {
 
   rawWrite(data: Uint8Array) {
     if (!this.coalesceWrites) {
-      this.ws!.send(data);
+
+      if (this.written) {
+        if (this.reallyConnected) {
+          this.ws!.send(data);
+
+        } else {
+          this.once('reallyConnect', () => this.rawWrite(data));
+        }
+
+      } else {
+        this.reallyConnect(data);
+        this.written = true;
+      }
+
+      // this.ws!.send(data);
       return;
     }
 
     if (this.writeBuffer === undefined) {
       this.writeBuffer = data;
       setTimeout(() => {
-        this.ws!.send(this.writeBuffer!);
+
+        if (this.written) {
+          if (this.reallyConnected) {
+            this.ws!.send(this.writeBuffer!);
+
+          } else {
+            this.once('reallyConnect', () => this.rawWrite(this.writeBuffer as Uint8Array));
+          }
+
+        } else {
+          this.reallyConnect(this.writeBuffer!);
+          this.written = true;
+        }
         this.writeBuffer = undefined;
       }, 0);
 
