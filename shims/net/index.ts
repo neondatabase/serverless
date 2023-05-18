@@ -7,7 +7,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { startTls, TrustedCert, ReadQueue } from 'subtls';
+import { startTls, TrustedCert, WebSocketReadQueue } from 'subtls';
 
 // @ts-ignore - esbuild knows how to deal with this
 import letsEncryptRootCert from './isrgrootx1.pem';
@@ -247,7 +247,7 @@ export class Socket extends EventEmitter {
     this.tlsState = TlsState.Handshake;
 
     const rootCerts = TrustedCert.fromPEM(letsEncryptRootCert);
-    const readQueue = new ReadQueue(this.ws!);
+    const readQueue = new WebSocketReadQueue(this.ws!);
     const networkRead = readQueue.read.bind(readQueue);
     const networkWrite = this.rawWrite.bind(this);
 
