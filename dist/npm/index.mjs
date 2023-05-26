@@ -1,6 +1,6 @@
 import mod from "./index.js";
 
-export default mod;
+export default mod["default"];
 export const Client = mod.Client;
 export const ClientBase = mod.ClientBase;
 export const Connection = mod.Connection;

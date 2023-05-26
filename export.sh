@@ -10,6 +10,7 @@ fi
 
 npx esbuild export/index.ts \
   --bundle \
+  --keep-names \
   --external:ws \
   --inject:shims/shims.js \
   --loader:.pem=text \
@@ -73,4 +74,32 @@ export interface ClientBase extends PgClientBase {
 }
 
 export const neonConfig: NeonConfig;
+
+
+// experimental SQL-over-HTTP
+
+type SQLParam = null | boolean | number | string | Date | SQLObject | SQLArray;
+type SQLObject = { [k: string]: SQLParam };
+type SQLArray = SQLParam[];
+
+/**
+ * This experimental function returns an async tagged-template function that
+ * runs a single SQL query (no session or transactions) with low latency over
+ * http. Returns database rows directly. Types should match those returned by
+ * node-postgres (`pg`), but some complex or array types are not yet returned
+ * correctly.
+ * 
+ * For example:
+ * ```
+ * import db from "@neondatabase/serverless";
+ * const sql = db("postgres://user:pass@host/db");
+ * const h = "hello ", w = "world";
+ * const rows = await sql`SELECT ${h} || ${w} AS greeting`;  
+ * // -> [ { greeting: "hello world" } ]
+ * ```
+ * 
+ * @param connectionString this has the format `postgres://user:pass@host/db`
+ */
+export default function db(connectionString: string): (strings: TemplateStringsArray, ...params: SQLParam[]) => Promise<any[]>;
+
 ' >> dist/npm/index.d.ts
