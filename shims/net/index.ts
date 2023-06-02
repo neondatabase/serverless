@@ -159,6 +159,14 @@ export class Socket extends EventEmitter {
       this.emit('close');
       return;
     }
+    
+    // for handling WebSocket error events before the open event.
+    // we declare this listener here so we can remove it after we
+    // get the open event.
+    const beforeOpenError = (err: ErrorEvent) => {
+      debug && log("WebSocket error", err);
+      this.emit("error", err);
+    };
 
     this.ws = await new Promise<WebSocket>(async resolve => {
       try {
@@ -182,6 +190,8 @@ export class Socket extends EventEmitter {
             ws = new __unstable_WebSocket(wsAddrFull);
           }
         }
+        
+        ws.addEventListener('error', beforeOpenError)
 
         ws.addEventListener('open', () => {
           debug && log('WebSocket opened');
@@ -212,6 +222,9 @@ export class Socket extends EventEmitter {
     });
 
     this.ws.binaryType = 'arraybuffer';
+    
+    // remove error event listener we may have assigned before opening
+    ws.removeEventListener('error', beforeOpenError)
 
     this.ws.addEventListener('error', (err) => {
       debug && log('websocket error', err);
