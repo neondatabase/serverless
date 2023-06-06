@@ -118,8 +118,8 @@ type SQLArray = SQLParam[];
  * 
  * For example:
  * ```
- * import db from "@neondatabase/serverless";
- * const sql = db("postgres://user:pass@host/db");
+ * import { neon } from "@neondatabase/serverless";
+ * const sql = neon("postgres://user:pass@host/db");
  * const h = "hello ", w = "world";
  * const rows = await sql`SELECT ${h} || ${w} AS greeting`;  
  * // -> [ { greeting: "hello world" } ]
@@ -127,7 +127,7 @@ type SQLArray = SQLParam[];
  * 
  * @param connectionString this has the format `postgres://user:pass@host/db`
  */
-export default function db(connectionString: string): (
+export function neon(connectionString: string): (
   strings: TemplateStringsArray | string, 
   ...params: SQLParam[]
 ) => Promise<any[]>;

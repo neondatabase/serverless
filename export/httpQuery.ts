@@ -29,7 +29,7 @@ const noParseDataTypeIDs = new Set([
   16,    // boolean
 ]);
 
-export default function db(
+export function neon(
   connectionString: string,
   queryCb?: (query: Query) => void,
   resultCb?: (query: Query, result: JSONObject, rows: any) => void,

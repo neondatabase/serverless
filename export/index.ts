@@ -1,9 +1,8 @@
+export { neon } from './httpQuery';
+
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { NeonConfig } from './neonConfig';
-
-import sql from './httpQuery';
-export default sql;
 
 /**
  * We export the pg library mostly unchanged, but we do make a few tweaks.
