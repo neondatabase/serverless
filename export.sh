@@ -11,7 +11,6 @@ fi
 npx esbuild export/index.ts \
   --bundle \
   --keep-names \
-  --external:ws \
   --inject:shims/shims.js \
   --loader:.pem=text \
   --format=cjs \
@@ -100,6 +99,9 @@ type SQLArray = SQLParam[];
  * 
  * @param connectionString this has the format `postgres://user:pass@host/db`
  */
-export default function db(connectionString: string): (strings: TemplateStringsArray, ...params: SQLParam[]) => Promise<any[]>;
+export default function db(connectionString: string): (
+  strings: TemplateStringsArray | string, 
+  ...params: SQLParam[]
+) => Promise<any[]>;
 
 ' >> dist/npm/index.d.ts

@@ -127,6 +127,9 @@ type SQLArray = SQLParam[];
  * 
  * @param connectionString this has the format `postgres://user:pass@host/db`
  */
-export default function db(connectionString: string): (strings: TemplateStringsArray, ...params: SQLParam[]) => Promise<any[]>;
+export default function db(connectionString: string): (
+  strings: TemplateStringsArray | string, 
+  ...params: SQLParam[]
+) => Promise<any[]>;
 
 

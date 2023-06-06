@@ -41,12 +41,18 @@ export default function db(
     throw new Error('Database connection string format should be: postgres://user:password@host.tld/dbname?option=value');
   }
 
-  return async function (strings: TemplateStringsArray, ...params: SQLParam[]): Promise<any> {
-    let query = '';
+  return async function (strings: TemplateStringsArray | string, ...params: SQLParam[]): Promise<any> {
+    let query;
 
-    for (let i = 0; i < strings.length; i++) {
-      query += strings[i];
-      if (i < params.length) query += '$' + (i + 1);
+    if (typeof strings === 'string') {
+      query = strings;
+
+    } else {
+      query = '';
+      for (let i = 0; i < strings.length; i++) {
+        query += strings[i];
+        if (i < params.length) query += '$' + (i + 1);
+      }
     }
 
     let qp, response;
