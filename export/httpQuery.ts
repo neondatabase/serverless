@@ -27,7 +27,7 @@ export function neon(
     fullResults,
     queryCallback,
     resultCallback
-  }: HTTPQueryOptions
+  }: HTTPQueryOptions = {}
 ) {
 
   const db = parse(connectionString);

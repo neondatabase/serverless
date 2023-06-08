@@ -96,6 +96,7 @@ export interface NeonConfig {
    */
   disableSNI: boolean;
 }
+
 export interface ClientBase extends PgClientBase {
   neonConfig: NeonConfig;
 }
@@ -105,31 +106,47 @@ export const neonConfig: NeonConfig;
 
 // experimental SQL-over-HTTP
 
-type SQLParam = null | boolean | number | string | Date | SQLObject | SQLArray;
-type SQLObject = { [k: string]: SQLParam };
-type SQLArray = SQLParam[];
-
 /**
  * This experimental function returns an async tagged-template function that
  * runs a single SQL query (no session or transactions) with low latency over
- * http. Returns database rows directly. Types should match those returned by
- * node-postgres (`pg`), but some complex or array types are not yet returned
- * correctly.
+ * https. By default, it returns database rows directly. Types should match
+ * those returned by this driver over WebSockets.
+ * 
+ * The returned function can also be called directly (i.e. not as a template 
+ * function). In that case, pass a query string with embedded `$1`, `$2` (etc.)
+ * followed by an array of query parameters.
  * 
  * For example:
  * ```
  * import { neon } from "@neondatabase/serverless";
+ * const h = "hello", w = "world";
+ * 
+ * // default options, used as a tagged-template function
  * const sql = neon("postgres://user:pass@host/db");
- * const h = "hello ", w = "world";
- * const rows = await sql`SELECT ${h} || ${w} AS greeting`;  
+ * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;  
  * // -> [ { greeting: "hello world" } ]
+ * 
+ * // arrayMode and fullResults options, used as an ordinary function
+ * const options = { arrayMode: true, fullResults: true };
+ * const sqlFullArr = neon("postgres://user:pass@host/db", options);
+ * const rows = await sqlFullArr("SELECT $1 || ' ' || $2 AS greeting", [h, w]);
+ * // -> { 
+ * //      command: "SELECT", 
+ * //      fields: [ { name: "greeting", dataTypeID: 25 } ],
+ * //      rowAsArray: true, 
+ * //      rowCount: 1, 
+ * //      rows: [ [ "hello world" ] ]
+ * //    }
  * ```
  * 
  * @param connectionString this has the format `postgres://user:pass@host/db`
+ * @param options pass `arrayMode: true` to receive results as an array of 
+ * arrays, instead of the default array of objects; pass `fullResults: true`
+ * to receive a complete result object similar to one returned by node-postgres
+ * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`).
  */
-export function neon(connectionString: string): (
-  strings: TemplateStringsArray | string, 
-  ...params: SQLParam[]
+export function neon(connectionString: string, options?: { arrayMode?: boolean, fullResults?: boolean }): (
+  strings: TemplateStringsArray | string,
+  ...params: any[]
 ) => Promise<any[]>;
-
 
