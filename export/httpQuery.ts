@@ -1,13 +1,8 @@
 import { parse } from '../shims/url';
 import { types } from '.';
 
-type JSONValue = null | boolean | number | string | JSONObject | JSONArray;
-type JSONObject = { [k: string]: JSONValue };
-type JSONArray = JSONValue[];
-
-type SQLParam = JSONValue | Date | SQLObject | SQLArray;
-type SQLObject = { [k: string]: SQLParam };
-type SQLArray = SQLParam[];
+// @ts-ignore -- this isn't officially exported by pg
+import { prepareValue } from '../node_modules/pg/lib/utils';
 
 export class NeonDbError extends Error {
   code: string | null = null;
@@ -16,36 +11,38 @@ export class NeonDbError extends Error {
 
 interface Query {
   query: string;
-  params: SQLParam[];
+  params: any[];
 }
 
-const noParseDataTypeIDs = new Set([
-  1007,  // integer[]
-  1009,  // text[]
-  1040,  // macaddr[]
-  651,   // cidr[]
-  114,   // json
-  3802,  // jsonb
-  16,    // boolean
-]);
+interface HTTPQueryOptions {
+  arrayMode?: boolean;  // default false
+  fullResults?: boolean;  // default false
+  queryCallback?: (query: Query) => void;
+  resultCallback?: (query: Query, result: any, rows: any) => void;
+}
 
 export function neon(
-  connectionString: string,
-  queryCb?: (query: Query) => void,
-  resultCb?: (query: Query, result: JSONObject, rows: any) => void,
+  connectionString: string, {
+    arrayMode,
+    fullResults,
+    queryCallback,
+    resultCallback
+  }: HTTPQueryOptions
 ) {
-  const db = parse(connectionString);
-  const { protocol, username, password, host, pathname } = db;
 
-  if ((protocol !== 'postgres:' && protocol !== 'postgresql:') || !host || !username || !password || !pathname) {
+  const db = parse(connectionString);
+  const { protocol, username, password, hostname, pathname } = db;
+
+  if ((protocol !== 'postgres:' && protocol !== 'postgresql:') || !hostname || !username || !password || !pathname) {
     throw new Error('Database connection string format should be: postgres://user:password@host.tld/dbname?option=value');
   }
 
-  return async function (strings: TemplateStringsArray | string, ...params: SQLParam[]): Promise<any> {
+  return async function (strings: TemplateStringsArray | string, ...params: any[]): Promise<any> {
     let query;
 
     if (typeof strings === 'string') {
       query = strings;
+      params = params[0];  // because we expect the second fn argumewnt to be an array of params
 
     } else {
       query = '';
@@ -55,17 +52,24 @@ export function neon(
       }
     }
 
+    // preparing the query params makes timezones and array types consistent with ordinary node-postgres/pg
+    params = params.map(param => prepareValue(param));
+
     let qp, response;
     try {
-      const url = `https://${host}/sql`;
+      const url = `https://${hostname}/sql`;
       qp = { query, params };
-      if (queryCb) queryCb(qp);
 
-      const body = JSON.stringify(qp);
+      if (queryCallback) queryCallback(qp);
+
       response = await fetch(url, {
-        body,
+        body: JSON.stringify(qp),
         method: 'POST',
-        headers: { 'Neon-Connection-String': connectionString },
+        headers: {
+          'Neon-Connection-String': connectionString,
+          'Neon-Raw-Text-Output': 'true',
+          'Neon-Array-Mode': 'true',
+        },
       });
 
     } catch (err: any) {
@@ -73,26 +77,30 @@ export function neon(
     }
 
     if (response.ok) {
-      const results = await response.json() as any;
+      const rawResults = await response.json() as any;
+      const colNames = rawResults.fields.map((field: any) => field.name);
+      const parsers =
+        rawResults._parsers =  // to match the pg package
+        rawResults.fields.map((field: any) => types.getTypeParser(field.dataTypeID));
 
-      // TODO: better parsing
+      // now parse and possibly restructure the rows data like node-postgres does
+      const rows = arrayMode === true ?
+        // maintain array-of-arrays structure
+        rawResults.rows.map((row: any) => row.map((col: any, i: number) => col === null ? null : parsers[i](col))) :
+        // turn into an object
+        rawResults.rows.map((row: any) => {
+          return Object.fromEntries(
+            row.map((col: any, i: number) => [colNames[i], col === null ? null : parsers[i](col)])
+          )
+        });
 
-      const parsers = Object.fromEntries(
-        results.fields.map((f: any) => [
-          f.name,
-          noParseDataTypeIDs.has(f.dataTypeID) ?
-            (x: any) => x :
-            types.getTypeParser(f.dataTypeID)
-        ])
-      );
-      const rows = results.rows.map((row: any) => Object.fromEntries(
-        Object.entries(row).map(([name, value]) => [name, value === null ? value : parsers[name](value)])
-      ));
+      if (resultCallback) resultCallback(qp, rawResults, rows);
 
-      // alternative: no parsing
-      // const rows = results.rows;
+      if (fullResults) {
+        rawResults.rows = rows;
+        return rawResults;
+      }
 
-      if (resultCb) resultCb(qp, results, rows);
       return rows;
 
     } else {

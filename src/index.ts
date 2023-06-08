@@ -1,5 +1,5 @@
 import { deepEqual } from 'fast-equals';
-import http, { Client, Pool } from '../export';
+import { Client, Pool, neon } from '../export';
 import { timedRepeats, runQuery, clientRunQuery, poolRunQuery } from './util';
 import { queries } from './queries';
 
@@ -43,10 +43,9 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
   const pgShowKeys = new Set(['command', 'rowCount', 'rows', 'fields']);
 
   const pool = await new Pool({ connectionString: env.NEON_DB_URL });
-  const sql = http(
-    env.NEON_DB_URL,
-    undefined,
-    async (query, result, rows) => {
+
+  const sql = neon(env.NEON_DB_URL, {
+    resultCallback: async (query, result, rows) => {
       const pgRes = await pool.query(query.query, query.params);
 
       const commandMatches = result.command === pgRes.command;
@@ -71,9 +70,8 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
       //   console.dir(Object.fromEntries(Object.entries(pgRes).filter(([k]) => pgShowKeys.has(k))), { depth: null });
       // }
     }
-  );
+  });
 
-  // OK
   await sql`SELECT ${1} AS int_uncast`;
   await sql`SELECT ${1}::int AS int`;
   await sql`SELECT ${1}::int8 AS int8num`;
@@ -94,9 +92,6 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
   await sql`SELECT ${'10.10.10.0/24'}::cidr AS cidr`;
   await sql`SELECT ${true} AS bool_uncast`;  // 'true'
   await sql`SELECT ${'hello'} || ' ' || ${'world'} AS greeting`;
-  await sql`SELECT null AS null`;  // special-cased to pass through as null, not 'null'
-
-  // exceptions: these are OK as long as we exempt them from local parsing
   await sql`SELECT ${[1, 2, 3]}::int[] AS arrnum`;
   await sql`SELECT ${['a', 'b', 'c']}::text[] AS arrstr`;
   await sql`SELECT ${{ "x": "y" }}::jsonb AS jsonb_obj`;
@@ -104,19 +99,21 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
   await sql`SELECT ${['11:22:33:44:55:66']}::macaddr[] AS arrmacaddr`;
   await sql`SELECT ${['10.10.10.0/24']}::cidr[] AS arrcidr`;
   await sql`SELECT ${true}::boolean AS bool`;
-
-  // problem arrays: local parsing doesn't work (because they're already arrays)
   await sql`SELECT ${[new Date()]}::timestamptz[] AS arrtstz`;
   await sql`SELECT ${['(2, 3)']}::point[] AS arrpoint`;
   await sql`SELECT ${['<(2, 3), 1>']}::circle[] AS arrcircle`;  // pg has no parser for this
   await sql`SELECT ${['\\xDEADBEEF', '\\xDEADBEEF']}::bytea[] AS arrbytea`;
-
-  // mismatches
+  await sql`SELECT null AS null`;
   await sql`SELECT ${null} AS null`;  // us: "null", pg: null
+  await sql`SELECT ${"NULL"} AS null_str`;
   await sql`SELECT ${[1, 2, 3]} AS arrnum_uncast`;  // us: '{1,2,3}', pg: '{"1","2","3"}' <-- pg imagines strings?
   await sql`SELECT ${[[1, 2], [3, 4]]} AS arrnumnested_uncast`;  // us: '{{1,2},{3,4}}', pg: '{{"1","2"},{"3","4"}}' <-- pg imagines strings?
   await sql`SELECT ${new Date()} AS timenow_uncast`;  // us: '2023-05-26T13:35:22.616Z', pg: '2023-05-26T14:35:22.616+01:00' <-- different representations
   await sql`SELECT ${new Date()}::timestamp AS timestampnow`;  // us: 2023-05-26T12:35:22.696Z, pg: 2023-05-26T13:35:22.696Z <-- different TZs
+
+  // non-template usage
+  await sql('SELECT $1::timestamp AS timestampnow', [new Date()]);
+  await sql("SELECT $1 || ' ' || $2 AS greeting", ['hello', 'world']);
 
   await new Promise(resolve => setTimeout(resolve, 1000));
   pool.end();
