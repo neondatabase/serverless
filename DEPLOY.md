@@ -1,10 +1,27 @@
+# Running your own WebSocket proxy
+
+The package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket.
+
+But you can also run your own WebSocket proxy, and configure it to allow onward connections to your own Postgres instances.
+
+First, you'll need to set up the proxy itself somewhere public-facing (or on `localhost` for development). See https://github.com/neondatabase/wsproxy for the Go code and instructions.
+
+There are two ways you can secure this.
+
+1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve this can be found below. Onward traffic to Postgres is not secured by this method, so Postgres should be running on the same machine or be reached over a private network.
+
+2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). **Please note that subtls is experimental software and this configuration is not suitable for use in production**. There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. You get this form of encryption if you set `neonConfig.useSecureWebSocket` to `false` and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end.
+
+Second, you'll need to set some configuration options on this package, including at a minimum [the `wsProxy` option](README.md#configuration).
+
+```bash
 # To deploy wsproxy behind nginx (for TLS) on a host ws.example.com
 # running Ubuntu 22.04 (and Postgres locally), you'd do something similar to
 # the following.
 
 # note: be sure port 443 isn't firewalled off
 
-# upgrade to 22.04 if on earlier version (required for recent enough Golang)
+# upgrade to 22.04 if on earlier version (Golang is too old on older releases)
 
 sudo su  # do this all as root
 
@@ -107,3 +124,4 @@ server {
 " > /etc/nginx/sites-available/wsproxy
 
 service nginx restart
+```
