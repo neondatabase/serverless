@@ -25,7 +25,7 @@ export async function cf(request: Request, env: Env, ctx: ExecutionContext): Pro
   );
 }
 
-// latency tests for browsers and node
+// latency + compatibility tests for browsers and node
 
 const ctx = {
   waitUntil(promise: Promise<any>) { },
@@ -35,6 +35,9 @@ const ctx = {
 export async function latencies(env: Env, subtls: boolean, log = (s: string) => { }): Promise<void> {
   const queryRepeats = [1, 3];
   const connectRepeats = 15;
+
+  log('Warm-up ...\n\n');
+  await poolRunQuery(1, env.NEON_DB_URL, ctx, queries[0]);
 
   let counter = 0;
 
@@ -156,9 +159,6 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
         await section(queryRepeat, f);
       }
     }
-
-    log('Warm-up ...\n\n');
-    await poolRunQuery(1, env.NEON_DB_URL, ctx, query);
 
     await sections('Neon/wss, no pipelining', async n => {
       const client = new Client(env.NEON_DB_URL);

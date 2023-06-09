@@ -40,11 +40,11 @@ export function neon(
   return async function (strings: TemplateStringsArray | string, ...params: any[]): Promise<any> {
     let query;
 
-    if (typeof strings === 'string') {
+    if (typeof strings === 'string') {  // ordinary (non tagged-template) usage
       query = strings;
-      params = params[0];  // because we expect the second fn argumewnt to be an array of params
+      params = params[0];  // because we expect the second argument to be an array of params
 
-    } else {
+    } else {  // tagged-template usage
       query = '';
       for (let i = 0; i < strings.length; i++) {
         query += strings[i];
