@@ -1,6 +1,6 @@
 {
   "name": "@neondatabase/serverless",
-  "version": "0.4.9",
+  "version": "0.4.10",
   "author": "Neon",
   "description": "node-postgres for serverless environments from neon.tech",
   "exports": {
