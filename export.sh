@@ -78,6 +78,23 @@ export const neonConfig: NeonConfig;
 
 // experimental SQL-over-HTTP
 
+type QueryRows<ArrayMode extends boolean> = 
+  ArrayMode extends true ? any[][] : 
+  Record<string, any>[];
+
+interface BriefFieldDef {
+  name: string;
+  dataTypeID: number;
+}
+
+interface FullQueryResults<ArrayMode extends boolean> {
+  fields: BriefFieldDef[];
+  command: string;
+  rowCount: number;
+  rows: QueryRows<ArrayMode>;
+  rowAsArray?: ArrayMode;
+}
+
 /**
  * This experimental function returns an async tagged-template function that
  * runs a single SQL query (no session or transactions) with low latency over
@@ -117,9 +134,15 @@ export const neonConfig: NeonConfig;
  * to receive a complete result object similar to one returned by node-postgres
  * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`).
  */
-export function neon(connectionString: string, options?: { arrayMode?: boolean, fullResults?: boolean }): (
+export function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(
+  connectionString: string,
+  options?: {
+    arrayMode?: ArrayMode;
+    fullResults?: FullResults;
+  }
+): (
   strings: TemplateStringsArray | string,
   ...params: any[]
-) => Promise<any[]>;
+) => Promise<FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
 
 EOF

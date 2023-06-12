@@ -1,6 +1,6 @@
 # @neondatabase/serverless [BETA]
 
-This package from [Neon](https://neon.tech) shims the [node-postgres](https://node-postgres.com/) `pg` library to work on serverless runtimes such as Cloudflare Workers and Vercel Edge Functions — places where TCP sockets are not available — via a WebSocket proxy.
+This package from [Neon](https://neon.tech) shims the [node-postgres](https://node-postgres.com/) `pg` library to work on serverless runtimes such as Cloudflare Workers and Vercel Edge Functions — places where TCP sockets may not be not available — via WebSockets or https fetch.
 
 The package also works in web browsers, but in most cases it's not appropriate to publicly deploy that way because it would reveal your Postgres credentials.
 
@@ -29,7 +29,7 @@ For a complete usage example on Cloudflare Workers, see https://github.com/neond
 
 ## Notes
 
-* **Pooling**: in general, serverless platforms don't keep WebSocket connections alive between requests. So it won't generally work to connect a database client (or establish a connection pool) outside of the function that's run on each request. You can of course use a `Pool` within your request handler as a slightly terser way to acquire and connect a `Client`.
+* **Pooling**: in general, serverless platforms don't keep WebSocket connections alive between requests. So it won't generally work to connect a database client (or establish a connection pool) outside of the function that's run on each request. You can of course use a `Pool` within your request handler as a slightly terser way to acquire and connect one or more `Client` objects, as shown above.
 
 * **Cloudflare**: brief queries such as the one shown above can generally be run on Cloudflare’s free plan. Queries with larger result sets may exceed the 10ms CPU time available to Workers on the free plan: in that case you’ll see a Cloudflare error page and will need to upgrade your Cloudflare service.
 
@@ -41,7 +41,7 @@ If you're running on Node, or anywhere else where a TCP connection can be made v
 Alternatively, you can use this library by providing a WebSocket constructor, like so:
 
 ```javascript
-import ws from 'ws';
+import ws from 'ws';  // undici also works
 import { neonConfig, Pool } from '@neondatabase/serverless';
 neonConfig.webSocketConstructor = ws; 
 
@@ -53,17 +53,7 @@ const pool = new Pool({ connectionString: 'postgres://...' });
 
 The package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket.
 
-But you can also run your own WebSocket proxy, and configure it to allow onward connections to your own Postgres instances.
-
-First, you'll need to set up the proxy itself somewhere public-facing (or on `localhost` for development). See https://github.com/neondatabase/wsproxy for the Go code and instructions.
-
-There are two ways you can secure this.
-
-1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve this can be found in [DEPLOY.sh](DEPLOY.sh). Onward traffic to Postgres is not secured by this method, so Postgres should be running on the same machine or be reached over a private network.
-
-2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). **Please note that subtls is experimental software and this configuration is not suitable for use in production**. There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. You get this form of encryption if you set `neonConfig.useSecureWebSocket` to `false` and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end.
-
-Second, you'll need to set some configuration options on this package, including at a minimum the `wsProxy` option (details below).
+But you can also [run your own WebSocket proxy](DEPLOY.md), and configure it to allow onward connections to your own Postgres instances.
 
 
 ## Configuration
@@ -140,7 +130,7 @@ If you're using any other certificate authority to secure Postgres connections, 
 
 Only when using experimental pure-JS encryption, the driver will pipeline the SSL request message and TLS Client Hello if `pipelineTLS` is set to `true`. Currently, this is only supported by Neon database hosts, and will fail when communicating with an ordinary Postgres or pgbouncer back-end.
 
-The default is `true`. For non-Neon hosts, set it to `false` instead.
+The default is `false`.
 
 ## Development
 
