@@ -42,7 +42,7 @@ export function neon(
 
     if (typeof strings === 'string') {  // ordinary (non tagged-template) usage
       query = strings;
-      params = params[0];  // because we expect the second argument to be an array of params
+      params = params[0] ?? [];  // because we expect the second argument to be an array of params
 
     } else {  // tagged-template usage
       query = '';

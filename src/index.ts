@@ -117,6 +117,7 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
   // non-template usage
   await sql('SELECT $1::timestamp AS timestampnow', [new Date()]);
   await sql("SELECT $1 || ' ' || $2 AS greeting", ['hello', 'world']);
+  await sql('SELECT now()');
 
   await new Promise(resolve => setTimeout(resolve, 1000));
   pool.end();
