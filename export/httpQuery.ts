@@ -95,6 +95,7 @@ export function neon(
       if (resultCallback) resultCallback(qp, rawResults, rows);
 
       if (fullResults) {
+        rawResults.viaNeonFetch = true;
         rawResults.rowAsArray = arrayMode;
         rawResults.rows = rows;
         return rawResults;

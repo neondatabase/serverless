@@ -1,6 +1,6 @@
 export { neon } from './httpQuery';
 
-import { Client, Connection, Pool, ConnectionConfig } from 'pg';
+import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { NeonConfig } from './neonConfig';
 import { neon } from './httpQuery';
@@ -21,6 +21,9 @@ import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
  * for a serverless environment. In case it is still used, however, we replace
  * the standard (synchronous) pg implementation with one that uses SubtleCrypto
  * for repeated SHA-256 digests. This saves some time and CPU.
+ * 
+ * (3) We now (experimentally) redirect Pool.query over a fetch request if the
+ * circumstances are right.
  */
 
 declare interface NeonClient {
@@ -171,13 +174,22 @@ function promisify(Promise: any, callback: any) {
 
 class NeonPool extends Pool {
   Client = NeonClient;
+  hasFetchUnsupportedListeners = false;
+
+  on(event: 'error' | 'connect' | 'acquire' | 'release' | 'remove', listener: any) {
+    if (event !== 'error') this.hasFetchUnsupportedListeners = true;
+    return super.on(event as any, listener);
+  }
 
   // @ts-ignore -- is it even possible to make TS happy with these overloaded function types?
   query(config?: any, values?: any, cb?: any) {
-    if (!Socket.poolQueryViaFetch) return super.query(config, values, cb);
-
-    // guard clause against passing a function as the first parameter
-    if (typeof config === 'function') return super.query(config, values, cb);  // (will error)
+    if (
+      !Socket.poolQueryViaFetch
+      || this.hasFetchUnsupportedListeners
+      || typeof config === 'function'  // super.query will detect this and error
+    ) {
+      return super.query(config, values, cb);
+    }
 
     // allow plain text query without values
     if (typeof values === 'function') {
