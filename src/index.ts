@@ -55,7 +55,7 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
       const rowCountMatches = result.rowCount === pgRes.rowCount;
       const dataTypesMatch = deepEqual(
         (result.fields as any[]).map(f => f.dataTypeID),
-        pgRes.fields.map(f => f.dataTypeID),
+        pgRes.fields.map((f: any) => f.dataTypeID),
       );
       const rowsMatch = deepEqual(rows, pgRes.rows);
       const ok = commandMatches && rowCountMatches && rowsMatch && dataTypesMatch;

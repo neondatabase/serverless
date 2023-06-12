@@ -1,8 +1,12 @@
 export { neon } from './httpQuery';
 
-import { Client, Connection, Pool } from 'pg';
+import { Client, Connection, Pool, ConnectionConfig } from 'pg';
 import { Socket } from '../shims/net';
 import { NeonConfig } from './neonConfig';
+import { neon } from './httpQuery';
+
+// @ts-ignore -- this isn't officially exported by pg
+import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
 
 /**
  * We export the pg library mostly unchanged, but we do make a few tweaks.
@@ -153,8 +157,60 @@ class NeonClient extends Client {
   };
 }
 
+// copied from pg to support NeonPool.query
+function promisify(Promise: any, callback: any) {
+  if (callback) return { callback: callback, result: undefined };
+  let rej: any, res: any;
+  const cb = function (err: any, client: any) { err ? rej(err) : res(client); };
+  const result = new Promise(function (resolve: any, reject: any) {
+    res = resolve;
+    rej = reject;
+  });
+  return { callback: cb, result: result };
+}
+
 class NeonPool extends Pool {
   Client = NeonClient;
+
+  // @ts-ignore -- is it even possible to make TS happy with these overloaded function types?
+  query(config?: any, values?: any, cb?: any) {
+    if (!Socket.poolQueryViaFetch) return super.query(config, values, cb);
+
+    // guard clause against passing a function as the first parameter
+    if (typeof config === 'function') return super.query(config, values, cb);  // (will error)
+
+    // allow plain text query without values
+    if (typeof values === 'function') {
+      cb = values;
+      values = undefined;
+    }
+
+    // create a synthetic callback that resolves the returned Promise
+    // @ts-ignore -- TS doesn't know about this.Promise
+    const response = promisify(this.Promise, cb)
+    cb = response.callback;
+
+    try {
+      // @ts-ignore -- TS doesn't know about this.options
+      const cp = new ConnectionParameters(this.options);
+      const euc = encodeURIComponent, eu = encodeURI;
+      const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
+
+      const queryText = typeof config === 'string' ? config : config.text;
+      const queryValues = (typeof config === 'string' ? values : config.values) ?? [];
+
+      const sql = neon(connectionString, { fullResults: true, arrayMode: config.rowMode === 'array' });
+
+      sql(queryText, queryValues)
+        .then(result => cb(undefined, result))
+        .catch(err => cb(err));
+
+    } catch (err) {
+      cb(err);
+    }
+
+    return response.result;
+  }
 }
 
 export {

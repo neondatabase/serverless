@@ -45,6 +45,7 @@ export function isIP(input: string) {
 }
 
 export interface SocketDefaults {
+  poolQueryViaFetch: boolean;
   webSocketConstructor: typeof WebSocket | undefined;
   wsProxy: string | ((host: string, port: number | string) => string) | undefined;
   useSecureWebSocket: boolean;
@@ -57,6 +58,7 @@ export interface SocketDefaults {
 
 export class Socket extends EventEmitter {
   static defaults: SocketDefaults = {
+    poolQueryViaFetch: false,
     webSocketConstructor: undefined,
     wsProxy: host => host + '/v2',
     useSecureWebSocket: true,
@@ -66,6 +68,11 @@ export class Socket extends EventEmitter {
     pipelineTLS: false,
     rootCerts: letsEncryptRootCert as string,
   };
+
+  static poolQueryViaFetch: SocketDefaults['poolQueryViaFetch'];
+  private _poolQueryViaFetch: typeof Socket.poolQueryViaFetch | undefined;
+  get poolQueryViaFetch() { return this._poolQueryViaFetch ?? Socket.poolQueryViaFetch ?? Socket.defaults.poolQueryViaFetch; }
+  set poolQueryViaFetch(poolQueryViaFetch: typeof Socket.poolQueryViaFetch) { this._poolQueryViaFetch = poolQueryViaFetch; }
 
   static webSocketConstructor: SocketDefaults['webSocketConstructor'];
   private _webSocketConstructor: typeof Socket.webSocketConstructor | undefined;

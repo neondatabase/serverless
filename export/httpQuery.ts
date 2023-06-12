@@ -79,9 +79,7 @@ export function neon(
     if (response.ok) {
       const rawResults = await response.json() as any;
       const colNames = rawResults.fields.map((field: any) => field.name);
-      const parsers =
-        rawResults._parsers =  // to match the pg package
-        rawResults.fields.map((field: any) => types.getTypeParser(field.dataTypeID));
+      const parsers = rawResults.fields.map((field: any) => types.getTypeParser(field.dataTypeID));
 
       // now parse and possibly restructure the rows data like node-postgres does
       const rows = arrayMode === true ?
@@ -97,6 +95,7 @@ export function neon(
       if (resultCallback) resultCallback(qp, rawResults, rows);
 
       if (fullResults) {
+        rawResults.rowAsArray = arrayMode;
         rawResults.rows = rows;
         return rawResults;
       }
