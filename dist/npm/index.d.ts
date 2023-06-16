@@ -57,10 +57,19 @@ export interface NeonConfig {
 
   /**
    * Use a secure (`wss:`) connection to the WebSocket proxy.
-   *  
+   * 
    * Default: `true`.
    */
   useSecureWebSocket: boolean;
+
+  /**
+   * Disable TLS encryption in the Postgres protocol (as set via e.g.
+   * `?sslmode=require` in the connection string). Connection remains secure
+   * if `useSecureWebSocket` is `true`.
+   * 
+   * Default: `true`
+   */
+  forceDisablePgSSL: boolean;
 
   /**
    * Pipelines the startup message, cleartext password message and first query

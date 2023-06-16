@@ -122,8 +122,6 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
   await new Promise(resolve => setTimeout(resolve, 1000));
   pool.end();
 
-  // process.exit();
-
   for (const query of queries) {
     log(`\n===== ${query.sql} =====\n\n`);
 
@@ -199,9 +197,9 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
 
     if (subtls) {
       await sections('Patched pg/subtls, pipelined TLS + connect', async n => {
-        const client = new Client(env.MY_DB_URL + '?sslmode=verify-full');
+        const client = new Client(env.MY_DB_URL);
         client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
-        client.neonConfig.useSecureWebSocket = false;  // true to use wss + cleartext pg, false to use ws + subtls pg
+        client.neonConfig.forceDisablePgSSL = client.neonConfig.useSecureWebSocket = false;
         client.neonConfig.pipelineTLS = true;
         client.neonConfig.pipelineConnect = 'password';
         await clientRunQuery(n, client, ctx, query);

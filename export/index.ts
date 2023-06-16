@@ -2,8 +2,8 @@ export { neon } from './httpQuery';
 
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
-import { NeonConfig } from './neonConfig';
 import { neon } from './httpQuery';
+import type { NeonConfig } from './neonConfig';
 
 // @ts-ignore -- this isn't officially exported by pg
 import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
@@ -33,6 +33,7 @@ declare interface NeonClient {
   connection: Connection & {
     stream: Socket;
     sendSCRAMClientFinalMessage: (response: any) => void;
+    ssl: any;
   };
   _handleReadyForQuery: any;
   _handleAuthCleartextPassword: any;
@@ -48,8 +49,13 @@ class NeonClient extends Client {
   connect(): Promise<void>;
   connect(callback: (err?: Error) => void): void;
   connect(callback?: (err?: Error) => void) {
-    if (this.ssl && this.neonConfig.useSecureWebSocket) {
-      console.warn(`SSL is enabled for both Postgres (e.g. ?sslmode=require in the connection string) and the WebSocket tunnel (useSecureWebSocket = true). Double encryption will increase latency and CPU usage. It may be appropriate to disable SSL on the Postgres connection.`);
+    const { neonConfig } = this;
+
+    if (neonConfig.forceDisablePgSSL) {
+      this.ssl = this.connection.ssl = false;
+    }
+    if (this.ssl && neonConfig.useSecureWebSocket) {
+      console.warn(`SSL is enabled for both Postgres (e.g. ?sslmode=require in the connection string + forceDisablePgSSL = false) and the WebSocket tunnel (useSecureWebSocket = true). Double encryption will increase latency and CPU usage. It may be appropriate to disable SSL in the Postgres connection parameters or set forceDisablePgSSL = true.`);
     }
     if (this.host === 'localhost') {
       console.warn(`The database host is 'localhost', which is the default host when none is set. If that's intentional, please ignore this warning. If not, perhaps an environment variable has not been set, or has not been passed to the library?`);
@@ -57,10 +63,10 @@ class NeonClient extends Client {
 
     const result = super.connect(callback as any) as void | Promise<void>;
 
-    const pipelineTLS = this.neonConfig.pipelineTLS && this.ssl;
-    const pipelineConnect = this.neonConfig.pipelineConnect === 'password';
+    const pipelineTLS = neonConfig.pipelineTLS && this.ssl;
+    const pipelineConnect = neonConfig.pipelineConnect === 'password';
 
-    if (!pipelineTLS && !this.neonConfig.pipelineConnect) return result;
+    if (!pipelineTLS && !neonConfig.pipelineConnect) return result;
 
     const con = this.connection;
 

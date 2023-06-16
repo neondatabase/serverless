@@ -21,7 +21,7 @@
     "serve": "^14.1.2",
     "stream": "file:shims/stream",
     "string_decoder": "file:shims/string_decoder",
-    "subtls": "^0.2.0",
+    "subtls": "^0.3.0",
     "tls": "file:shims/tls",
     "undici": "^5.22.0",
     "url": "file:shims/url",

@@ -49,6 +49,7 @@ export interface SocketDefaults {
   webSocketConstructor: typeof WebSocket | undefined;
   wsProxy: string | ((host: string, port: number | string) => string) | undefined;
   useSecureWebSocket: boolean;
+  forceDisablePgSSL: boolean;
   coalesceWrites: boolean;
   disableSNI: boolean;
   pipelineConnect: 'password' | false;
@@ -62,6 +63,7 @@ export class Socket extends EventEmitter {
     webSocketConstructor: undefined,
     wsProxy: host => host + '/v2',
     useSecureWebSocket: true,
+    forceDisablePgSSL: true,
     coalesceWrites: true,
     disableSNI: false,
     pipelineConnect: 'password',
@@ -93,6 +95,11 @@ export class Socket extends EventEmitter {
   private _useSecureWebSocket: typeof Socket.useSecureWebSocket | undefined;
   get useSecureWebSocket() { return this._useSecureWebSocket ?? Socket.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket; }
   set useSecureWebSocket(useSecureWebSocket: typeof Socket.useSecureWebSocket) { this._useSecureWebSocket = useSecureWebSocket; }
+
+  static forceDisablePgSSL: SocketDefaults['forceDisablePgSSL'];
+  private _forceDisablePgSSL: typeof Socket.forceDisablePgSSL | undefined;
+  get forceDisablePgSSL() { return this._forceDisablePgSSL ?? Socket.forceDisablePgSSL ?? Socket.defaults.forceDisablePgSSL; }
+  set forceDisablePgSSL(forceDisablePgSSL: typeof Socket.forceDisablePgSSL) { this._forceDisablePgSSL = forceDisablePgSSL; }
 
   static disableSNI: SocketDefaults['disableSNI'];
   private _disableSNI: typeof Socket.disableSNI | undefined;
@@ -263,9 +270,10 @@ export class Socket extends EventEmitter {
       rootCerts,
       networkRead,
       networkWrite,
-      !this.disableSNI,
-      undefined,  // nothing to pre-write (pg handles the SSLRequest message)
-      this.pipelineTLS ? new Uint8Array([0x53]) : undefined,  // expect (and discard) an 'S' before the TLS response if pipelineTLS is set
+      {
+        useSNI: !this.disableSNI,
+        expectPreData: this.pipelineTLS ? new Uint8Array([0x53]) : undefined,  // expect (and discard) an 'S' before the TLS response if pipelineTLS is set
+      }
     );
 
     this.tlsRead = tlsRead;
