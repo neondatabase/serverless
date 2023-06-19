@@ -1,7 +1,6 @@
 
 // @neondatabase/serverless driver types, mimicking pg
 
-import { ClientBase as PgClientBase } from "pg";
 export { DatabaseError } from "pg-protocol";
 export {
   ClientConfig,
@@ -24,9 +23,8 @@ export {
   ExecuteConfig,
   MessageConfig,
   Connection,
+  ClientBase,
   Pool,
-  Client,
-  PoolClient,
   Query,
   Events,
   types,
@@ -128,30 +126,36 @@ export interface NeonConfig {
   poolQueryViaFetch: boolean;
 }
 
-export interface ClientBase extends PgClientBase {
+import {
+  Client as PgClient,
+  PoolClient as PgPoolClient,
+} from "pg";
+
+export class Client extends PgClient {
+  neonConfig: NeonConfig;
+}
+
+export interface PoolClient extends PgPoolClient {
   neonConfig: NeonConfig;
 }
 
 export const neonConfig: NeonConfig;
 
 
-// experimental SQL-over-HTTP
+// SQL-over-HTTP
 
-type QueryRows<ArrayMode extends boolean> = 
-  ArrayMode extends true ? any[][] : 
+import { FieldDef } from "pg";
+
+type QueryRows<ArrayMode extends boolean> =
+  ArrayMode extends true ? any[][] :
   Record<string, any>[];
 
-interface BriefFieldDef {
-  name: string;
-  dataTypeID: number;
-}
-
 interface FullQueryResults<ArrayMode extends boolean> {
-  fields: BriefFieldDef[];
+  fields: FieldDef[];
   command: string;
   rowCount: number;
   rows: QueryRows<ArrayMode>;
-  rowAsArray?: ArrayMode;
+  rowAsArray: ArrayMode;
 }
 
 /**
