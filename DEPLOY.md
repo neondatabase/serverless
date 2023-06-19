@@ -1,38 +1,42 @@
-# Running your own WebSocket proxy
+# Deploying a WebSocket proxy in front of your own Postgres instance
 
-The package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket.
+**This package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket. If you're using a Neon database, you can ignore what follows.**
 
 But you can also run your own WebSocket proxy, and configure it to allow onward connections to your own Postgres instances.
 
 First, you'll need to set up the proxy itself somewhere public-facing (or on `localhost` for development). See https://github.com/neondatabase/wsproxy for the Go code and instructions.
 
-There are two ways you can secure this.
+There are then two ways you can secure this:
 
 1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve this can be found below. Onward traffic to Postgres is not secured by this method, so Postgres should be running on the same machine or be reached over a private network.
 
-2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). **Please note that subtls is experimental software and this configuration is not suitable for use in production**. There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. You get this form of encryption if you set `neonConfig.useSecureWebSocket` to `false` and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end.
+2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. You get this form of encryption if you set both `neonConfig.useSecureWebSocket`  and `neonConfig.forceDisablePgSSL` to `false`, and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end. **Please note that subtls is experimental software and this configuration is not recommended for production use.**
 
-Second, you'll need to set some configuration options on this package, including at a minimum [the `wsProxy` option](README.md#configuration).
+Second, you'll need to set some configuration options on this package, including at a minimum [the `wsProxy` option](CONFIG.md).
+
+
+## Example shell commands
+
+To deploy `wsproxy` behind nginx (for TLS) on a host `ws.example.com` running Ubuntu 22.04 (and Postgres locally), you'd do something similar to the following.
+
+Before you start:
+
+1. Ensure port 443 is accessible on this machine. You might need to change firewall settings with your platform provider.
+
+2. Upgrade to Ubuntu 22.04 if on earlier version (Golang is too old on older releases):
 
 ```bash
-# To deploy wsproxy behind nginx (for TLS) on a host ws.example.com
-# running Ubuntu 22.04 (and Postgres locally), you'd do something similar to
-# the following.
-
-# note: be sure port 443 isn't firewalled off
-
-# upgrade to 22.04 if on earlier version (Golang is too old on older releases)
-
 sudo su  # do this all as root
-
 apt update -y && apt upgrade -y && apt dist-upgrade -y
 apt autoremove -y && apt autoclean -y
 apt install -y update-manager-core
 do-release-upgrade  # and answer yes to all defaults
+```
 
-# ... reboots, then ...
+Then:
 
-sudo su  # we do the rest as root too
+```bash
+sudo su  # do this all as root
 
 export HOSTDOMAIN=ws.example.com  # edit the domain name for your case
 
@@ -41,9 +45,11 @@ export HOSTDOMAIN=ws.example.com  # edit the domain name for your case
 apt install -y postgresql
 
 echo 'create database wstest; create user wsclear; grant all privileges on database wstest to wsclear;' | sudo -u postgres psql
+
 sudo -u postgres psql  # and run: \password wsclear
 
 perl -pi -e 's/^# IPv4 local connections:\n/# IPv4 local connections:\nhost all wsclear 127.0.0.1\/32 password\n/' /etc/postgresql/14/main/pg_hba.conf
+
 service postgresql restart
 
 # install wsproxy

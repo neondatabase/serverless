@@ -1,15 +1,88 @@
 # @neondatabase/serverless [BETA]
 
-This package from [Neon](https://neon.tech) shims the [node-postgres](https://node-postgres.com/) `pg` library to work on serverless runtimes such as Cloudflare Workers and Vercel Edge Functions — places where TCP sockets may not be not available — via WebSockets or https fetch.
+`@neondatabase/serverless` is [Neon](https://neon.tech)'s PostgreSQL driver for JavaScript and TypeScript. It's:
 
-The package also works in web browsers, but in most cases it's not appropriate to publicly deploy that way because it would reveal your Postgres credentials.
+* **Low-latency**, thanks to [message pipelining](https://neon.tech/blog/quicker-serverless-postgres) and other optimizations
+* **Ideal for serverless/edge** deployment, using https and WebSockets in place of of TCP
+* **A drop-in replacement** for [node-postgres](https://node-postgres.com/), aka [`pg`](https://www.npmjs.com/package/pg) (on which it's based)
+
+## Get started
+
+### Install
+
+Install it with your JS package manager. For example:
+
+```bash
+npm install @neondatabase/serverless
+```
+
+Using TypeScript? Types are included.
+
+### Configure
+
+Get your connection string from the [Neon console](https://console.neon.tech/) and set it as an environment variable. Something like:
+
+```
+DATABASE_URL=postgres://username:password@host.neon.tech/neondb
+```
+
+### Use
+
+For direct, one-shot queries, use the `neon` function. For instance:
+
+```javascript
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL);
+
+const [post] = await sql`SELECT * FROM posts WHERE id = ${postId}`;
+// `post` is now { id: 12, title: 'My post', ... } | undefined
+```
+
+Note: interpolating `${postId}` here is [safe from SQL injection](https://neon.tech/blog/sql-template-tags).
 
 
-## How to use it
+### Deploy
 
-Where you'd otherwise install `pg` and `@types/pg`, instead run `npm install @neondatabase/serverless`.
+To turn this example into a complete API endpoint deployed on [Vercel Edge Functions](https://vercel.com/docs/concepts/functions/edge-functions) at `https://myapp.vercel.dev/api/post?postId=123`, follow these two steps:
 
-Then use it the same way you'd use `pg`. For example, with your Neon database connection string available as `DATABASE_URL`:
+1. Create a new file `api/post.ts`:
+
+```javascript
+export const config = {
+  runtime: 'edge',
+  regions: ['iad1'],  // specify the region nearest your Neon DB
+};
+
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL);
+
+export default async (req: Request, ctx: any) => {
+  // get and validate the `postId` query parameter
+  const postId = parseInt(new URL(req.url).searchParams.get('postId'), 10);
+  if (isNaN(postId)) return new Response('Bad request', { status: 400 });
+
+  // query and validate the post
+  const [post] = await sql`SELECT * FROM posts WHERE id = ${postId}`;
+  if (!post) return new Response('Not found', { status: 404 });
+
+  // return the post as JSON
+  return new Response(JSON.stringify(post), { 
+    headers: { 'content-type': 'application/json' }
+  });
+}
+```
+
+2. Test and deploy
+
+```bash
+npm install -g vercel  # install vercel CLI
+npx vercel env add DATABASE_URL  # paste Neon connection string, select all environments
+npx vercel dev  # check working locally, then ...
+npx vercel deploy
+```
+
+# TODO: edit the rest
+
 
 ```javascript
 import { Pool } from '@neondatabase/serverless';
@@ -54,92 +127,3 @@ const pool = new Pool({ connectionString: 'postgres://...' });
 The package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket.
 
 But you can also [run your own WebSocket proxy](DEPLOY.md), and configure it to allow onward connections to your own Postgres instances.
-
-
-## Configuration
-
-There are two ways to set configuration options:
-
-1. You can import `neonConfig` from the package and set global default options on it. 
-2. You can set options on individual `Client` instances using their `neonConfig` property.
-
-For example:
-
-```javascript
-import { Client, neonConfig } from '@neondatabase/serverless';
-
-// set default options for all clients
-neonConfig.wsProxy = (host, port) => `my-wsproxy.example.com/v1?address=${host}:${port}`;
-neonConfig.rootCerts = `
------BEGIN CERTIFICATE-----
-MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw ...
------END CERTIFICATE-----
-`;
-
-// override default options on an individual client
-const client = new Client(env.DATABASE_URL);
-client.neonConfig.wsProxy = (host, port) => `my-other-wsproxy.example.com/v1?address=${host}:${port}`;
-```
-
-### `webSocketContructor: typeof WebSocket | undefined`
-
-Set this parameter if you're using the driver in an environment where `globalThis.WebSocket` is not defined, such as Node.js.
-
-For example:
-
-```javascript
-import ws from 'ws';
-import { neonConfig } from '@neondatabase/serverless';
-neonConfig.webSocketConstructor = ws; 
-```
-
-### `wsProxy: string | (host: string, port: number | string) => string`
-
-The `wsProxy` option should point to the WebSocket proxy you just set up. It can either be a string, which will have `?address=host:port` appended to it, or a function with the signature `(host: string, port: number | string) => string`. Either way, the protocol must _not_ be included, because this depends on other options. For example, when using the `wsproxy` proxy, the `wsProxy` option should look something like this:
-
-```javascript
-// either:
-neonConfig.wsProxy = (host, port) => `my-wsproxy.example.com/v1?address=${host}:${port}`
-// or (with identical effect):
-neonConfig.wsProxy = 'my-wsproxy.example.com/v1';
-```
-
-### `useSecureWebSocket: boolean`
-
-This option switches between secure (the default) and insecure WebSockets. 
-
-To use experimental pure-JS encryption, set this to `false` and append `?sslmode=verify-full` to your database connection string. **Remember that pure-JS encryption is currently experimental and not suitable for use in production.**
-
-### `pipelineConnect: "password" | false`
-
-To speed up connection times, the driver will pipeline the first three messages to the database (startup, authentication and first query) if `pipelineConnect` is set to `"password"`. Note that this will only work if you've configured cleartext password authentication for the relevant user and database. 
-
-The default is `"password"`. If your connection doesn't support password authentication, set it to `false` instead.
-
-### `coalesceWrites: boolean`
-
-When this option is `true`, multiple network writes generated in a single iteration of the JavaScript run-loop are coalesced into a single WebSocket message. Since node-postgres sends a lot of very short messages, this may reduce TCP/IP overhead. It defaults to `true`.
-
-### `rootCerts: string /* PEM format */`
-
-Only when using the experimental pure-JS TLS implementation, this option determines what root (certificate authority) certificates are trusted. The default value of `rootCerts` is the [ISRG Root X1](https://letsencrypt.org/certificates/) certificate, which is appropriate for servers secured with [Let’s Encrypt](https://letsencrypt.org/).
-
-If you're using any other certificate authority to secure Postgres connections, provide the root certificate(s) in PEM format to the `rootCerts` option.
-
-### `pipelineTLS: boolean`
-
-Only when using experimental pure-JS encryption, the driver will pipeline the SSL request message and TLS Client Hello if `pipelineTLS` is set to `true`. Currently, this is only supported by Neon database hosts, and will fail when communicating with an ordinary Postgres or pgbouncer back-end.
-
-The default is `false`.
-
-## Development
-
-The code is at https://github.com/neondatabase/serverless. Most of the interesting parts are in `shims/net/index.ts` and `export/index.ts`.
-
-* To update the npm package, run `npm run export`, then `cd dist/npm` and `npm publish`.
-
-* To run or deploy the simple test app on Cloudflare, create a `.dev.vars` file containing `DATABASE_URL=postgres://connection_string`, run `npx wrangler dev --local` or `npx wrangler publish`.
-
-* To run the latencies test app in a browser, create a `.dev.vars` file as above, run `npm run browser` and visit `http://localhost:7070/dist/browser/`. To include debug output and avoid minification, use `npm run browserDebug` instead.
-
-* To run the latencies test app in node, create a `.dev.vars` file as above and run `npm run node`. To include debug output and avoid minification, use `npm run nodeDebug` instead.
