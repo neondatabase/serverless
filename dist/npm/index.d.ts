@@ -135,7 +135,7 @@ export class Client extends PgClient {
   neonConfig: NeonConfig;
 }
 
-export class PoolClient extends PgPoolClient {
+export interface PoolClient extends PgPoolClient {
   neonConfig: NeonConfig;
 }
 
