@@ -72,11 +72,11 @@ import {
   PoolClient as PgPoolClient,
 } from "pg";
 
-export interface Client extends PgClient {
+export class Client extends PgClient {
   neonConfig: NeonConfig;
 }
 
-export interface PoolClient extends PgPoolClient {
+export class PoolClient extends PgPoolClient {
   neonConfig: NeonConfig;
 }
 
