@@ -23,8 +23,6 @@ export {
   ExecuteConfig,
   MessageConfig,
   Connection,
-  ClientBase,
-  Pool,
   Query,
   Events,
   types,
@@ -127,9 +125,15 @@ export interface NeonConfig {
 }
 
 import {
+  ClientBase as PgClientBase,
   Client as PgClient,
   PoolClient as PgPoolClient,
+  Pool as PgPool,
 } from "pg";
+
+export class ClientBase extends PgClientBase {
+  neonConfig: NeonConfig;
+}
 
 export class Client extends PgClient {
   neonConfig: NeonConfig;
@@ -137,6 +141,13 @@ export class Client extends PgClient {
 
 export interface PoolClient extends PgPoolClient {
   neonConfig: NeonConfig;
+}
+
+export class Pool extends PgPool {
+  connect(): Promise<PoolClient>;
+  connect(callback: (err: Error, client: PoolClient, done: (release?: any) => void) => void): void;
+  on(event: 'error', listener: (err: Error, client: PoolClient) => void): this;
+  on(event: 'connect' | 'acquire' | 'remove', listener: (client: PoolClient) => void): this;
 }
 
 export const neonConfig: NeonConfig;
