@@ -5,7 +5,7 @@ if [ "$1" = "debug" ]; then
   MINIFY_ARG=""
 else 
   DEBUG_ARG="--define:debug=false"
-  MINIFY_ARG="--minify"
+  MINIFY_ARG="--minify --line-limit=80"
 fi
 
 npx esbuild export/index.ts \

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DEBUG_ARG="--define:debug=false"
-MINIFY_ARG="--minify"
+MINIFY_ARG="--minify --line-limit=80"
 WATCH_ARG=""
 
 if [ "$1" = "debug" ] || [ "$2" = "debug" ]; then
