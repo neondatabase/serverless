@@ -5,7 +5,7 @@ if [ "$1" = "debug" ]; then
   MINIFY_ARG=""
 else 
   DEBUG_ARG="--define:debug=false"
-  MINIFY_ARG="--minify"
+  MINIFY_ARG="--minify --line-limit=80"
 fi
 
 npx esbuild export/index.ts \
@@ -110,11 +110,18 @@ interface FullQueryResults<ArrayMode extends boolean> {
   rowAsArray: ArrayMode;
 }
 
+export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
+  (strings: TemplateStringsArray, ...params: any[]):
+    Promise<FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+  (strings: string, params?: any[]):
+    Promise<FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+}
+
 /**
  * This experimental function returns an async tagged-template function that
  * runs a single SQL query (no session or transactions) with low latency over
  * https. By default, it returns database rows directly. Types should match
- * those returned by this driver over WebSockets.
+ * those returned by this driver (i.e. Pool or Client) over WebSockets.
  * 
  * The returned function can also be called directly (i.e. not as a template 
  * function). In that case, pass a query string with embedded `$1`, `$2` (etc.)
@@ -155,9 +162,6 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
     arrayMode?: ArrayMode;
     fullResults?: FullResults;
   }
-): (
-  strings: TemplateStringsArray | string,
-  ...params: any[]
-) => Promise<FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+): NeonQueryFunction<ArrayMode, FullResults>;
 
 EOF
