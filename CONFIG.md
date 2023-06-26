@@ -41,7 +41,7 @@ const rows = await sql`SELECT * FROM posts WHERE id = ${postId}`;
 
 ### `fullResults: boolean`
 
-When `fullResults` is true, additional metadata is returned alongside the result rows, which are then found in the `rows` property of the return value. The metadata matches what's returned by node-postgres:
+When `fullResults` is true, additional metadata is returned alongside the result rows, which are then found in the `rows` property of the return value. The metadata matches what would be returned by node-postgres:
 
 ```typescript
 import { neon } from '@neondatabase/serverless';
@@ -62,9 +62,7 @@ const results = await sql`SELECT * FROM posts WHERE id = ${postId}`;
 ```
 
 
-## Advanced configuration
-
-If you're using `@neondatabase/serverless` with a Neon database, you won't usually need to touch most of these configuration options.
+## `neonConfig` configuration
 
 There are two ways to set configuration options:
 
@@ -75,19 +73,19 @@ For example:
 
 ```javascript
 import { Client, neonConfig } from '@neondatabase/serverless';
+import ws from 'ws';
 
 // set default option for all clients
-neonConfig.wsProxy = (host, port) => `my-wsproxy.example.com/v1?address=${host}:${port}`;
+neonConfig.webSocketConstructor = ws;
 
 // override the default option on an individual client
 const client = new Client(process.env.DATABASE_URL);
-client.neonConfig.wsProxy = (host, port) => `my-wsproxy.example.com/v1?address=${host}:${port}`;
+client.neonConfig.webSocketConstructor = ws;
 ```
 
+### `webSocketConstructor: typeof WebSocket | undefined`
 
-### `webSocketContructor: typeof WebSocket | undefined`
-
-Set this parameter if you're using the driver in an environment where `globalThis.WebSocket` is not defined, such as Node.js, and you need transaction or session support.
+Set this parameter if you're using the driver in an environment where the `WebSocket` global is not defined, such as Node.js, and you need transaction or session support.
 
 For example:
 
@@ -97,16 +95,22 @@ import { neonConfig } from '@neondatabase/serverless';
 neonConfig.webSocketConstructor = ws; 
 ```
 
-### `poolQueryViaFetch: boolean`
+
+### Advanced configuration
+
+If you're using `@neondatabase/serverless` to connect to a Neon database, you usually **won't** need to touch the following configuration options. These options are intended for testing, troubleshooting, and supporting access to non-Neon Postgres instances via self-hosted WebSocket proxies.
+
+
+#### `poolQueryViaFetch: boolean`
 
 When `poolQueryViaFetch` is `true`, and no listeners for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP fetch request.
 
 We are investigating compatibility of this option.
 
-Default: currently `false` (may be `true` in future).
+Default: currently `false` (but may be `true` in future).
 
 
-### `wsProxy: string | (host: string, port: number | string) => string`
+#### `wsProxy: string | (host: string, port: number | string) => string`
 
 The `wsProxy` option should point to [your WebSocket proxy](DEPLOY.sh). It can either be a string, which will have `?address=host:port` appended to it, or a function with the signature `(host: string, port: number | string) => string`. Either way, the protocol must _not_ be included, because this depends on other options. For example, when using the `wsproxy` proxy, the `wsProxy` option should look something like this:
 
@@ -120,7 +124,7 @@ neonConfig.wsProxy = 'my-wsproxy.example.com/v1';
 Default: `host => host + '/v2'`.
 
 
-### `useSecureWebSocket: boolean`
+#### `useSecureWebSocket: boolean`
 
 This option switches between secure (the default) and insecure WebSockets. 
 
@@ -131,30 +135,30 @@ To use experimental pure-JS encryption, set `useSecureWebSocket = false` and `fo
 Default: `true`.
 
 
-### `forceDisablePgSSL: boolean`
+#### `forceDisablePgSSL: boolean`
 
 This option disables TLS encryption in the Postgres protocol (as set via e.g. `?sslmode=require` in the connection string). Security is not compromised if used in conjunction with `useSecureWebSocket = true`.
 
 Default: `true`.
 
 
-### `pipelineConnect: "password" | false`
+#### `pipelineConnect: "password" | false`
 
 To speed up connection times, the driver will pipeline the first three messages to the database (startup, authentication and first query) if `pipelineConnect` is set to `"password"`. Note that this will only work if you've configured cleartext password authentication for the relevant user and database. 
 
-If your connection doesn't support password authentication, set it to `false` instead.
+If your connection doesn't support password authentication, set `pipelineConnect` to `false` instead.
 
 Default: `"password"`.
 
 
-### `coalesceWrites: boolean`
+#### `coalesceWrites: boolean`
 
 When this option is `true`, multiple network writes generated in a single iteration of the JavaScript run-loop are coalesced into a single WebSocket message. Since node-postgres sends a lot of very short messages, this may reduce TCP/IP overhead.
 
 Default: `true`.
 
 
-### `rootCerts: string /* PEM format */`
+#### `rootCerts: string /* PEM format */`
 
 **Only when using experimental pure-JS TLS encryption**, this option determines what root (certificate authority) certificates are trusted.
 
@@ -163,7 +167,7 @@ Its value is a string containing one or more certificates in PEM format.
 Default: the [ISRG Root X1](https://letsencrypt.org/certificates/) certificate, which is appropriate for servers secured with [Let’s Encrypt](https://letsencrypt.org/).
 
 
-### `pipelineTLS: boolean`
+#### `pipelineTLS: boolean`
 
 **Only when using experimental pure-JS encryption**, the driver will pipeline the SSL request message and TLS Client Hello if `pipelineTLS` is set to `true`. Currently, this is only supported by Neon database hosts, and will fail when communicating with an ordinary Postgres or pgbouncer back-end.
 
