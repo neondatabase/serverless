@@ -157,11 +157,11 @@ export const neonConfig: NeonConfig;
 
 import { FieldDef } from "pg";
 
-type QueryRows<ArrayMode extends boolean> =
+export type QueryRows<ArrayMode extends boolean> =
   ArrayMode extends true ? any[][] :
   Record<string, any>[];
 
-interface FullQueryResults<ArrayMode extends boolean> {
+export interface FullQueryResults<ArrayMode extends boolean> {
   fields: FieldDef[];
   command: string;
   rowCount: number;
