@@ -112,7 +112,7 @@ Default: currently `false` (but may be `true` in future).
 
 #### `wsProxy: string | (host: string, port: number | string) => string`
 
-The `wsProxy` option should point to [your WebSocket proxy](DEPLOY.sh). It can either be a string, which will have `?address=host:port` appended to it, or a function with the signature `(host: string, port: number | string) => string`. Either way, the protocol must _not_ be included, because this depends on other options. For example, when using the `wsproxy` proxy, the `wsProxy` option should look something like this:
+The `wsProxy` option should point to [your WebSocket proxy](DEPLOY.md). It can either be a string, which will have `?address=host:port` appended to it, or a function with the signature `(host: string, port: number | string) => string`. Either way, the protocol must _not_ be included, because this depends on other options. For example, when using the `wsproxy` proxy, the `wsProxy` option should look something like this:
 
 ```javascript
 // either:
