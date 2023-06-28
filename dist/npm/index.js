@@ -1987,9 +1987,9 @@ if(!Ge.poolQueryViaFetch||this.hasFetchUnsupportedListeners||typeof t=="function
 return super.query(t,n,i);typeof n=="function"&&(i=n,n=void 0);let s=wl(this.Promise,
 i);i=s.callback;try{let a=new za.default(this.options),u=encodeURIComponent,c=encodeURI,
 h=`postgresql://${u(a.user)}:${u(a.password)}@${u(a.host)}/${c(a.database)}`,l=typeof t==
-"string"?t:t.text,f=(typeof t=="string"?n:t.values)??[];Nt(h,{fullResults:!0,arrayMode:t.
-rowMode==="array"})(l,f).then(b=>i(void 0,b)).catch(b=>i(b))}catch(a){i(a)}return s.
-result}};o(oi,"NeonPool");var si=oi;
+"string"?t:t.text,f=n??t.values??[];Nt(h,{fullResults:!0,arrayMode:t.rowMode==="\
+array"})(l,f).then(b=>i(void 0,b)).catch(b=>i(b))}catch(a){i(a)}return s.result}};
+o(oi,"NeonPool");var si=oi;
 /*! Bundled license information:
 
 ieee754/index.js:
