@@ -83,7 +83,7 @@ const client = new Client(process.env.DATABASE_URL);
 client.neonConfig.webSocketConstructor = ws;
 ```
 
-### `webSocketConstructor: typeof WebSocket | undefined`
+#### `webSocketConstructor: typeof WebSocket | undefined`
 
 Set this parameter if you're using the driver in an environment where the `WebSocket` global is not defined, such as Node.js, and you need transaction or session support.
 
