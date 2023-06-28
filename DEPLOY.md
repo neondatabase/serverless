@@ -23,7 +23,7 @@ Before you start:
 
 1. Ensure port 443 is accessible on this machine. You might need to change firewall settings with your platform provider.
 
-2. Upgrade to Ubuntu 22.04 if on earlier version (Golang is too old on older releases):
+2. Upgrade to Ubuntu 22.04 if on an earlier version (golang is too old on older releases):
 
 ```bash
 sudo su  # do this all as root
