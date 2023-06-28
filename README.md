@@ -10,18 +10,18 @@
 ## Get started
 
 
-### Install
+### Install it
 
-Install it with your JS package manager. For example:
+Install it with your preferred JavaScript package manager. For example:
 
 ```bash
 npm install @neondatabase/serverless
 ```
 
-Using TypeScript? Types are included.
+Using TypeScript? No worries: types are included.
 
 
-### Configure
+### Configure it
 
 Get your connection string from the [Neon console](https://console.neon.tech/) and set it as an environment variable. Something like:
 
@@ -30,7 +30,7 @@ DATABASE_URL=postgres://username:password@host.neon.tech/neondb
 ```
 
 
-### Use
+### Use it
 
 For one-shot queries, use the `neon` function. For instance:
 
@@ -45,18 +45,13 @@ const [post] = await sql`SELECT * FROM posts WHERE id = ${postId}`;
 Note: interpolating `${postId}` here is [safe from SQL injection](https://neon.tech/blog/sql-template-tags).
 
 
-### Deploy
+### Deploy it
 
-To turn this example into a complete API endpoint deployed on [Vercel Edge Functions](https://vercel.com/docs/concepts/functions/edge-functions) at `https://myapp.vercel.dev/api/post?postId=123`, follow these two steps:
+Turn this example into a complete API endpoint deployed on [Vercel Edge Functions](https://vercel.com/docs/concepts/functions/edge-functions) at `https://myapp.vercel.dev/api/post?postId=123` by following two simple steps:
 
 1. Create a new file `api/post.ts`:
 
 ```javascript
-export const config = {
-  runtime: 'edge',
-  regions: ['iad1'],  // specify the region nearest your Neon DB
-};
-
 import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL);
 
@@ -74,6 +69,11 @@ export default async (req: Request, ctx: any) => {
     headers: { 'content-type': 'application/json' }
   });
 }
+
+export const config = {
+  runtime: 'edge',
+  regions: ['iad1'],  // specify the region nearest your Neon DB
+};
 ```
 
 2. Test and deploy
@@ -90,28 +90,45 @@ The `neon` query function has a few [additional options](CONFIG.md).
 
 ## Sessions, transactions, and node-postgres compatibility
 
-A query using the `neon` function, as above, is carried by an https [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) request. This should work — and work fast — from any modern JS environment. But you can only send one query at a time this way: sessions and transactions are not supported.
+A query using the `neon` function, as shown above, is carried by an https [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) request. 
 
-When you need session or transaction support, use the `Pool` or `Client` constructors instead. Use `Pool` or `Client` also when you need  node-postgres compatibility, supporting query libraries like Kysely or Zapatos.
+This should work — and work fast — from any modern JavaScript environment. But you can only send one query at a time this way: sessions and transactions are not supported.
 
-The [node-postgres docs](https://node-postgres.com/) have the full API reference for `Pool` and `Client`.
 
-The `Pool` and `Client` objects carry queries over WebSockets. There are two key things you need to know:
+### `Pool` and `Client`
 
-1. In Node.js and some other environments, there's no built-in WebSocket support. In those cases, supply a WebSocket constructor function.
-2. In serverless environments such as Vercel Edge Functions or Cloudflare Workers, WebSocket connections cannot outlive a single request. That means `Pool` or `Client` objects must be connected, used and closed within a single request handler. Don't create them outside a request handler; don't create them in one handler and try to reuse them in another; and to avoid exhausting available connections, don't forget to close them.
+Use the `Pool` or `Client` constructors instead when you need:
+
+* **session or transaction support**, or
+
+* **node-postgres compatibility**, to enable query libraries like [Kysely](https://kysely.dev/) or [Zapatos](https://jawj.github.io/zapatos/).
+
+Using `Pool` and `Client`, queries are carried by WebSockets. There are **two key things** you need to know:
+
+1. **In Node.js** and some other environments, there's no built-in WebSocket support. In these cases, supply a WebSocket constructor function.
+
+2. **In serverless environments** such as Vercel Edge Functions or Cloudflare Workers, WebSocket connections can't outlive a single request. 
+    
+    That means `Pool` or `Client` objects must be connected, used and closed **within a single request handler**. Don't create them outside a request handler; don't create them in one handler and try to reuse them in another; and to avoid exhausting available connections, don't forget to close them.
 
 These points are demonstrated in the examples below.
 
 
-### Node.js/`webSocketConstructor` example
+### API 
 
-In Node.js, the only difference to node-postgres is the need to configure WebSocket support. For example:
+* **The full API guide** to `Pool` and `Client` can be found in the [node-postgres docs](https://node-postgres.com/).
+
+* There are a few [additional configuration options](CONFIG.md) that apply to `Pool` and `Client` here.
+
+
+## Example: Node.js with `Pool.connect()`
+
+In Node.js, it takes two lines to configure WebSocket support. For example:
 
 ```javascript
 import { Pool, neonConfig } from '@neondatabase/serverless';
-import ws from 'ws';
 
+import ws from 'ws';
 neonConfig.webSocketConstructor = ws;  // <-- this is the key bit
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -123,7 +140,7 @@ const client = await pool.connect();
 try {
   await client.query('BEGIN');
   const { rows: [{ id: postId }] } = await client.query('INSERT INTO posts (title) VALUES ($1) RETURNING id', ['Welcome']);
-  await client.query('INSERT INTO photos (post_id, url) VALUES ($1, $2)', [postId, 's3.bucket.foo']);
+  await client.query('INSERT INTO photos (post_id, url) VALUES ($1, $2)', [postId, 's3.bucket/photo/url']);
   await client.query('COMMIT');
 
 } catch (err) {
@@ -138,20 +155,22 @@ try {
 await pool.end();
 ```
 
+Other WebSocket libraries are available. For example, you could replace `ws` in the above example with `undici`:
 
-### Serverless environment example
+```typescript
+import { WebSocket } from 'undici';
+neonConfig.webSocketConstructor = WebSocket; 
+```
 
-We can rewrite the Vercel Edge Function we saw above to use `Pool`, as follows:
+
+## Example: Vercel Edge Function with `Pool.query()`
+
+We can rewrite the Vercel Edge Function above to use `Pool`, as follows:
 
 ```javascript
-export const config = {
-  runtime: 'edge',
-  regions: ['iad1'],  // specify the region nearest your Neon DB
-};
-
 import { Pool } from '@neondatabase/serverless';
 
-// don't create a `Pool` or `Client` here, outside the request handler
+// *don't* create a `Pool` or `Client` here, outside the request handler
 
 export default async (req: Request, ctx: any) => {
   // create a `Pool` inside the request handler
@@ -174,18 +193,21 @@ export default async (req: Request, ctx: any) => {
     headers: { 'content-type': 'application/json' }
   });
 }
-```
 
-Note: we don't use the pooling capabilities of `Pool` in this example, but it's slightly briefer than using `Client`, and because `Pool.query` is designed for one-shot queries we may in future automatically route these queries over https for lower latency.
-
-Using `Client` instead would look like this:
-
-```javascript
 export const config = {
   runtime: 'edge',
   regions: ['iad1'],  // specify the region nearest your Neon DB
 };
+```
 
+Note: we don't actually use the pooling capabilities of `Pool` in this example. But it's slightly briefer than using `Client` and, because `Pool.query` is designed for one-shot queries, we may in future automatically route these queries over https for lower latency.
+
+
+## Example: Vercel Edge Function with `Client`
+
+Using `Client` instead, the example looks like this:
+
+```javascript
 import { Client } from '@neondatabase/serverless';
 
 // don't create a `Pool` or `Client` here, outside the request handler
@@ -212,14 +234,34 @@ export default async (req: Request, ctx: any) => {
     headers: { 'content-type': 'application/json' }
   });
 }
+
+export const config = {
+  runtime: 'edge',
+  regions: ['iad1'],  // specify the region nearest your Neon DB
+};
 ```
 
-There are a few additional [configuration options](CONFIG.md) that apply to `Pool` and `Client`.
+## More examples
+
+These repos show how to use `@neondatabase/serverless` with a variety of environments and tools:
+
+* [Raw SQL + Vercel Edge Functions](https://github.com/neondatabase/neon-vercel-rawsql)
+* [Raw SQL via https + Vercel Edge Functions](https://github.com/neondatabase/neon-vercel-http)
+* [Raw SQL + Cloudflare Workers](https://github.com/neondatabase/serverless-cfworker-demo)
+* [Kysely + Vercel Edge Functions](https://github.com/neondatabase/neon-vercel-kysely)
+* [Zapatos + Vercel Edge Functions](https://github.com/neondatabase/neon-vercel-zapatos)
 
 
-TODO: links to example repos
+## Bring your own Postgres database
+
+This package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket. But you can also use it to connect to your own Postgres instances if you [run your own WebSocket proxy](DEPLOY.md).
 
 
-## Run your own WebSocket proxy
+## Open-source
 
-The package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket. But you can also [run your own WebSocket proxy](DEPLOY.md), and configure it to allow onward connections to your own Postgres instances.
+This code is released under the [MIT license](LICENSE).
+
+
+## Feedback and support
+
+Please visit [Neon Community](https://community.neon.tech/) or [Support](https://neon.tech/docs/introduction/support).

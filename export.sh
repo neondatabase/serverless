@@ -22,7 +22,7 @@ npx gen-esm-wrapper dist/npm/index.js dist/npm/index.mjs
 
 # copy static asset: README
 
-cp README.md dist/npm/
+cp LICENSE README.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
 
 # add pg types
 
