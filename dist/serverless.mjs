@@ -2028,9 +2028,8 @@ if(!ze.poolQueryViaFetch||this.hasFetchUnsupportedListeners||typeof e=="function
 return super.query(e,t,n);typeof t=="function"&&(n=t,t=void 0);let i=Eh(this.Promise,
 n);n=i.callback;try{let s=new Ta.default(this.options),a=encodeURIComponent,u=encodeURI,
 c=`postgresql://${a(s.user)}:${a(s.password)}@${a(s.host)}/${u(s.database)}`,l=typeof e==
-"string"?e:e.text,h=(typeof e=="string"?t:e.values)??[];mt(c,{fullResults:!0,arrayMode:e.
-rowMode==="array"})(l,h).then(d=>n(void 0,d)).catch(d=>n(d))}catch(s){n(s)}return i.
-result}};y();async function xh(r){let e=Date.now(),t=await r();return[Date.now()-e,t]}o(xh,"t\
+"string"?e:e.text,h=t??e.values??[];mt(c,{fullResults:!0,arrayMode:e.rowMode==="\
+array"})(l,h).then(d=>n(void 0,d)).catch(d=>n(d))}catch(s){n(s)}return i.result}};y();async function xh(r){let e=Date.now(),t=await r();return[Date.now()-e,t]}o(xh,"t\
 imed");async function _t(r,e,t=(n,i)=>{}){let n=[];for(let s=0;s<r;s++){let a=await xh(
 e),[u,c]=a;t(u,c),n.push(a)}return[n.reduce((s,[a])=>s+a,0),n]}o(_t,"timedRepeat\
 s");async function tr(r,e){let{sql:t,test:n}=e,{rows:i}=await r.query(t);if(!n(i))

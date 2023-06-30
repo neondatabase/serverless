@@ -215,7 +215,7 @@ class NeonPool extends Pool {
       const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
 
       const queryText = typeof config === 'string' ? config : config.text;
-      const queryValues = (typeof config === 'string' ? values : config.values) ?? [];
+      const queryValues = values ?? config.values ?? [];
 
       const sql = neon(connectionString, { fullResults: true, arrayMode: config.rowMode === 'array' });
 
