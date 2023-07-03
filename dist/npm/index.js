@@ -361,7 +361,7 @@ constructor.name===e.name}o(xe,"isInstance");function dr(r){return r!==r}o(dr,"n
 umberIsNaN");var jo=function(){let r="0123456789abcdef",e=new Array(256);for(let t=0;t<
 16;++t){let n=t*16;for(let i=0;i<16;++i)e[n+i]=r[t]+r[i]}return e}();function Ue(r){
 return typeof BigInt>"u"?Ko:r}o(Ue,"defineBigIntMethod");function Ko(){throw new Error(
-"BigInt not supported")}o(Ko,"BufferBigIntNotDefined")});var A,E,U,S,y,w,p=ie(()=>{"use strict";A=globalThis,E=globalThis.setImmediate??(r=>setTimeout(
+"BigInt not supported")}o(Ko,"BufferBigIntNotDefined")});var v,E,U,S,y,w,p=ie(()=>{"use strict";v=globalThis,E=globalThis.setImmediate??(r=>setTimeout(
 r,0)),U=globalThis.clearImmediate??(r=>clearTimeout(r)),S=globalThis.crypto??{};
 S.subtle??(S.subtle={});y=typeof globalThis.Buffer=="function"&&typeof globalThis.
 Buffer.allocUnsafe=="function"?globalThis.Buffer:Ri().Buffer,w=globalThis.process??
@@ -382,7 +382,7 @@ j+=4)b[R]=_[j]<<24|_[j+1]<<16|_[j+2]<<8|_[j+3];for(let R=16;R<64;R++){let j=m(b[
 16]+j+b[R-7]+K|0}let I=e,x=t,N=n,V=i,k=s,re=a,D=u,he=c;for(let R=0;R<64;R++){let j=m(
 k,6)^m(k,11)^m(k,25),K=k&re^~k&D,$=he+j+K+f[R]+b[R]|0,G=m(I,2)^m(I,13)^m(I,22),Y=I&
 x^I&N^x&N,q=G+Y|0;he=D,D=re,re=k,k=V+$|0,V=N,N=x,x=I,I=$+q|0}e=e+I|0,t=t+x|0,n=n+
-N|0,i=i+V|0,s=s+k|0,a=a+re|0,u=u+D|0,c=c+he|0,l=0},"process"),v=o(I=>{typeof I==
+N|0,i=i+V|0,s=s+k|0,a=a+re|0,u=u+D|0,c=c+he|0,l=0},"process"),A=o(I=>{typeof I==
 "string"&&(I=new TextEncoder().encode(I));for(let x=0;x<I.length;x++)_[l++]=I[x],
 l===64&&L();h+=I.length},"add"),P=o(()=>{if(_[l++]=128,l==64&&L(),l+8>64){for(;l<
 64;)_[l++]=0;L()}for(;l<58;)_[l++]=0;let I=h*8;_[l++]=I/1099511627776&255,_[l++]=
@@ -393,7 +393,7 @@ e&255,x[4]=t>>>24,x[5]=t>>>16&255,x[6]=t>>>8&255,x[7]=t&255,x[8]=n>>>24,x[9]=n>>
 x[15]=i&255,x[16]=s>>>24,x[17]=s>>>16&255,x[18]=s>>>8&255,x[19]=s&255,x[20]=a>>>
 24,x[21]=a>>>16&255,x[22]=a>>>8&255,x[23]=a&255,x[24]=u>>>24,x[25]=u>>>16&255,x[26]=
 u>>>8&255,x[27]=u&255,x[28]=c>>>24,x[29]=c>>>16&255,x[30]=c>>>8&255,x[31]=c&255,
-x},"digest");return r===void 0?{add:v,digest:P}:(v(r),P())}var Mi=ie(()=>{"use s\
+x},"digest");return r===void 0?{add:A,digest:P}:(A(r),P())}var Mi=ie(()=>{"use s\
 trict";p();o(rt,"sha256")});var J,nt,ki=ie(()=>{"use strict";p();J=class J{constructor(){g(this,"_dataLength",
 0);g(this,"_bufferLength",0);g(this,"_state",new Int32Array(4));g(this,"_buffer",
 new ArrayBuffer(68));g(this,"_buffer8");g(this,"_buffer32");this._buffer8=new Uint8Array(
@@ -746,8 +746,8 @@ once is too short")}else throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: serv
 er nonce does not start with client nonce");var i=y.from(n.salt,"base64"),s=hc(e,
 i,n.iteration),a=je(s,"Client Key"),u=cc(a),c="n=*,r="+r.clientNonce,h="r="+n.nonce+
 ",s="+n.salt+",i="+n.iteration,l="c=biws,r="+n.nonce,f=c+","+h+","+l,m=je(u,f),b=Cs(
-a,m),_=b.toString("base64"),L=je(s,"Server Key"),v=je(L,f);r.message="SASLRespon\
-se",r.serverSignature=v.toString("base64"),r.response=l+",p="+_}o(ic,"continueSe\
+a,m),_=b.toString("base64"),L=je(s,"Server Key"),A=je(L,f);r.message="SASLRespon\
+se",r.serverSignature=A.toString("base64"),r.response=l+",p="+_}o(ic,"continueSe\
 ssion");function sc(r,e){if(r.message!=="SASLResponse")throw new Error("SASL: La\
 st message was not SASLResponse");if(typeof e!="string")throw new Error("SASL: S\
 CRAM-SERVER-FINAL-MESSAGE: serverData must be a string");let{serverSignature:t}=uc(
@@ -843,15 +843,15 @@ for(let u of t.searchParams.entries())e[u[0]]=u[1];if(e.user=e.user||decodeURICo
 t.username),e.password=e.password||decodeURIComponent(t.password),e.port=t.port,
 t.protocol=="socket:")return e.host=decodeURI(t.pathname),e.database=t.searchParams.
 get("db"),e.client_encoding=t.searchParams.get("encoding"),e;let i=n?"":t.hostname;
-e.host?i&&(t.pathname=i+t.pathname):e.host=decodeURIComponent(i);let s=t.pathname.
-slice(1)||null;e.database=s?decodeURI(s):null,(e.ssl==="true"||e.ssl==="1")&&(e.
-ssl=!0),e.ssl==="0"&&(e.ssl=!1),(e.sslcert||e.sslkey||e.sslrootcert||e.sslmode)&&
-(e.ssl={});let a=e.sslcert||e.sslkey||e.sslrootcert?(Fr(),Z(Rr)):null;switch(e.sslcert&&
-(e.ssl.cert=a.readFileSync(e.sslcert).toString()),e.sslkey&&(e.ssl.key=a.readFileSync(
-e.sslkey).toString()),e.sslrootcert&&(e.ssl.ca=a.readFileSync(e.sslrootcert).toString()),
-e.sslmode){case"disable":{e.ssl=!1;break}case"prefer":case"require":case"verify-\
-ca":case"verify-full":break;case"no-verify":{e.ssl.rejectUnauthorized=!1;break}}
-return e}o(jr,"parse");Ks.exports=jr;jr.parse=jr});var Kt=T((sd,Gs)=>{"use strict";p();var Rc=(js(),Z(Hs)),Vs=ht(),Ws=$s().parse,ce=o(
+e.host?i&&/^%2f/i.test(i)&&(t.pathname=i+t.pathname):e.host=decodeURIComponent(i);
+let s=t.pathname.slice(1)||null;e.database=s?decodeURI(s):null,(e.ssl==="true"||
+e.ssl==="1")&&(e.ssl=!0),e.ssl==="0"&&(e.ssl=!1),(e.sslcert||e.sslkey||e.sslrootcert||
+e.sslmode)&&(e.ssl={});let a=e.sslcert||e.sslkey||e.sslrootcert?(Fr(),Z(Rr)):null;
+switch(e.sslcert&&(e.ssl.cert=a.readFileSync(e.sslcert).toString()),e.sslkey&&(e.
+ssl.key=a.readFileSync(e.sslkey).toString()),e.sslrootcert&&(e.ssl.ca=a.readFileSync(
+e.sslrootcert).toString()),e.sslmode){case"disable":{e.ssl=!1;break}case"prefer":case"\
+require":case"verify-ca":case"verify-full":break;case"no-verify":{e.ssl.rejectUnauthorized=
+!1;break}}return e}o(jr,"parse");Ks.exports=jr;jr.parse=jr});var Kt=T((sd,Gs)=>{"use strict";p();var Rc=(js(),Z(Hs)),Vs=ht(),Ws=$s().parse,ce=o(
 function(r,e,t){return t===void 0?t=w.env["PG"+r.toUpperCase()]:t===!1||(t=w.env[t]),
 e[r]||t||Vs[r]},"val"),Fc=o(function(){switch(w.env.PGSSLMODE){case"disable":return!1;case"\
 prefer":case"require":case"verify-ca":case"verify-full":return!0;case"no-verify":
@@ -944,7 +944,7 @@ writeLengthUint16(0);i.writeUint8(0,0);let D=i.writeLengthUint16(0);i.writeUTF8S
 r),D(),re(),k()}i.writeUint16(11,0);let f=i.writeLengthUint16(0),m=i.writeLengthUint8(
 0);i.writeUint8(0,0),m(),f(),i.writeUint16(10,0);let b=i.writeLengthUint16(0),_=i.
 writeLengthUint16(0);i.writeUint16(23,0),_(),b(),i.writeUint16(13,0);let L=i.writeLengthUint16(
-0),v=i.writeLengthUint16(0);i.writeUint16(1027,0),i.writeUint16(2052,0),v(),L(),
+0),A=i.writeLengthUint16(0);i.writeUint16(1027,0),i.writeUint16(2052,0),A(),L(),
 i.writeUint16(43,0);let P=i.writeLengthUint16(0),I=i.writeLengthUint8(0);i.writeUint16(
 772,0),I(),P(),i.writeUint16(51,0);let x=i.writeLengthUint16(0),N=i.writeLengthUint16(
 0);i.writeUint16(23,0);let V=i.writeLengthUint16(0);return i.writeBytes(new Uint8Array(
@@ -991,11 +991,11 @@ async function jc(r,e,t,n,i){let s=n>>>3,a=new Uint8Array(s),u=await F.importKey
 "raw",r,{name:"ECDH",namedCurve:"P-256"},!1,[]),c=await F.deriveBits({name:"ECDH",
 public:u},e,256),h=new Uint8Array(c),l=await F.digest("SHA-256",t),f=new Uint8Array(
 l),m=await rn(new Uint8Array(1),a,n),b=await F.digest(`SHA-${n}`,new Uint8Array(
-0)),_=new Uint8Array(b),L=await ue(m,"derived",_,s,n),v=await rn(L,h,n),P=await ue(
-v,"c hs traffic",f,s,n),I=await ue(v,"s hs traffic",f,s,n),x=await ue(P,"key",new Uint8Array(
+0)),_=new Uint8Array(b),L=await ue(m,"derived",_,s,n),A=await rn(L,h,n),P=await ue(
+A,"c hs traffic",f,s,n),I=await ue(A,"s hs traffic",f,s,n),x=await ue(P,"key",new Uint8Array(
 0),i,n),N=await ue(I,"key",new Uint8Array(0),i,n),V=await ue(P,"iv",new Uint8Array(
 0),12,n),k=await ue(I,"iv",new Uint8Array(0),12,n);return{serverHandshakeKey:N,serverHandshakeIV:k,
-clientHandshakeKey:x,clientHandshakeIV:V,handshakeSecret:v,clientSecret:P,serverSecret:I}}
+clientHandshakeKey:x,clientHandshakeIV:V,handshakeSecret:A,clientSecret:P,serverSecret:I}}
 async function Kc(r,e,t,n){let i=t>>>3,s=new Uint8Array(i),a=await F.digest(`SHA\
 -${t}`,new Uint8Array(0)),u=new Uint8Array(a),c=await ue(r,"derived",u,i,t),h=await rn(
 c,s,t),l=await ue(h,"c ap traffic",e,i,t),f=await ue(h,"s ap traffic",e,i,t),m=await ue(
@@ -1051,8 +1051,8 @@ r: ${r}`);return e}function ca(r,e=[]){return Object.values(r).forEach(t=>{typeo
 "string"?e=[...e,t]:e=ca(t,e)}),e}function eh(r){return ca(r).join(" / ")}async function ha(r,e,t,n,i){
 r.expectUint8(ae,0);let[s]=r.expectASN1Length(0);r.expectUint8(Gt,0);let[a,u]=r.
 expectASN1Length(0),c=r.readBytes(u());a(),r.expectUint8(Gt,0);let[h,l]=r.expectASN1Length(
-0),f=r.readBytes(l());h(),s();let m=o((v,P)=>v.length>P?v.subarray(v.length-P):v.
-length<P?oe(new Uint8Array(P-v.length),v):v,"m"),b=n==="P-256"?32:48,_=oe(m(c,b),
+0),f=r.readBytes(l());h(),s();let m=o((A,P)=>A.length>P?A.subarray(A.length-P):A.
+length<P?oe(new Uint8Array(P-A.length),A):A,"m"),b=n==="P-256"?32:48,_=oe(m(c,b),
 m(f,b)),L=await F.importKey("spki",e,{name:"ECDSA",namedCurve:n},!1,["verify"]);
 if(await F.verify({name:"ECDSA",hash:i},L,_,t)!==!0)throw new Error("ECDSA-SECP2\
 56R1-SHA256 certificate verify failed")}async function rh(r,e,t,n=!0,i=!0){for(let u of e)
@@ -1071,10 +1071,10 @@ cate keyUsage does not include digital signatures");if(f.basicConstraints?.ca!==
 rtificate");let{pathLength:b}=f.basicConstraints;if(b!==void 0&&b<u)throw new Error(
 "Exceeded certificate pathLength");if(h.algorithm==="1.2.840.10045.4.3.2"||h.algorithm===
 "1.2.840.10045.4.3.3"){let _=h.algorithm==="1.2.840.10045.4.3.2"?"SHA-256":"SHA-\
-384",L=f.publicKey.identifiers,v=L.includes("1.2.840.10045.3.1.7")?"P-256":L.includes(
-"1.3.132.0.34")?"P-384":void 0;if(v===void 0)throw new Error("Unsupported signin\
+384",L=f.publicKey.identifiers,A=L.includes("1.2.840.10045.3.1.7")?"P-256":L.includes(
+"1.3.132.0.34")?"P-384":void 0;if(A===void 0)throw new Error("Unsupported signin\
 g key curve");let P=new Vt(h.signature);await ha(P,f.publicKey.all,h.signedData,
-v,_)}else if(h.algorithm==="1.2.840.113549.1.1.11"||h.algorithm==="1.2.840.11354\
+A,_)}else if(h.algorithm==="1.2.840.113549.1.1.11"||h.algorithm==="1.2.840.11354\
 9.1.1.12"){let _=h.algorithm==="1.2.840.113549.1.1.11"?"SHA-256":"SHA-384",L=await F.
 importKey("spki",f.publicKey.all,{name:"RSASSA-PKCS1-v1_5",hash:_},!1,["verify"]);
 if(await F.verify({name:"RSASSA-PKCS1-v1_5"},L,h.signature,h.signedData)!==!0)throw new Error(
@@ -1090,9 +1090,9 @@ m=u.readUint8();if(m===13){f=!0;let[O]=u.expectLengthUint24("certificate request
 extensions");u.skip(ve(),0),Se(),O(),u.remaining()===0&&u.extend(await e()),m=u.
 readUint8()}if(m!==11)throw new Error(`Unexpected handshake message type 0x${Le(
 [m])}`);let[b]=u.expectLengthUint24(0);u.expectUint8(0,0);let[_,L]=u.expectLengthUint24(
-0),v=[];for(;L()>0;){let[O]=u.expectLengthUint24(0),Se=new mt(u);v.push(Se),O();
-let[ve,Fe]=u.expectLengthUint16(),ui=u.subarray(Fe());ve()}if(_(),b(),v.length===
-0)throw new Error("No certificates supplied");let P=v[0],I=u.data.subarray(0,u.offset),
+0),A=[];for(;L()>0;){let[O]=u.expectLengthUint24(0),Se=new mt(u);A.push(Se),O();
+let[ve,Fe]=u.expectLengthUint16(),ui=u.subarray(Fe());ve()}if(_(),b(),A.length===
+0)throw new Error("No certificates supplied");let P=A[0],I=u.data.subarray(0,u.offset),
 x=oe(n,I),N=await F.digest("SHA-256",x),V=new Uint8Array(N),k=oe(nh.encode(" ".repeat(
 64)+"TLS 1.3, server CertificateVerify"),[0],V);u.remaining()===0&&u.extend(await e()),
 u.expectUint8(15,0);let[re]=u.expectLengthUint24(0),D=u.readUint16();if(D===1027){
@@ -1108,7 +1108,7 @@ digest("SHA-256",R),$=await F.importKey("raw",j,{name:"HMAC",hash:{name:"SHA-256
 extend(await e()),u.expectUint8(20,0);let[q,z]=u.expectLengthUint24(0),X=u.readBytes(
 z());if(q(),u.remaining()!==0)throw new Error("Unexpected extra bytes in server \
 handshake");if(_t(X,Y)!==!0)throw new Error("Invalid server verify hash");if(!await rh(
-r,v,i,s,a))throw new Error("Validated certificate chain did not end in a trusted\
+r,A,i,s,a))throw new Error("Validated certificate chain did not end in a trusted\
  root");return[u.data,f]}async function la(r,e,t,n,{useSNI:i,requireServerTlsExtKeyUsage:s,
 requireDigitalSigKeyUsage:a,writePreData:u,expectPreData:c,commentPreData:h}={}){
 i??(i=!0),s??(s=!0),a??(a=!0);let l=await F.generateKey({name:"ECDH",namedCurve:"\
@@ -1116,7 +1116,7 @@ P-256"},!0,["deriveKey","deriveBits"]),f=await F.exportKey("raw",l.publicKey),m=
 32);S.getRandomValues(m);let b=Dc(r,f,m,i).array(),_=u?oe(u,b):b;if(n(_),c){let ne=await t(
 c.length);if(!ne||!_t(ne,c))throw new Error("Pre data did not match expectation")}
 let L=await en(t,22);if(L===void 0)throw new Error("Connection closed while awai\
-ting server hello");let v=new Ae(L.content),P=qc(v,m),I=await en(t,20);if(I===void 0)
+ting server hello");let A=new Ae(L.content),P=qc(A,m),I=await en(t,20);if(I===void 0)
 throw new Error("Connection closed awaiting server cipher change");let x=new Ae(
 I.content),[N]=x.expectLength(1);x.expectUint8(1,0),N();let V=b.subarray(5),k=L.
 content,re=oe(V,k),D=await jc(P,l.privateKey,re,256,16),he=await F.importKey("ra\
@@ -1245,7 +1245,7 @@ h()>0&&(t.expectUint8(Jr,0),t.expectUint8(0,0)),c(),this.issuer=oa(t,"issuer"),t
 expectUint8(ae,0);let[l]=t.expectASN1Length(0);t.expectUint8(aa,0);let f=t.readASN1UTCTime();
 t.expectUint8(aa,0);let m=t.readASN1UTCTime();this.validityPeriod={notBefore:f,notAfter:m},
 l(),this.subject=oa(t,"subject");let b=t.offset;t.expectUint8(ae,0);let[_]=t.expectASN1Length(
-0);t.expectUint8(ae,0);let[L,v]=t.expectASN1Length(0),P=[];for(;v()>0;){let he=t.
+0);t.expectUint8(ae,0);let[L,A]=t.expectASN1Length(0),P=[];for(;A()>0;){let he=t.
 readUint8();if(he===Ve){let R=t.readASN1OID();P.push(R)}else he===Jr&&t.expectUint8(
 0,0)}L(),t.expectUint8(Zr,0);let I=t.readASN1BitString();this.publicKey={identifiers:P,
 data:I,all:t.data.subarray(b,t.offset)},_(),t.expectUint8(zc,0);let[x]=t.expectASN1Length();
@@ -1631,7 +1631,7 @@ user,this.database=this.connectionParameters.database,this.port=this.connectionP
 port,this.host=this.connectionParameters.host,Object.defineProperty(this,"passwo\
 rd",{configurable:!0,enumerable:!1,writable:!0,value:this.connectionParameters.password}),
 this.replication=this.connectionParameters.replication;var t=e||{};this._Promise=
-t.Promise||A.Promise,this._types=new zh(t.types),this._ending=!1,this._connecting=
+t.Promise||v.Promise,this._types=new zh(t.types),this._ending=!1,this._connecting=
 !1,this._connected=!1,this._connectionError=!1,this._queryable=!0,this.connection=
 t.connection||new Zh({stream:t.stream,ssl:this.connectionParameters.ssl,keepAlive:t.
 keepAlive||!1,keepAliveInitialDelayMillis:t.keepAliveInitialDelayMillis||0,encoding:this.
@@ -1745,20 +1745,20 @@ this.timeoutId=n}};o(Xn,"IdleItem");var Jn=Xn,ei=class ei{constructor(e){this.ca
 e}};o(ei,"PendingItem");var Je=ei;function el(){throw new Error("Release called \
 on client which has already been released to the pool.")}o(el,"throwOnDoubleRele\
 ase");function er(r,e){if(e)return{callback:e,result:void 0};let t,n,i=o(function(a,u){
-a?t(a):n(u)},"cb"),s=new r(function(a,u){n=a,t=u});return{callback:i,result:s}}o(
-er,"promisify");function tl(r,e){return o(function t(n){n.client=e,e.removeListener(
-"error",t),e.on("error",()=>{r.log("additional client error after disconnection \
-due to error",n)}),r._remove(e),r.emit("error",n,e)},"idleListener")}o(tl,"makeI\
-dleListener");var ti=class ti extends Xh{constructor(e,t){super(),this.options=Object.
-assign({},e),e!=null&&"password"in e&&Object.defineProperty(this.options,"passwo\
-rd",{configurable:!0,enumerable:!1,writable:!0,value:e.password}),e!=null&&e.ssl&&
-e.ssl.key&&Object.defineProperty(this.options.ssl,"key",{enumerable:!1}),this.options.
-max=this.options.max||this.options.poolSize||10,this.options.maxUses=this.options.
-maxUses||1/0,this.options.allowExitOnIdle=this.options.allowExitOnIdle||!1,this.
-options.maxLifetimeSeconds=this.options.maxLifetimeSeconds||0,this.log=this.options.
-log||function(){},this.Client=this.options.Client||t||tr().Client,this.Promise=this.
-options.Promise||A.Promise,typeof this.options.idleTimeoutMillis>"u"&&(this.options.
-idleTimeoutMillis=1e4),this._clients=[],this._idle=[],this._expired=new WeakSet,
+a?t(a):n(u)},"cb"),s=new r(function(a,u){n=a,t=u}).catch(a=>{throw Error.captureStackTrace(
+a),a});return{callback:i,result:s}}o(er,"promisify");function tl(r,e){return o(function t(n){
+n.client=e,e.removeListener("error",t),e.on("error",()=>{r.log("additional clien\
+t error after disconnection due to error",n)}),r._remove(e),r.emit("error",n,e)},
+"idleListener")}o(tl,"makeIdleListener");var ti=class ti extends Xh{constructor(e,t){
+super(),this.options=Object.assign({},e),e!=null&&"password"in e&&Object.defineProperty(
+this.options,"password",{configurable:!0,enumerable:!1,writable:!0,value:e.password}),
+e!=null&&e.ssl&&e.ssl.key&&Object.defineProperty(this.options.ssl,"key",{enumerable:!1}),
+this.options.max=this.options.max||this.options.poolSize||10,this.options.maxUses=
+this.options.maxUses||1/0,this.options.allowExitOnIdle=this.options.allowExitOnIdle||
+!1,this.options.maxLifetimeSeconds=this.options.maxLifetimeSeconds||0,this.log=this.
+options.log||function(){},this.Client=this.options.Client||t||tr().Client,this.Promise=
+this.options.Promise||v.Promise,typeof this.options.idleTimeoutMillis>"u"&&(this.
+options.idleTimeoutMillis=1e4),this._clients=[],this._idle=[],this._expired=new WeakSet,
 this._pendingQueue=[],this._endCallback=void 0,this.ending=!1,this.ended=!1}_isFull(){
 return this._clients.length>=this.options.max}_pulseQueue(){if(this.log("pulse q\
 ueue"),this.ended){this.log("pulse queue ended");return}if(this.ending){this.log(
@@ -1861,7 +1861,7 @@ values)){let s=new Error("Query values must be an array");return t(s)}var i=this
 values.map(ri.prepareValue);r.native.query(this.text,i,t)}else r.native.query(this.
 text,t)}});var Va=T((ap,Wa)=>{"use strict";p();var al=(qa(),Z(Da)),ol=Hr(),sp=Oa(),Ka=Ce().
 EventEmitter,ul=(pt(),Z(dt)),cl=Kt(),$a=ja(),pe=Wa.exports=function(r){Ka.call(this),
-r=r||{},this._Promise=r.Promise||A.Promise,this._types=new ol(r.types),this.native=
+r=r||{},this._Promise=r.Promise||v.Promise,this._types=new ol(r.types),this.native=
 new al({types:this._types}),this._queryQueue=[],this._ending=!1,this._connecting=
 !1,this._connected=!1,this._queryable=!0;var e=this.connectionParameters=new cl(
 r);this.user=e.user,Object.defineProperty(this,"password",{configurable:!0,enumerable:!1,
@@ -1924,18 +1924,19 @@ fullResults:t,queryCallback:n,resultCallback:i}={}){let s=Fi(r),{protocol:a,user
 password:c,hostname:h,pathname:l}=s;if(a!=="postgres:"&&a!=="postgresql:"||!h||!u||
 !c||!l)throw new Error("Database connection string format should be: postgres://\
 user:password@host.tld/dbname?option=value");return async function(f,...m){let b;
-if(typeof f=="string")b=f,m=m[0]??[];else{b="";for(let v=0;v<f.length;v++)b+=f[v],
-v<m.length&&(b+="$"+(v+1))}m=m.map(v=>(0,ps.prepareValue)(v));let _,L;try{let v=`\
-https://${h}/sql`;_={query:b,params:m},n&&n(_),L=await fetch(v,{body:JSON.stringify(
-_),method:"POST",headers:{"Neon-Connection-String":r,"Neon-Raw-Text-Output":"tru\
-e","Neon-Array-Mode":"true"}})}catch(v){throw new ft(`Error connecting to databa\
-se: ${v.message}`)}if(L.ok){let v=await L.json(),P=v.fields.map(N=>N.name),I=v.fields.
-map(N=>de.types.getTypeParser(N.dataTypeID)),x=e===!0?v.rows.map(N=>N.map((V,k)=>V===
-null?null:I[k](V))):v.rows.map(N=>Object.fromEntries(N.map((V,k)=>[P[k],V===null?
-null:I[k](V)])));return i&&i(_,v,x),t?(v.viaNeonFetch=!0,v.rowAsArray=e,v.rows=x,
-v):x}else{let{status:v}=L;if(v===400){let{message:P,code:I}=await L.json(),x=new ft(
-P);throw x.code=I,x}else{let P=await L.text();throw new ft(`Database error (HTTP\
- status ${v}): ${P}`)}}}}o(Nt,"neon");var nr=et(tr());an();var za=et(Kt()),de=et(tr());var ai=class ai extends nr.Client{get neonConfig(){return this.connection.stream}connect(e){
+if(typeof f=="string"){b=f;let A=m[1];A!==void 0&&(A.arrayMode!==void 0&&(e=A.arrayMode),
+A.fullResults!==void 0&&(t=A.fullResults)),m=m[0]??[]}else{b="";for(let A=0;A<f.
+length;A++)b+=f[A],A<m.length&&(b+="$"+(A+1))}m=m.map(A=>(0,ps.prepareValue)(A));
+let _,L;try{let A=`https://${h}/sql`;_={query:b,params:m},n&&n(_),L=await fetch(
+A,{body:JSON.stringify(_),method:"POST",headers:{"Neon-Connection-String":r,"Neo\
+n-Raw-Text-Output":"true","Neon-Array-Mode":"true"}})}catch(A){throw new ft(`Err\
+or connecting to database: ${A.message}`)}if(L.ok){let A=await L.json(),P=A.fields.
+map(N=>N.name),I=A.fields.map(N=>de.types.getTypeParser(N.dataTypeID)),x=e===!0?
+A.rows.map(N=>N.map((V,k)=>V===null?null:I[k](V))):A.rows.map(N=>Object.fromEntries(
+N.map((V,k)=>[P[k],V===null?null:I[k](V)])));return i&&i(_,A,x),t?(A.viaNeonFetch=
+!0,A.rowAsArray=e,A.rows=x,A):x}else{let{status:A}=L;if(A===400){let{message:P,code:I}=await L.
+json(),x=new ft(P);throw x.code=I,x}else{let P=await L.text();throw new ft(`Data\
+base error (HTTP status ${A}): ${P}`)}}}}o(Nt,"neon");var nr=et(tr());an();var za=et(Kt()),de=et(tr());var ai=class ai extends nr.Client{get neonConfig(){return this.connection.stream}connect(e){
 let{neonConfig:t}=this;t.forceDisablePgSSL&&(this.ssl=this.connection.ssl=!1),this.
 ssl&&t.useSecureWebSocket&&console.warn("SSL is enabled for both Postgres (e.g. \
 ?sslmode=require in the connection string + forceDisablePgSSL = false) and the W\
@@ -1965,7 +1966,7 @@ if(a.length===t.clientNonce.length)throw new Error("SASL: SCRAM-SERVER-FIRST-MES
 SAGE: server nonce is too short");let h=parseInt(c,10),l=y.from(u,"base64"),f=new TextEncoder,
 m=f.encode(n),b=await S.subtle.importKey("raw",m,{name:"HMAC",hash:{name:"SHA-25\
 6"}},!1,["sign"]),_=new Uint8Array(await S.subtle.sign("HMAC",b,y.concat([l,y.from(
-[0,0,0,1])]))),L=_;for(var v=0;v<h-1;v++)_=new Uint8Array(await S.subtle.sign("H\
+[0,0,0,1])]))),L=_;for(var A=0;A<h-1;A++)_=new Uint8Array(await S.subtle.sign("H\
 MAC",b,_)),L=y.from(L.map((z,X)=>L[X]^_[X]));let P=L,I=await S.subtle.importKey(
 "raw",P,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),x=new Uint8Array(await S.
 subtle.sign("HMAC",I,f.encode("Client Key"))),N=await S.subtle.digest("SHA-256",

@@ -42,7 +42,14 @@ export function neon(
 
     if (typeof strings === 'string') {  // ordinary (non tagged-template) usage
       query = strings;
-      params = params[0] ?? [];  // because we expect the second argument to be an array of params
+
+      const opts = params[1];  // drizzle-orm insist that they need these options overrides
+      if (opts !== undefined) {
+        if (opts.arrayMode !== undefined) arrayMode = opts.arrayMode;
+        if (opts.fullResults !== undefined) fullResults = opts.fullResults;
+      }
+
+      params = params[0] ?? [];  // the second argument should be an array of params
 
     } else {  // tagged-template usage
       query = '';
