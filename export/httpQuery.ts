@@ -1,4 +1,5 @@
 import { parse } from '../shims/url';
+import { Socket } from '../shims/net';
 import { types } from '.';
 
 // @ts-ignore -- this isn't officially exported by pg
@@ -18,13 +19,13 @@ interface HTTPQueryOptions {
   arrayMode?: boolean;  // default false
   fullResults?: boolean;  // default false
   queryCallback?: (query: Query) => void;
-  resultCallback?: (query: Query, result: any, rows: any) => void;
+  resultCallback?: (query: Query, result: any, rows: any, opts: any) => void;
 }
 
 export function neon(
   connectionString: string, {
-    arrayMode,
-    fullResults,
+    arrayMode: arrayModeDefault,
+    fullResults: fullresultsDefault,
     queryCallback,
     resultCallback
   }: HTTPQueryOptions = {}
@@ -38,8 +39,10 @@ export function neon(
   }
 
   return async function (strings: TemplateStringsArray | string, ...params: any[]): Promise<any> {
-    let query;
+    let arrayMode = arrayModeDefault;
+    let fullResults = fullresultsDefault;
 
+    let query;
     if (typeof strings === 'string') {  // ordinary (non tagged-template) usage
       query = strings;
 
@@ -65,8 +68,9 @@ export function neon(
     let qp, response;
     try {
       const url = `https://${hostname}/sql`;
-      qp = { query, params };
+      const connCacheHeader = Socket.fetchConnectionCache === true ? { 'Neon-Pool-Opt-In': 'true' } : {} as Record<string, string>;
 
+      qp = { query, params };
       if (queryCallback) queryCallback(qp);
 
       response = await fetch(url, {
@@ -76,6 +80,7 @@ export function neon(
           'Neon-Connection-String': connectionString,
           'Neon-Raw-Text-Output': 'true',
           'Neon-Array-Mode': 'true',
+          ...connCacheHeader,
         },
       });
 
@@ -99,7 +104,7 @@ export function neon(
           )
         });
 
-      if (resultCallback) resultCallback(qp, rawResults, rows);
+      if (resultCallback) resultCallback(qp, rawResults, rows, { arrayMode, fullResults });
 
       if (fullResults) {
         rawResults.viaNeonFetch = true;

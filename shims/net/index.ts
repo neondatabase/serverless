@@ -46,6 +46,7 @@ export function isIP(input: string) {
 
 export interface SocketDefaults {
   poolQueryViaFetch: boolean;
+  fetchConnectionCache: boolean;
   webSocketConstructor: typeof WebSocket | undefined;
   wsProxy: string | ((host: string, port: number | string) => string) | undefined;
   useSecureWebSocket: boolean;
@@ -60,6 +61,7 @@ export interface SocketDefaults {
 export class Socket extends EventEmitter {
   static defaults: SocketDefaults = {
     poolQueryViaFetch: false,
+    fetchConnectionCache: false,
     webSocketConstructor: undefined,
     wsProxy: host => host + '/v2',
     useSecureWebSocket: true,
@@ -75,6 +77,11 @@ export class Socket extends EventEmitter {
   private _poolQueryViaFetch: typeof Socket.poolQueryViaFetch | undefined;
   get poolQueryViaFetch() { return this._poolQueryViaFetch ?? Socket.poolQueryViaFetch ?? Socket.defaults.poolQueryViaFetch; }
   set poolQueryViaFetch(poolQueryViaFetch: typeof Socket.poolQueryViaFetch) { this._poolQueryViaFetch = poolQueryViaFetch; }
+
+  static fetchConnectionCache: SocketDefaults['fetchConnectionCache'];
+  private _fetchConnectionCache: typeof Socket.fetchConnectionCache | undefined;
+  get fetchConnectionCache() { return this._fetchConnectionCache ?? Socket.fetchConnectionCache ?? Socket.defaults.fetchConnectionCache; }
+  set fetchConnectionCache(fetchConnectionCache: typeof Socket.fetchConnectionCache) { this._fetchConnectionCache = fetchConnectionCache; }
 
   static webSocketConstructor: SocketDefaults['webSocketConstructor'];
   private _webSocketConstructor: typeof Socket.webSocketConstructor | undefined;
