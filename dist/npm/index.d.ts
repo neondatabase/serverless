@@ -122,6 +122,14 @@ export interface NeonConfig {
    * Default: `false`.
    */
   poolQueryViaFetch: boolean;
+
+  /**
+   * **Experimentally**, when `fetchConnectionCache` is `true`, queries carried
+   * via HTTP fetch make use of a connection cache on the server.
+   * 
+   * Default: `false`.
+   */
+  fetchConnectionCache: boolean;
 }
 
 import {
