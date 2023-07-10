@@ -42,6 +42,8 @@ declare interface NeonClient {
   saslSession: any;
 }
 
+export const localhostWarning = `The database host is 'localhost', which is the default host when none is set. If that's intentional, please ignore this warning. If not, perhaps an environment variable has not been set, or has not been passed to the library?`;
+
 class NeonClient extends Client {
 
   get neonConfig(): NeonConfig { return this.connection.stream; }
@@ -58,7 +60,7 @@ class NeonClient extends Client {
       console.warn(`SSL is enabled for both Postgres (e.g. ?sslmode=require in the connection string + forceDisablePgSSL = false) and the WebSocket tunnel (useSecureWebSocket = true). Double encryption will increase latency and CPU usage. It may be appropriate to disable SSL in the Postgres connection parameters or set forceDisablePgSSL = true.`);
     }
     if (this.host === 'localhost') {
-      console.warn(`The database host is 'localhost', which is the default host when none is set. If that's intentional, please ignore this warning. If not, perhaps an environment variable has not been set, or has not been passed to the library?`);
+      console.warn(localhostWarning);
     }
 
     const result = super.connect(callback as any) as void | Promise<void>;

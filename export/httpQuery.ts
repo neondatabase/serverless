@@ -1,6 +1,6 @@
 import { parse } from '../shims/url';
 import { Socket } from '../shims/net';
-import { types } from '.';
+import { types, localhostWarning } from '.';
 
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from '../node_modules/pg/lib/utils';
@@ -18,6 +18,7 @@ interface Query {
 interface HTTPQueryOptions {
   arrayMode?: boolean;  // default false
   fullResults?: boolean;  // default false
+  fetchOptions?: Record<string, any>;
   queryCallback?: (query: Query) => void;
   resultCallback?: (query: Query, result: any, rows: any, opts: any) => void;
 }
@@ -26,6 +27,7 @@ export function neon(
   connectionString: string, {
     arrayMode: arrayModeDefault,
     fullResults: fullresultsDefault,
+    fetchOptions: fetchOptionsDefault,
     queryCallback,
     resultCallback
   }: HTTPQueryOptions = {}
@@ -35,12 +37,14 @@ export function neon(
   const { protocol, username, password, hostname, pathname } = db;
 
   if ((protocol !== 'postgres:' && protocol !== 'postgresql:') || !hostname || !username || !password || !pathname) {
-    throw new Error('Database connection string format should be: postgres://user:password@host.tld/dbname?option=value');
+    throw new Error('Database connection string format should be: postgresql://user:password@host.tld/dbname?option=value');
   }
+  if (hostname === 'localhost') console.warn(localhostWarning);
 
   return async function (strings: TemplateStringsArray | string, ...params: any[]): Promise<any> {
-    let arrayMode = arrayModeDefault;
-    let fullResults = fullresultsDefault;
+    let arrayMode = arrayModeDefault ?? false;
+    let fullResults = fullresultsDefault ?? false;
+    let fetchOptions = fetchOptionsDefault ?? {};
 
     let query;
     if (typeof strings === 'string') {  // ordinary (non tagged-template) usage
@@ -50,6 +54,7 @@ export function neon(
       if (opts !== undefined) {
         if (opts.arrayMode !== undefined) arrayMode = opts.arrayMode;
         if (opts.fullResults !== undefined) fullResults = opts.fullResults;
+        if (opts.fetchOptions !== undefined) fetchOptions = { ...fetchOptions, ...opts.fetchOptions };
       }
 
       params = params[0] ?? [];  // the second argument should be an array of params
@@ -82,6 +87,7 @@ export function neon(
           'Neon-Array-Mode': 'true',
           ...connCacheHeader,
         },
+        ...fetchOptions,
       });
 
     } catch (err: any) {
