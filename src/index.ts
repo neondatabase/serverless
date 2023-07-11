@@ -1,3 +1,8 @@
+import * as subtls from 'subtls';
+
+// @ts-ignore -- esbuild knows how to deal with this
+import isrgRootX1 from './isrgrootx1.pem';
+
 import { deepEqual } from 'fast-equals';
 import { Client, Pool, neon, neonConfig } from '../export';
 import { timedRepeats, runQuery, clientRunQuery, poolRunQuery } from './util';
@@ -32,9 +37,9 @@ const ctx = {
   passThroughOnException() { },
 };
 
-export async function latencies(env: Env, subtls: boolean, log = (s: string) => { }): Promise<void> {
+export async function latencies(env: Env, useSubtls: boolean, log = (s: string) => { }): Promise<void> {
   const queryRepeats = [1, 3];
-  const connectRepeats = 15;
+  const connectRepeats = 9;
 
   log('Warm-up ...\n\n');
   await poolRunQuery(1, env.NEON_DB_URL, ctx, queries[0]);
@@ -207,7 +212,10 @@ export async function latencies(env: Env, subtls: boolean, log = (s: string) => 
       await clientRunQuery(n, client, ctx, query);
     });
 
-    if (subtls) {
+    if (useSubtls) {
+      neonConfig.subtls = subtls;
+      neonConfig.rootCerts = isrgRootX1;
+
       await sections('Patched pg/subtls, pipelined TLS + connect', async n => {
         const client = new Client(env.MY_DB_URL);
         client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;

@@ -1,5 +1,4 @@
-export function connect(options: { socket: any, servername: string }) {
-  const { socket, servername } = options;
+export function connect({ socket, servername }: { socket: any, servername: string }) {
   socket.startTls(servername);
   return socket;
 }

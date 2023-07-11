@@ -76,8 +76,23 @@ export interface NeonConfig {
   pipelineConnect: "password" | false;
 
   /**
-   * Pipeline pg SSL request and TLS handshake when `useSecureWebSocket` is
-   * `false`. Currently compatible only with Neon hosts.
+   * If `forceDisablePgSSL` is `false` and the Postgres connection parameters
+   * specify TLS, you must supply the subtls TLS library to this option:
+   * 
+   * ```
+   * import { neonConfig } from '@neondatabase/serverlesss';
+   * import * as subtls from 'subtls';
+   * neonConfig.subtls = subtls;
+   * ```
+   * 
+   * Default: `undefined`.
+   */
+  subtls: any;
+
+  /**
+   * Pipeline the pg SSL request and TLS handshake when `forceDisablePgSSL` is
+   * `false` and the Postgres connection parameters specify TLS. Currently
+   * compatible only with Neon hosts.
    * 
    * Default: `false`.
    */
@@ -86,22 +101,25 @@ export interface NeonConfig {
   /**
    * Set `rootCerts` to a string comprising one or more PEM files. These are
    * the trusted root certificates for a TLS connection to Postgres when
-   * `useSecureWebSocket` is `false`.
+   * `forceDisablePgSSL` is `false` and the Postgres connection parameters
+   * specify TLS.
    * 
-   * Default: the ISRG Root X1 certificate used by Let’s Encrypt.
+   * Default: `""`.
    */
   rootCerts: string;
 
   /**
-   * Batch multiple network writes per run-loop into one WebSocket message.
+   * Batch multiple network writes per run-loop into a single outgoing
+   * WebSocket message.
    * 
    * Default: `true`.
    */
   coalesceWrites: boolean;
 
   /**
-   * When `disableSNI` is `true` and `useSecureWebSocket` is `false`, we send 
-   * no SNI data in the TLS handshake.
+   * When `disableSNI` is `true`, `forceDisablePgSSL` is `false` and the
+   * Postgres connection parameters specify TLS, we send no SNI data in the
+   * Postgres TLS handshake.
    * 
    * On Neon, disabling SNI and including the Neon project name in the password
    * avoids CPU-intensive SCRAM authentication, but this is only relevant for
@@ -116,8 +134,6 @@ export interface NeonConfig {
    * for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set
    * on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP
    * fetch request.
-   * 
-   * We are still investigating compatibility of this option.
    * 
    * Default: `false`.
    */
@@ -228,6 +244,7 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
   options?: {
     arrayMode?: ArrayMode;
     fullResults?: FullResults;
+    fetchOptions?: Record<string, any>;
   }
 ): NeonQueryFunction<ArrayMode, FullResults>;
 

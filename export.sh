@@ -161,6 +161,7 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
   options?: {
     arrayMode?: ArrayMode;
     fullResults?: FullResults;
+    fetchOptions?: Record<string, any>;
   }
 ): NeonQueryFunction<ArrayMode, FullResults>;
 

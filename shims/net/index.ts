@@ -7,10 +7,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { startTls, TrustedCert, WebSocketReadQueue } from 'subtls';
-
-// @ts-ignore - esbuild knows how to deal with this
-import letsEncryptRootCert from './isrgrootx1.pem';
+import type * as subtls from 'subtls';
 
 declare global {
   const debug: boolean;  // e.g. --define:debug=false in esbuild command
@@ -45,32 +42,37 @@ export function isIP(input: string) {
 }
 
 export interface SocketDefaults {
-  poolQueryViaFetch: boolean;
-  fetchConnectionCache: boolean;
   webSocketConstructor: typeof WebSocket | undefined;
   wsProxy: string | ((host: string, port: number | string) => string) | undefined;
   useSecureWebSocket: boolean;
   forceDisablePgSSL: boolean;
   coalesceWrites: boolean;
-  disableSNI: boolean;
   pipelineConnect: 'password' | false;
-  pipelineTLS: boolean;  // relevant only when useSecureWebSocket == false
-  rootCerts: string;  // ditto
+  // these options only have an effect when set globally
+  poolQueryViaFetch: boolean;
+  fetchConnectionCache: boolean;
+  // the remaining options are relevant only for pg TLS (when forceDisablePgSSL === false)
+  subtls: typeof subtls | undefined;
+  rootCerts: string;
+  pipelineTLS: boolean;
+  disableSNI: boolean;
 }
 
 export class Socket extends EventEmitter {
+
   static defaults: SocketDefaults = {
-    poolQueryViaFetch: false,
-    fetchConnectionCache: false,
     webSocketConstructor: undefined,
     wsProxy: host => host + '/v2',
     useSecureWebSocket: true,
     forceDisablePgSSL: true,
     coalesceWrites: true,
-    disableSNI: false,
     pipelineConnect: 'password',
+    poolQueryViaFetch: false,
+    fetchConnectionCache: false,
+    subtls: undefined,
+    rootCerts: '',
     pipelineTLS: false,
-    rootCerts: letsEncryptRootCert as string,
+    disableSNI: false,
   };
 
   static poolQueryViaFetch: SocketDefaults['poolQueryViaFetch'];
@@ -117,6 +119,11 @@ export class Socket extends EventEmitter {
   private _pipelineConnect: typeof Socket.pipelineConnect | undefined;
   get pipelineConnect() { return this._pipelineConnect ?? Socket.pipelineConnect ?? Socket.defaults.pipelineConnect; }
   set pipelineConnect(pipelineConnect: typeof Socket.pipelineConnect) { this._pipelineConnect = pipelineConnect; }
+
+  static subtls: SocketDefaults['subtls'];
+  private _subtls: typeof Socket.subtls | undefined;
+  get subtls() { return this._subtls ?? Socket.subtls ?? Socket.defaults.subtls; }
+  set subtls(subtls: typeof Socket.subtls) { this._subtls = subtls; }
 
   static pipelineTLS: SocketDefaults['pipelineTLS'];
   private _pipelineTLS: typeof Socket.pipelineTLS | undefined;
@@ -265,14 +272,16 @@ export class Socket extends EventEmitter {
 
   async startTls(host: string) {
     debug && log('starting TLS');
+    if (this.subtls === undefined) throw new Error('For Postgres SSL connections, you must set `neonConfig.subtls` to the subtls library. See https://github.com/neondatabase/serverless/blob/main/CONFIG.md for more information.');
+
     this.tlsState = TlsState.Handshake;
 
-    const rootCerts = TrustedCert.fromPEM(letsEncryptRootCert);
-    const readQueue = new WebSocketReadQueue(this.ws!);
+    const rootCerts = this.subtls.TrustedCert.fromPEM(this.rootCerts);
+    const readQueue = new this.subtls.WebSocketReadQueue(this.ws!);
     const networkRead = readQueue.read.bind(readQueue);
     const networkWrite = this.rawWrite.bind(this);
 
-    const [tlsRead, tlsWrite] = await startTls(
+    const [tlsRead, tlsWrite] = await this.subtls.startTls(
       host,
       rootCerts,
       networkRead,
