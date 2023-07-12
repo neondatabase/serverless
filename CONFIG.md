@@ -24,7 +24,7 @@ const rows = await sql`SELECT * FROM posts WHERE id = ${postId}`;
 // -> [{ id: 12, title: "My post", ... }]
 ```
 
-However, the `neon(...)` function exposes two configuration options to customise the return format of the query function. These are `fullResults` and `arrayMode`.
+However, you can customise the return format of the query function using the configuration options `fullResults` and `arrayMode`. These options are available both on the `neon(...)` function and on the query function it returns (but only when the query function is called as an ordinary function, not as a tagged-template function).
 
 
 ### `arrayMode: boolean`
@@ -35,6 +35,15 @@ When `arrayMode` is true, rows are returned as an array of arrays instead of an 
 import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL, { arrayMode: true });
 const rows = await sql`SELECT * FROM posts WHERE id = ${postId}`;
+// -> [[12, "My post", ...]]
+```
+
+Or, with the same effect:
+
+```typescript
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL);
+const rows = await sql('SELECT * FROM posts WHERE id = $1', [postId], { arrayMode: true });
 // -> [[12, "My post", ...]]
 ```
 
@@ -59,6 +68,42 @@ const results = await sql`SELECT * FROM posts WHERE id = ${postId}`;
   command: "SELECT"
 } 
 */
+```
+
+Or, with the same effect:
+
+```typescript
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL);
+const results = await sql('SELECT * FROM posts WHERE id = $1', [postId], { fullResults: true });
+// -> { ... same as above ... }
+```
+
+
+### `fetchOptions: Record<string, any>`
+
+The `fetchOptions` option can also be passed to either `neon(...)` or the query function. This option takes an object that is merged with the options to the `fetch` call.
+
+For example, to increase the priority of every database `fetch` request:
+
+```typescript
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { priority: 'high' } });
+const rows = await sql`SELECT * FROM posts WHERE id = ${postId}`;
+```
+
+Or to implement a `fetch` timeout:
+
+```typescript
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL);
+const abortController = new AbortController();
+const timeout = setTimeout(() => abortController.abort('timed out'), 10000);
+const rows = await sql(
+  'SELECT * FROM posts WHERE id = $1', [postId], 
+  { fetchOptions: { signal: abortController.signal } }
+);  // throws an error if no result received within 10s
+clearTimeout(timeout);
 ```
 
 
@@ -90,8 +135,8 @@ Set this parameter if you're using the driver in an environment where the `WebSo
 For example:
 
 ```javascript
-import ws from 'ws';
 import { neonConfig } from '@neondatabase/serverless';
+import ws from 'ws';
 neonConfig.webSocketConstructor = ws; 
 ```
 
@@ -103,16 +148,25 @@ If you're using `@neondatabase/serverless` to connect to a Neon database, you us
 
 #### `poolQueryViaFetch: boolean`
 
-When `poolQueryViaFetch` is `true`, and no listeners for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP fetch request.
-
-We are investigating compatibility of this option.
+**Experimentally**, when `poolQueryViaFetch` is `true` and no listeners for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP `fetch` request.
 
 Default: currently `false` (but may be `true` in future).
+
+Note: this option has no effect if set on an individual `Client` instance.
+
+
+#### `fetchConnectionCache: boolean`
+
+**Experimentally**, when `fetchConnectionCache` is `true`, queries carried via HTTP `fetch` will make use of a connection cache (pool) on the server.
+
+Default: currently `false` (but may be `true` in future).
+
+Note: this option has no effect if set on an individual `Client` instance.
 
 
 #### `wsProxy: string | (host: string, port: number | string) => string`
 
-The `wsProxy` option should point to [your WebSocket proxy](DEPLOY.md). It can either be a string, which will have `?address=host:port` appended to it, or a function with the signature `(host: string, port: number | string) => string`. Either way, the protocol must _not_ be included, because this depends on other options. For example, when using the `wsproxy` proxy, the `wsProxy` option should look something like this:
+If connecting to a non-Neon database, the `wsProxy` option should point to [your WebSocket proxy](DEPLOY.md). It can either be a string, which will have `?address=host:port` appended to it, or a function with the signature `(host: string, port: number | string) => string`. Either way, the protocol must _not_ be included, because this depends on other options. For example, when using the `wsproxy` proxy, the `wsProxy` option should look something like this:
 
 ```javascript
 // either:
@@ -122,24 +176,6 @@ neonConfig.wsProxy = 'my-wsproxy.example.com/v1';
 ```
 
 Default: `host => host + '/v2'`.
-
-
-#### `useSecureWebSocket: boolean`
-
-This option switches between secure (the default) and insecure WebSockets. 
-
-To use experimental pure-JS encryption, set `useSecureWebSocket = false` and `forceDisablePgSSL = false`, and append `?sslmode=verify-full` to your database connection string.
-
-**Remember that pure-JS encryption is currently experimental and not suitable for use in production.**
-
-Default: `true`.
-
-
-#### `forceDisablePgSSL: boolean`
-
-This option disables TLS encryption in the Postgres protocol (as set via e.g. `?sslmode=require` in the connection string). Security is not compromised if used in conjunction with `useSecureWebSocket = true`.
-
-Default: `true`.
 
 
 #### `pipelineConnect: "password" | false`
@@ -158,17 +194,48 @@ When this option is `true`, multiple network writes generated in a single iterat
 Default: `true`.
 
 
+#### `forceDisablePgSSL: boolean`
+
+This option disables TLS encryption in the Postgres protocol (as set via e.g. `?sslmode=require` in the connection string). Security is not compromised if used in conjunction with `useSecureWebSocket = true`.
+
+Default: `true`.
+
+
+#### `useSecureWebSocket: boolean`
+
+This option switches between secure (the default) and insecure WebSockets. 
+
+To use experimental pure-JS encryption, set `useSecureWebSocket = false` and `forceDisablePgSSL = false`, and append `?sslmode=verify-full` to your database connection string.
+
+**Remember that pure-JS encryption is currently experimental and not suitable for use in production.**
+
+Default: `true`.
+
+
+#### `subtls: any`
+
+**Only when using experimental pure-JS TLS encryption**, you must supply the [subtls](https://github.com/jawj/subtls) TLS library to the `subtls` option like so:
+
+```typescript
+import { neonConfig } from '@neondatabase/serverless';
+import * as subtls from 'subtls';
+neonConfig.subtls = subtls;
+```
+
+Default: `undefined`.
+
+
 #### `rootCerts: string /* PEM format */`
 
-**Only when using experimental pure-JS TLS encryption**, this option determines what root (certificate authority) certificates are trusted.
+**Only when using experimental pure-JS TLS encryption**, the `rootCerts` option determines what root (certificate authority) certificates are trusted.
 
-Its value is a string containing one or more certificates in PEM format.
+Its value is a string containing zero or more certificates in PEM format.
 
-Default: the [ISRG Root X1](https://letsencrypt.org/certificates/) certificate, which is appropriate for servers secured with [Let’s Encrypt](https://letsencrypt.org/).
+Default: `""` (the empty string).
 
 
 #### `pipelineTLS: boolean`
 
 **Only when using experimental pure-JS encryption**, the driver will pipeline the SSL request message and TLS Client Hello if `pipelineTLS` is set to `true`. Currently, this is only supported by Neon database hosts, and will fail when communicating with an ordinary Postgres or pgbouncer back-end.
 
-The default is `false`.
+Default: `false`.

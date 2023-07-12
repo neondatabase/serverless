@@ -1,6 +1,6 @@
 # Development and contributing
 
-The code is at https://github.com/neondatabase/serverless. Most of the interesting stuff is in `shims/net/index.ts` and `export/`.
+The code is at https://github.com/neondatabase/serverless. Most of the interesting stuff is in `shims/net/index.ts` and the `export/` folder.
 
 * To update the npm package:
 

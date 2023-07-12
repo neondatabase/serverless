@@ -6,8 +6,9 @@ import { types, localhostWarning } from '.';
 import { prepareValue } from '../node_modules/pg/lib/utils';
 
 export class NeonDbError extends Error {
-  code: string | null = null;
   name = 'NeonDbError';
+  code: string | null = null;
+  sourceError: Error | undefined;
 }
 
 interface Query {
@@ -79,8 +80,8 @@ export function neon(
       if (queryCallback) queryCallback(qp);
 
       response = await fetch(url, {
-        body: JSON.stringify(qp),
         method: 'POST',
+        body: JSON.stringify(qp),
         headers: {
           'Neon-Connection-String': connectionString,
           'Neon-Raw-Text-Output': 'true',
@@ -91,7 +92,9 @@ export function neon(
       });
 
     } catch (err: any) {
-      throw new NeonDbError(`Error connecting to database: ${err.message}`)
+      const connectErr = new NeonDbError(`Error connecting to database: ${err.message}`);
+      connectErr.sourceError = err;
+      throw connectErr;
     }
 
     if (response.ok) {

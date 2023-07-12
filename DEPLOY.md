@@ -12,7 +12,7 @@ There are then two ways you can secure this:
 
 2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. You get this form of encryption if you set both `neonConfig.useSecureWebSocket`  and `neonConfig.forceDisablePgSSL` to `false`, and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end. **Please note that subtls is experimental software and this configuration is not recommended for production use.**
 
-Second, you'll need to set some configuration options on this package, including at a minimum [the `wsProxy` option](CONFIG.md).
+Second, you'll need to set some [configuration options](CONFIG.md) on this package: at a minimum the `wsProxy` option and (if using experimental encryption) `subtls` and `rootCerts`.
 
 
 ## Example shell commands

@@ -131,10 +131,44 @@ export async function latencies(env: Env, useSubtls: boolean, log = (s: string) 
   await sql('SELECT 123 AS num');
   await sql('SELECT 123 AS num', [], { arrayMode: true, fullResults: true });
 
+  // cache
   neonConfig.fetchConnectionCache = true;
   await sql`SELECT ${"hello"} AS str`;
   await sql`SELECT ${"world"} AS str`;
   await sql('SELECT 123 AS num');
+
+  // timeout
+  function sqlWithRetries(sql: ReturnType<typeof neon>, timeoutMs: number, attempts = 3) {
+    return async function (strings: TemplateStringsArray, ...params: any[]) {
+      // reassemble template string
+      let query = '';
+      for (let i = 0; i < strings.length; i++) {
+        query += strings[i];
+        if (i < params.length) query += '$' + (i + 1);
+      }
+      // run query with timeout and retries
+      for (let i = 1; ; i++) {
+        const abortController = new AbortController();
+        const timeout = setTimeout(() => abortController.abort('fetch timed out'), timeoutMs);
+
+        try {
+          const { signal } = abortController;
+          const result = await sql(query, params, { fetchOptions: { signal } });
+          return result;
+
+        } catch (err: any) {
+          const timedOut = err.sourceError && err.sourceError instanceof DOMException && err.sourceError.name === 'AbortError';
+          if (!timedOut || i >= attempts) throw err;
+
+        } finally {
+          clearTimeout(timeout);
+        }
+      }
+    }
+  }
+
+  const sqlRetry = sqlWithRetries(sql, 5000);
+  await sqlRetry`SELECT ${'did this time out?'} AS str`;
 
   await new Promise(resolve => setTimeout(resolve, 1000));
   pool.end();

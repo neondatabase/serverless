@@ -48,7 +48,7 @@ export interface NeonConfig {
    * specify TLS, you must supply the subtls TLS library to this option:
    * 
    * ```
-   * import { neonConfig } from '@neondatabase/serverlesss';
+   * import { neonConfig } from '@neondatabase/serverless';
    * import * as subtls from 'subtls';
    * neonConfig.subtls = subtls;
    * ```

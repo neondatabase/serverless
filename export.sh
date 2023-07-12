@@ -99,8 +99,7 @@ export const neonConfig: NeonConfig;
 import { FieldDef } from "pg";
 
 export type QueryRows<ArrayMode extends boolean> =
-  ArrayMode extends true ? any[][] :
-  Record<string, any>[];
+  ArrayMode extends true ? any[][] : Record<string, any>[];
 
 export interface FullQueryResults<ArrayMode extends boolean> {
   fields: FieldDef[];
@@ -111,10 +110,19 @@ export interface FullQueryResults<ArrayMode extends boolean> {
 }
 
 export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
+  // tagged-template function usage
   (strings: TemplateStringsArray, ...params: any[]):
     Promise<FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
-  (strings: string, params?: any[]):
-    Promise<FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+  // ordinary function usage, with options overrides
+  <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(
+    strings: string,
+    params?: any[],
+    options?: {
+      arrayMode?: ArrayModeOverride;
+      fullResults?: FullResultsOverride;
+      fetchOptions?: Record<string, any>;
+    }):
+    Promise<FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>>;
 }
 
 /**
@@ -124,23 +132,24 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
  * those returned by this driver (i.e. Pool or Client) over WebSockets.
  * 
  * The returned function can also be called directly (i.e. not as a template 
- * function). In that case, pass a query string with embedded `$1`, `$2` (etc.)
- * followed by an array of query parameters.
+ * function). In that case, pass it a query string with embedded `$1`, `$2` 
+ * (etc.), followed by an array of query parameters, followed (optionally) by
+ * any of the same options you can pass to this function.
  * 
- * For example:
+ * Some examples:
  * ```
  * import { neon } from "@neondatabase/serverless";
  * const h = "hello", w = "world";
  * 
- * // default options, used as a tagged-template function
+ * // example 1: default options, tagged-template usage
  * const sql = neon("postgres://user:pass@host/db");
  * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;  
  * // -> [ { greeting: "hello world" } ]
  * 
- * // arrayMode and fullResults options, used as an ordinary function
+ * // example 2: `arrayMode` and `fullResults` options, ordinary function usage
  * const options = { arrayMode: true, fullResults: true };
- * const sqlFullArr = neon("postgres://user:pass@host/db", options);
- * const rows = await sqlFullArr("SELECT $1 || ' ' || $2 AS greeting", [h, w]);
+ * const sql = neon("postgres://user:pass@host/db", options);
+ * const rows = await sql("SELECT $1 || ' ' || $2 AS greeting", [h, w]);
  * // -> { 
  * //      command: "SELECT", 
  * //      fields: [ { name: "greeting", dataTypeID: 25 } ],
@@ -148,13 +157,23 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
  * //      rowCount: 1, 
  * //      rows: [ [ "hello world" ] ]
  * //    }
+ *
+ * // example 3: `fetchOptions` option, ordinary function usage
+ * const sql = neon("postgres://user:pass@host/db");
+ * const rows = await sql(
+ *   "SELECT $1 || ' ' || $2 AS greeting", [h, w],
+ *   { fetchOptions: { priority: "high" } }
+ * );
+ * // -> [ { greeting: "hello world" } ]
  * ```
  * 
  * @param connectionString this has the format `postgres://user:pass@host/db`
  * @param options pass `arrayMode: true` to receive results as an array of 
  * arrays, instead of the default array of objects; pass `fullResults: true`
  * to receive a complete result object similar to one returned by node-postgres
- * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`).
+ * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`);
+ * pass as `fetchOptions` an object which will be merged into the options
+ * passed to `fetch`.
  */
 export function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(
   connectionString: string,
