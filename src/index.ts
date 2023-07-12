@@ -13,6 +13,7 @@ export { neonConfig } from '../export';
 export interface Env {
   NEON_DB_URL: string;
   MY_DB_URL: string;
+  LOCAL_DB_URL: string;
 }
 
 // simple tests for Cloudflare Workers
@@ -37,7 +38,7 @@ const ctx = {
   passThroughOnException() { },
 };
 
-export async function latencies(env: Env, useSubtls: boolean, log = (s: string) => { }): Promise<void> {
+export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]) => { }): Promise<void> {
   const queryRepeats = [1, 3];
   const connectRepeats = 9;
 
@@ -69,7 +70,7 @@ export async function latencies(env: Env, useSubtls: boolean, log = (s: string) 
       const rowsMatch = deepEqual(rows, pgRes.rows);
       const ok = commandMatches && rowCountMatches && rowsMatch && dataTypesMatch;
 
-      console.log(ok ? '\u2713' : 'X', JSON.stringify(query), '\n  -> us:', rows, '\n  -> pg:', pgRes.rows);
+      log(ok ? '\u2713' : 'X', JSON.stringify(query), '\n  -> us:', JSON.stringify(rows), '\n  -> pg:', JSON.stringify(pgRes.rows), '\n');
 
       // if (!ok) {
       //   console.log('------');

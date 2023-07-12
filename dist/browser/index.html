@@ -40,7 +40,7 @@
     }, {});
 
     const pre = document.querySelector('pre');
-    const log = (s) => pre.innerHTML += s;
+    const log = (...s) => pre.innerHTML += s.join(' ');
 
     latencies(env, true, log);
   }
