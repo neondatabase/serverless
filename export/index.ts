@@ -3,7 +3,7 @@ export { neon } from './httpQuery';
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { neon } from './httpQuery';
-import type { NeonConfig } from './neonConfig';
+import type { NeonConfigGlobalAndClient } from './neonConfig';
 
 // @ts-ignore -- this isn't officially exported by pg
 import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
@@ -46,7 +46,7 @@ export const localhostWarning = `The database host is 'localhost', which is the 
 
 class NeonClient extends Client {
 
-  get neonConfig(): NeonConfig { return this.connection.stream; }
+  get neonConfig(): NeonConfigGlobalAndClient { return this.connection.stream; }
 
   connect(): Promise<void>;
   connect(callback: (err?: Error) => void): void;

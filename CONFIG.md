@@ -109,7 +109,7 @@ clearTimeout(timeout);
 
 ## `neonConfig` configuration
 
-There are two ways to set configuration options:
+In most cases, there are two ways to set configuration options:
 
 1. Import `neonConfig` from the package and set global default options on that. 
 2. Set options on individual `Client` instances using their `neonConfig` property.
@@ -127,6 +127,9 @@ neonConfig.webSocketConstructor = ws;
 const client = new Client(process.env.DATABASE_URL);
 client.neonConfig.webSocketConstructor = ws;
 ```
+
+A few configuration options can only be set globally, and these are noted as such below.
+
 
 #### `webSocketConstructor: typeof WebSocket | undefined`
 
@@ -152,7 +155,7 @@ If you're using `@neondatabase/serverless` to connect to a Neon database, you us
 
 Default: currently `false` (but may be `true` in future).
 
-Note: this option has no effect if set on an individual `Client` instance.
+Note: this option can only be set globally, **not** on an individual `Client` instance.
 
 
 #### `fetchConnectionCache: boolean`
@@ -161,7 +164,20 @@ Note: this option has no effect if set on an individual `Client` instance.
 
 Default: currently `false` (but may be `true` in future).
 
-Note: this option has no effect if set on an individual `Client` instance.
+Note: this option can only be set globally, **not** on an individual `Client` instance.
+
+
+#### `fetchEndpoint: string | ((host: string, port: number | string) => string)`
+
+Set `fetchEndpoint` to set the server endpoint to be sent queries via http fetch. 
+
+This may be useful for local development (e.g. to set a port that's not the default 443).
+
+Provide either the full endpoint URL, or a function that takes the database host address and port and returns the full endpoint URL (including protocol).
+
+Default: `host => 'https://' + host + '/sql'`
+
+Note: this option can only be set globally, **not** on an individual `Client` instance.
 
 
 #### `wsProxy: string | (host: string, port: number | string) => string`

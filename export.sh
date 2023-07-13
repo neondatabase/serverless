@@ -73,15 +73,15 @@ import {
 } from "pg";
 
 export class ClientBase extends PgClientBase {
-  neonConfig: NeonConfig;
+  neonConfig: NeonConfigGlobalAndClient;
 }
 
 export class Client extends PgClient {
-  neonConfig: NeonConfig;
+  neonConfig: NeonConfigGlobalAndClient;
 }
 
 export interface PoolClient extends PgPoolClient {
-  neonConfig: NeonConfig;
+  neonConfig: NeonConfigGlobalAndClient;
 }
 
 export class Pool extends PgPool {

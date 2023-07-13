@@ -35,7 +35,7 @@ export function neon(
 ) {
 
   const db = parse(connectionString);
-  const { protocol, username, password, hostname, pathname } = db;
+  const { protocol, username, password, hostname, port, pathname } = db;
 
   if ((protocol !== 'postgres:' && protocol !== 'postgresql:') || !hostname || !username || !password || !pathname) {
     throw new Error('Database connection string format should be: postgresql://user:password@host.tld/dbname?option=value');
@@ -71,14 +71,21 @@ export function neon(
     // preparing the query params makes timezones and array types consistent with ordinary node-postgres/pg
     params = params.map(param => prepareValue(param));
 
-    let qp, response;
+    const { fetchEndpoint, fetchConnectionCache } = Socket;
+
+    const url = typeof fetchEndpoint === 'function' ?
+      fetchEndpoint(hostname, port) :
+      fetchEndpoint;
+
+    const connCacheHeader = fetchConnectionCache === true ?
+      { 'Neon-Pool-Opt-In': 'true' } :
+      {} as Record<string, string>;
+
+    const qp = { query, params };
+    if (queryCallback) queryCallback(qp);
+
+    let response;
     try {
-      const url = `https://${hostname}/sql`;
-      const connCacheHeader = Socket.fetchConnectionCache === true ? { 'Neon-Pool-Opt-In': 'true' } : {} as Record<string, string>;
-
-      qp = { query, params };
-      if (queryCallback) queryCallback(qp);
-
       response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(qp),

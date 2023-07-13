@@ -42,99 +42,107 @@ export function isIP(input: string) {
 }
 
 export interface SocketDefaults {
+  // these options relate to the fetch transport and take effect *only* when set globally
+  poolQueryViaFetch: boolean;
+  fetchEndpoint: string | ((host: string, port: number | string) => string);
+  fetchConnectionCache: boolean;
+  // these options relate to the WebSocket transport
   webSocketConstructor: typeof WebSocket | undefined;
-  wsProxy: string | ((host: string, port: number | string) => string) | undefined;
+  wsProxy: string | ((host: string, port: number | string) => string);
   useSecureWebSocket: boolean;
   forceDisablePgSSL: boolean;
   coalesceWrites: boolean;
   pipelineConnect: 'password' | false;
-  // these options only have an effect when set globally
-  poolQueryViaFetch: boolean;
-  fetchConnectionCache: boolean;
-  // the remaining options are relevant only for pg TLS (when forceDisablePgSSL === false)
+  // these options apply only to Postgres-native TLS over WebSockets (when forceDisablePgSSL === false)
   subtls: typeof subtls | undefined;
   rootCerts: string;
   pipelineTLS: boolean;
   disableSNI: boolean;
 }
+type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache';
 
 export class Socket extends EventEmitter {
 
   static defaults: SocketDefaults = {
+    // these options relate to the fetch transport and take effect *only* when set globally
+    poolQueryViaFetch: false,
+    fetchEndpoint: host => 'https://' + host + '/sql',
+    fetchConnectionCache: false,
+    // these options relate to the WebSocket transport
     webSocketConstructor: undefined,
     wsProxy: host => host + '/v2',
     useSecureWebSocket: true,
     forceDisablePgSSL: true,
     coalesceWrites: true,
     pipelineConnect: 'password',
-    poolQueryViaFetch: false,
-    fetchConnectionCache: false,
+    // these options apply only to Postgres-native TLS over WebSockets (when forceDisablePgSSL === false)
     subtls: undefined,
     rootCerts: '',
     pipelineTLS: false,
     disableSNI: false,
   };
 
-  static poolQueryViaFetch: SocketDefaults['poolQueryViaFetch'];
-  private _poolQueryViaFetch: typeof Socket.poolQueryViaFetch | undefined;
-  get poolQueryViaFetch() { return this._poolQueryViaFetch ?? Socket.poolQueryViaFetch ?? Socket.defaults.poolQueryViaFetch; }
-  set poolQueryViaFetch(poolQueryViaFetch: typeof Socket.poolQueryViaFetch) { this._poolQueryViaFetch = poolQueryViaFetch; }
+  static opts: Partial<SocketDefaults> = {};
+  private opts: Partial<Omit<SocketDefaults, GlobalOnlyDefaults>> = {};
 
-  static fetchConnectionCache: SocketDefaults['fetchConnectionCache'];
-  private _fetchConnectionCache: typeof Socket.fetchConnectionCache | undefined;
-  get fetchConnectionCache() { return this._fetchConnectionCache ?? Socket.fetchConnectionCache ?? Socket.defaults.fetchConnectionCache; }
-  set fetchConnectionCache(fetchConnectionCache: typeof Socket.fetchConnectionCache) { this._fetchConnectionCache = fetchConnectionCache; }
+  static get poolQueryViaFetch() { return Socket.opts.poolQueryViaFetch ?? Socket.defaults.poolQueryViaFetch; }
+  static set poolQueryViaFetch(newValue: SocketDefaults['poolQueryViaFetch']) { Socket.opts.poolQueryViaFetch = newValue; }
 
-  static webSocketConstructor: SocketDefaults['webSocketConstructor'];
-  private _webSocketConstructor: typeof Socket.webSocketConstructor | undefined;
-  get webSocketConstructor() { return this._webSocketConstructor ?? Socket.webSocketConstructor ?? Socket.defaults.webSocketConstructor; }
-  set webSocketConstructor(webSocketConstructor: typeof Socket.webSocketConstructor) { this._webSocketConstructor = webSocketConstructor; }
+  static get fetchEndpoint() { return Socket.opts.fetchEndpoint ?? Socket.defaults.fetchEndpoint; }
+  static set fetchEndpoint(newValue: SocketDefaults['fetchEndpoint']) { Socket.opts.fetchEndpoint = newValue; }
 
-  static wsProxy: SocketDefaults['wsProxy'];
-  private _wsProxy: typeof Socket.wsProxy | undefined;
-  get wsProxy() { return this._wsProxy ?? Socket.wsProxy ?? Socket.defaults.wsProxy; }
-  set wsProxy(wsProxy: typeof Socket.wsProxy) { this._wsProxy = wsProxy; }
+  static get fetchConnectionCache() { return Socket.opts.fetchConnectionCache ?? Socket.defaults.fetchConnectionCache; }
+  static set fetchConnectionCache(newValue: SocketDefaults['fetchConnectionCache']) { Socket.opts.fetchConnectionCache = newValue; }
 
-  static coalesceWrites: SocketDefaults['coalesceWrites'];
-  private _coalesceWrites: typeof Socket.coalesceWrites | undefined;
-  get coalesceWrites() { return this._coalesceWrites ?? Socket.coalesceWrites ?? Socket.defaults.coalesceWrites; }
-  set coalesceWrites(coalesceWrites: typeof Socket.coalesceWrites) { this._coalesceWrites = coalesceWrites; }
+  static get webSocketConstructor() { return Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor; }
+  static set webSocketConstructor(newValue: SocketDefaults['webSocketConstructor']) { Socket.opts.webSocketConstructor = newValue; }
+  get webSocketConstructor() { return this.opts.webSocketConstructor ?? Socket.webSocketConstructor; }
+  set webSocketConstructor(newValue: SocketDefaults['webSocketConstructor']) { this.opts.webSocketConstructor = newValue; }
 
-  static useSecureWebSocket: SocketDefaults['useSecureWebSocket'];
-  private _useSecureWebSocket: typeof Socket.useSecureWebSocket | undefined;
-  get useSecureWebSocket() { return this._useSecureWebSocket ?? Socket.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket; }
-  set useSecureWebSocket(useSecureWebSocket: typeof Socket.useSecureWebSocket) { this._useSecureWebSocket = useSecureWebSocket; }
+  static get wsProxy() { return Socket.opts.wsProxy ?? Socket.defaults.wsProxy; }
+  static set wsProxy(newValue: SocketDefaults['wsProxy']) { Socket.opts.wsProxy = newValue; }
+  get wsProxy() { return this.opts.wsProxy ?? Socket.wsProxy; }
+  set wsProxy(newValue: SocketDefaults['wsProxy']) { this.opts.wsProxy = newValue; }
 
-  static forceDisablePgSSL: SocketDefaults['forceDisablePgSSL'];
-  private _forceDisablePgSSL: typeof Socket.forceDisablePgSSL | undefined;
-  get forceDisablePgSSL() { return this._forceDisablePgSSL ?? Socket.forceDisablePgSSL ?? Socket.defaults.forceDisablePgSSL; }
-  set forceDisablePgSSL(forceDisablePgSSL: typeof Socket.forceDisablePgSSL) { this._forceDisablePgSSL = forceDisablePgSSL; }
+  static get coalesceWrites() { return Socket.opts.coalesceWrites ?? Socket.defaults.coalesceWrites; }
+  static set coalesceWrites(newValue: SocketDefaults['coalesceWrites']) { Socket.opts.coalesceWrites = newValue; }
+  get coalesceWrites() { return this.opts.coalesceWrites ?? Socket.coalesceWrites; }
+  set coalesceWrites(newValue: SocketDefaults['coalesceWrites']) { this.opts.coalesceWrites = newValue; }
 
-  static disableSNI: SocketDefaults['disableSNI'];
-  private _disableSNI: typeof Socket.disableSNI | undefined;
-  get disableSNI() { return this._disableSNI ?? Socket.disableSNI ?? Socket.defaults.disableSNI; }
-  set disableSNI(disableSNI: typeof Socket.disableSNI) { this._disableSNI = disableSNI; }
+  static get useSecureWebSocket() { return Socket.opts.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket; }
+  static set useSecureWebSocket(newValue: SocketDefaults['useSecureWebSocket']) { Socket.opts.useSecureWebSocket = newValue; }
+  get useSecureWebSocket() { return this.opts.useSecureWebSocket ?? Socket.useSecureWebSocket; }
+  set useSecureWebSocket(newValue: SocketDefaults['useSecureWebSocket']) { this.opts.useSecureWebSocket = newValue; }
 
-  static pipelineConnect: SocketDefaults['pipelineConnect'];
-  private _pipelineConnect: typeof Socket.pipelineConnect | undefined;
-  get pipelineConnect() { return this._pipelineConnect ?? Socket.pipelineConnect ?? Socket.defaults.pipelineConnect; }
-  set pipelineConnect(pipelineConnect: typeof Socket.pipelineConnect) { this._pipelineConnect = pipelineConnect; }
+  static get forceDisablePgSSL() { return Socket.opts.forceDisablePgSSL ?? Socket.defaults.forceDisablePgSSL; }
+  static set forceDisablePgSSL(newValue: SocketDefaults['forceDisablePgSSL']) { Socket.opts.forceDisablePgSSL = newValue; }
+  get forceDisablePgSSL() { return this.opts.forceDisablePgSSL ?? Socket.forceDisablePgSSL; }
+  set forceDisablePgSSL(newValue: SocketDefaults['forceDisablePgSSL']) { this.opts.forceDisablePgSSL = newValue; }
 
-  static subtls: SocketDefaults['subtls'];
-  private _subtls: typeof Socket.subtls | undefined;
-  get subtls() { return this._subtls ?? Socket.subtls ?? Socket.defaults.subtls; }
-  set subtls(subtls: typeof Socket.subtls) { this._subtls = subtls; }
+  static get disableSNI() { return Socket.opts.disableSNI ?? Socket.defaults.disableSNI; }
+  static set disableSNI(newValue: SocketDefaults['disableSNI']) { Socket.opts.disableSNI = newValue; }
+  get disableSNI() { return this.opts.disableSNI ?? Socket.disableSNI; }
+  set disableSNI(newValue: SocketDefaults['disableSNI']) { this.opts.disableSNI = newValue; }
 
-  static pipelineTLS: SocketDefaults['pipelineTLS'];
-  private _pipelineTLS: typeof Socket.pipelineTLS | undefined;
-  get pipelineTLS() { return this._pipelineTLS ?? Socket.pipelineTLS ?? Socket.defaults.pipelineTLS; }
-  set pipelineTLS(pipelineTLS: typeof Socket.pipelineTLS) { this._pipelineTLS = pipelineTLS; }
+  static get pipelineConnect() { return Socket.opts.pipelineConnect ?? Socket.defaults.pipelineConnect; }
+  static set pipelineConnect(newValue: SocketDefaults['pipelineConnect']) { Socket.opts.pipelineConnect = newValue; }
+  get pipelineConnect() { return this.opts.pipelineConnect ?? Socket.pipelineConnect; }
+  set pipelineConnect(newValue: SocketDefaults['pipelineConnect']) { this.opts.pipelineConnect = newValue; }
 
-  static rootCerts: SocketDefaults['rootCerts'];
-  private _rootCerts: typeof Socket.rootCerts | undefined;
-  get rootCerts() { return this._rootCerts ?? Socket.rootCerts ?? Socket.defaults.rootCerts; }
-  set rootCerts(rootCerts: typeof Socket.rootCerts) { this._rootCerts = rootCerts; }
+  static get subtls() { return Socket.opts.subtls ?? Socket.defaults.subtls; }
+  static set subtls(newValue: SocketDefaults['subtls']) { Socket.opts.subtls = newValue; }
+  get subtls() { return this.opts.subtls ?? Socket.subtls; }
+  set subtls(newValue: SocketDefaults['subtls']) { this.opts.subtls = newValue; }
 
+  static get pipelineTLS() { return Socket.opts.pipelineTLS ?? Socket.defaults.pipelineTLS; }
+  static set pipelineTLS(newValue: SocketDefaults['pipelineTLS']) { Socket.opts.pipelineTLS = newValue; }
+  get pipelineTLS() { return this.opts.pipelineTLS ?? Socket.pipelineTLS; }
+  set pipelineTLS(newValue: SocketDefaults['pipelineTLS']) { this.opts.pipelineTLS = newValue; }
+
+  static get rootCerts() { return Socket.opts.rootCerts ?? Socket.defaults.rootCerts; }
+  static set rootCerts(newValue: SocketDefaults['rootCerts']) { Socket.opts.rootCerts = newValue; }
+  get rootCerts() { return this.opts.rootCerts ?? Socket.rootCerts; }
+  set rootCerts(newValue: SocketDefaults['rootCerts']) { this.opts.rootCerts = newValue; }
 
   wsProxyAddrForHost(host: string, port: number) {
     const wsProxy = this.wsProxy;

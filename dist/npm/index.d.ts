@@ -30,7 +30,41 @@ export {
   native,
 } from "pg";
 
-export interface NeonConfig {
+export interface NeonConfigGlobalOnly {
+  /**
+   * Set `fetchEndpoint` to set the server endpoint to be sent queries via http
+   * fetch. May be useful in local development (e.g. to set a port that's not
+   * the default 443).
+   * 
+   * Provide either the full endpoint URL, or a function that takes the
+   * database host address and port and returns the full endpoint URL
+   * (including protocol).
+   * 
+   * Default: `host => 'https://' + host + '/sql'`
+   * 
+   */
+  fetchEndpoint: string | ((host: string, port: number | string) => string);
+
+  /**
+   * **Experimentally**, when `poolQueryViaFetch` is `true`, and no listeners
+   * for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set
+   * on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP
+   * fetch request.
+   * 
+   * Default: `false`.
+   */
+  poolQueryViaFetch: boolean;
+
+  /**
+   * **Experimentally**, when `fetchConnectionCache` is `true`, queries carried
+   * via HTTP fetch make use of a connection cache on the server.
+   * 
+   * Default: `false`.
+   */
+  fetchConnectionCache: boolean;
+}
+
+export interface NeonConfigGlobalAndClient {
   /**
    * If no global `WebSocket` object is available, set `webSocketConstructor`
    * to the constructor for a custom WebSocket implementation, such as those
@@ -42,8 +76,8 @@ export interface NeonConfig {
    * Set `wsProxy` to use your own WebSocket proxy server. 
    * 
    * Provide either the proxy server’s domain name, or a function that takes
-   * the database host address and port and returns the proxy server URL
-   * (without protocol).
+   * the database host and port and returns the proxy server address (without
+   * protocol).
    * 
    * Example: `(host, port) => "myproxy.example.net?address=" + host + ":" + port`
    * 
@@ -128,25 +162,9 @@ export interface NeonConfig {
    * Default: `false`.
    */
   disableSNI: boolean;
-
-  /**
-   * **Experimentally**, when `poolQueryViaFetch` is `true`, and no listeners
-   * for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set
-   * on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP
-   * fetch request.
-   * 
-   * Default: `false`.
-   */
-  poolQueryViaFetch: boolean;
-
-  /**
-   * **Experimentally**, when `fetchConnectionCache` is `true`, queries carried
-   * via HTTP fetch make use of a connection cache on the server.
-   * 
-   * Default: `false`.
-   */
-  fetchConnectionCache: boolean;
 }
+
+export interface NeonConfig extends NeonConfigGlobalOnly, NeonConfigGlobalAndClient { }
 
 import {
   ClientBase as PgClientBase,
@@ -156,15 +174,15 @@ import {
 } from "pg";
 
 export class ClientBase extends PgClientBase {
-  neonConfig: NeonConfig;
+  neonConfig: NeonConfigGlobalAndClient;
 }
 
 export class Client extends PgClient {
-  neonConfig: NeonConfig;
+  neonConfig: NeonConfigGlobalAndClient;
 }
 
 export interface PoolClient extends PgPoolClient {
-  neonConfig: NeonConfig;
+  neonConfig: NeonConfigGlobalAndClient;
 }
 
 export class Pool extends PgPool {
