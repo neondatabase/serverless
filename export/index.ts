@@ -42,27 +42,41 @@ declare interface NeonClient {
   saslSession: any;
 }
 
-export const localhostWarning = `The database host is 'localhost', which is the default host when none is set. If that's intentional, please ignore this warning. If not, perhaps an environment variable has not been set, or has not been passed to the library?`;
-
 class NeonClient extends Client {
 
   get neonConfig(): NeonConfigGlobalAndClient { return this.connection.stream; }
+
+  constructor(public config: any) {
+    super(config);
+  }
 
   connect(): Promise<void>;
   connect(callback: (err?: Error) => void): void;
   connect(callback?: (err?: Error) => void) {
     const { neonConfig } = this;
 
+    // disable TLS if requested
     if (neonConfig.forceDisablePgSSL) {
       this.ssl = this.connection.ssl = false;
     }
+
+    // warn on double-encryption
     if (this.ssl && neonConfig.useSecureWebSocket) {
       console.warn(`SSL is enabled for both Postgres (e.g. ?sslmode=require in the connection string + forceDisablePgSSL = false) and the WebSocket tunnel (useSecureWebSocket = true). Double encryption will increase latency and CPU usage. It may be appropriate to disable SSL in the Postgres connection parameters or set forceDisablePgSSL = true.`);
     }
-    if (this.host === 'localhost') {
-      console.warn(localhostWarning);
-    }
 
+    // throw on likely missing DB connection params
+    const hasConfiguredHost = this.config?.host !== undefined || this.config?.connectionString !== undefined || process.env.PGHOST !== undefined;
+    const defaultUser = process.env.USER ?? process.env.USERNAME;
+    if (
+      !hasConfiguredHost &&
+      this.host === 'localhost' &&
+      this.user === defaultUser &&
+      this.database === defaultUser &&
+      this.password === null
+    ) throw new Error(`No database host or connection string was set, and key parameters have default values (host: localhost, user: ${defaultUser}, db: ${defaultUser}, password: null). Is an environment variable missing? Alternatively, if you intended to connect with these parameters, please set the host to 'localhost' explicitly.`);
+
+    // pipelining
     const result = super.connect(callback as any) as void | Promise<void>;
 
     const pipelineTLS = neonConfig.pipelineTLS && this.ssl;

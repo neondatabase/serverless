@@ -1,6 +1,6 @@
 import { parse } from '../shims/url';
 import { Socket } from '../shims/net';
-import { types, localhostWarning } from '.';
+import { types } from '.';
 
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from '../node_modules/pg/lib/utils';
@@ -34,14 +34,21 @@ export function neon(
   }: HTTPQueryOptions = {}
 ) {
 
-  const db = parse(connectionString);
-  const { protocol, username, password, hostname, port, pathname } = db;
+  // check connection string
+  if (!connectionString) throw new Error('No database connection string was provided to `neon()`. Perhaps an environment variable has not been set?');
 
-  if ((protocol !== 'postgres:' && protocol !== 'postgresql:') || !hostname || !username || !password || !pathname) {
-    throw new Error('Database connection string format should be: postgresql://user:password@host.tld/dbname?option=value');
+  let db;
+  try { db = parse(connectionString); }
+  catch {
+    throw new Error('Database connection string provided to `neon()` is not a valid URL. Connection string: ' + String(connectionString));
   }
-  if (hostname === 'localhost') console.warn(localhostWarning);
 
+  const { protocol, username, password, hostname, port, pathname } = db;
+  if ((protocol !== 'postgres:' && protocol !== 'postgresql:') || !username || !password || !hostname || !pathname) {
+    throw new Error('Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value');
+  }
+
+  // return query function
   return async function (strings: TemplateStringsArray | string, ...params: any[]): Promise<any> {
     let arrayMode = arrayModeDefault ?? false;
     let fullResults = fullresultsDefault ?? false;

@@ -8,7 +8,6 @@ export const DatabaseError = mod.DatabaseError;
 export const Pool = mod.Pool;
 export const Query = mod.Query;
 export const defaults = mod.defaults;
-export const localhostWarning = mod.localhostWarning;
 export const neon = mod.neon;
 export const neonConfig = mod.neonConfig;
 export const types = mod.types;

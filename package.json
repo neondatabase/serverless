@@ -44,7 +44,6 @@
     "node": "npm run build && npm run launch",
     "nodeDebug": "npm run buildDebug && npm run launch",
     "cfDev": "npm run build && wrangler dev",
-    "cfDevLocal": "npm run build && wrangler dev --local",
     "cfDeploy": "npm run build && wrangler publish"
   },
   "devDependencies": {
