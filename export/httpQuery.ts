@@ -78,7 +78,7 @@ export function neon(
     // preparing the query params makes timezones and array types consistent with ordinary node-postgres/pg
     params = params.map(param => prepareValue(param));
 
-    const { fetchEndpoint, fetchConnectionCache } = Socket;
+    const { fetchEndpoint, fetchConnectionCache, fetchFunction } = Socket;
 
     const url = typeof fetchEndpoint === 'function' ?
       fetchEndpoint(hostname, port) :
@@ -93,7 +93,7 @@ export function neon(
 
     let response;
     try {
-      response = await fetch(url, {
+      response = await (fetchFunction ?? fetch)(url, {
         method: 'POST',
         body: JSON.stringify(qp),
         headers: {

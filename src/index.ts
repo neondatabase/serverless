@@ -171,6 +171,14 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
   const sqlRetry = sqlWithRetries(sql, 5000);
   await sqlRetry`SELECT ${'did this time out?'} AS str`;
 
+  // custom fetch
+  neonConfig.fetchFunction = (url: string, options: any) => {
+    console.log('custom fetch:', url, options);
+    return fetch(url, options);
+  };
+  await sql`SELECT ${"customFetch"} AS str`;
+
+
   await new Promise(resolve => setTimeout(resolve, 1000));
   pool.end();
 

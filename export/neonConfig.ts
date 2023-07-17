@@ -30,6 +30,15 @@ export interface NeonConfigGlobalOnly {
    * Default: `false`.
    */
   fetchConnectionCache: boolean;
+
+  /**
+   * The `fetchFunction` option allows you to supply an alternative function
+   * for making http requests. The function must accept the same arguments as
+   * native `fetch`.
+   * 
+   * Default: `undefined`.
+   */
+  fetchFunction: any;
 }
 
 export interface NeonConfigGlobalAndClient {

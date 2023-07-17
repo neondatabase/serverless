@@ -180,6 +180,15 @@ Default: `host => 'https://' + host + '/sql'`
 Note: this option can only be set globally, **not** on an individual `Client` instance.
 
 
+#### `fetchFunction: any`
+
+The `fetchFunction` option allows you to supply an alternative function for making http requests. The function must accept the same arguments as native `fetch`.
+
+Default: `undefined`.
+
+Note: this option can only be set globally, **not** on an individual `Client` instance.
+
+
 #### `wsProxy: string | (host: string, port: number | string) => string`
 
 If connecting to a non-Neon database, the `wsProxy` option should point to [your WebSocket proxy](DEPLOY.md). It can either be a string, which will have `?address=host:port` appended to it, or a function with the signature `(host: string, port: number | string) => string`. Either way, the protocol must _not_ be included, because this depends on other options. For example, when using the `wsproxy` proxy, the `wsProxy` option should look something like this:

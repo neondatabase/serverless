@@ -41,11 +41,14 @@ export function isIP(input: string) {
   return 0;
 }
 
+fetch
+
 export interface SocketDefaults {
   // these options relate to the fetch transport and take effect *only* when set globally
   poolQueryViaFetch: boolean;
   fetchEndpoint: string | ((host: string, port: number | string) => string);
   fetchConnectionCache: boolean;
+  fetchFunction: any;
   // these options relate to the WebSocket transport
   webSocketConstructor: typeof WebSocket | undefined;
   wsProxy: string | ((host: string, port: number | string) => string);
@@ -59,7 +62,7 @@ export interface SocketDefaults {
   pipelineTLS: boolean;
   disableSNI: boolean;
 }
-type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache';
+type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache' | 'fetchFunction';
 
 export class Socket extends EventEmitter {
 
@@ -68,6 +71,7 @@ export class Socket extends EventEmitter {
     poolQueryViaFetch: false,
     fetchEndpoint: host => 'https://' + host + '/sql',
     fetchConnectionCache: false,
+    fetchFunction: undefined,
     // these options relate to the WebSocket transport
     webSocketConstructor: undefined,
     wsProxy: host => host + '/v2',
@@ -93,6 +97,9 @@ export class Socket extends EventEmitter {
 
   static get fetchConnectionCache() { return Socket.opts.fetchConnectionCache ?? Socket.defaults.fetchConnectionCache; }
   static set fetchConnectionCache(newValue: SocketDefaults['fetchConnectionCache']) { Socket.opts.fetchConnectionCache = newValue; }
+
+  static get fetchFunction() { return Socket.opts.fetchFunction ?? Socket.defaults.fetchFunction; }
+  static set fetchFunction(newValue: SocketDefaults['fetchFunction']) { Socket.opts.fetchFunction = newValue; }
 
   static get webSocketConstructor() { return Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor; }
   static set webSocketConstructor(newValue: SocketDefaults['webSocketConstructor']) { Socket.opts.webSocketConstructor = newValue; }
