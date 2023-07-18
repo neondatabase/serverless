@@ -1999,15 +1999,15 @@ g[_],_<S.length&&(v+="$"+(_+1))}S=S.map(_=>(0,xs.prepareValue)(_));let{fetchEndp
 fetchConnectionCache:M,fetchFunction:H}=de,F=typeof E=="function"?E(h,f):E,Y=M===
 !0?{"Neon-Pool-Opt-In":"true"}:{},O={query:v,params:S};i&&i(O);let G;try{G=await(H??
 fetch)(F,{method:"POST",body:JSON.stringify(O),headers:{"Neon-Connection-String":r,
-"Neon-Raw-Text-Output":"true","Neon-Array-Mode":"true",...Y},...T})}catch(_){let P=new gt(
-`Error connecting to database: ${_.message}`);throw P.sourceError=_,P}if(G.ok){let _=await G.
-json(),P=_.fields.map(N=>N.name),$=_.fields.map(N=>Le.types.getTypeParser(N.dataTypeID)),
-D=A===!0?_.rows.map(N=>N.map((j,q)=>j===null?null:$[q](j))):_.rows.map(N=>Object.
-fromEntries(N.map((j,q)=>[P[q],j===null?null:$[q](j)])));return s&&s(O,_,D,{arrayMode:A,
-fullResults:b}),b?(_.viaNeonFetch=!0,_.rowAsArray=A,_.rows=D,_):D}else{let{status:_}=G;
-if(_===400){let{message:P,code:$}=await G.json(),D=new gt(P);throw D.code=$,D}else{
-let P=await G.text();throw new gt(`Database error (HTTP status ${_}): ${P}`)}}}}
-o(St,"neon");var er=nt(Xt());qt();var Pa=nt(Wt()),Le=nt(Xt());var Ae=class extends er.Client{constructor(t){super(t);this.config=t}static{o(this,
+"Neon-Raw-Text-Output":"true","Neon-Array-Mode":"true",...Y},cache:"no-store",...T})}catch(_){
+let P=new gt(`Error connecting to database: ${_.message}`);throw P.sourceError=_,
+P}if(G.ok){let _=await G.json(),P=_.fields.map(N=>N.name),$=_.fields.map(N=>Le.types.
+getTypeParser(N.dataTypeID)),D=A===!0?_.rows.map(N=>N.map((j,q)=>j===null?null:$[q](
+j))):_.rows.map(N=>Object.fromEntries(N.map((j,q)=>[P[q],j===null?null:$[q](j)])));
+return s&&s(O,_,D,{arrayMode:A,fullResults:b}),b?(_.viaNeonFetch=!0,_.rowAsArray=
+A,_.rows=D,_):D}else{let{status:_}=G;if(_===400){let{message:P,code:$}=await G.json(),
+D=new gt(P);throw D.code=$,D}else{let P=await G.text();throw new gt(`Database er\
+ror (HTTP status ${_}): ${P}`)}}}}o(St,"neon");var er=nt(Xt());qt();var Pa=nt(Wt()),Le=nt(Xt());var Ae=class extends er.Client{constructor(t){super(t);this.config=t}static{o(this,
 "NeonClient")}get neonConfig(){return this.connection.stream}connect(t){let{neonConfig:n}=this;
 n.forceDisablePgSSL&&(this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&
 console.warn("SSL is enabled for both Postgres (e.g. ?sslmode=require in the con\

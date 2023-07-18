@@ -1519,15 +1519,15 @@ B+=A[v],v<P.length&&(B+="$"+(v+1))}P=P.map(v=>(0,Oi.prepareValue)(v));let{fetchE
 fetchConnectionCache:te,fetchFunction:be}=me,Z=typeof _=="function"?_(f,m):_,fe=te===
 !0?{"Neon-Pool-Opt-In":"true"}:{},re={query:B,params:P};i&&i(re);let z;try{z=await(be??
 fetch)(Z,{method:"POST",body:JSON.stringify(re),headers:{"Neon-Connection-String":r,
-"Neon-Raw-Text-Output":"true","Neon-Array-Mode":"true",...fe},...ue})}catch(v){let k=new Ze(
-`Error connecting to database: ${v.message}`);throw k.sourceError=v,k}if(z.ok){let v=await z.
-json(),k=v.fields.map(ie=>ie.name),se=v.fields.map(ie=>$.types.getTypeParser(ie.
-dataTypeID)),ne=D===!0?v.rows.map(ie=>ie.map((ce,pe)=>ce===null?null:se[pe](ce))):
-v.rows.map(ie=>Object.fromEntries(ie.map((ce,pe)=>[k[pe],ce===null?null:se[pe](ce)])));
-return s&&s(re,v,ne,{arrayMode:D,fullResults:V}),V?(v.viaNeonFetch=!0,v.rowAsArray=
-D,v.rows=ne,v):ne}else{let{status:v}=z;if(v===400){let{message:k,code:se}=await z.
-json(),ne=new Ze(k);throw ne.code=se,ne}else{let k=await z.text();throw new Ze(`\
-Database error (HTTP status ${v}): ${k}`)}}}}a(ft,"neon");var Ct=qe(_t());at();var Vs=qe(gt()),$=qe(_t());var En=class En extends Ct.Client{constructor(t){super(t);this.config=t}get neonConfig(){
+"Neon-Raw-Text-Output":"true","Neon-Array-Mode":"true",...fe},cache:"no-store",...ue})}catch(v){
+let k=new Ze(`Error connecting to database: ${v.message}`);throw k.sourceError=v,
+k}if(z.ok){let v=await z.json(),k=v.fields.map(ie=>ie.name),se=v.fields.map(ie=>$.types.
+getTypeParser(ie.dataTypeID)),ne=D===!0?v.rows.map(ie=>ie.map((ce,pe)=>ce===null?
+null:se[pe](ce))):v.rows.map(ie=>Object.fromEntries(ie.map((ce,pe)=>[k[pe],ce===
+null?null:se[pe](ce)])));return s&&s(re,v,ne,{arrayMode:D,fullResults:V}),V?(v.viaNeonFetch=
+!0,v.rowAsArray=D,v.rows=ne,v):ne}else{let{status:v}=z;if(v===400){let{message:k,
+code:se}=await z.json(),ne=new Ze(k);throw ne.code=se,ne}else{let k=await z.text();
+throw new Ze(`Database error (HTTP status ${v}): ${k}`)}}}}a(ft,"neon");var Ct=qe(_t());at();var Vs=qe(gt()),$=qe(_t());var En=class En extends Ct.Client{constructor(t){super(t);this.config=t}get neonConfig(){
 return this.connection.stream}connect(t){let{neonConfig:n}=this;n.forceDisablePgSSL&&
 (this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&console.warn("\
 SSL is enabled for both Postgres (e.g. ?sslmode=require in the connection string\

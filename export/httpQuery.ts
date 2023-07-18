@@ -102,6 +102,7 @@ export function neon(
           'Neon-Array-Mode': 'true',
           ...connCacheHeader,
         },
+        cache: 'no-store',
         ...fetchOptions,
       });
 
