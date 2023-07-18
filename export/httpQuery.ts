@@ -102,7 +102,7 @@ export function neon(
           'Neon-Array-Mode': 'true',
           ...connCacheHeader,
         },
-        cache: 'no-store',
+        // cache: 'no-store',  // currently breaks on Cloudflare Workers: https://github.com/cloudflare/workerd/issues/698
         ...fetchOptions,
       });
 
