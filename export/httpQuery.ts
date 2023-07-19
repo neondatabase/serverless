@@ -58,14 +58,15 @@ export function neon(
     if (typeof strings === 'string') {  // ordinary (non tagged-template) usage
       query = strings;
 
-      const opts = params[1];  // drizzle-orm insist that they need these options overrides
+      // options passed here override options passed to neon
+      const opts = params[1];  // the third argument, which is the second of the ...rest arguments
       if (opts !== undefined) {
         if (opts.arrayMode !== undefined) arrayMode = opts.arrayMode;
         if (opts.fullResults !== undefined) fullResults = opts.fullResults;
         if (opts.fetchOptions !== undefined) fetchOptions = { ...fetchOptions, ...opts.fetchOptions };
       }
 
-      params = params[0] ?? [];  // the second argument should be an array of params
+      params = params[0] ?? [];  // the second argument, which is the first of the ...rest arguments
 
     } else {  // tagged-template usage
       query = '';
@@ -81,15 +82,21 @@ export function neon(
     const { fetchEndpoint, fetchConnectionCache, fetchFunction } = Socket;
 
     const url = typeof fetchEndpoint === 'function' ?
-      fetchEndpoint(hostname, port) :
-      fetchEndpoint;
+      fetchEndpoint(hostname, port) : fetchEndpoint;
 
     const connCacheHeader = fetchConnectionCache === true ?
-      { 'Neon-Pool-Opt-In': 'true' } :
-      {} as Record<string, string>;
+      { 'Neon-Pool-Opt-In': 'true' } : {};
 
     const qp = { query, params };
     if (queryCallback) queryCallback(qp);
+
+    // we want this to neutralise aggressive and non-standard caching by e.g. Next.js
+    // (https://nextjs.org/docs/app/building-your-application/data-fetching/caching),
+    // but it currently breaks on Cloudflare Workers (https://github.com/cloudflare/workerd/issues/698), so ...
+    let fetchCacheOption: {} = { cache: 'no-store' };
+    // @ts-ignore
+    try { new Request('x:', fetchCacheOption); }
+    catch (err) { fetchCacheOption = {}; }
 
     let response;
     try {
@@ -102,8 +109,8 @@ export function neon(
           'Neon-Array-Mode': 'true',
           ...connCacheHeader,
         },
-        // cache: 'no-store',  // currently breaks on Cloudflare Workers: https://github.com/cloudflare/workerd/issues/698
-        ...fetchOptions,
+        ...fetchCacheOption,
+        ...fetchOptions,  // this is last, so it gets the final say
       });
 
     } catch (err: any) {

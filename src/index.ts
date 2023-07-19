@@ -5,7 +5,7 @@ import isrgRootX1 from './isrgrootx1.pem';
 
 import { deepEqual } from 'fast-equals';
 import { Client, Pool, neon, neonConfig } from '../export';
-import { timedRepeats, runQuery, clientRunQuery, poolRunQuery } from './util';
+import { timedRepeats, runQuery, clientRunQuery, poolRunQuery, httpRunQuery } from './util';
 import { queries } from './queries';
 
 export { neonConfig } from '../export';
@@ -20,8 +20,14 @@ export interface Env {
 
 export async function cf(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   let results: any[] = [];
+
   for (const query of queries) {
     const [, [[, result]]] = await poolRunQuery(1, env.NEON_DB_URL, ctx, query);
+    results.push(result);
+  }
+
+  for (const query of queries) {
+    const [, [[, result]]] = await httpRunQuery(1, env.NEON_DB_URL, ctx, query);
     results.push(result);
   }
 

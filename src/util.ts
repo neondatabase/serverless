@@ -1,4 +1,4 @@
-import { Client, ClientBase, Pool } from '../export';
+import { Client, ClientBase, Pool, neon } from '../export';
 import type { Query } from './queries';
 
 export async function timed(f: () => Promise<any>) {
@@ -20,9 +20,9 @@ export async function timedRepeats(n: number, f: () => Promise<any>, timeListene
   return [total, results] as const;
 }
 
-export async function runQuery(queryable: ClientBase | Pool, query: Query) {
+export async function runQuery(queryable: ClientBase | Pool | ReturnType<typeof neon>, query: Query) {
   const { sql, test } = query;
-  const { rows } = await queryable.query(sql);
+  const { rows } = await (typeof queryable === 'function' ? queryable(sql) : queryable.query(sql));
   if (!test(rows)) throw new Error(`Result fails test\nQuery: ${sql}\nResult: ${JSON.stringify(rows)}`);
   return rows;
 }
@@ -38,6 +38,12 @@ export async function poolRunQuery(n: number, dbUrl: string, ctx: ExecutionConte
   const pool = new Pool({ connectionString: dbUrl });
   const tPlusResults = await timedRepeats(n, () => runQuery(pool, query));
   ctx.waitUntil(pool.end());
+  return tPlusResults;
+}
+
+export async function httpRunQuery(n: number, dbUrl: string, ctx: ExecutionContext, query: Query) {
+  const sql = neon(dbUrl, { fullResults: true });
+  const tPlusResults = await timedRepeats(n, () => runQuery(sql, query));
   return tPlusResults;
 }
 
