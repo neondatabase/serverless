@@ -260,4 +260,6 @@ export {
   ClientBase,
   defaults,
   types,
+  escapeIdentifier,
+  escapedLiteral,
 } from 'pg';
