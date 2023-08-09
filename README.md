@@ -254,7 +254,7 @@ These repos show how to use `@neondatabase/serverless` with a variety of environ
 
 ## Bring your own Postgres database
 
-This package comes configured to connect to a Neon database over a secure (`wss:`) WebSocket. But you can also use it to connect to your own Postgres instances if you [run your own WebSocket proxy](DEPLOY.md).
+This package comes configured to connect to a Neon database. But you can also use it to connect to your own Postgres instances if you [run your own WebSocket proxy](DEPLOY.md).
 
 
 ## Open-source
