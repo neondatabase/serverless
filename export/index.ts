@@ -1,8 +1,6 @@
-export { neon } from './httpQuery';
-
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
-import { neon } from './httpQuery';
+import { neon, NeonDbError } from './httpQuery';
 import type { NeonConfigGlobalAndClient } from './neonConfig';
 
 // @ts-ignore -- this isn't officially exported by pg
@@ -251,6 +249,8 @@ export {
   Socket as neonConfig,
   NeonPool as Pool,
   NeonClient as Client,
+  neon,
+  NeonDbError
 };
 
 export {

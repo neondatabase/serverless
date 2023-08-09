@@ -294,3 +294,8 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
   }
 ): NeonQueryFunction<ArrayMode, FullResults>;
 
+export class NeonDbError extends Error {
+  name: 'NeonDbError';
+  code: string | null;
+  sourceError: Error | undefined;
+}

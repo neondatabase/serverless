@@ -6,7 +6,7 @@ import { types } from '.';
 import { prepareValue } from '../node_modules/pg/lib/utils';
 
 export class NeonDbError extends Error {
-  name = 'NeonDbError';
+  name = 'NeonDbError' as const;
   code: string | null = null;
   sourceError: Error | undefined;
 }
