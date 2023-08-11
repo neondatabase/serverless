@@ -28,6 +28,11 @@ interface HTTPQueryOptions {
   resultCallback?: (query: ParameterizedQuery, result: any, rows: any, opts: any) => void;
 }
 
+interface NeonQueryPromise<T = any> extends Promise<T> {
+  parameterizedQuery: ParameterizedQuery;
+  opts?: HTTPQueryOptions;
+};
+
 export function neon(
   connectionString: string, {
     arrayMode: arrayModeGeneral,
@@ -82,7 +87,7 @@ export function neon(
     const parameterizedQuery = { query, params };
     if (queryCallback) queryCallback(parameterizedQuery);
 
-    return createNeonPromise(execute, parameterizedQuery, opts);
+    return createNeonQueryPromise(execute, parameterizedQuery, opts);
   };
 
   // execute query
@@ -92,7 +97,7 @@ export function neon(
   let isolationLevel = isolationLevelGeneral;  // default is undefined
   let readOnly = readOnlyGeneral;  // default is undefined
 
-  const execute = async (parameterizedQuery: ParameterizedQuery | ParameterizedQuery[], opts?: HTTPQueryOptions): Promise<any> => {
+  const execute = async (parameterizedQuery: ParameterizedQuery | ParameterizedQuery[], opts?: HTTPQueryOptions) => {
     let fetchOptions = fetchOptionsGeneral ?? {};
     const { fetchEndpoint, fetchConnectionCache, fetchFunction } = Socket;
 
@@ -203,7 +208,7 @@ export function neon(
     if (!Array.isArray(queries)) throw new Error('transaction() expects an array of queries');
 
     const payload = queries.map(query => {
-      if (query[Symbol.toStringTag] === 'NeonPromise') {
+      if (query[Symbol.toStringTag] === 'NeonQueryPromise') {
         const neonPromise = query as NeonQueryPromise;
         if (neonPromise.opts !== undefined) throw new Error('Cannot set options on individual queries passed to `transaction()`: set options on `transaction()` instead');
         return neonPromise.parameterizedQuery;
@@ -219,19 +224,14 @@ export function neon(
   return resolve;
 }
 
-interface NeonQueryPromise<T = any> extends Promise<T> {
-  parameterizedQuery: ParameterizedQuery;
-  opts?: HTTPQueryOptions;
-};
-
-const createNeonPromise = (
+const createNeonQueryPromise = (
   execute: (pq: ParameterizedQuery, hqo?: HTTPQueryOptions) => Promise<any>,
   parameterizedQuery: ParameterizedQuery,
   opts?: HTTPQueryOptions
 ) => {
 
   return {
-    [Symbol.toStringTag]: 'NeonPromise',
+    [Symbol.toStringTag]: 'NeonQueryPromise',
     parameterizedQuery,
     opts,
     then: (resolve, reject) => execute(parameterizedQuery, opts).then(resolve, reject),

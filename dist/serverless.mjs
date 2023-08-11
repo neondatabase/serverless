@@ -837,7 +837,7 @@ http:"+r.substring(t.length),{username:i,password:s,host:a,hostname:u,port:c,pat
 search:h,searchParams:f,hash:d}=new URL(n);s=decodeURIComponent(s);let g=i+":"+s,
 S=e?Object.fromEntries(f.entries()):h;return{href:r,protocol:t,auth:g,username:i,
 password:s,host:a,hostname:u,port:c,pathname:l,search:h,query:S,hash:d}}var Xr=ae(
-()=>{"use strict";y();o(Zr,"parse")});var ks=N((Id,Os)=>{"use strict";y();var fl=(Xr(),Z(qs)),en=(Hr(),Z(jr));function tn(r){
+()=>{y();o(Zr,"parse")});var ks=N((Id,Os)=>{"use strict";y();var fl=(Xr(),Z(qs)),en=(Hr(),Z(jr));function tn(r){
 if(r.charAt(0)==="/"){var t=r.split(" ");return{host:t[0],database:t[1]}}var e=fl.
 parse(/ |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.test(r)?encodeURI(r).replace(/\%25(\d\d)/g,
 "%$1"):r,!0),t=e.query;for(var n in t)Array.isArray(t[n])&&(t[n]=t[n][t[n].length-
@@ -2015,13 +2015,14 @@ map((O,Q)=>O===null?null:$[Q](O))):U.rows.map(R=>Object.fromEntries(R.map((O,Q)=
 M[Q],O===null?null:$[Q](O)])));return u&&u(B,U,P,{arrayMode:E,fullResults:T}),T?
 (U.viaNeonFetch=!0,U.rowAsArray=E,U.rows=P,U):P},"processQueryResult");return A.
 transaction=async(U,B)=>{if(!Array.isArray(U))throw new Error("transaction() exp\
-ects an array of queries");let M=U.map($=>{if($[Symbol.toStringTag]==="NeonPromi\
-se"){let P=$;if(P.opts!==void 0)throw new Error("Cannot set options on individua\
-l queries passed to `transaction()`: set options on `transaction()` instead");return P.
-parameterizedQuery}else throw new Error("`transaction()` expects an array of neo\
-n queries")});return q(M,B)},A}o(Ie,"neon");var _h=o((r,e,t)=>({[Symbol.toStringTag]:"\
-NeonPromise",parameterizedQuery:e,opts:t,then:(n,i)=>r(e,t).then(n,i),catch:n=>r(
-e,t).catch(n),finally:n=>r(e,t).finally(n)}),"createNeonPromise");var Ba=at(Gt()),Pe=at(tr());var Ae=class extends rr.Client{constructor(t){super(t);this.config=t}static{o(this,
+ects an array of queries");let M=U.map($=>{if($[Symbol.toStringTag]==="NeonQuery\
+Promise"){let P=$;if(P.opts!==void 0)throw new Error("Cannot set options on indi\
+vidual queries passed to `transaction()`: set options on `transaction()` instead");
+return P.parameterizedQuery}else throw new Error("`transaction()` expects an arr\
+ay of neon queries")});return q(M,B)},A}o(Ie,"neon");var _h=o((r,e,t)=>({[Symbol.
+toStringTag]:"NeonQueryPromise",parameterizedQuery:e,opts:t,then:(n,i)=>r(e,t).then(
+n,i),catch:n=>r(e,t).catch(n),finally:n=>r(e,t).finally(n)}),"createNeonQueryPro\
+mise");var Ba=at(Gt()),Pe=at(tr());var Ae=class extends rr.Client{constructor(t){super(t);this.config=t}static{o(this,
 "NeonClient")}get neonConfig(){return this.connection.stream}connect(t){let{neonConfig:n}=this;
 n.forceDisablePgSSL&&(this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&
 console.warn("SSL is enabled for both Postgres (e.g. ?sslmode=require in the con\
