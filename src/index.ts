@@ -44,6 +44,18 @@ const ctx = {
   passThroughOnException() { },
 };
 
+export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
+  const sql = neon(env.NEON_DB_URL);
+  const r1 = await sql`SELECT ${1}::int AS int`;
+  console.log(r1)
+  log(r1[0].int, "==", 1, "\n")
+  const r2 = await sql`SELECT ${"hello"} AS str`;
+  log(r2[0].str, "==", "hello", "\n")
+  const r3 = await sql.transaction([sql`SELECT ${1}::int AS int`, sql`SELECT ${"hello"} AS str`])
+  log(r3[0][0].int, "==", 1, "\n")
+  log(r3[1][0].str, "==", "hello", "\n")
+}
+
 export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]) => { }): Promise<void> {
   const queryRepeats = [1, 3];
   const connectRepeats = 9;
