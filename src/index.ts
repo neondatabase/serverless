@@ -48,7 +48,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
   const sql = neon(env.NEON_DB_URL);
 
   // basic batch query
-  const [[r1], [r2]] = await sql.transaction([
+  const [[r1], [r2]] = await sql.transaction(sql => [
     sql`SELECT ${1}::int AS "batchInt"`,
     sql`SELECT ${"hello"} AS "batchStr"`
   ]);
@@ -56,13 +56,13 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
   if (r1.batchInt !== 1 || r2.batchStr !== 'hello') throw new Error('Batch query problem');
 
   // empty batch query
-  const emptyResult = await sql.transaction([]);
+  const emptyResult = await sql.transaction(sql => []);
   log('empty txn result:', JSON.stringify(emptyResult), '\n');
 
   // invalid option setting on individual queries within a batch
   let optsErr = undefined;
   try {
-    await sql.transaction([
+    await sql.transaction(sql => [
       sql`SELECT ${1}::int AS "batchInt"`,
       sql('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: false })
     ]);
@@ -73,7 +73,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
   log('caught option setting on individual transaction queries\n');
 
   // option setting on `transaction()`
-  const [[[r3]], [[r4]]] = await sql.transaction([
+  const [[[r3]], [[r4]]] = await sql.transaction(sql => [
     sql`SELECT ${1}::int AS "batchInt"`,
     sql`SELECT ${"hello"} AS "batchStr"`
   ], { arrayMode: true, isolationLevel: 'Serializable', readOnly: true });
@@ -82,7 +82,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
 
   // option setting on `neon()`
   const sqlArr = neon(env.NEON_DB_URL, { arrayMode: true, isolationLevel: 'RepeatableRead' });
-  const [[[r5]], [[r6]]] = await sqlArr.transaction([
+  const [[[r5]], [[r6]]] = await sqlArr.transaction(sqlArr => [
     sqlArr`SELECT ${1}::int AS "batchInt"`,
     sqlArr`SELECT ${"hello"} AS "batchStr"`
   ]);
@@ -92,7 +92,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
   // invalid query to `transaction()`
   let queryErr = undefined;
   try {
-    await sql.transaction([
+    await sql.transaction(sql => [
       sql`SELECT ${1}::int AS "batchInt"`,
       // @ts-ignore
       `SELECT 'hello' AS "batchStr"`
@@ -102,6 +102,18 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
   }
   if (queryErr === undefined) throw new Error('Error should have been raised for string passed to `transaction()`');
   log('caught invalid query passed to `transaction()`\n');
+
+  // wrong DB URL
+  let connErr;
+  try {
+    await neon(env.NEON_DB_URL + 'x').transaction(sqlErr => [
+      sqlErr`SELECT 1`
+    ]);
+  } catch (err) {
+    connErr = err;
+  }
+  if (connErr === undefined) throw new Error('Error should have been raised for bad DB');
+  log('caught invalid DB URL passed to `neon()`\n');
 }
 
 export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]) => { }): Promise<void> {

@@ -219,20 +219,107 @@ export interface FullQueryResults<ArrayMode extends boolean> {
   rowAsArray: ArrayMode;
 }
 
+export interface ParameterizedQuery {
+  query: string;
+  params: any[];
+}
+
+export interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends boolean> {
+  /**
+   * When `arrayMode` is `false`, which is the default, result rows are
+   * returned as objects whose keys represent column names, such as
+   * `{ id: 1 }`).
+   * 
+   * When `arrayMode` is `true`, rows are returned as arrays (and keys are not
+   * provided), e.g. `[1]`.
+   */
+  arrayMode?: ArrayMode;
+  /**
+   * When `fullResults` is `false`, which is the default, only result rows are
+   * returned, e.g. `[{ id: 1 }]`).
+   * 
+   * When `fullResults` is `true`, a result object is returned that matches
+   * what's returned by node-postgres. This has a `rows` property, which is an
+   * array of result rows, plus `fields`, which provides column names and
+   * types, `command` and `rowCount`.
+   */
+  fullResults?: FullResults;  // default false
+  /**
+   * Any options in `fetchOptions` are merged in to the options passed to
+   * `fetch`. In case of conflict with what would otherwise be passed, these
+   * options take precedence.
+   */
+  fetchOptions?: Record<string, any>;
+}
+
+export interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
+  /**
+   * Postgres transaction isolation level: see https://www.postgresql.org/docs/current/transaction-iso.html.
+   * Note that `ReadUncommitted` actually gets you `ReadCommitted` in Postgres.
+   * */
+  isolationLevel?: 'ReadUncommitted' | 'ReadCommitted' | 'RepeatableRead' | 'Serializable';
+  /**
+   * When `readOnly` is `false`, which is the default, a `READ WRITE` Postgres
+   * transaction is used.
+   * 
+   * When `readOnly` is `true`, a `READ ONLY` Postgres transaction is used.
+   * */
+  readOnly?: boolean;
+  /**
+   * When `deferrable` is `false`, which is the default, a `NOT DEFERRABLE`
+   * Postgres transaction is used.
+   * 
+   * When `deferrable` is `true` (and `isolationLevel` is `Serializable` and
+   * `readOnly` is `true`), a `DEFERRABLE` Postgres transaction is used.
+   * */
+  deferrable?: boolean;
+}
+
+export interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
+  parameterizedQuery: ParameterizedQuery;
+  opts?: HTTPQueryOptions<ArrayMode, FullResults>;
+}
+
+export interface NeonQueryInTransaction {
+  // this is a simplified form of query, which has only a `parameterizedQuery` (no `opts` and not a `Promise`)
+  parameterizedQuery: ParameterizedQuery;
+}
+
+export interface NeonQueryFunctionInTransaction<ArrayMode extends boolean, FullResults extends boolean> {
+  // this is a simplified form of NeonQueryFunction (below):
+  // * `opts` cannot be passed
+  // * no `transaction()` method is available
+
+  // tagged-template function usage
+  (strings: TemplateStringsArray, ...params: any[]):
+    NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+
+  // ordinary function usage (*no* options overrides)
+  (string: string, params?: any[]):
+    NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+}
+
 export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
   // tagged-template function usage
   (strings: TemplateStringsArray, ...params: any[]):
-    Promise<FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+    NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+
   // ordinary function usage, with options overrides
   <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(
-    strings: string,
+    string: string,
     params?: any[],
-    options?: {
-      arrayMode?: ArrayModeOverride;
-      fullResults?: FullResultsOverride;
-      fetchOptions?: Record<string, any>;
-    }):
-    Promise<FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>>;
+    opts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>
+  ): NeonQueryPromise<
+    ArrayModeOverride,
+    FullResultsOverride,
+    FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>
+  >;
+
+  // transaction function
+  transaction: <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(
+    queriesFn: (sql: NeonQueryFunctionInTransaction<ArrayModeOverride, FullResultsOverride>) => NeonQueryInTransaction[],
+    opts?: HTTPTransactionOptions<ArrayModeOverride, FullResultsOverride>
+  ) => Promise<FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride>[] : QueryRows<ArrayModeOverride>[]>;
 }
 
 /**
@@ -287,11 +374,7 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
  */
 export function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(
   connectionString: string,
-  options?: {
-    arrayMode?: ArrayMode;
-    fullResults?: FullResults;
-    fetchOptions?: Record<string, any>;
-  }
+  options?: HTTPTransactionOptions<ArrayMode, FullResults>,
 ): NeonQueryFunction<ArrayMode, FullResults>;
 
 export class NeonDbError extends Error {

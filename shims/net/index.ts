@@ -69,12 +69,12 @@ export class Socket extends EventEmitter {
   static defaults: SocketDefaults = {
     // these options relate to the fetch transport and take effect *only* when set globally
     poolQueryViaFetch: false,
-    fetchEndpoint: host => 'https://' + host + '/sql',
+    fetchEndpoint: host => 'https://' + host + ':4444/sql',
     fetchConnectionCache: false,
     fetchFunction: undefined,
     // these options relate to the WebSocket transport
     webSocketConstructor: undefined,
-    wsProxy: host => host + '/v2',
+    wsProxy: host => host + ':4444/v2',
     useSecureWebSocket: true,
     forceDisablePgSSL: true,
     coalesceWrites: true,
