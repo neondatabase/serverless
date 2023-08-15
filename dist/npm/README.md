@@ -95,6 +95,23 @@ A query using the `neon` function, as shown above, is carried by an https [fetch
 This should work — and work fast — from any modern JavaScript environment. But you can only send one query at a time this way: sessions and transactions are not supported.
 
 
+### `transaction()`
+
+Multiple queries can be executed within a single, non-interactive transaction by using the `transaction()` function, which is exposed as a property on the query function.
+
+For example:
+
+```javascript
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL);
+
+const [posts, tags] = await sql.transaction(txn => [
+  txn`SELECT * FROM posts ORDER BY posted_at DESC LIMIT 10`,
+  txn`SELECT * FROM tags`,
+]);
+```
+
+
 ### `Pool` and `Client`
 
 Use the `Pool` or `Client` constructors instead when you need:

@@ -37,6 +37,8 @@ interface NeonQueryPromise<T = any> extends Promise<T> {
   opts?: HTTPQueryOptions;
 };
 
+const txnArgErrMsg = 'transaction() expects an array of queries, or a function returning an array of queries';
+
 export function neon(
   connectionString: string, {
     arrayMode: arrayModeGeneral,
@@ -215,14 +217,12 @@ export function neon(
     return rows;
   };
 
-  resolve.transaction = async (queriesFn: (sql: typeof resolve) => NeonQueryPromise[], opts?: HTTPTransactionOptions) => {
-    const argErrMsg = 'transaction() expects a function returning an array of queries';
-    if (typeof queriesFn !== 'function') throw new Error(argErrMsg);
-    const queries = queriesFn(resolve);
-    if (!Array.isArray(queries)) throw new Error(argErrMsg);
+  resolve.transaction = async (queries: NeonQueryPromise[] | ((sql: typeof resolve) => NeonQueryPromise[]), opts?: HTTPTransactionOptions) => {
+    if (typeof queries === 'function') queries = queries(resolve);
+    if (!Array.isArray(queries)) throw new Error(txnArgErrMsg);
 
     const payload = queries.map(query => {
-      if (query[Symbol.toStringTag] !== 'NeonQueryPromise') throw new Error(argErrMsg);
+      if (query[Symbol.toStringTag] !== 'NeonQueryPromise') throw new Error(txnArgErrMsg);
       const neonPromise = query as NeonQueryPromise;
       if (neonPromise.opts !== undefined) throw new Error('Cannot set options on individual queries passed to `transaction()`: pass options to `transaction()` instead');
       return neonPromise.parameterizedQuery;

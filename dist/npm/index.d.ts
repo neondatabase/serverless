@@ -323,9 +323,9 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
    * ```
    * import { neon } from "@neondatabase/serverless";
    * const sql = neon("postgres://user:pass@host/db");
-   * const results = await sql.transaction(sql => [
-   *   sql`SELECT 1 AS num`,
-   *   sql`SELECT 'a' AS str`,
+   * const results = await sql.transaction(txn => [
+   *   txn`SELECT 1 AS num`,
+   *   txn`SELECT 'a' AS str`,
    * ], { isolationLevel: "Serializable" });
    * // -> [[{ num: 1 }], [{ str: "a" }]]
    * ```
