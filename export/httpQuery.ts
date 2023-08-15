@@ -78,7 +78,7 @@ export function neon(
       opts = params[1];  // the third argument, which is the second of the ...rest arguments
       params = params[0] ?? [];  // the second argument, which is the first of the ...rest arguments
 
-    } else { // tagged-template usage
+    } else {  // tagged-template usage
       query = '';
       for (let i = 0; i < strings.length; i++) {
         query += strings[i];
@@ -87,7 +87,7 @@ export function neon(
     }
 
     // prepare the query params to make timezones and array types consistent with ordinary node-postgres/pg
-    params = params.map((param) => prepareValue(param));
+    params = params.map(param => prepareValue(param));
 
     const parameterizedQuery = { query, params };
     if (queryCallback) queryCallback(parameterizedQuery);
@@ -130,7 +130,7 @@ export function neon(
       'Neon-Array-Mode': 'true',  // this saves data and post-processing even if we return objects, not arrays
     };
     if (fetchConnectionCache === true) headers['Neon-Pool-Opt-In'] = 'true';
-    if (Array.isArray(parameterizedQuery)) {
+    if (Array.isArray(parameterizedQuery)) {  // only send these headers for batch queries, where they matter
       if (isolationLevel !== undefined) headers['Neon-Batch-Isolation-Level'] = isolationLevel;
       if (readOnly !== undefined) headers['Neon-Batch-Read-Only'] = String(readOnly);
       if (deferrable !== undefined) headers['Neon-Batch-Deferrable'] = String(deferrable);
