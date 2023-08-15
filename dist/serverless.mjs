@@ -934,8 +934,8 @@ binary,valueMapper:Vs.prepareValue})}catch(t){this.handleError(t,e);return}e.des
 e.sendCopyFail("No source stream defined")}handleCopyData(e,t){}};zs.exports=sn});var Zs={};de(Zs,{Socket:()=>pe,isIP:()=>ml});function ml(r){return 0}var Ys,pe,Vt=oe(
 ()=>{"use strict";y();Ys=at(Ue(),1);o(ml,"isIP");pe=class r extends Ys.EventEmitter{static{
 o(this,"Socket")}static defaults={poolQueryViaFetch:!1,fetchEndpoint:e=>"https:/\
-/"+e+":4444/sql",fetchConnectionCache:!1,fetchFunction:void 0,webSocketConstructor:void 0,
-wsProxy:e=>e+":4444/v2",useSecureWebSocket:!0,forceDisablePgSSL:!0,coalesceWrites:!0,
+/"+e+"/sql",fetchConnectionCache:!1,fetchFunction:void 0,webSocketConstructor:void 0,
+wsProxy:e=>e+"/v2",useSecureWebSocket:!0,forceDisablePgSSL:!0,coalesceWrites:!0,
 pipelineConnect:"password",subtls:void 0,rootCerts:"",pipelineTLS:!1,disableSNI:!1};static opts={};opts={};static get poolQueryViaFetch(){
 return r.opts.poolQueryViaFetch??r.defaults.poolQueryViaFetch}static set poolQueryViaFetch(e){
 r.opts.poolQueryViaFetch=e}static get fetchEndpoint(){return r.opts.fetchEndpoint??

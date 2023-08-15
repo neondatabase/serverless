@@ -839,7 +839,7 @@ http:"+r.substring(t.length),{username:i,password:s,host:o,hostname:u,port:c,pat
 search:f,searchParams:m,hash:x}=new URL(n);s=decodeURIComponent(s);let _=i+":"+s,
 R=e?Object.fromEntries(m.entries()):f;return{href:r,protocol:t,auth:_,username:i,
 password:s,host:o,hostname:u,port:c,pathname:h,search:f,query:R,hash:x}}var dr=K(
-()=>{p();a(pr,"parse")});var ss=C((bl,is)=>{"use strict";p();var Au=(dr(),q(ns)),yr=(ir(),q(nr));function mr(r){
+()=>{"use strict";p();a(pr,"parse")});var ss=C((bl,is)=>{"use strict";p();var Au=(dr(),q(ns)),yr=(ir(),q(nr));function mr(r){
 if(r.charAt(0)==="/"){var t=r.split(" ");return{host:t[0],database:t[1]}}var e=Au.
 parse(/ |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.test(r)?encodeURI(r).replace(/\%25(\d\d)/g,
 "%$1"):r,!0),t=e.query;for(var n in t)Array.isArray(t[n])&&(t[n]=t[n][t[n].length-
@@ -1008,8 +1008,8 @@ t,n)),this.tlsState===0?this.rawWrite(t):this.tlsState===1?this.once("secureConn
 ection",()=>this.write(t,n,i)):this.tlsWrite(t),!0)}end(t=d.alloc(0),n="utf8",i){
 return this.write(t,n,()=>{this.ws.close(),i&&i()}),this}destroy(){return this.destroyed=
 !0,this.end()}};a(S,"Socket"),T(S,"defaults",{poolQueryViaFetch:!1,fetchEndpoint:t=>"\
-https://"+t+":4444/sql",fetchConnectionCache:!1,fetchFunction:void 0,webSocketConstructor:void 0,
-wsProxy:t=>t+":4444/v2",useSecureWebSocket:!0,forceDisablePgSSL:!0,coalesceWrites:!0,
+https://"+t+"/sql",fetchConnectionCache:!1,fetchFunction:void 0,webSocketConstructor:void 0,
+wsProxy:t=>t+"/v2",useSecureWebSocket:!0,forceDisablePgSSL:!0,coalesceWrites:!0,
 pipelineConnect:"password",subtls:void 0,rootCerts:"",pipelineTLS:!1,disableSNI:!1}),
 T(S,"opts",{});xe=S});var Zr=C(A=>{"use strict";p();Object.defineProperty(A,"__esModule",{value:!0});A.
 NoticeMessage=A.DataRowMessage=A.CommandCompleteMessage=A.ReadyForQueryMessage=A.
