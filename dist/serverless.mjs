@@ -837,7 +837,7 @@ http:"+r.substring(t.length),{username:i,password:s,host:a,hostname:u,port:c,pat
 search:h,searchParams:f,hash:d}=new URL(n);s=decodeURIComponent(s);let S=i+":"+s,
 m=e?Object.fromEntries(f.entries()):h;return{href:r,protocol:t,auth:S,username:i,
 password:s,host:a,hostname:u,port:c,pathname:l,search:h,query:m,hash:d}}var Xr=oe(
-()=>{"use strict";y();o(Zr,"parse")});var ks=N((Id,Os)=>{"use strict";y();var fl=(Xr(),Z(qs)),en=(Hr(),Z(jr));function tn(r){
+()=>{y();o(Zr,"parse")});var ks=N((Id,Os)=>{"use strict";y();var fl=(Xr(),Z(qs)),en=(Hr(),Z(jr));function tn(r){
 if(r.charAt(0)==="/"){var t=r.split(" ");return{host:t[0],database:t[1]}}var e=fl.
 parse(/ |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.test(r)?encodeURI(r).replace(/\%25(\d\d)/g,
 "%$1"):r,!0),t=e.query;for(var n in t)Array.isArray(t[n])&&(t[n]=t[n][t[n].length-
@@ -2117,9 +2117,9 @@ f),`
 m=>[m`SELECT ${1}::int AS "batchInt"`,`SELECT 'hello' AS "batchStr"`])}catch(m){
 d=m}if(d===void 0)throw new Error("Error should have been raised for string pass\
 ed to `transaction()`");e("caught invalid query passed to `transaction()`\n");let S;
-try{await Ae(r.NEON_DB_URL+"x").transaction(m=>[m`SELECT 1`])}catch(m){S=m}if(S===
-void 0)throw new Error("Error should have been raised for bad DB");e("caught inv\
-alid DB URL passed to `neon()`\n")}o(Th,"batchQueryTest");async function u0(r,e,t=(...n)=>{}){
+try{let m=r.NEON_DB_URL.replace(/@/,"x@");await Ae(m).transaction(A=>[A`SELECT 1`])}catch(m){
+S=m}if(S===void 0)throw new Error("Error should have been raised for bad passwor\
+d");e("caught invalid password passed to `neon()`\n")}o(Th,"batchQueryTest");async function u0(r,e,t=(...n)=>{}){
 let n=[1,3],i=9;t(`Warm-up ...
 
 `),await nr(1,r.NEON_DB_URL,Be,_t[0]);let s=0;t(`

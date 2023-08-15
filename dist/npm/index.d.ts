@@ -315,7 +315,31 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
     FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>
   >;
 
-  // transaction function
+  /**
+   * The `transaction()` function allows multiple queries to be submitted (over
+   * HTTP) as a single, non-interactive Postgres transaction.
+   * 
+   * For example:
+   * ```
+   * import { neon } from "@neondatabase/serverless";
+   * const sql = neon("postgres://user:pass@host/db");
+   * const results = await sql.transaction(sql => [
+   *   sql`SELECT 1 AS num`,
+   *   sql`SELECT 'a' AS str`,
+   * ], { isolationLevel: "Serializable" });
+   * // -> [[{ num: 1 }], [{ str: "a" }]]
+   * ```
+   * @param queriesFn The function passed in here receives a query function,
+   * which may be used either as a conventional function or a tagged-template
+   * function, and must return an array of queries constructed with it.
+   * @param opts The same options that may be set on individual queries in a
+   * non-transaction setting -- that is, `arrayMode` `fullResults` and
+   * `fetchOptions` -- plus transaction options `isolationLevel`, `readOnly`
+   * and `deferrable`. Note that none of these options can be set on individual
+   * queries within a transaction.
+   * @returns An array of results. The structure of each result object depends
+   * on the `arrayMode` and `fullResults` options.
+   */
   transaction: <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(
     queriesFn: (sql: NeonQueryFunctionInTransaction<ArrayModeOverride, FullResultsOverride>) => NeonQueryInTransaction[],
     opts?: HTTPTransactionOptions<ArrayModeOverride, FullResultsOverride>
@@ -323,10 +347,13 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
 }
 
 /**
- * This experimental function returns an async tagged-template function that
- * runs a single SQL query (no session or transactions) with low latency over
- * https. By default, it returns database rows directly. Types should match
- * those returned by this driver (i.e. Pool or Client) over WebSockets.
+ * This function returns an async tagged-template function that runs a single
+ * SQL query (no session or transactions) with low latency over https. Support
+ * for multiple queries as a non-interactive transaction is provided by
+ * the `transaction` property of the query function.
+ * 
+ * By default, the query function returns database rows directly. Types should
+ * match those returned by this driver (i.e. Pool or Client) over WebSockets.
  * 
  * The returned function can also be called directly (i.e. not as a template 
  * function). In that case, pass it a query string with embedded `$1`, `$2` 

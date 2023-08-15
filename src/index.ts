@@ -106,14 +106,15 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
   // wrong DB URL
   let connErr;
   try {
-    await neon(env.NEON_DB_URL + 'x').transaction(sqlErr => [
+    const urlWithBadPassword = env.NEON_DB_URL.replace(/@/, 'x@');
+    await neon(urlWithBadPassword).transaction(sqlErr => [
       sqlErr`SELECT 1`
     ]);
   } catch (err) {
     connErr = err;
   }
-  if (connErr === undefined) throw new Error('Error should have been raised for bad DB');
-  log('caught invalid DB URL passed to `neon()`\n');
+  if (connErr === undefined) throw new Error('Error should have been raised for bad password');
+  log('caught invalid password passed to `neon()`\n');
 }
 
 export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]) => { }): Promise<void> {
