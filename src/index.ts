@@ -44,6 +44,91 @@ const ctx = {
   passThroughOnException() { },
 };
 
+export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
+  const sql = neon(env.NEON_DB_URL);
+
+  // basic batch query with array instead of function
+  const [[ra], [rb]] = await sql.transaction([
+    sql`SELECT ${1}::int AS "batchInt"`,
+    sql`SELECT ${"hello"} AS "batchStr"`
+  ]);
+  log('batch results:', JSON.stringify(ra), JSON.stringify(rb), '\n');
+  if (ra.batchInt !== 1 || rb.batchStr !== 'hello') throw new Error('Batch query problem');
+
+  // basic batch query
+  const [[r1], [r2]] = await sql.transaction(txn => [
+    txn`SELECT ${1}::int AS "batchInt"`,
+    txn`SELECT ${"hello"} AS "batchStr"`
+  ]);
+  log('batch results:', JSON.stringify(r1), JSON.stringify(r2), '\n');
+  if (r1.batchInt !== 1 || r2.batchStr !== 'hello') throw new Error('Batch query problem');
+
+  // empty batch query
+  const emptyResult = await sql.transaction(txn => []);
+  log('empty txn result:', JSON.stringify(emptyResult), '\n');
+
+  // option setting on `transaction()`
+  const [[[r3]], [[r4]]] = await sql.transaction(txn => [
+    txn`SELECT ${1}::int AS "batchInt"`,
+    txn`SELECT ${"hello"} AS "batchStr"`
+  ], { arrayMode: true, isolationLevel: 'Serializable', readOnly: true });
+  log('array mode (via transaction options) batch results:', JSON.stringify(r3), JSON.stringify(r4), '\n');
+  if (r3 !== 1 || r4 !== 'hello') throw new Error('Batch query problem');
+
+  // option setting on `neon()`
+  const sqlArr = neon(env.NEON_DB_URL, { arrayMode: true, isolationLevel: 'RepeatableRead' });
+  const [[[r5]], [[r6]]] = await sqlArr.transaction(txn => [
+    txn`SELECT ${1}::int AS "batchInt"`,
+    txn`SELECT ${"hello"} AS "batchStr"`
+  ]);
+  log('array mode (via neon options) batch results:', JSON.stringify(r5), JSON.stringify(r6), '\n');
+  if (r5 !== 1 || r6 !== 'hello') throw new Error('Batch query problem');
+
+  // option setting in transaction overrides option setting on Neon
+  const sqlArr2 = neon(env.NEON_DB_URL, { arrayMode: true });
+  const [[r7], [r8]] = await sqlArr2.transaction(txn => [
+    txn`SELECT ${1}::int AS "batchInt"`,
+    txn`SELECT ${"hello"} AS "batchStr"`
+  ], { arrayMode: false });
+  log('ordinary (via overridden options) batch results:', JSON.stringify(r7), JSON.stringify(r8), '\n');
+  if (r7.batchInt !== 1 || r8.batchStr !== 'hello') throw new Error('Batch query problem');
+
+  // invalid option setting on individual queries within a batch: should be ignored
+  const [[r9], [r10]] = await sql.transaction(txn => [
+    txn`SELECT ${1}::int AS "batchInt"`,
+    txn('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: true })
+  ]);
+  log('ignored query options batch results:', JSON.stringify(r9), JSON.stringify(r10), '\n');
+  if (r9.batchInt !== 1 || r10.batchStr !== 'hello') throw new Error('Batch query problem');
+
+  // invalid query to `transaction()`
+  let queryErr = undefined;
+  try {
+    // @ts-ignore
+    await sql.transaction(txn => [
+      txn`SELECT ${1}::int AS "batchInt"`,
+      `SELECT 'hello' AS "batchStr"`
+    ]);
+  } catch (err) {
+    queryErr = err;
+  }
+  if (queryErr === undefined) throw new Error('Error should have been raised for string passed to `transaction()`');
+  log('caught invalid query passed to `transaction()`\n');
+
+  // wrong DB URL
+  let connErr;
+  try {
+    const urlWithBadPassword = env.NEON_DB_URL.replace(/@/, 'x@');
+    await neon(urlWithBadPassword).transaction(txn => [
+      txn`SELECT 'never' AS this_should_be_seen_precisely`
+    ]);
+  } catch (err) {
+    connErr = err;
+  }
+  if (connErr === undefined) throw new Error('Error should have been raised for bad password');
+  log('caught invalid password passed to `neon()`\n');
+}
+
 export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]) => { }): Promise<void> {
   const queryRepeats = [1, 3];
   const connectRepeats = 9;
@@ -177,6 +262,9 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
   const sqlRetry = sqlWithRetries(sql, 5000);
   await sqlRetry`SELECT ${'did this time out?'} AS str`;
 
+  // batch/transaction
+  await batchQueryTest(env, log);
+
   // custom fetch
   neonConfig.fetchFunction = (url: string, options: any) => {
     console.log('custom fetch:', url, options);
@@ -188,8 +276,11 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
   await new Promise(resolve => setTimeout(resolve, 1000));
   pool.end();
 
+
+  log(`\n\n===== Pool/Client tests =====\n`);
+
   for (const query of queries) {
-    log(`\n===== ${query.sql} =====\n\n`);
+    log(`\n----- ${query.sql} -----\n\n`);
 
     async function section(queryRepeat: number, f: (n: number) => Promise<void>) {
       const marker = String.fromCharCode(counter + (counter > 25 ? 49 - 26 : 65));  // A - Z, 1 - 9

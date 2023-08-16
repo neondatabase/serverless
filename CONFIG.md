@@ -107,6 +107,58 @@ clearTimeout(timeout);
 ```
 
 
+## `transaction(...)` function
+
+The `transaction(queriesOrFn, options)` function, is exposed as a property on the query function. It allows multiple queries to be executed within a single, non-interactive transaction.
+
+The first argument to `transaction()`, `queriesOrFn`, is either (1) an array of queries or (2) a non-`async` function that receives a query function as its argument and returns an array of queries.
+
+The array-of-queries case looks like this:
+
+```javascript
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL);
+const showLatestN = 10;
+
+const [posts, tags] = await sql.transaction([
+  sql`SELECT * FROM posts ORDER BY posted_at DESC LIMIT ${showLatestN}`,
+  sql`SELECT * FROM tags`,
+], { 
+  isolationLevel: 'RepeatableRead',
+  readOnly: true, 
+});
+```
+
+Or as an example of the function case:
+
+```javascript
+const [authors, tags] = await neon(process.env.DATABASE_URL)
+  .transaction(txn => [
+    txn`SELECT * FROM authors`,
+    txn`SELECT * FROM tags`,
+  ]);
+```
+
+The optional second argument to `transaction()`, `options`, has the same keys as the options to the ordinary query function -- `arrayMode`, `fullResults` and `fetchOptions` -- plus three additional keys that concern the transaction configuration. These transaction-related keys are: `isolationMode`, `readOnly` and `deferrable`.
+
+Note that options **cannot** be supplied for individual queries within a transaction. Query and transaction options must instead be passed as the second argument of the `transaction()` function. For example, this `arrayMode` setting is ineffective (and TypeScript won't compile it): `await sql.transaction([sql('SELECT now()', [], { arrayMode: true })])`. Instead, use `await sql.transaction([sql('SELECT now()')], { arrayMode: true })`.
+
+
+### `isolationMode`
+
+This option selects a Postgres [transaction isolation mode](https://www.postgresql.org/docs/current/transaction-iso.html). If present, it must be one of: `'ReadUncommitted'`, `'ReadCommitted'`, `'RepeatableRead'` or `'Serializable'`.
+
+
+### `readOnly`
+
+If `true`, this option ensures that a `READ ONLY` transaction is used to execute the queries passed.
+
+
+### `deferrable`
+
+If `true` (and if `readOnly` is also `true`, and `isolationMode` is `'Serializable'`), this option ensures that a `DEFERRABLE` transaction is used to execute the queries passed.
+
+
 ## `neonConfig` configuration
 
 In most cases, there are two ways to set configuration options:
