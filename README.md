@@ -97,30 +97,33 @@ This should work — and work fast — from any modern JavaScript environment. B
 
 ### `transaction()`
 
-Multiple queries can be executed within a single, non-interactive transaction by using the `transaction()` function, which is exposed as a property on the query function.
+Multiple queries can be issed via fetch request within a single, non-interactive transaction by using the `transaction()` function. This is exposed as a property on the query function.
 
 For example:
 
 ```javascript
 import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL);
+const showLatestN = 10;
 
-const [posts, tags] = await sql.transaction(txn => [
-  txn`SELECT * FROM posts ORDER BY posted_at DESC LIMIT 10`,
-  txn`SELECT * FROM tags`,
+const [posts, tags] = await sql.transaction([
+  sql`SELECT * FROM posts ORDER BY posted_at DESC LIMIT ${showLatestN}`,
+  sql`SELECT * FROM tags`,
 ]);
 ```
+
+There are some [additional options](CONFIG.md) when using `transaction()`.
 
 
 ### `Pool` and `Client`
 
-Use the `Pool` or `Client` constructors instead when you need:
+Use the `Pool` or `Client` constructors, instead of the functions described above, when you need:
 
-* **session or transaction support**, or
+* **session or interactive transaction support**, and/or
 
-* **node-postgres compatibility**, to enable query libraries like [Kysely](https://kysely.dev/) or [Zapatos](https://jawj.github.io/zapatos/).
+* **compatibility with node-postgres**, which supports query libraries like [Kysely](https://kysely.dev/) or [Zapatos](https://jawj.github.io/zapatos/).
 
-Using `Pool` and `Client`, queries are carried by WebSockets. There are **two key things** you need to know:
+Queries using `Pool` and `Client` are carried by WebSockets. There are **two key things** to know about this:
 
 1. **In Node.js** and some other environments, there's no built-in WebSocket support. In these cases, supply a WebSocket constructor function.
 
@@ -149,7 +152,7 @@ import ws from 'ws';
 neonConfig.webSocketConstructor = ws;  // <-- this is the key bit
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-pool.on('error', err => console.error(err));
+pool.on('error', err => console.error(err));  // deal with e.g. re-connect
 // ...
 
 const client = await pool.connect();
@@ -182,7 +185,7 @@ neonConfig.webSocketConstructor = WebSocket;
 
 ## Example: Vercel Edge Function with `Pool.query()`
 
-We can rewrite the Vercel Edge Function above to use `Pool`, as follows:
+We can rewrite the Vercel Edge Function shown above (under the heading 'Deploy it') to use `Pool`, as follows:
 
 ```javascript
 import { Pool } from '@neondatabase/serverless';

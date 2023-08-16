@@ -323,25 +323,32 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
    * ```
    * import { neon } from "@neondatabase/serverless";
    * const sql = neon("postgres://user:pass@host/db");
+   * 
+   * const results = await sql.transaction([
+   *   sql`SELECT 1 AS num`,
+   *   sql`SELECT 'a' AS str`,
+   * ]);
+   * // -> [[{ num: 1 }], [{ str: "a" }]]
+   * 
+   * // or equivalently:
    * const results = await sql.transaction(txn => [
    *   txn`SELECT 1 AS num`,
    *   txn`SELECT 'a' AS str`,
-   * ], { isolationLevel: "Serializable" });
+   * ]);
    * // -> [[{ num: 1 }], [{ str: "a" }]]
    * ```
-   * @param queriesFn The function passed in here receives a query function,
-   * which may be used either as a conventional function or a tagged-template
-   * function, and must return an array of queries constructed with it.
+   * @param queriesOrFn Either an array of queries, or a (non-`async`) function
+   * that receives a query function and returns an array of queries.
    * @param opts The same options that may be set on individual queries in a
    * non-transaction setting -- that is, `arrayMode` `fullResults` and
-   * `fetchOptions` -- plus transaction options `isolationLevel`, `readOnly`
-   * and `deferrable`. Note that none of these options can be set on individual
-   * queries within a transaction.
+   * `fetchOptions` -- plus the transaction options `isolationLevel`,
+   * `readOnly` and `deferrable`. Note that none of these options can be set on
+   * individual queries within a transaction.
    * @returns An array of results. The structure of each result object depends
    * on the `arrayMode` and `fullResults` options.
    */
   transaction: <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(
-    queriesFn: NeonQueryPromise<ArrayMode, FullResults>[] |  // not ArrayModeOverride or FullResultsOverride: clamp these values to the current ones
+    queriesOrFn: NeonQueryPromise<ArrayMode, FullResults>[] |  // not ArrayModeOverride or FullResultsOverride: clamp these values to the current ones
       ((sql: NeonQueryFunctionInTransaction<ArrayModeOverride, FullResultsOverride>) => NeonQueryInTransaction[]),
     opts?: HTTPTransactionOptions<ArrayModeOverride, FullResultsOverride>
   ) => Promise<FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride>[] : QueryRows<ArrayModeOverride>[]>;
