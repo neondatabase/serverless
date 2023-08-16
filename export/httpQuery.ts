@@ -37,6 +37,13 @@ interface NeonQueryPromise<T = any> extends Promise<T> {
   opts?: HTTPQueryOptions;
 };
 
+interface ProcessQueryResultOptions {
+  arrayMode: boolean;
+  fullResults: boolean;
+  parameterizedQuery: ParameterizedQuery;
+  resultCallback: HTTPQueryOptions['resultCallback'];
+}
+
 const txnArgErrMsg = 'transaction() expects an array of queries, or a function returning an array of queries';
 
 export function neon(
@@ -68,16 +75,15 @@ export function neon(
   }
 
   // resolve query, params and opts
-
-  const resolve = (strings: TemplateStringsArray | string, ...params: any[]): NeonQueryPromise => {
+  function resolve(strings: TemplateStringsArray | string, ...params: any[]): NeonQueryPromise {
     let query;
-    let opts: HTTPQueryOptions | undefined;
+    let queryOpts: HTTPQueryOptions | undefined;
 
     if (typeof strings === 'string') {  // ordinary (non tagged-template) usage
       query = strings;
 
       // options passed here override options passed to neon
-      opts = params[1];  // the third argument, which is the second of the ...rest arguments
+      queryOpts = params[1];  // the third argument, which is the second of the ...rest arguments
       params = params[0] ?? [];  // the second argument, which is the first of the ...rest arguments
 
     } else {  // tagged-template usage
@@ -94,18 +100,24 @@ export function neon(
     const parameterizedQuery = { query, params };
     if (queryCallback) queryCallback(parameterizedQuery);
 
-    return createNeonQueryPromise(execute, parameterizedQuery, opts);
+    return createNeonQueryPromise(execute, parameterizedQuery, queryOpts);
+  };
+
+  resolve.transaction = async (queries: NeonQueryPromise[] | ((sql: typeof resolve) => NeonQueryPromise[]), txnOpts?: HTTPTransactionOptions) => {
+    if (typeof queries === 'function') queries = queries(resolve);
+    if (!Array.isArray(queries)) throw new Error(txnArgErrMsg);
+
+    const payload = queries.map(query => {
+      if (query[Symbol.toStringTag] !== 'NeonQueryPromise') throw new Error(txnArgErrMsg);
+      const neonPromise = query as NeonQueryPromise;
+      return neonPromise.parameterizedQuery;
+    });
+
+    return execute(payload, txnOpts);
   };
 
   // execute query
-
-  let arrayMode = arrayModeGeneral ?? false;
-  let fullResults = fullResultsGeneral ?? false;
-  let isolationLevel = isolationLevelGeneral;  // default is undefined
-  let readOnly = readOnlyGeneral;  // default is undefined
-  let deferrable = deferrableGeneral;  // default is undefined
-
-  const execute = async (parameterizedQuery: ParameterizedQuery | ParameterizedQuery[], opts?: HTTPTransactionOptions) => {
+  async function execute(parameterizedQuery: ParameterizedQuery | ParameterizedQuery[], opts?: HTTPTransactionOptions) {
     let fetchOptions = fetchOptionsGeneral ?? {};
     const { fetchEndpoint, fetchConnectionCache, fetchFunction } = Socket;
 
@@ -116,11 +128,18 @@ export function neon(
       { queries: parameterizedQuery } :
       parameterizedQuery;
 
+    let arrayMode = arrayModeGeneral ?? false;
+    let fullResults = fullResultsGeneral ?? false;
+    let isolationLevel = isolationLevelGeneral;  // default is undefined
+    let readOnly = readOnlyGeneral;  // default is undefined
+    let deferrable = deferrableGeneral;  // default is undefined
+
     if (opts !== undefined) {
+      // query options
       if (opts.arrayMode !== undefined) arrayMode = opts.arrayMode;
       if (opts.fullResults !== undefined) fullResults = opts.fullResults;
       if (opts.fetchOptions !== undefined) fetchOptions = { ...fetchOptions, ...opts.fetchOptions };
-
+      // transaction options
       if (opts.isolationLevel !== undefined) isolationLevel = opts.isolationLevel;
       if (opts.readOnly !== undefined) readOnly = opts.readOnly;
       if (opts.deferrable !== undefined) deferrable = opts.deferrable;
@@ -160,11 +179,12 @@ export function neon(
         // batch query
         const resultArray = rawResults.results;
         if (!Array.isArray(resultArray)) throw new NeonDbError('Neon internal error: unexpected result format');
-        return resultArray.map((result, i) => processQueryResult(result, parameterizedQuery[i]));
+        return resultArray.map((result, i) =>
+          processQueryResult(result, { arrayMode, fullResults, parameterizedQuery: parameterizedQuery[i], resultCallback }));
 
       } else {
         // single query
-        return processQueryResult(rawResults, parameterizedQuery);
+        return processQueryResult(rawResults, { arrayMode, fullResults, parameterizedQuery, resultCallback });
       }
 
     } else {
@@ -182,64 +202,14 @@ export function neon(
     }
   };
 
-  const processQueryResult = (rawResults: any, parameterizedQuery: ParameterizedQuery) => {
-    const colNames = rawResults.fields.map((field: any) => field.name);
-    const parsers = rawResults.fields.map((field: any) => types.getTypeParser(field.dataTypeID));
-
-    // now parse and possibly restructure the rows data like node-postgres does
-    const rows =
-      arrayMode === true ?
-        // maintain array-of-arrays structure
-        rawResults.rows.map((row: any) =>
-          row.map((col: any, i: number) =>
-            col === null ? null : parsers[i](col),
-          ),
-        ) :
-        // turn into an object
-        rawResults.rows.map((row: any) => {
-          return Object.fromEntries(
-            row.map((col: any, i: number) => [
-              colNames[i],
-              col === null ? null : parsers[i](col),
-            ]),
-          );
-        });
-
-    if (resultCallback) resultCallback(parameterizedQuery, rawResults, rows, { arrayMode, fullResults });
-
-    if (fullResults) {
-      rawResults.viaNeonFetch = true;
-      rawResults.rowAsArray = arrayMode;
-      rawResults.rows = rows;
-      return rawResults;
-    }
-
-    return rows;
-  };
-
-  resolve.transaction = async (queries: NeonQueryPromise[] | ((sql: typeof resolve) => NeonQueryPromise[]), opts?: HTTPTransactionOptions) => {
-    if (typeof queries === 'function') queries = queries(resolve);
-    if (!Array.isArray(queries)) throw new Error(txnArgErrMsg);
-
-    const payload = queries.map(query => {
-      if (query[Symbol.toStringTag] !== 'NeonQueryPromise') throw new Error(txnArgErrMsg);
-      const neonPromise = query as NeonQueryPromise;
-      if (neonPromise.opts !== undefined) throw new Error('Cannot set options on individual queries passed to `transaction()`: pass options to `transaction()` instead');
-      return neonPromise.parameterizedQuery;
-    });
-
-    return execute(payload, opts);
-  };
-
   return resolve;
 }
 
-const createNeonQueryPromise = (
+function createNeonQueryPromise(
   execute: (pq: ParameterizedQuery, hqo?: HTTPQueryOptions) => Promise<any>,
   parameterizedQuery: ParameterizedQuery,
   opts?: HTTPQueryOptions
-) => {
-
+) {
   return {
     [Symbol.toStringTag]: 'NeonQueryPromise',
     parameterizedQuery,
@@ -248,4 +218,43 @@ const createNeonQueryPromise = (
     catch: reject => execute(parameterizedQuery, opts).catch(reject),
     finally: finallyFn => execute(parameterizedQuery, opts).finally(finallyFn),
   } as NeonQueryPromise;
+}
+
+function processQueryResult(
+  rawResults: any,
+  { arrayMode, fullResults, parameterizedQuery, resultCallback }: ProcessQueryResultOptions
+) {
+  const colNames = rawResults.fields.map((field: any) => field.name);
+  const parsers = rawResults.fields.map((field: any) => types.getTypeParser(field.dataTypeID));
+
+  // now parse and possibly restructure the rows data like node-postgres does
+  const rows =
+    arrayMode === true ?
+      // maintain array-of-arrays structure
+      rawResults.rows.map((row: any) =>
+        row.map((col: any, i: number) =>
+          col === null ? null : parsers[i](col),
+        ),
+      ) :
+      // turn into an object
+      rawResults.rows.map((row: any) => {
+        return Object.fromEntries(
+          row.map((col: any, i: number) => [
+            colNames[i],
+            col === null ? null : parsers[i](col),
+          ]),
+        );
+      });
+
+  if (resultCallback) resultCallback(parameterizedQuery, rawResults, rows, { arrayMode, fullResults });
+
+  if (fullResults) {
+    rawResults.viaNeonFetch = true;
+    rawResults.rowAsArray = arrayMode;
+    rawResults.rows = rows;
+    return rawResults;
+  }
+
+  return rows;
 };
+

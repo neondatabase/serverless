@@ -341,7 +341,8 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
    * on the `arrayMode` and `fullResults` options.
    */
   transaction: <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(
-    queriesFn: (sql: NeonQueryFunctionInTransaction<ArrayModeOverride, FullResultsOverride>) => NeonQueryInTransaction[],
+    queriesFn: NeonQueryPromise<ArrayMode, FullResults>[] |  // not ArrayModeOverride or FullResultsOverride: clamp these values to the current ones
+      ((sql: NeonQueryFunctionInTransaction<ArrayModeOverride, FullResultsOverride>) => NeonQueryInTransaction[]),
     opts?: HTTPTransactionOptions<ArrayModeOverride, FullResultsOverride>
   ) => Promise<FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride>[] : QueryRows<ArrayModeOverride>[]>;
 }

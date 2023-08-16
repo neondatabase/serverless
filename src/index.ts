@@ -67,25 +67,12 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
   const emptyResult = await sql.transaction(txn => []);
   log('empty txn result:', JSON.stringify(emptyResult), '\n');
 
-  // invalid option setting on individual queries within a batch
-  let optsErr = undefined;
-  try {
-    await sql.transaction(txn => [
-      txn`SELECT ${1}::int AS "batchInt"`,
-      txn('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: false })
-    ]);
-  } catch (err) {
-    optsErr = err;
-  }
-  if (optsErr === undefined) throw new Error('Error should have been raised for individual query options inside transaction');
-  log('caught option setting on individual transaction queries\n');
-
   // option setting on `transaction()`
   const [[[r3]], [[r4]]] = await sql.transaction(txn => [
     txn`SELECT ${1}::int AS "batchInt"`,
     txn`SELECT ${"hello"} AS "batchStr"`
   ], { arrayMode: true, isolationLevel: 'Serializable', readOnly: true });
-  log('array mode (via transaction options) batch results:', JSON.stringify(r3), JSON.stringify(r4), '\n');  // expect: array mode, non-array mode
+  log('array mode (via transaction options) batch results:', JSON.stringify(r3), JSON.stringify(r4), '\n');
   if (r3 !== 1 || r4 !== 'hello') throw new Error('Batch query problem');
 
   // option setting on `neon()`
@@ -94,8 +81,25 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
     txn`SELECT ${1}::int AS "batchInt"`,
     txn`SELECT ${"hello"} AS "batchStr"`
   ]);
-  log('array mode (via neon options) batch results:', JSON.stringify(r5), JSON.stringify(r6), '\n');  // expect: array mode, non-array mode
+  log('array mode (via neon options) batch results:', JSON.stringify(r5), JSON.stringify(r6), '\n');
   if (r5 !== 1 || r6 !== 'hello') throw new Error('Batch query problem');
+
+  // option setting in transaction overrides option setting on Neon
+  const sqlArr2 = neon(env.NEON_DB_URL, { arrayMode: true });
+  const [[r7], [r8]] = await sqlArr2.transaction(txn => [
+    txn`SELECT ${1}::int AS "batchInt"`,
+    txn`SELECT ${"hello"} AS "batchStr"`
+  ], { arrayMode: false });
+  log('ordinary (via overridden options) batch results:', JSON.stringify(r7), JSON.stringify(r8), '\n');
+  if (r7.batchInt !== 1 || r8.batchStr !== 'hello') throw new Error('Batch query problem');
+
+  // invalid option setting on individual queries within a batch: should be ignored
+  const [[r9], [r10]] = await sql.transaction(txn => [
+    txn`SELECT ${1}::int AS "batchInt"`,
+    txn('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: true })
+  ]);
+  log('ignored query options batch results:', JSON.stringify(r9), JSON.stringify(r10), '\n');
+  if (r9.batchInt !== 1 || r10.batchStr !== 'hello') throw new Error('Batch query problem');
 
   // invalid query to `transaction()`
   let queryErr = undefined;
