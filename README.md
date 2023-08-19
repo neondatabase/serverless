@@ -97,7 +97,7 @@ This should work — and work fast — from any modern JavaScript environment. B
 
 ### `transaction()`
 
-Multiple queries can be issed via fetch request within a single, non-interactive transaction by using the `transaction()` function. This is exposed as a property on the query function.
+Multiple queries can be issued via fetch request within a single, non-interactive transaction by using the `transaction()` function. This is exposed as a property on the query function.
 
 For example:
 
