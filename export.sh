@@ -20,6 +20,39 @@ npx esbuild export/index.ts \
 
 npx gen-esm-wrapper dist/npm/index.js dist/npm/index.mjs
 
-# copy static asset: README
+# copy static assets
 
 cp LICENSE README.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
+
+
+# Note: --keep-names adds about 10KB to the bundle size, but it gives us error
+# messages and stack traces with no short, cryptic variable names
+
+# WITHOUT (see `xe`, `pe`):
+
+# Uncaught:
+# xe [NeonDbError]: db error: ERROR: function xnow() does not exist
+# HINT: No function matches the given name and argument types. You might need to add explicit type casts.
+
+# Caused by:
+#     ERROR: function xnow() does not exist
+#     HINT: No function matches the given name and argument types. You might need to add explicit type casts.
+#     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+#     at pe (/Users/george/Development/neon/pgshims/dist/npm/index.js:1459:56) {
+#   code: '42883',
+#   sourceError: undefined
+# }
+
+# WITH:
+
+# Uncaught NeonDbError: db error: ERROR: function xnow() does not exist
+# HINT: No function matches the given name and argument types. You might need to add explicit type casts.
+
+# Caused by:
+#     ERROR: function xnow() does not exist
+#     HINT: No function matches the given name and argument types. You might need to add explicit type casts.
+#     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+#     at execute (/Users/george/Development/neon/pgshims/dist/npm/index.js:1539:48) {
+#   code: '42883',
+#   sourceError: undefined
+# }

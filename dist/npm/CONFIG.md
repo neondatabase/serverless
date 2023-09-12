@@ -109,7 +109,7 @@ clearTimeout(timeout);
 
 ## `transaction(...)` function
 
-The `transaction(queriesOrFn, options)` function, is exposed as a property on the query function. It allows multiple queries to be executed within a single, non-interactive transaction.
+The `transaction(queriesOrFn, options)` function is exposed as a property on the query function. It allows multiple queries to be executed within a single, non-interactive transaction.
 
 The first argument to `transaction()`, `queriesOrFn`, is either (1) an array of queries or (2) a non-`async` function that receives a query function as its argument and returns an array of queries.
 
