@@ -10,14 +10,13 @@ fi
 
 npx esbuild export/index.ts \
   --bundle \
+  --keep-names \
   --inject:shims/shims.js \
   --loader:.pem=text \
   --format=cjs \
   --target=es2020 \
   --outfile=dist/npm/index.js \
   $DEBUG_ARG $MINIFY_ARG
-
-# --keep-names \
 
 npx gen-esm-wrapper dist/npm/index.js dist/npm/index.mjs
 
