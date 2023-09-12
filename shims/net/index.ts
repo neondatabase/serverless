@@ -154,7 +154,7 @@ export class Socket extends EventEmitter {
   wsProxyAddrForHost(host: string, port: number) {
     const wsProxy = this.wsProxy;
     if (wsProxy === undefined) {
-      throw new Error(`No WebSocket proxy is configured. Please refer to https://github.com/neondatabase/serverless#run-your-own-websocket-proxy`);
+      throw new Error(`No WebSocket proxy is configured. Please see https://github.com/neondatabase/serverless/blob/main/CONFIG.md#wsproxy-string--host-string-port-number--string--string`);
     }
     return typeof wsProxy === 'function' ? wsProxy(host, port) : `${wsProxy}?address=${host}:${port}`;
   }
@@ -247,7 +247,7 @@ export class Socket extends EventEmitter {
 
         } catch (err) {
           debug && log('fetch() with { Upgrade: "websocket" } failed');
-          this.emit('error', new Error('All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless#run-on-node'));
+          this.emit('error', new Error('All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined'));
           this.emit('close');
           return;
         }
