@@ -8,7 +8,7 @@
   "dependencies": {
     "@types/events": "^3.0.0",
     "assert": "file:shims/assert",
-    "buffer": "^6.0.3",
+    "buffer": "file:shims/buffer",
     "crypto": "file:shims/crypto",
     "dns": "file:shims/dns",
     "events": "^3.3.0",

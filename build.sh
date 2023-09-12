@@ -19,7 +19,7 @@ npx esbuild src/index.ts \
   --inject:shims/shims.js \
   --loader:.pem=text \
   --format=esm \
-  --target=es2022 \
+  --target=es2020 \
   --platform=neutral \
   --main-fields=main \
   --outfile=dist/serverless.mjs \
