@@ -1,0 +1,7 @@
+In this branch, I tried manually eliminating dead code from the Buffer package.
+
+The unused methods I could identify saved only about 7KB (on 137KB) on the bundled package.
+
+However, node-postgres can return a Buffer (e.g. for a bytea column), which the user could conceivably want to use these methods on.
+
+So I'm regarding this as a dead-end.
