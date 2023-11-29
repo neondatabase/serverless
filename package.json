@@ -52,7 +52,7 @@
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.4",
     "dotenv": "^16.0.3",
-    "esbuild": "^0.18.8",
+    "esbuild": "^0.19.8",
     "fast-equals": "^5.0.1",
     "gen-esm-wrapper": "^1.1.3",
     "subtls": "^0.3.0",
