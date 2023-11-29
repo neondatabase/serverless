@@ -43,6 +43,7 @@
     "launch": "DOTENV_CONFIG_PATH=.dev.vars node -r dotenv/config --no-warnings dist/node/index.mjs",
     "node": "npm run build && npm run launch",
     "nodeDebug": "npm run buildDebug && npm run launch",
+    "bun": "npm run build && bun dist/node/index.mjs",
     "cfDev": "npm run build && wrangler dev",
     "cfDeploy": "npm run build && wrangler publish"
   },

@@ -22,7 +22,7 @@ npx gen-esm-wrapper dist/npm/index.js dist/npm/index.mjs
 
 # copy static assets
 
-cp LICENSE README.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
+cp LICENSE README.md CHANGELOG.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
 
 
 # Note: --keep-names adds about 10KB to the bundle size, but it gives us error
