@@ -974,40 +974,41 @@ let n=this.wsProxy;if(n===void 0)throw new Error("No WebSocket proxy is configur
 ed. Please see https://github.com/neondatabase/serverless/blob/main/CONFIG.md#ws\
 proxy-string--host-string-port-number--string--string");return typeof n=="functi\
 on"?n(e,t):`${n}?address=${e}:${t}`}connecting=!1;pending=!0;writable=!0;encrypted=!1;authorized=!1;destroyed=!1;ws=null;writeBuffer;tlsState=0;tlsRead;tlsWrite;setNoDelay(){
-return this}setKeepAlive(){return this}ref(){return this}unref(){return this}async connect(e,t,n){
-this.connecting=!0,n&&this.once("connect",n);let i;try{i=this.wsProxyAddrForHost(
-t,typeof e=="string"?parseInt(e,10):e)}catch(s){this.emit("error",s),this.emit("\
-close");return}return this.ws=await new Promise(async s=>{try{let u=(this.useSecureWebSocket?
-"wss:":"ws:")+"//"+i,c;if(this.webSocketConstructor!==void 0)c=new this.webSocketConstructor(
-u);else try{c=new WebSocket(u)}catch{c=new __unstable_WebSocket(u)}c.addEventListener(
-"open",()=>{s(c)})}catch(a){try{let c=(this.useSecureWebSocket?"https:":"http:")+
-"//"+i;await fetch(c,{headers:{Upgrade:"websocket"}}).then(l=>{let h=l.webSocket;
-if(h==null)throw a;h.accept(),s(h)})}catch{this.emit("error",new Error("All atte\
-mpts to open a WebSocket to connect to the database failed. Please refer to http\
-s://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-\
-typeof-websocket--undefined")),this.emit("close");return}}}),this.ws.binaryType=
-"arraybuffer",this.ws.addEventListener("error",s=>{this.emit("error",s),this.emit(
-"close")}),this.ws.addEventListener("close",()=>{this.emit("close")}),this.ws.addEventListener(
-"message",s=>{if(this.tlsState===0){let a=w.from(s.data);this.emit("data",a)}}),
-this.connecting=!1,this.pending=!1,this.emit("connect"),this.emit("ready"),this}async startTls(e){
-if(this.subtls===void 0)throw new Error("For Postgres SSL connections, you must \
-set `neonConfig.subtls` to the subtls library. See https://github.com/neondataba\
-se/serverless/blob/main/CONFIG.md for more information.");this.tlsState=1;let t=this.
-subtls.TrustedCert.fromPEM(this.rootCerts),n=new this.subtls.WebSocketReadQueue(
-this.ws),i=n.read.bind(n),s=this.rawWrite.bind(this),[a,u]=await this.subtls.startTls(
-e,t,i,s,{useSNI:!this.disableSNI,expectPreData:this.pipelineTLS?new Uint8Array([
-83]):void 0});this.tlsRead=a,this.tlsWrite=u,this.tlsState=2,this.encrypted=!0,this.
-authorized=!0,this.emit("secureConnection",this),this.tlsReadLoop()}async tlsReadLoop(){
-for(;;){let e=await this.tlsRead();if(e===void 0)break;{let t=w.from(e);this.emit(
-"data",t)}}}rawWrite(e){if(!this.coalesceWrites){this.ws.send(e);return}if(this.
-writeBuffer===void 0)this.writeBuffer=e,setTimeout(()=>{this.ws.send(this.writeBuffer),
-this.writeBuffer=void 0},0);else{let t=new Uint8Array(this.writeBuffer.length+e.
-length);t.set(this.writeBuffer),t.set(e,this.writeBuffer.length),this.writeBuffer=
-t}}write(e,t="utf8",n=i=>{}){return e.length===0?n():(typeof e=="string"&&(e=w.from(
-e,t)),this.tlsState===0?this.rawWrite(e):this.tlsState===1?this.once("secureConn\
-ection",()=>this.write(e,t,n)):this.tlsWrite(e),!0)}end(e=w.alloc(0),t="utf8",n){
-return this.write(e,t,()=>{this.ws.close(),n&&n()}),this}destroy(){return this.destroyed=
-!0,this.end()}}});var En=P(I=>{"use strict";y();Object.defineProperty(I,"__esModule",{value:!0});I.
+return this}setKeepAlive(){return this}ref(){return this}unref(){return this}connect(e,t,n){
+this.connecting=!0,n&&this.once("connect",n);let i=o(()=>{this.connecting=!1,this.
+pending=!1,this.emit("connect"),this.emit("ready")},"handleWebSocketOpen"),s=o((u,c=!1)=>{
+u.binaryType="arraybuffer",u.addEventListener("error",l=>{this.emit("error",l),this.
+emit("close")}),u.addEventListener("message",l=>{if(this.tlsState===0){let h=w.from(
+l.data);this.emit("data",h)}}),u.addEventListener("close",()=>{this.emit("close")}),
+c?i():u.addEventListener("open",i)},"configureWebSocket"),a;try{a=this.wsProxyAddrForHost(
+t,typeof e=="string"?parseInt(e,10):e)}catch(u){this.emit("error",u),this.emit("\
+close");return}try{let c=(this.useSecureWebSocket?"wss:":"ws:")+"//"+a;if(this.webSocketConstructor!==
+void 0)this.ws=new this.webSocketConstructor(c),s(this.ws);else try{this.ws=new WebSocket(
+c),s(this.ws)}catch{this.ws=new __unstable_WebSocket(c),s(this.ws)}}catch(u){let l=(this.
+useSecureWebSocket?"https:":"http:")+"//"+a;fetch(l,{headers:{Upgrade:"websocket"}}).
+then(h=>{if(this.ws=h.webSocket,this.ws==null)throw u;this.ws.accept(),s(this.ws,
+!0)}).catch(h=>{this.emit("error",new Error(`All attempts to open a WebSocket to\
+ connect to the database failed. Please refer to https://github.com/neondatabase\
+/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined\
+. Details: ${h.message}`)),this.emit("close")})}}async startTls(e){if(this.subtls===
+void 0)throw new Error("For Postgres SSL connections, you must set `neonConfig.s\
+ubtls` to the subtls library. See https://github.com/neondatabase/serverless/blo\
+b/main/CONFIG.md for more information.");this.tlsState=1;let t=this.subtls.TrustedCert.
+fromPEM(this.rootCerts),n=new this.subtls.WebSocketReadQueue(this.ws),i=n.read.bind(
+n),s=this.rawWrite.bind(this),[a,u]=await this.subtls.startTls(e,t,i,s,{useSNI:!this.
+disableSNI,expectPreData:this.pipelineTLS?new Uint8Array([83]):void 0});this.tlsRead=
+a,this.tlsWrite=u,this.tlsState=2,this.encrypted=!0,this.authorized=!0,this.emit(
+"secureConnection",this),this.tlsReadLoop()}async tlsReadLoop(){for(;;){let e=await this.
+tlsRead();if(e===void 0)break;{let t=w.from(e);this.emit("data",t)}}}rawWrite(e){
+if(!this.coalesceWrites){this.ws.send(e);return}if(this.writeBuffer===void 0)this.
+writeBuffer=e,setTimeout(()=>{this.ws.send(this.writeBuffer),this.writeBuffer=void 0},
+0);else{let t=new Uint8Array(this.writeBuffer.length+e.length);t.set(this.writeBuffer),
+t.set(e,this.writeBuffer.length),this.writeBuffer=t}}write(e,t="utf8",n=i=>{}){return e.
+length===0?(n(),!0):(typeof e=="string"&&(e=w.from(e,t)),this.tlsState===0?(this.
+rawWrite(e),n()):this.tlsState===1?this.once("secureConnection",()=>{this.write(
+e,t,n)}):(this.tlsWrite(e),n()),!0)}end(e=w.alloc(0),t="utf8",n=()=>{}){return this.
+write(e,t,()=>{this.ws.close(),n()}),this}destroy(){return this.destroyed=!0,this.
+end()}}});var En=P(I=>{"use strict";y();Object.defineProperty(I,"__esModule",{value:!0});I.
 NoticeMessage=I.DataRowMessage=I.CommandCompleteMessage=I.ReadyForQueryMessage=I.
 NotificationResponseMessage=I.BackendKeyDataMessage=I.AuthenticationMD5Password=
 I.ParameterStatusMessage=I.ParameterDescriptionMessage=I.RowDescriptionMessage=I.

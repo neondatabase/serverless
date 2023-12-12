@@ -15,6 +15,9 @@ declare global {
     accept: () => void;
     binaryType: string;
   }
+  interface Response {
+    webSocket?: any;
+  }
 }
 
 enum TlsState {
@@ -40,8 +43,6 @@ export function isIP(input: string) {
   // if we ever need this to work properly, see https://github.com/nodejs/node/blob/main/lib/internal/net.js
   return 0;
 }
-
-fetch
 
 export interface SocketDefaults {
   // these options relate to the fetch transport and take effect *only* when set globally
@@ -189,9 +190,44 @@ export class Socket extends EventEmitter {
     return this;
   }
 
-  async connect(port: number | string, host: string, connectListener?: () => void) {
+  connect(port: number | string, host: string, connectListener?: () => void) {
     this.connecting = true;
     if (connectListener) this.once('connect', connectListener);
+
+    const handleWebSocketOpen = () => {
+      debug && log('socket ready');
+      this.connecting = false;
+      this.pending = false;
+      this.emit('connect');
+      this.emit('ready');
+    }
+
+    const configureWebSocket = (ws: WebSocket, immediateOpen = false) => {
+      ws.binaryType = 'arraybuffer';
+
+      ws.addEventListener('error', (err) => {
+        debug && log('websocket error', err);
+        this.emit('error', err);
+        this.emit('close');
+      });
+
+      ws.addEventListener('message', (msg) => {
+        debug && log('socket received:', msg.data);
+        if (this.tlsState === TlsState.None) {
+          debug && log('emitting received data');
+          const buffer = Buffer.from(msg.data as ArrayBuffer);
+          this.emit('data', buffer);
+        }
+      });
+
+      ws.addEventListener('close', () => {
+        debug && log('websocket closed');
+        this.emit('close');
+      });
+
+      if (immediateOpen) handleWebSocketOpen();
+      else ws.addEventListener('open', handleWebSocketOpen);
+    };
 
     let wsAddr: string;
     try {
@@ -203,86 +239,52 @@ export class Socket extends EventEmitter {
       return;
     }
 
-    this.ws = await new Promise<WebSocket>(async resolve => {
-      try {
-        // ordinary/browser path
-        const wsProtocol = this.useSecureWebSocket ? 'wss:' : 'ws:';
-        const wsAddrFull = wsProtocol + '//' + wsAddr;
+    try {
+      // ordinary/browser path
+      const wsProtocol = this.useSecureWebSocket ? 'wss:' : 'ws:';
+      const wsAddrFull = wsProtocol + '//' + wsAddr;
 
-        let ws: WebSocket;
-        if (this.webSocketConstructor !== undefined) {
-          ws = new this.webSocketConstructor(wsAddrFull);
+      // first, use a custom constructor, if supplied
+      if (this.webSocketConstructor !== undefined) {
+        this.ws = new this.webSocketConstructor(wsAddrFull);
+        configureWebSocket(this.ws);
 
-        } else {
-          try {
-            // first, try a common-or-garden WebSocket, e.g. in a web browser
-            ws = new WebSocket(wsAddrFull);
-
-          } catch (err) {
-            debug && log('new WebSocket() failed');
-
-            // @ts-ignore -- second, how about a Vercel Edge Functions __unstable_WebSocket (as at early 2023?)
-            ws = new __unstable_WebSocket(wsAddrFull);
-          }
-        }
-
-        ws.addEventListener('open', () => {
-          debug && log('WebSocket opened');
-          resolve(ws);
-        });
-
-      } catch (err) {
-        debug && log('new __unstable_WebSocket() failed');
+      } else {
         try {
-          // fourth and finally, let's try the Cloudflare Workers method ...
-          const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
-          const fetchAddrFull = wsProtocol + '//' + wsAddr;
-          await fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } }).then(resp => {
-            const ws = resp.webSocket;
-            if (ws == undefined) throw err;  // deliberate loose equality
-            ws.accept();
-            debug && log('Cloudflare WebSocket opened');
-            resolve(ws);
-          });
+          // second, try a common-or-garden WebSocket, e.g. in a web browser
+          this.ws = new WebSocket(wsAddrFull);
+          configureWebSocket(this.ws);
 
         } catch (err) {
-          debug && log('fetch() with { Upgrade: "websocket" } failed');
-          this.emit('error', new Error('All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined'));
-          this.emit('close');
-          return;
+          debug && log('new WebSocket() failed');
+
+          // @ts-ignore -- third, how about a Vercel Edge Functions __unstable_WebSocket (as at early 2023)?Í
+          this.ws = new __unstable_WebSocket(wsAddrFull);
+          configureWebSocket(this.ws!);
         }
       }
-    });
 
-    this.ws.binaryType = 'arraybuffer';
+    } catch (err) {
+      debug && log('WebSocket constructors failed');
 
-    this.ws.addEventListener('error', (err) => {
-      debug && log('websocket error', err);
-      this.emit('error', err);
-      this.emit('close');
-    });
+      // fourth and finally, let's try the Cloudflare Workers method ...
+      const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
+      const fetchAddrFull = wsProtocol + '//' + wsAddr;
 
-    this.ws.addEventListener('close', () => {
-      debug && log('websocket closed');
-      this.emit('close');
-    });
-
-    this.ws.addEventListener('message', (msg) => {
-      debug && log('socket received:', msg.data);
-      if (this.tlsState === TlsState.None) {
-        debug && log('emitting received data');
-        const buffer = Buffer.from(msg.data as ArrayBuffer);
-        this.emit('data', buffer);
-      }
-    });
-
-    debug && log('socket ready');
-    this.connecting = false;
-    this.pending = false;
-    this.emit('connect');
-    this.emit('ready');
-
-    return this;
+      fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } })
+        .then(resp => {
+          this.ws = resp.webSocket;
+          if (this.ws == undefined) throw err;  // deliberate loose equality
+          this.ws.accept();
+          configureWebSocket(this.ws, true);
+          debug && log('Cloudflare WebSocket opened');
+        })
+        .catch(err => {
+          debug && log(`fetch() with { Upgrade: "websocket" } failed`);
+          this.emit('error', new Error(`All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err.message}`));
+          this.emit('close');
+        });
+    }
   }
 
   async startTls(host: string) {
@@ -358,31 +360,37 @@ export class Socket extends EventEmitter {
   }
 
   write(data: Buffer | string, encoding = 'utf8', callback = (err?: any) => { }) {
-    if (data.length === 0) return callback();
+    if (data.length === 0) {
+      callback();
+      return true;
+    }
+
     if (typeof data === 'string') data = Buffer.from(data, encoding as BufferEncoding) as unknown as Buffer;
 
     if (this.tlsState === TlsState.None) {
       debug && log('sending data direct:', data);
       this.rawWrite(data);
+      callback();
 
     } else if (this.tlsState === TlsState.Handshake) {
       // pg starts sending without waiting for the handshake to complete
       debug && log('TLS handshake in progress, queueing data:', data);
-      this.once('secureConnection', () => this.write(data, encoding, callback));
+      this.once('secureConnection', () => { this.write(data, encoding, callback); });
 
     } else {
       debug && log('encrypting data:', data);
       this.tlsWrite!(data);
+      callback();
     }
 
     return true;
   }
 
-  end(data: Buffer | string = Buffer.alloc(0) as unknown as Buffer, encoding = 'utf8', callback?: (() => void)) {
+  end(data: Buffer | string = Buffer.alloc(0) as unknown as Buffer, encoding = 'utf8', callback = () => { }) {
     debug && log('ending socket');
     this.write(data, encoding, () => {
       this.ws!.close();
-      if (callback) callback();
+      callback();
     });
     return this;
   }
