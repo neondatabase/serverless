@@ -6,7 +6,6 @@
   "author": "George MacKerron",
   "license": "MIT",
   "dependencies": {
-    "@types/events": "^3.0.0",
     "assert": "file:shims/assert",
     "buffer": "^6.0.3",
     "crypto": "file:shims/crypto",
@@ -51,6 +50,7 @@
     "@cloudflare/workers-types": "^4.20230115.0",
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.4",
+    "@types/events": "^3.0.0",
     "dotenv": "^16.0.3",
     "esbuild": "^0.19.8",
     "fast-equals": "^5.0.1",

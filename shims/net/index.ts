@@ -12,11 +12,7 @@ import type * as subtls from 'subtls';
 declare global {
   const debug: boolean;  // e.g. --define:debug=false in esbuild command
   interface WebSocket {
-    accept: () => void;
-    binaryType: string;
-  }
-  interface Response {
-    webSocket?: any;
+    binaryType: string;  // oddly not included in Cloudflare types
   }
 }
 
@@ -273,8 +269,10 @@ export class Socket extends EventEmitter {
 
       fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } })
         .then(resp => {
+          // @ts-ignore webSocket is defined in the Cloudflare types, but there are conflicts
           this.ws = resp.webSocket;
-          if (this.ws == undefined) throw err;  // deliberate loose equality
+          if (this.ws == null) throw err;  // deliberate loose equality
+
           this.ws.accept();
           configureWebSocket(this.ws, true);
           debug && log('Cloudflare WebSocket opened');
