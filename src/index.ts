@@ -8,6 +8,8 @@ import { Client, Pool, neon, neonConfig } from '../export';
 import { timedRepeats, runQuery, clientRunQuery, poolRunQuery, httpRunQuery } from './util';
 import { queries } from './queries';
 
+import type { ExecutionContext } from '@cloudflare/workers-types';
+
 export { neonConfig } from '../export';
 
 export interface Env {
@@ -345,25 +347,33 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
       ctx.waitUntil(pool.end());
     });
 
-    await sections('Patched pg/wss, pipelined connect', async n => {
+    await sections('Patched pg/wss, pipelined connect [currently broken, since proxy is down]', async n => {
       const client = new Client(env.MY_DB_URL);
       client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
       client.neonConfig.pipelineConnect = 'password';
-      await clientRunQuery(n, client, ctx, query);
+      try {
+        await clientRunQuery(n, client, ctx, query);
+      } catch (err) {
+        console.error(`\n*** ${err.message}`);
+      }
     });
 
     if (useSubtls) {
       neonConfig.subtls = subtls;
       neonConfig.rootCerts = isrgRootX1;
 
-      await sections('Patched pg/subtls, pipelined TLS + connect', async n => {
+      await sections('Patched pg/subtls, pipelined TLS + connect [currently broken, since proxy is down]', async n => {
         const client = new Client(env.MY_DB_URL);
         client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
         client.neonConfig.forceDisablePgSSL = client.neonConfig.useSecureWebSocket = false;
         client.neonConfig.pipelineTLS = true;
         client.neonConfig.pipelineConnect = 'password';
-        await clientRunQuery(n, client, ctx, query);
+        try {
+          await clientRunQuery(n, client, ctx, query);
+        } catch (err) {
+          console.error(`\n*** ${err.message}`);
+        }
       });
     }
-  };
+  }
 }

@@ -2200,14 +2200,17 @@ x.neonConfig.coalesceWrites=!1,await nt(v,x,Be,d)}),await E("Neon/wss, pipelined
  connect using Pool.query",async v=>{await nr(v,r.NEON_DB_URL,Be,d)}),await E("N\
 eon/wss, pipelined connect using Pool.connect",async v=>{let x=new Fe({connectionString:r.
 NEON_DB_URL}),T=await x.connect();await rt(v,()=>Ct(T,d)),T.release(),Be.waitUntil(
-x.end())}),await E("Patched pg/wss, pipelined connect",async v=>{let x=new ve(r.
-MY_DB_URL);x.neonConfig.wsProxy=(T,b)=>`ws.manipulexity.com/v1?address=${T}:${b}`,
-x.neonConfig.pipelineConnect="password",await nt(v,x,Be,d)}),e&&(de.subtls=Ar,de.
-rootCerts=Si,await E("Patched pg/subtls, pipelined TLS + connect",async v=>{let x=new ve(
+x.end())}),await E("Patched pg/wss, pipelined connect [currently broken, since p\
+roxy is down]",async v=>{let x=new ve(r.MY_DB_URL);x.neonConfig.wsProxy=(T,b)=>`\
+ws.manipulexity.com/v1?address=${T}:${b}`,x.neonConfig.pipelineConnect="password";
+try{await nt(v,x,Be,d)}catch(T){console.error(`
+*** ${T.message}`)}}),e&&(de.subtls=Ar,de.rootCerts=Si,await E("Patched pg/subtl\
+s, pipelined TLS + connect [currently broken, since proxy is down]",async v=>{let x=new ve(
 r.MY_DB_URL);x.neonConfig.wsProxy=(T,b)=>`ws.manipulexity.com/v1?address=${T}:${b}`,
 x.neonConfig.forceDisablePgSSL=x.neonConfig.useSecureWebSocket=!1,x.neonConfig.pipelineTLS=
-!0,x.neonConfig.pipelineConnect="password",await nt(v,x,Be,d)}))}}o(l0,"latencie\
-s");export{Ph as batchQueryTest,c0 as cf,l0 as latencies,de as neonConfig};
+!0,x.neonConfig.pipelineConnect="password";try{await nt(v,x,Be,d)}catch(T){console.
+error(`
+*** ${T.message}`)}}))}}o(l0,"latencies");export{Ph as batchQueryTest,c0 as cf,l0 as latencies,de as neonConfig};
 /*! Bundled license information:
 
 ieee754/index.js:

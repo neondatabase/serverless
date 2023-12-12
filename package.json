@@ -44,7 +44,7 @@
     "nodeDebug": "npm run buildDebug && npm run launch",
     "bun": "npm run build && bun dist/node/index.mjs",
     "cfDev": "npm run build && wrangler dev",
-    "cfDeploy": "npm run build && wrangler publish"
+    "cfDeploy": "npm run build && wrangler deploy"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230115.0",

@@ -1,5 +1,6 @@
 import { Client, ClientBase, Pool, neon } from '../export';
 import type { Query } from './queries';
+import type { ExecutionContext } from '@cloudflare/workers-types';
 
 export async function timed(f: () => Promise<any>) {
   const t0 = Date.now();
@@ -9,7 +10,7 @@ export async function timed(f: () => Promise<any>) {
 }
 
 export async function timedRepeats(n: number, f: () => Promise<any>, timeListener = (ms: number, result: any) => { }) {
-  const results = [];
+  const results: (readonly [number, any])[] = [];
   for (let i = 0; i < n; i++) {
     const tPlusResult = await timed(f);
     const [t, result] = tPlusResult;
