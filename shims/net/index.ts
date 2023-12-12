@@ -12,7 +12,8 @@ import type * as subtls from 'subtls';
 declare global {
   const debug: boolean;  // e.g. --define:debug=false in esbuild command
   interface WebSocket {
-    binaryType: string;  // oddly not included in Cloudflare types
+    binaryType: 'arraybuffer' | 'blob';  // oddly not included in Cloudflare types
+    accept: () => void;
   }
 }
 

@@ -6,6 +6,13 @@ import type { NeonConfigGlobalAndClient } from './neonConfig';
 // @ts-ignore -- this isn't officially exported by pg
 import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
 
+interface ConnectionParameters {
+  user: string;
+  password: string;
+  host: string;
+  database: string;
+}
+
 /**
  * We export the pg library mostly unchanged, but we do make a few tweaks.
  *
@@ -224,7 +231,7 @@ class NeonPool extends Pool {
 
     try {
       // @ts-ignore -- TS doesn't know about this.options
-      const cp = new ConnectionParameters(this.options);
+      const cp = new ConnectionParameters(this.options) as ConnectionParametersWithPassword;
       const euc = encodeURIComponent, eu = encodeURI;
       const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
 
