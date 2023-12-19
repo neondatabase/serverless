@@ -353,7 +353,7 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
       client.neonConfig.pipelineConnect = 'password';
       try {
         await clientRunQuery(n, client, ctx, query);
-      } catch (err) {
+      } catch (err: any) {
         console.error(`\n*** ${err.message}`);
       }
     });
@@ -370,7 +370,7 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
         client.neonConfig.pipelineConnect = 'password';
         try {
           await clientRunQuery(n, client, ctx, query);
-        } catch (err) {
+        } catch (err: any) {
           console.error(`\n*** ${err.message}`);
         }
       });
