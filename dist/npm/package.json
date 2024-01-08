@@ -4,7 +4,6 @@
   "author": "Neon",
   "description": "node-postgres for serverless environments from neon.tech",
   "exports": {
-    "types": "./index.d.ts",
     "require": "./index.js",
     "import": "./index.mjs"
   },

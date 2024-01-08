@@ -18,8 +18,6 @@ npx esbuild export/index.ts \
   --outfile=dist/npm/index.js \
   $DEBUG_ARG $MINIFY_ARG
 
-npx gen-esm-wrapper dist/npm/index.js dist/npm/index.mjs
-
 # copy static assets
 
 cp LICENSE README.md CHANGELOG.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
