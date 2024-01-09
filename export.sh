@@ -18,6 +18,12 @@ npx esbuild export/index.ts \
   --outfile=dist/npm/index.js \
   $DEBUG_ARG $MINIFY_ARG
 
+echo "
+// DON'T EDIT THIS FILE
+// It's a simple automatic copy of index.d.ts
+" > dist/npm/index.d.mts
+cat dist/npm/index.d.ts >> dist/npm/index.d.mts
+
 # copy static assets
 
 cp LICENSE README.md CHANGELOG.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
