@@ -8,15 +8,36 @@ else
   MINIFY_ARG="--minify --line-limit=80"
 fi
 
+
+# CJS code: index.js
+
 npx esbuild export/index.ts \
+  --format=cjs \
   --bundle \
   --keep-names \
   --inject:shims/shims.js \
-  --loader:.pem=text \
-  --format=cjs \
   --target=es2020 \
   --outfile=dist/npm/index.js \
   $DEBUG_ARG $MINIFY_ARG
+
+
+# ESM code: index.mjs
+
+npx esbuild export/index.ts \
+  --format=esm \
+  --bundle \
+  --keep-names \
+  --inject:shims/shims.js \
+  --target=es2020 \
+  --outfile=dist/npm/index.mjs \
+  $DEBUG_ARG $MINIFY_ARG
+
+# CJS TS types: index.d.ts
+
+# updated manually
+
+
+# ESM TS types: index.d.mts
 
 echo "
 // DON'T EDIT THIS FILE
@@ -24,7 +45,8 @@ echo "
 " > dist/npm/index.d.mts
 cat dist/npm/index.d.ts >> dist/npm/index.d.mts
 
-# copy static assets
+
+# static assets
 
 cp LICENSE README.md CHANGELOG.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
 

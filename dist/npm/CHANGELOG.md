@@ -1,3 +1,7 @@
+## 0.7.2 (2024-01-10)
+
+Export a full ESM build to index.mjs -- don't just wrap the CJS code -- since no wrapping method seems reliable across bundlers and platforms. It's now important to only `require` or only `import` the package: if you mix, you'll get two copies of the code that don't share configuration changes.
+
 ## 0.7.1 (2024-01-09)
 
 Fixed index.d.mts.
