@@ -11,6 +11,7 @@ interface ConnectionParameters {
   password: string;
   host: string;
   database: string;
+  options: any;
 }
 
 /**
@@ -81,6 +82,15 @@ class NeonClient extends Client {
       this.password === null
     ) throw new Error(`No database host or connection string was set, and key parameters have default values (host: localhost, user: ${defaultUser}, db: ${defaultUser}, password: null). Is an environment variable missing? Alternatively, if you intended to connect with these parameters, please set the host to 'localhost' explicitly.`);
 
+    if (this.host !== 'localhost') {
+      // @ts-ignore -- TS doesn't know about this.connectionParameters
+      if (typeof this.connectionParameters.options !== 'string') {
+        // @ts-ignore
+        this.connectionParameters.options = '';
+      }
+      // @ts-ignore
+      this.connectionParameters.options += 'project=' + this.host.split('.')[0];
+    }
     // pipelining
     const result = super.connect(callback as any) as void | Promise<void>;
 

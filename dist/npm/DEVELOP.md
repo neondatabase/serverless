@@ -11,7 +11,7 @@ npm version patch  # or minor or major
 npm publish
 ```
 
-* To run or deploy the simple test app on Cloudflare, create a `.dev.vars` file containing `DATABASE_URL=postgres://connection_string`, run `npx wrangler dev --local` or `npx wrangler publish`.
+* To run or deploy the simple test app on Cloudflare, create a `.dev.vars` file containing `NEON_DB_URL=postgres://connection_string`, run `npx wrangler dev --local` or `npx wrangler publish`.
 
 * To run the latencies test app in a browser, create a `.dev.vars` file as above, run `npm run browser` and visit `http://localhost:7070/dist/browser/`. To include debug output and avoid minification, use `npm run browserDebug` instead.
 

@@ -15,7 +15,6 @@ export { neonConfig } from '../export';
 export interface Env {
   NEON_DB_URL: string;
   MY_DB_URL: string;
-  LOCAL_DB_URL: string;
 }
 
 // simple tests for Cloudflare Workers
