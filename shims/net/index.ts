@@ -62,7 +62,12 @@ export interface SocketDefaults {
 }
 type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache' | 'fetchFunction';
 
+export const isNeonHost = (host: string) => {
+  return host.endsWith('.aws.neon.tech') || host.endsWith('.aws.neon.build');
+}
+
 const transformHost = (host: string): string => {
+  if (!isNeonHost(host)) return host;
   return host.replace(/^[^.]*/, 'api');
 }
 
