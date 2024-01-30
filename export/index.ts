@@ -90,7 +90,12 @@ class NeonClient extends Client {
         this.connectionParameters.options = endpointOption;
       } else {
         // @ts-ignore
-        this.connectionParameters.options += ' ' + endpointOption;
+        if (this.connectionParameters.options.includes('endpoint=') || this.connectionParameters.options.includes('project=')) {
+          // Do nothing, endpoint is already set.
+        } else {
+          // @ts-ignore
+          this.connectionParameters.options += ' ' + endpointOption;
+        }
       }
     }
     // pipelining

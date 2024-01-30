@@ -2044,13 +2044,14 @@ values (host: localhost, user: ${s}, db: ${s}, password: null). Is an environmen
 t variable missing? Alternatively, if you intended to connect with these paramet\
 ers, please set the host to 'localhost' explicitly.`);if(Vt(this.host)){let h="e\
 ndpoint="+this.host.split(".")[0];typeof this.connectionParameters.options!="str\
-ing"?this.connectionParameters.options=h:this.connectionParameters.options+=" "+
-h}let a=super.connect(t),u=n.pipelineTLS&&this.ssl,c=n.pipelineConnect==="passwo\
-rd";if(!u&&!n.pipelineConnect)return a;let l=this.connection;if(u&&l.on("connect",
-()=>l.stream.emit("data","S")),c){l.removeAllListeners("authenticationCleartextP\
-assword"),l.removeAllListeners("readyForQuery"),l.once("readyForQuery",()=>l.on(
-"readyForQuery",this._handleReadyForQuery.bind(this)));let h=this.ssl?"sslconnec\
-t":"connect";l.on(h,()=>{this._handleAuthCleartextPassword(),this._handleReadyForQuery()})}
+ing"?this.connectionParameters.options=h:this.connectionParameters.options.includes(
+"endpoint=")||this.connectionParameters.options.includes("project=")||(this.connectionParameters.
+options+=" "+h)}let a=super.connect(t),u=n.pipelineTLS&&this.ssl,c=n.pipelineConnect===
+"password";if(!u&&!n.pipelineConnect)return a;let l=this.connection;if(u&&l.on("\
+connect",()=>l.stream.emit("data","S")),c){l.removeAllListeners("authenticationC\
+leartextPassword"),l.removeAllListeners("readyForQuery"),l.once("readyForQuery",
+()=>l.on("readyForQuery",this._handleReadyForQuery.bind(this)));let h=this.ssl?"\
+sslconnect":"connect";l.on(h,()=>{this._handleAuthCleartextPassword(),this._handleReadyForQuery()})}
 return a}async _handleAuthSASLContinue(t){let n=this.saslSession,i=this.password,
 s=t.data;if(n.message!=="SASLInitialResponse"||typeof i!="string"||typeof s!="st\
 ring")throw new Error("SASL: protocol error");let a=Object.fromEntries(s.split("\
@@ -2098,7 +2099,8 @@ Result: ${JSON.stringify(i)}`);return i}o(Ct,"runQuery");async function nt(r,e,t
 await e.connect();let i=await rt(r,()=>Ct(e,n));return t.waitUntil(e.end()),i}o(
 nt,"clientRunQuery");async function ir(r,e,t,n){let i=new Fe({connectionString:e}),
 s=await rt(r,()=>Ct(i,n));return t.waitUntil(i.end()),s}o(ir,"poolRunQuery");async function Fa(r,e,t,n){
-let i=Ee(e,{fullResults:!0});return await rt(r,()=>Ct(i,n))}o(Fa,"httpRunQuery");y();var _t=[{sql:"SELECT now()",test:r=>/^2\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+Z$/.
+let i=Ee(e,{fullResults:!0});return await rt(r,()=>Ct(i,n))}o(Fa,"httpRunQuery");y();var _t=[{sql:"SELECT * FROM employees LIMIT 10",test:r=>r.length>1&&typeof r[0].
+first_name=="string"},{sql:"SELECT now()",test:r=>/^2\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+Z$/.
 test(r[0].now.toISOString())}];async function f0(r,e,t){let n=[];for(let i of _t){let[,[[,s]]]=await ir(1,e.NEON_DB_URL,
 t,i);n.push(s)}for(let i of _t){let[,[[,s]]]=await Fa(1,e.NEON_DB_URL,t,i);n.push(
 s)}return new Response(JSON.stringify(n,null,2),{headers:{"Content-Type":"applic\

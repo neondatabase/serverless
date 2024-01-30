@@ -1562,19 +1562,21 @@ ost: localhost, user: ${s}, db: ${s}, password: null). Is an environment variabl
 e missing? Alternatively, if you intended to connect with these parameters, plea\
 se set the host to 'localhost' explicitly.`);if(wt(this.host)){let l="endpoint="+
 this.host.split(".")[0];typeof this.connectionParameters.options!="string"?this.
-connectionParameters.options=l:this.connectionParameters.options+=" "+l}let o=super.
-connect(t),u=n.pipelineTLS&&this.ssl,c=n.pipelineConnect==="password";if(!u&&!n.
-pipelineConnect)return o;let h=this.connection;if(u&&h.on("connect",()=>h.stream.
-emit("data","S")),c){h.removeAllListeners("authenticationCleartextPassword"),h.removeAllListeners(
-"readyForQuery"),h.once("readyForQuery",()=>h.on("readyForQuery",this._handleReadyForQuery.
-bind(this)));let l=this.ssl?"sslconnect":"connect";h.on(l,()=>{this._handleAuthCleartextPassword(),
-this._handleReadyForQuery()})}return o}async _handleAuthSASLContinue(t){let n=this.
-saslSession,i=this.password,s=t.data;if(n.message!=="SASLInitialResponse"||typeof i!=
-"string"||typeof s!="string")throw new Error("SASL: protocol error");let o=Object.
-fromEntries(s.split(",").map($=>{if(!/^.=/.test($))throw new Error("SASL: Invali\
-d attribute pair entry");let ne=$[0],Ce=$.substring(2);return[ne,Ce]})),u=o.r,c=o.
-s,h=o.i;if(!u||!/^[!-+--~]+$/.test(u))throw new Error("SASL: SCRAM-SERVER-FIRST-\
-MESSAGE: nonce missing/unprintable");if(!c||!/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.
+connectionParameters.options=l:this.connectionParameters.options.includes("endpo\
+int=")||this.connectionParameters.options.includes("project=")||(this.connectionParameters.
+options+=" "+l)}let o=super.connect(t),u=n.pipelineTLS&&this.ssl,c=n.pipelineConnect===
+"password";if(!u&&!n.pipelineConnect)return o;let h=this.connection;if(u&&h.on("\
+connect",()=>h.stream.emit("data","S")),c){h.removeAllListeners("authenticationC\
+leartextPassword"),h.removeAllListeners("readyForQuery"),h.once("readyForQuery",
+()=>h.on("readyForQuery",this._handleReadyForQuery.bind(this)));let l=this.ssl?"\
+sslconnect":"connect";h.on(l,()=>{this._handleAuthCleartextPassword(),this._handleReadyForQuery()})}
+return o}async _handleAuthSASLContinue(t){let n=this.saslSession,i=this.password,
+s=t.data;if(n.message!=="SASLInitialResponse"||typeof i!="string"||typeof s!="st\
+ring")throw new Error("SASL: protocol error");let o=Object.fromEntries(s.split("\
+,").map($=>{if(!/^.=/.test($))throw new Error("SASL: Invalid attribute pair entr\
+y");let ne=$[0],Ce=$.substring(2);return[ne,Ce]})),u=o.r,c=o.s,h=o.i;if(!u||!/^[!-+--~]+$/.
+test(u))throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce missing/unprint\
+able");if(!c||!/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.
 test(c))throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: salt missing/not base\
 64");if(!h||!/^[1-9][0-9]*$/.test(h))throw new Error("SASL: SCRAM-SERVER-FIRST-M\
 ESSAGE: missing/invalid iteration count");if(!u.startsWith(n.clientNonce))throw new Error(
