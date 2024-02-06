@@ -46,6 +46,7 @@ declare interface NeonClient {
   startup: any;
   getStartupConf: any;
   saslSession: any;
+  connectionParameters: ConnectionParameters;
 }
 
 class NeonClient extends Client {
@@ -84,16 +85,12 @@ class NeonClient extends Client {
 
     if (isNeonHost(this.host)) {
       const endpointOption = 'endpoint=' + this.host.split('.')[0];
-      // @ts-ignore -- TS doesn't know about this.connectionParameters
       if (typeof this.connectionParameters.options !== 'string') {
-        // @ts-ignore
         this.connectionParameters.options = endpointOption;
       } else {
-        // @ts-ignore
         if (this.connectionParameters.options.includes('endpoint=') || this.connectionParameters.options.includes('project=')) {
           // Do nothing, endpoint is already set.
         } else {
-          // @ts-ignore
           this.connectionParameters.options += ' ' + endpointOption;
         }
       }

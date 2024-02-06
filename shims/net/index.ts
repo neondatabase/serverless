@@ -61,14 +61,14 @@ export interface SocketDefaults {
   disableSNI: boolean;
 }
 type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache' | 'fetchFunction';
+const neonHostPattern = /^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)/;
 
 export const isNeonHost = (host: string) => {
-  return host.endsWith('.aws.neon.tech') || host.endsWith('.aws.neon.build');
+  return neonHostPattern.test(host);
 }
 
 const transformHost = (host: string): string => {
-  if (!isNeonHost(host)) return host;
-  return host.replace(/^[^.]*/, 'api');
+  return host.replace(neonHostPattern, 'api');
 }
 
 export class Socket extends EventEmitter {
