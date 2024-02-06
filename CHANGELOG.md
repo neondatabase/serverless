@@ -1,4 +1,4 @@
-## 0.7.3 (2024-01-29)
+## 0.8.0 (2024-02-06)
 Use the same domain name for the connections. It helps with connections caching on v8 side. Pass endpont id inside the options for ws connections.
 
 ## 0.7.2 (2024-01-10)
