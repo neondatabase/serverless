@@ -1,5 +1,6 @@
 ## 0.8.0 (2024-02-06)
-Use the same domain name for the connections. It helps with connections caching on v8 side. Pass endpont id inside the options for ws connections.
+
+Use a single (per-region) domain name for all connections to Neon databases. Intended to help with connection caching in V8. Passes the endpoint ID inside connection options for WebSocket connections.
 
 ## 0.7.2 (2024-01-10)
 
