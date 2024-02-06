@@ -1,5 +1,5 @@
 import { Client, Connection, Pool } from 'pg';
-import { Socket } from '../shims/net';
+import { Socket, isNeonHost } from '../shims/net';
 import { neon, NeonDbError } from './httpQuery';
 import type { NeonConfigGlobalAndClient } from './neonConfig';
 
@@ -11,6 +11,7 @@ interface ConnectionParameters {
   password: string;
   host: string;
   database: string;
+  options: any;
 }
 
 /**
@@ -45,6 +46,7 @@ declare interface NeonClient {
   startup: any;
   getStartupConf: any;
   saslSession: any;
+  connectionParameters: ConnectionParameters;
 }
 
 class NeonClient extends Client {
@@ -81,6 +83,18 @@ class NeonClient extends Client {
       this.password === null
     ) throw new Error(`No database host or connection string was set, and key parameters have default values (host: localhost, user: ${defaultUser}, db: ${defaultUser}, password: null). Is an environment variable missing? Alternatively, if you intended to connect with these parameters, please set the host to 'localhost' explicitly.`);
 
+    if (isNeonHost(this.host)) {
+      const endpointOption = 'endpoint=' + this.host.split('.')[0];
+      if (typeof this.connectionParameters.options !== 'string') {
+        this.connectionParameters.options = endpointOption;
+      } else {
+        if (this.connectionParameters.options.includes('endpoint=') || this.connectionParameters.options.includes('project=')) {
+          // Do nothing, endpoint is already set.
+        } else {
+          this.connectionParameters.options += ' ' + endpointOption;
+        }
+      }
+    }
     // pipelining
     const result = super.connect(callback as any) as void | Promise<void>;
 

@@ -1,3 +1,4 @@
 .dev.vars
 .env.local
 node_modules
+tmp

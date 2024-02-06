@@ -61,18 +61,28 @@ export interface SocketDefaults {
   disableSNI: boolean;
 }
 type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache' | 'fetchFunction';
+const neonEpPattern = /^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)[.][^.]+[.][^.]+/;
+const neonHostFirstPartPattern = /^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)/;
+
+export const isNeonHost = (host: string) => {
+  return neonEpPattern.test(host);
+}
+
+const transformHost = (host: string): string => {
+  return host.replace(neonHostFirstPartPattern, 'api');
+}
 
 export class Socket extends EventEmitter {
 
   static defaults: SocketDefaults = {
     // these options relate to the fetch transport and take effect *only* when set globally
     poolQueryViaFetch: false,
-    fetchEndpoint: host => 'https://' + host + '/sql',
+    fetchEndpoint: host => 'https://' + transformHost(host) + '/sql',
     fetchConnectionCache: false,
     fetchFunction: undefined,
     // these options relate to the WebSocket transport
     webSocketConstructor: undefined,
-    wsProxy: host => host + '/v2',
+    wsProxy: host => transformHost(host) + '/v2',
     useSecureWebSocket: true,
     forceDisablePgSSL: true,
     coalesceWrites: true,
