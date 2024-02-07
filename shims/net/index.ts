@@ -61,8 +61,8 @@ export interface SocketDefaults {
   disableSNI: boolean;
 }
 type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache' | 'fetchFunction';
-const neonEpPattern = /^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)[.][^.]+[.][^.]+/;
-const neonHostFirstPartPattern = /^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)/;
+const neonEpPattern = /^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)(?:-pooler)?[.][^.]+[.][^.]+/;
+const neonHostFirstPartPattern = /^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)(?:-pooler)?/;
 
 export const isNeonHost = (host: string) => {
   return neonEpPattern.test(host);

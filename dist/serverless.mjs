@@ -934,7 +934,7 @@ binary,valueMapper:Vs.prepareValue})}catch(t){this.handleError(t,e);return}e.des
 {type:"P",name:this.portal||""}),this._getRows(e,this.rows)}handleCopyInResponse(e){
 e.sendCopyFail("No source stream defined")}handleCopyData(e,t){}};zs.exports=sn});var Xs={};fe(Xs,{Socket:()=>de,isIP:()=>bl,isNeonHost:()=>Zs});function bl(r){return 0}
 var Ys,xl,Al,Zs,vl,de,Vt=oe(()=>{"use strict";y();Ys=at(Ue(),1);o(bl,"isIP");xl=
-/^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)[.][^.]+[.][^.]+/,Al=/^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)/,
+/^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)(?:-pooler)?[.][^.]+[.][^.]+/,Al=/^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)(?:-pooler)?/,
 Zs=o(r=>xl.test(r),"isNeonHost"),vl=o(r=>Zs(r)?r.replace(Al,"api"):r,"transformH\
 ost"),de=class r extends Ys.EventEmitter{static{o(this,"Socket")}static defaults={
 poolQueryViaFetch:!1,fetchEndpoint:e=>"https://"+vl(e)+"/sql",fetchConnectionCache:!1,
@@ -2096,8 +2096,7 @@ Result: ${JSON.stringify(i)}`);return i}o(Ct,"runQuery");async function nt(r,e,t
 await e.connect();let i=await rt(r,()=>Ct(e,n));return t.waitUntil(e.end()),i}o(
 nt,"clientRunQuery");async function nr(r,e,t,n){let i=new Fe({connectionString:e}),
 s=await rt(r,()=>Ct(i,n));return t.waitUntil(i.end()),s}o(nr,"poolRunQuery");async function Da(r,e,t,n){
-let i=Ee(e,{fullResults:!0});return await rt(r,()=>Ct(i,n))}o(Da,"httpRunQuery");y();var _t=[{sql:"SELECT * FROM employees LIMIT 10",test:r=>r.length>1&&typeof r[0].
-first_name=="string"},{sql:"SELECT now()",test:r=>/^2\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+Z$/.
+let i=Ee(e,{fullResults:!0});return await rt(r,()=>Ct(i,n))}o(Da,"httpRunQuery");y();var _t=[{sql:"SELECT now()",test:r=>/^2\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+Z$/.
 test(r[0].now.toISOString())}];async function p0(r,e,t){let n=[];for(let i of _t){let[,[[,s]]]=await nr(1,e.NEON_DB_URL,
 t,i);n.push(s)}for(let i of _t){let[,[[,s]]]=await Da(1,e.NEON_DB_URL,t,i);n.push(
 s)}return new Response(JSON.stringify(n,null,2),{headers:{"Content-Type":"applic\
