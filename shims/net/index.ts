@@ -63,7 +63,7 @@ export interface SocketDefaults {
 type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache' | 'fetchFunction';
 
 const transformHost = (host: string): string => {
-  return host.replace(/^[^.]*\./, 'api.');
+  return host.replace(/^[^.]+\./, 'api.');
 }
 
 export class Socket extends EventEmitter {

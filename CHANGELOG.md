@@ -1,6 +1,6 @@
 ## 0.8.1 (2024-02-07)
 
-Revert single per-region domain for websocket. Fix the pooled connection.
+Revert single per-region domain for WebSockets. Fix treatment of -pooler connection hosts.
 
 ## 0.8.0 (2024-02-06)
 
