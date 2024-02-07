@@ -61,16 +61,9 @@ export interface SocketDefaults {
   disableSNI: boolean;
 }
 type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache' | 'fetchFunction';
-const neonEpPattern = /^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)(?:-pooler)?[.][^.]+[.][^.]+/;
-const neonHostFirstPartPattern = /^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)(?:-pooler)?/;
-
-export const isNeonHost = (host: string) => {
-  return neonEpPattern.test(host);
-}
 
 const transformHost = (host: string): string => {
-  if (!isNeonHost(host)) return host;
-  return host.replace(neonHostFirstPartPattern, 'api');
+  return host.replace(/^[^.]*\./, 'api.');
 }
 
 export class Socket extends EventEmitter {
