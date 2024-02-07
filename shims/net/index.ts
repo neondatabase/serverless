@@ -69,6 +69,7 @@ export const isNeonHost = (host: string) => {
 }
 
 const transformHost = (host: string): string => {
+  if (!isNeonHost(host)) return host;
   return host.replace(neonHostFirstPartPattern, 'api');
 }
 
@@ -82,7 +83,7 @@ export class Socket extends EventEmitter {
     fetchFunction: undefined,
     // these options relate to the WebSocket transport
     webSocketConstructor: undefined,
-    wsProxy: host => transformHost(host) + '/v2',
+    wsProxy: host => host + '/v2',
     useSecureWebSocket: true,
     forceDisablePgSSL: true,
     coalesceWrites: true,

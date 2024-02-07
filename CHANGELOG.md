@@ -1,3 +1,7 @@
+## 0.8.1 (2024-02-07)
+
+Revert single per-region domain for websocket.
+
 ## 0.8.0 (2024-02-06)
 
 Use a single (per-region) domain name for all connections to Neon databases. Intended to help with connection caching in V8. Passes the endpoint ID inside connection options for WebSocket connections.
