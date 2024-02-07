@@ -937,7 +937,7 @@ binary,valueMapper:fs.prepareValue})}catch(t){this.handleError(t,e);return}e.des
 e.sendCopyFail("No source stream defined")}handleCopyData(e,t){}};a(xr,"Query");
 var Sr=xr;ps.exports=Sr});var gs={};ee(gs,{Socket:()=>Se,isIP:()=>Fu,isNeonHost:()=>ms});function Fu(r){return 0}
 var ys,Mu,Du,ms,Ou,x,Se,wt=V(()=>{"use strict";p();ys=We(we(),1);a(Fu,"isIP");Mu=
-/^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)[.][^.]+[.][^.]+/,Du=/^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)/,
+/^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)(?:-pooler)?[.][^.]+[.][^.]+/,Du=/^(?:ep-)?([a-z]+)-([a-z]+)-(\w+)(?:-pooler)?/,
 ms=a(r=>Mu.test(r),"isNeonHost"),Ou=a(r=>ms(r)?r.replace(Du,"api"):r,"transformH\
 ost"),x=class x extends ys.EventEmitter{constructor(){super(...arguments);T(this,
 "opts",{});T(this,"connecting",!1);T(this,"pending",!0);T(this,"writable",!0);T(
