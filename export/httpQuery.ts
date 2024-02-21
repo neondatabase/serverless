@@ -119,7 +119,7 @@ export function neon(
   // execute query
   async function execute(parameterizedQuery: ParameterizedQuery | ParameterizedQuery[], opts?: HTTPTransactionOptions) {
     let fetchOptions = fetchOptionsGeneral ?? {};
-    const { fetchEndpoint, fetchConnectionCache, fetchFunction } = Socket;
+    const { fetchEndpoint, fetchFunction } = Socket;
 
     const url = typeof fetchEndpoint === 'function' ?
       fetchEndpoint(hostname, port) : fetchEndpoint;
@@ -150,7 +150,6 @@ export function neon(
       'Neon-Raw-Text-Output': 'true',  // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true',  // this saves data and post-processing even if we return objects, not arrays
     };
-    if (fetchConnectionCache === true) headers['Neon-Pool-Opt-In'] = 'true';
     if (Array.isArray(parameterizedQuery)) {  // only send these headers for batch queries, where they matter
       if (isolationLevel !== undefined) headers['Neon-Batch-Isolation-Level'] = isolationLevel;
       if (readOnly !== undefined) headers['Neon-Batch-Read-Only'] = String(readOnly);

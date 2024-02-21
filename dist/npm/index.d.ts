@@ -56,10 +56,12 @@ export interface NeonConfigGlobalOnly {
   poolQueryViaFetch: boolean;
 
   /**
-   * **Experimentally**, when `fetchConnectionCache` is `true`, queries carried
-   * via HTTP fetch make use of a connection cache on the server.
+   * **DEPRECATED**. Previously, only when `fetchConnectionCache` was `true`
+   * did queries carried via HTTP fetch make use of a connection pool/cache
+   * on the server. All queries now use the connection pool/cache: this setting
+   * is ignored.
    * 
-   * Default: `false`.
+   * Default: `true`.
    */
   fetchConnectionCache: boolean;
 

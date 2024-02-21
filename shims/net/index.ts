@@ -72,7 +72,7 @@ export class Socket extends EventEmitter {
     // these options relate to the fetch transport and take effect *only* when set globally
     poolQueryViaFetch: false,
     fetchEndpoint: host => 'https://' + transformHost(host) + '/sql',
-    fetchConnectionCache: false,
+    fetchConnectionCache: true,
     fetchFunction: undefined,
     // these options relate to the WebSocket transport
     webSocketConstructor: undefined,
@@ -97,8 +97,8 @@ export class Socket extends EventEmitter {
   static get fetchEndpoint() { return Socket.opts.fetchEndpoint ?? Socket.defaults.fetchEndpoint; }
   static set fetchEndpoint(newValue: SocketDefaults['fetchEndpoint']) { Socket.opts.fetchEndpoint = newValue; }
 
-  static get fetchConnectionCache() { return Socket.opts.fetchConnectionCache ?? Socket.defaults.fetchConnectionCache; }
-  static set fetchConnectionCache(newValue: SocketDefaults['fetchConnectionCache']) { Socket.opts.fetchConnectionCache = newValue; }
+  static get fetchConnectionCache() { return true; }
+  static set fetchConnectionCache(newValue: SocketDefaults['fetchConnectionCache']) { console.warn('The `fetchConnectionCache` option is deprecated (now always `true`)'); }
 
   static get fetchFunction() { return Socket.opts.fetchFunction ?? Socket.defaults.fetchFunction; }
   static set fetchFunction(newValue: SocketDefaults['fetchFunction']) { Socket.opts.fetchFunction = newValue; }
