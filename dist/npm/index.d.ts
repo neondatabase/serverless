@@ -367,7 +367,8 @@ export interface NeonQueryFunction<NeonArrayMode extends boolean, NeonFullResult
     queriesOrFn: NeonQueriesInTransaction |
       ((sql: NeonQueryFunctionInTransaction<TxnArrayMode, TxnFullResults>) => NeonQueriesInTransaction),
     opts?: HTTPTransactionOptions<TxnArrayMode, TxnFullResults>
-  ) => Promise<TxnFullResults extends true ? FullQueryResults<TxnArrayMode>[] : QueryRows<TxnArrayMode>[]>;
+  ) => Promise<(FullQueryResults<boolean> | QueryRows<boolean>)[]>;
+  // ) => Promise<TxnFullResults extends true ? FullQueryResults<TxnArrayMode>[] : QueryRows<TxnArrayMode>[]>;
 }
 
 /**
