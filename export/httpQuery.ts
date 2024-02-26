@@ -46,14 +46,32 @@ interface ProcessQueryResultOptions {
 
 const txnArgErrMsg = 'transaction() expects an array of queries, or a function returning an array of queries';
 
+/* 
+Most config options can be set in 3 places:
+
+* in a call to `neon`, 
+* in a call to `transaction`, 
+* or in the call to `sql` (i.e. the function returned by `neon`).
+
+The option variables corresponding these levels are prefixed
+`neonOpt`, `txnOpt` and `sqlOpt` respectively.
+
+As you would expect, options at lower levels override higher levels. 
+That is:
+
+* `sql` options override `transaction` ones,
+* `transaction` options override `neon` ones, and
+* `neon` options override defaults.
+*/
+
 export function neon(
   connectionString: string, {
-    arrayMode: arrayModeGeneral,
-    fullResults: fullResultsGeneral,
-    fetchOptions: fetchOptionsGeneral,
-    isolationLevel: isolationLevelGeneral,
-    readOnly: readOnlyGeneral,
-    deferrable: deferrableGeneral,
+    arrayMode: neonOptArrayMode,
+    fullResults: neonOptFullResults,
+    fetchOptions: neonOptFetchOptions,
+    isolationLevel: neonOptIsolationLevel,
+    readOnly: neonOptReadOnly,
+    deferrable: neonOptDeferrable,
     queryCallback,
     resultCallback,
   }: HTTPTransactionOptions = {},
@@ -105,20 +123,23 @@ export function neon(
 
   resolve.transaction = async (queries: NeonQueryPromise[] | ((sql: typeof resolve) => NeonQueryPromise[]), txnOpts?: HTTPTransactionOptions) => {
     if (typeof queries === 'function') queries = queries(resolve);
-    if (!Array.isArray(queries)) throw new Error(txnArgErrMsg);
 
-    const payload = queries.map(query => {
+    if (!Array.isArray(queries)) throw new Error(txnArgErrMsg);
+    queries.forEach(query => {
       if (query[Symbol.toStringTag] !== 'NeonQueryPromise') throw new Error(txnArgErrMsg);
-      const neonPromise = query as NeonQueryPromise;
-      return neonPromise.parameterizedQuery;
     });
 
-    return execute(payload, txnOpts);
+    const parameterizedQueries = queries.map(query => (query as NeonQueryPromise).parameterizedQuery);
+    const opts = queries.map(query => (query as NeonQueryPromise).opts ?? {});
+    return execute(parameterizedQueries, opts, txnOpts);
   };
 
   // execute query
-  async function execute(parameterizedQuery: ParameterizedQuery | ParameterizedQuery[], opts?: HTTPTransactionOptions) {
-    let fetchOptions = fetchOptionsGeneral ?? {};
+  async function execute(
+    parameterizedQuery: ParameterizedQuery | ParameterizedQuery[],
+    allSqlOpts?: HTTPQueryOptions | HTTPQueryOptions[],
+    txnOpts?: HTTPTransactionOptions
+  ) {
     const { fetchEndpoint, fetchFunction } = Socket;
 
     const url = typeof fetchEndpoint === 'function' ?
@@ -128,33 +149,45 @@ export function neon(
       { queries: parameterizedQuery } :
       parameterizedQuery;
 
-    let arrayMode = arrayModeGeneral ?? false;
-    let fullResults = fullResultsGeneral ?? false;
-    let isolationLevel = isolationLevelGeneral;  // default is undefined
-    let readOnly = readOnlyGeneral;  // default is undefined
-    let deferrable = deferrableGeneral;  // default is undefined
+    // --- resolve options to transaction level ---
 
-    if (opts !== undefined) {
-      // query options
-      if (opts.arrayMode !== undefined) arrayMode = opts.arrayMode;
-      if (opts.fullResults !== undefined) fullResults = opts.fullResults;
-      if (opts.fetchOptions !== undefined) fetchOptions = { ...fetchOptions, ...opts.fetchOptions };
-      // transaction options
-      if (opts.isolationLevel !== undefined) isolationLevel = opts.isolationLevel;
-      if (opts.readOnly !== undefined) readOnly = opts.readOnly;
-      if (opts.deferrable !== undefined) deferrable = opts.deferrable;
+    let resolvedFetchOptions = neonOptFetchOptions ?? {};
+    let resolvedArrayMode = neonOptArrayMode ?? false;
+    let resolvedFullResults = neonOptFullResults ?? false;
+    let resolvedIsolationLevel = neonOptIsolationLevel;  // default is undefined
+    let resolvedReadOnly = neonOptReadOnly;  // default is undefined
+    let resolvedDeferrable = neonOptDeferrable;  // default is undefined
+
+    // batch query
+    if (txnOpts !== undefined) {
+      if (txnOpts.fetchOptions !== undefined) resolvedFetchOptions = { ...resolvedFetchOptions, ...txnOpts.fetchOptions };
+      if (txnOpts.arrayMode !== undefined) resolvedArrayMode = txnOpts.arrayMode;
+      if (txnOpts.fullResults !== undefined) resolvedFullResults = txnOpts.fullResults;
+      if (txnOpts.isolationLevel !== undefined) resolvedIsolationLevel = txnOpts.isolationLevel;
+      if (txnOpts.readOnly !== undefined) resolvedReadOnly = txnOpts.readOnly;
+      if (txnOpts.deferrable !== undefined) resolvedDeferrable = txnOpts.deferrable;
     }
+
+    // single query -- cannot be true at same time as `txnOpts !== undefined` above
+    if (allSqlOpts !== undefined && !Array.isArray(allSqlOpts) && allSqlOpts.fetchOptions !== undefined) {
+      resolvedFetchOptions = { ...resolvedFetchOptions, ...allSqlOpts.fetchOptions };
+    }
+
+    // --- set headers ---
 
     const headers: Record<string, string> = {
       'Neon-Connection-String': connectionString,
       'Neon-Raw-Text-Output': 'true',  // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true',  // this saves data and post-processing even if we return objects, not arrays
     };
+
     if (Array.isArray(parameterizedQuery)) {  // only send these headers for batch queries, where they matter
-      if (isolationLevel !== undefined) headers['Neon-Batch-Isolation-Level'] = isolationLevel;
-      if (readOnly !== undefined) headers['Neon-Batch-Read-Only'] = String(readOnly);
-      if (deferrable !== undefined) headers['Neon-Batch-Deferrable'] = String(deferrable);
+      if (resolvedIsolationLevel !== undefined) headers['Neon-Batch-Isolation-Level'] = resolvedIsolationLevel;
+      if (resolvedReadOnly !== undefined) headers['Neon-Batch-Read-Only'] = String(resolvedReadOnly);
+      if (resolvedDeferrable !== undefined) headers['Neon-Batch-Deferrable'] = String(resolvedDeferrable);
     }
+
+    // --- run query ---
 
     let response;
     try {
@@ -162,7 +195,7 @@ export function neon(
         method: 'POST',
         body: JSON.stringify(bodyData),  // TODO: use json-custom-numbers to allow BigInts?
         headers,
-        ...fetchOptions, // this is last, so it gets the final say
+        ...resolvedFetchOptions, // this is last, so it gets the final say
       });
 
     } catch (err: any) {
@@ -178,11 +211,21 @@ export function neon(
         // batch query
         const resultArray = rawResults.results;
         if (!Array.isArray(resultArray)) throw new NeonDbError('Neon internal error: unexpected result format');
-        return resultArray.map((result, i) =>
-          processQueryResult(result, { arrayMode, fullResults, parameterizedQuery: parameterizedQuery[i], resultCallback }));
+        return resultArray.map((result, i) => {
+          let sqlOpts = (allSqlOpts as HTTPQueryOptions[])[i] ?? {};
+          let arrayMode = sqlOpts.arrayMode ?? resolvedArrayMode;
+          let fullResults = sqlOpts.fullResults ?? resolvedFullResults;
+          return processQueryResult(
+            result,
+            { arrayMode, fullResults, parameterizedQuery: parameterizedQuery[i], resultCallback }
+          );
+        });
 
       } else {
         // single query
+        let sqlOpts = (allSqlOpts as HTTPQueryOptions) ?? {};
+        let arrayMode = sqlOpts.arrayMode ?? resolvedArrayMode;
+        let fullResults = sqlOpts.fullResults ?? resolvedFullResults;
         return processQueryResult(rawResults, { arrayMode, fullResults, parameterizedQuery, resultCallback });
       }
 
