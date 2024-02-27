@@ -82,7 +82,7 @@ const results = await sql('SELECT * FROM posts WHERE id = $1', [postId], { fullR
 
 ### `fetchOptions: Record<string, any>`
 
-The `fetchOptions` option can also be passed to either `neon(...)` or the query function. This option takes an object that is merged with the options to the `fetch` call.
+The `fetchOptions` option can be passed to `neon(...)`, the `transaction` function, or the query function (if not within a `transaction` function). This option takes an object that is merged with the options to the `fetch` call.
 
 For example, to increase the priority of every database `fetch` request:
 
@@ -139,9 +139,9 @@ const [authors, tags] = await neon(process.env.DATABASE_URL)
   ]);
 ```
 
-The optional second argument to `transaction()`, `options`, has the same keys as the options to the ordinary query function -- `arrayMode`, `fullResults` and `fetchOptions` -- plus three additional keys that concern the transaction configuration. These transaction-related keys are: `isolationMode`, `readOnly` and `deferrable`.
+The optional second argument to `transaction()`, `options`, has the same keys as the options to the ordinary query function -- `arrayMode`, `fullResults` and `fetchOptions` -- plus three additional keys that concern the transaction configuration. These transaction-related keys are: `isolationMode`, `readOnly` and `deferrable`. They are described below. Defaults for the transaction-related keys can also be set as options to the `neon` function.
 
-Note that options **cannot** be supplied for individual queries within a transaction. Query and transaction options must instead be passed as the second argument of the `transaction()` function. For example, this `arrayMode` setting is ineffective (and TypeScript won't compile it): `await sql.transaction([sql('SELECT now()', [], { arrayMode: true })])`. Instead, use `await sql.transaction([sql('SELECT now()')], { arrayMode: true })`.
+The `fetchOptions` option cannot be supplied for individual queries inside `transaction()`, since only a single `fetch` is performed for the transaction as a whole. The TypeScript types also currently do not allow `arrayMode` or `fullResults` options to be supplied for individual queries within `transaction()` (although this does have the expected effect if the type errors are ignored).
 
 
 ### `isolationMode`
@@ -204,15 +204,6 @@ If you're using `@neondatabase/serverless` to connect to a Neon database, you us
 #### `poolQueryViaFetch: boolean`
 
 **Experimentally**, when `poolQueryViaFetch` is `true` and no listeners for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP `fetch` request.
-
-Default: currently `false` (but may be `true` in future).
-
-Note: this option can only be set globally, **not** on an individual `Client` instance.
-
-
-#### `fetchConnectionCache: boolean`
-
-**Experimentally**, when `fetchConnectionCache` is `true`, queries carried via HTTP `fetch` will make use of a connection cache (pool) on the server.
 
 Default: currently `false` (but may be `true` in future).
 
