@@ -1,3 +1,7 @@
+## 0.9.0
+
+Deprecate `fetchConnectionCache` option, which is now always enabled. For `neon` http fetch queries, enable setting options on individual queries within a batch `transaction` (but note that the types still do not allow this).
+
 ## 0.8.1 (2024-02-07)
 
 Revert single per-region domain for WebSockets. Fix treatment of -pooler connection hosts.
