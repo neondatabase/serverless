@@ -282,50 +282,39 @@ export interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends
   opts?: HTTPQueryOptions<ArrayMode, FullResults>;
 }
 
-export type HTTPQueryOptionsInTransaction<ArrayMode extends boolean, FullResults extends boolean> =
-  Omit<HTTPQueryOptions<ArrayMode, FullResults>, 'fetchOptions'>;
-
-export interface NeonQueryInTransaction<ArrayMode extends boolean, FullResults extends boolean> {
-  // this is a simplified form of query, which has fewer `opts` and is not a `Promise`
+export interface NeonQueryInTransaction {
+  // this is a simplified form of query, which has only a `parameterizedQuery` (no `opts` and not a `Promise`)
   parameterizedQuery: ParameterizedQuery;
-  opts: HTTPQueryOptionsInTransaction<ArrayMode, FullResults>;
 }
 
-export interface NeonQueryFunctionInTransaction<TxnArrayMode extends boolean, TxnFullResults extends boolean> {
+export interface NeonQueryFunctionInTransaction<ArrayMode extends boolean, FullResults extends boolean> {
   // this is a simplified form of NeonQueryFunction (below):
-  // * fewer `opts`
+  // * `opts` cannot be passed
   // * no `transaction()` method is available
 
   // tagged-template function usage
   (strings: TemplateStringsArray, ...params: any[]):
-    NeonQueryPromise<TxnArrayMode, TxnFullResults, TxnFullResults extends true ? FullQueryResults<TxnArrayMode> : QueryRows<TxnArrayMode>>;
+    NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
 
-  // ordinary function usage, with options overrides (no fetchOptions)
-  <SqlArrayMode extends boolean = TxnArrayMode, SqlFullResults extends boolean = TxnFullResults>(
-    string: string,
-    params?: any[],
-    opts?: HTTPQueryOptionsInTransaction<SqlArrayMode, SqlFullResults>
-  ): NeonQueryPromise<
-    SqlArrayMode,
-    SqlFullResults,
-    SqlFullResults extends true ? FullQueryResults<SqlArrayMode> : QueryRows<SqlArrayMode>
-  >
+  // ordinary function usage (*no* options overrides)
+  (string: string, params?: any[]):
+    NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
 }
 
-export interface NeonQueryFunction<NeonArrayMode extends boolean, NeonFullResults extends boolean> {
+export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
   // tagged-template function usage
   (strings: TemplateStringsArray, ...params: any[]):
-    NeonQueryPromise<NeonArrayMode, NeonFullResults, NeonFullResults extends true ? FullQueryResults<NeonArrayMode> : QueryRows<NeonArrayMode>>;
+    NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
 
-  // ordinary function usage, with options overrides (including fetchOptions)
-  <SqlArrayMode extends boolean = NeonArrayMode, SqlFullResults extends boolean = NeonFullResults>(
+  // ordinary function usage, with options overrides
+  <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(
     string: string,
     params?: any[],
-    opts?: HTTPQueryOptions<SqlArrayMode, SqlFullResults>
+    opts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>
   ): NeonQueryPromise<
-    SqlArrayMode,
-    SqlFullResults,
-    SqlFullResults extends true ? FullQueryResults<SqlArrayMode> : QueryRows<SqlArrayMode>
+    ArrayModeOverride,
+    FullResultsOverride,
+    FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>
   >;
 
   /**
@@ -355,20 +344,16 @@ export interface NeonQueryFunction<NeonArrayMode extends boolean, NeonFullResult
    * @param opts The same options that may be set on individual queries in a
    * non-transaction setting -- that is, `arrayMode` `fullResults` and
    * `fetchOptions` -- plus the transaction options `isolationLevel`,
-   * `readOnly` and `deferrable`.
+   * `readOnly` and `deferrable`. Note that none of these options can be set on
+   * individual queries within a transaction.
    * @returns An array of results. The structure of each result object depends
    * on the `arrayMode` and `fullResults` options.
    */
-  transaction: <
-    TxnArrayMode extends boolean = NeonArrayMode,
-    TxnFullResults extends boolean = NeonFullResults,
-    NeonQueriesInTransaction extends NeonQueryInTransaction<boolean, boolean>[] = NeonQueryInTransaction<TxnArrayMode, TxnFullResults>[]
-  >(
-    queriesOrFn: NeonQueriesInTransaction |
-      ((sql: NeonQueryFunctionInTransaction<TxnArrayMode, TxnFullResults>) => NeonQueriesInTransaction),
-    opts?: HTTPTransactionOptions<TxnArrayMode, TxnFullResults>
-  ) => Promise<(FullQueryResults<boolean> | QueryRows<boolean>)[]>;
-  // ) => Promise<TxnFullResults extends true ? FullQueryResults<TxnArrayMode>[] : QueryRows<TxnArrayMode>[]>;
+  transaction: <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(
+    queriesOrFn: NeonQueryPromise<ArrayMode, FullResults>[] |  // not ArrayModeOverride or FullResultsOverride: clamp these values to the current ones
+      ((sql: NeonQueryFunctionInTransaction<ArrayModeOverride, FullResultsOverride>) => NeonQueryInTransaction[]),
+    opts?: HTTPTransactionOptions<ArrayModeOverride, FullResultsOverride>
+  ) => Promise<FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride>[] : QueryRows<ArrayModeOverride>[]>;
 }
 
 /**
@@ -424,10 +409,10 @@ export interface NeonQueryFunction<NeonArrayMode extends boolean, NeonFullResult
  * pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
-export function neon<NeonArrayMode extends boolean = false, NeonFullResults extends boolean = false>(
+export function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(
   connectionString: string,
-  options?: HTTPTransactionOptions<NeonArrayMode, NeonFullResults>,
-): NeonQueryFunction<NeonArrayMode, NeonFullResults>;
+  options?: HTTPTransactionOptions<ArrayMode, FullResults>,
+): NeonQueryFunction<ArrayMode, FullResults>;
 
 export class NeonDbError extends Error {
   name: 'NeonDbError';
