@@ -1,4 +1,4 @@
-## 0.9.0
+## 0.9.0 (2024-02-27)
 
 Deprecate `fetchConnectionCache` option, which is now always enabled. For `neon` http fetch queries, enable setting options on individual queries within a batch `transaction` (but note that the types still do not allow this).
 
