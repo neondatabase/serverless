@@ -50,6 +50,14 @@ cat dist/npm/index.d.ts >> dist/npm/index.d.mts
 
 cp LICENSE README.md CHANGELOG.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
 
+# Prepare jsr package
+
+cp dist/npm/index.d.ts dist/jsr/
+echo "/// <reference types=\"./index.d.ts\" />
+" > dist/jsr/index.js
+cat dist/npm/index.mjs >> dist/jsr/index.js
+cp LICENSE dist/jsr/
+
 
 # Note: --keep-names adds about 10KB to the bundle size, but it gives us error
 # messages and stack traces with no short, cryptic variable names
