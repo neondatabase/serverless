@@ -11,9 +11,10 @@ npm version patch  # or minor or major
 npm publish
 
 # Copy npm version
-jq --arg v "$(jq -r .version dist/npm/package.json)" '.version = $v' dist/jsr/jsr.json > dist/jsr/jsr.json.tmp && mv dist/jsr/jsr.json.tmp dist/jsr/jsr.json
+jq --arg v "$(jq -r .version package.json)" '.version = $v' ../jsr/jsr.json > ../jsr/jsr.json.tmp && mv ../jsr/jsr.json.tmp ../jsr/jsr.json
 
 # Publish jsr package
+cd ../jsr
 npx jsr publish
 ```
 
