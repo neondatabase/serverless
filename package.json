@@ -21,7 +21,7 @@
     "stream": "file:shims/stream",
     "string_decoder": "file:shims/string_decoder",
     "tls": "file:shims/tls",
-    "undici": "^6.0.1",
+    "undici": "^6.11.1",
     "url": "file:shims/url",
     "util": "file:shims/util",
     "ws": "^8.12.1"
