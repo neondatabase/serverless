@@ -56,7 +56,7 @@ cp dist/npm/index.d.ts dist/jsr/
 echo "/// <reference types=\"./index.d.ts\" />
 " > dist/jsr/index.js
 cat dist/npm/index.mjs >> dist/jsr/index.js
-cp LICENSE dist/jsr/
+cp LICENSE README.md dist/jsr/
 
 
 # Note: --keep-names adds about 10KB to the bundle size, but it gives us error
