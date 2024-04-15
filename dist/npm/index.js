@@ -837,10 +837,10 @@ mt.prototype.setTypeParser=function(r,e,t){typeof e=="function"&&(t=e,e="text"),
 this.getOverrides(e)[r]=t};mt.prototype.getTypeParser=function(r,e){return e=e||
 "text",this.getOverrides(e)[r]||this._types.getTypeParser(r,e)};es.exports=mt});var ts={};te(ts,{default:()=>Tu});var Tu,rs=$(()=>{"use strict";p();Tu={}});var ns={};te(ns,{parse:()=>fr});function fr(r,e=!1){let{protocol:t}=new URL(r),n="\
 http:"+r.substring(t.length),{username:i,password:s,host:o,hostname:u,port:c,pathname:h,
-search:l,searchParams:y,hash:x}=new URL(n);s=decodeURIComponent(s);let A=i+":"+s,
-B=e?Object.fromEntries(y.entries()):l;return{href:r,protocol:t,auth:A,username:i,
-password:s,host:o,hostname:u,port:c,pathname:h,search:l,query:B,hash:x}}var pr=$(
-()=>{"use strict";p();a(fr,"parse")});var ss=I((_l,is)=>{"use strict";p();var Pu=(pr(),U(ns)),dr=(nr(),U(rr));function yr(r){
+search:l,searchParams:y,hash:x}=new URL(n);s=decodeURIComponent(s),i=decodeURIComponent(
+i),h=decodeURIComponent(h);let A=i+":"+s,B=e?Object.fromEntries(y.entries()):l;return{
+href:r,protocol:t,auth:A,username:i,password:s,host:o,hostname:u,port:c,pathname:h,
+search:l,query:B,hash:x}}var pr=$(()=>{"use strict";p();a(fr,"parse")});var ss=I((_l,is)=>{"use strict";p();var Pu=(pr(),U(ns)),dr=(nr(),U(rr));function yr(r){
 if(r.charAt(0)==="/"){var t=r.split(" ");return{host:t[0],database:t[1]}}var e=Pu.
 parse(/ |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.test(r)?encodeURI(r).replace(/\%25(\d\d)/g,
 "%$1"):r,!0),t=e.query;for(var n in t)Array.isArray(t[n])&&(t[n]=t[n][t[n].length-
