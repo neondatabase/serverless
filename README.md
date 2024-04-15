@@ -12,13 +12,19 @@
 
 ### Install it
 
-Install it with your preferred JavaScript package manager. For example:
+Install it with your preferred JavaScript package manager. It's named `@neondatabase/serverless` on npm and `@neon/serverless` on JSR. So, for example:
 
 ```bash
 npm install @neondatabase/serverless
 ```
 
-Using TypeScript? No worries: types are included.
+or
+
+```bash
+bunx jsr add @neon/serverless
+```
+
+Using TypeScript? No worries: types are included either way.
 
 
 ### Configure it
