@@ -234,12 +234,6 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
   await sql('SELECT 123 AS num');
   await sql('SELECT 123 AS num', [], { arrayMode: true, fullResults: true });
 
-  // cache
-  neonConfig.fetchConnectionCache = true;
-  await sql`SELECT ${"hello"} AS str`;
-  await sql`SELECT ${"world"} AS str`;
-  await sql('SELECT 123 AS num');
-
   // timeout
   function sqlWithRetries(sql: ReturnType<typeof neon>, timeoutMs: number, attempts = 3) {
     return async function (strings: TemplateStringsArray, ...params: any[]) {
