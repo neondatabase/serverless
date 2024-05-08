@@ -7,7 +7,24 @@ import { prepareValue } from '../node_modules/pg/lib/utils';
 
 export class NeonDbError extends Error {
   name = 'NeonDbError' as const;
-  code: string | null = null;
+
+  severity: string | undefined;
+  code: string | undefined;
+  detail: string | undefined;
+  hint: string | undefined;
+  position: string | undefined;
+  internalPosition: string | undefined;
+  internalQuery: string | undefined;
+  where: string | undefined;
+  schema: string | undefined;
+  table: string | undefined;
+  column: string | undefined;
+  dataType: string | undefined;
+  constraint: string | undefined;
+  file: string | undefined;
+  line: string | undefined;
+  routine: string | undefined;
+
   sourceError: Error | undefined;
 }
 
@@ -45,6 +62,7 @@ interface ProcessQueryResultOptions {
 }
 
 const txnArgErrMsg = 'transaction() expects an array of queries, or a function returning an array of queries';
+const errorFields = ['severity', 'code', 'detail', 'hint', 'position', 'internalPosition', 'internalQuery', 'where', 'schema', 'table', 'column', 'dataType', 'constraint', 'file', 'line', 'routine'] as const;
 
 /* 
 Most config options can be set in 3 places:
@@ -232,9 +250,9 @@ export function neon(
     } else {
       const { status } = response;
       if (status === 400) {
-        const { message, code } = await response.json() as any;
-        const dbError = new NeonDbError(message);
-        dbError.code = code;
+        const json = await response.json() as any;
+        const dbError = new NeonDbError(json.message);
+        for (const field of errorFields) dbError[field] = json[field] ?? undefined;
         throw dbError;
 
       } else {
