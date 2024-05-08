@@ -1,3 +1,13 @@
+/* 
+This file contains various checks that the driver is working.
+
+Different elements can be run using:
+  * `npm run node`, `npm run bun`, or `npm run browser`
+  * `npm run cfDev` or `npm run cfDeploy`
+
+In the long run these checks should be turned into a formal test suits.
+*/
+
 import * as subtls from 'subtls';
 
 // @ts-ignore -- esbuild knows how to deal with this
