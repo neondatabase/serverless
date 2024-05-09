@@ -1,3 +1,15 @@
+## 0.9.3 (2024-05-09)
+
+Expose all error information fields on `NeonDbError` objects thrown when using the http fetch transport.
+
+## 0.9.2 (2024-05-09)
+
+JSR README updates only.
+
+## 0.9.1 (2024-04-15)
+
+Pass username (and database name) through URL decoder, so all usernames can successfully authorize.
+
 ## 0.9.0 (2024-02-27)
 
 Deprecate `fetchConnectionCache` option, which is now always enabled. For `neon` http fetch queries, enable setting options on individual queries within a batch `transaction` (but note that the types still do not allow this).
