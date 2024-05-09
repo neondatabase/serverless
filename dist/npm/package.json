@@ -1,6 +1,6 @@
 {
   "name": "@neondatabase/serverless",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "author": "Neon",
   "description": "node-postgres for serverless environments from neon.tech",
   "exports": {
@@ -30,6 +30,6 @@
     "https"
   ],
   "dependencies": {
-    "@types/pg": "8.6.6"
+    "@types/pg": "8.11.6"
   }
 }

@@ -1,3 +1,13 @@
+/* 
+This file contains various checks that the driver is working.
+
+Different elements can be run using:
+  * `npm run node`, `npm run bun`, or `npm run browser`
+  * `npm run cfDev` or `npm run cfDeploy`
+
+In the long run these checks should be turned into a formal test suits.
+*/
+
 import * as subtls from 'subtls';
 
 // @ts-ignore -- esbuild knows how to deal with this
@@ -94,13 +104,13 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
   log('ordinary (via overridden options) batch results:', JSON.stringify(r7), JSON.stringify(r8), '\n');
   if (r7.batchInt !== 1 || r8.batchStr !== 'hello') throw new Error('Batch query problem');
 
-  // invalid option setting on individual queries within a batch: should be ignored
+  // option setting on individual queries within a batch: should be honoured (despite types not supporting it)
   const [[r9], [r10]] = await sql.transaction(txn => [
     txn`SELECT ${1}::int AS "batchInt"`,
     txn('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: true })
   ]);
-  log('ignored query options batch results:', JSON.stringify(r9), JSON.stringify(r10), '\n');
-  if (r9.batchInt !== 1 || r10.batchStr !== 'hello') throw new Error('Batch query problem');
+  log('query options on individual batch queries:', JSON.stringify(r9), JSON.stringify(r10), '\n');
+  if (r9.batchInt !== 1 || r10[0] !== 'hello') throw new Error('Batch query problem');
 
   // invalid query to `transaction()`
   let queryErr = undefined;
@@ -224,12 +234,6 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
   await sql('SELECT 123 AS num');
   await sql('SELECT 123 AS num', [], { arrayMode: true, fullResults: true });
 
-  // cache
-  neonConfig.fetchConnectionCache = true;
-  await sql`SELECT ${"hello"} AS str`;
-  await sql`SELECT ${"world"} AS str`;
-  await sql('SELECT 123 AS num');
-
   // timeout
   function sqlWithRetries(sql: ReturnType<typeof neon>, timeoutMs: number, attempts = 3) {
     return async function (strings: TemplateStringsArray, ...params: any[]) {
@@ -273,6 +277,20 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
   };
   await sql`SELECT ${"customFetch"} AS str`;
 
+  // errors
+  const errstatement = 'SELECT 123::int[] WHERE x';
+  try {
+    await sql(errstatement);
+  } catch (err) {
+    console.log('Error fields should match following, except for having no length field');
+    console.log(err);
+  }
+  try {
+    await poolRunQuery(1, env.NEON_DB_URL, ctx, { sql: errstatement, test: () => true });
+  } catch (err) {
+    console.log('Error fields should match previous, except for having additional length field');
+    console.log(err);
+  }
 
   await new Promise(resolve => setTimeout(resolve, 1000));
   pool.end();
@@ -346,27 +364,16 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
       ctx.waitUntil(pool.end());
     });
 
-    await sections('Patched pg/wss, pipelined connect [currently broken, since proxy is down]', async n => {
-      const client = new Client(env.MY_DB_URL);
-      client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
-      client.neonConfig.pipelineConnect = 'password';
-      try {
-        await clientRunQuery(n, client, ctx, query);
-      } catch (err: any) {
-        console.error(`\n*** ${err.message}`);
-      }
-    });
-
     if (useSubtls) {
       neonConfig.subtls = subtls;
       neonConfig.rootCerts = isrgRootX1;
 
-      await sections('Patched pg/subtls, pipelined TLS + connect [currently broken, since proxy is down]', async n => {
-        const client = new Client(env.MY_DB_URL);
-        client.neonConfig.wsProxy = (host, port) => `ws.manipulexity.com/v1?address=${host}:${port}`;
+      await sections('pg/subtls, pipelined connect', async n => {
+        const client = new Client(env.NEON_DB_URL);
+        client.neonConfig.wsProxy = (host, port) => `subtls-wsproxy.jawj.workers.dev/?address=${host}:${port}`;
         client.neonConfig.forceDisablePgSSL = client.neonConfig.useSecureWebSocket = false;
-        client.neonConfig.pipelineTLS = true;
-        client.neonConfig.pipelineConnect = 'password';
+        client.neonConfig.pipelineTLS = false;  // only works with patched pg
+        client.neonConfig.pipelineConnect = false;  // only works with password auth, which we aren't offered this way
         try {
           await clientRunQuery(n, client, ctx, query);
         } catch (err: any) {
