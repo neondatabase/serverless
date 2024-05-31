@@ -1,3 +1,7 @@
+## UNRELEASED
+
+Capture stack traces in `NeonDbError`, if `Error.captureStackTrace` is available.
+
 ## 0.9.3 (2024-05-09)
 
 Expose all error information fields on `NeonDbError` objects thrown when using the http fetch transport.
