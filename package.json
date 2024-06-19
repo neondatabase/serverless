@@ -24,7 +24,7 @@
     "undici": "^6.0.1",
     "url": "file:shims/url",
     "util": "file:shims/util",
-    "ws": "^8.12.1"
+    "ws": "^8.17.1"
   },
   "overrides": {
     "pg-connection-string": "2.5.0"
