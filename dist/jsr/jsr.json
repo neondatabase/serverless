@@ -1,6 +1,6 @@
 {
   "name": "@neon/serverless",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "exports": "./index.js",
   "imports": {
     "pg": "npm:@types/pg@8.11.6"

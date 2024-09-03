@@ -1,9 +1,11 @@
 import { parse } from '../shims/url';
 import { Socket } from '../shims/net';
-import { types } from '.';
+import { types as defaultTypes } from '.';
 
 // @ts-ignore -- this isn't officially exported by pg
-import { prepareValue } from '../node_modules/pg/lib/utils';
+import { prepareValue } from 'pg/lib/utils';
+// @ts-ignore -- this isn't officially exported by pg
+import TypeOverrides from 'pg/lib/type-overrides';
 
 export class NeonDbError extends Error {
   name = 'NeonDbError' as const;
@@ -38,6 +40,7 @@ interface HTTPQueryOptions {
   fullResults?: boolean;  // default false
   fetchOptions?: Record<string, any>;
   // these callback options are not currently exported:
+  types?: typeof defaultTypes;
   queryCallback?: (query: ParameterizedQuery) => void;
   resultCallback?: (query: ParameterizedQuery, result: any, rows: any, opts: any) => void;
 }
@@ -59,6 +62,7 @@ interface ProcessQueryResultOptions {
   fullResults: boolean;
   parameterizedQuery: ParameterizedQuery;
   resultCallback: HTTPQueryOptions['resultCallback'];
+  types?: typeof defaultTypes;
 }
 
 const txnArgErrMsg = 'transaction() expects an array of queries, or a function returning an array of queries';
@@ -235,7 +239,7 @@ export function neon(
           let fullResults = sqlOpts.fullResults ?? resolvedFullResults;
           return processQueryResult(
             result,
-            { arrayMode, fullResults, parameterizedQuery: parameterizedQuery[i], resultCallback }
+            { arrayMode, fullResults, parameterizedQuery: parameterizedQuery[i], resultCallback, types: sqlOpts.types }
           );
         });
 
@@ -244,7 +248,7 @@ export function neon(
         let sqlOpts = (allSqlOpts as HTTPQueryOptions) ?? {};
         let arrayMode = sqlOpts.arrayMode ?? resolvedArrayMode;
         let fullResults = sqlOpts.fullResults ?? resolvedFullResults;
-        return processQueryResult(rawResults, { arrayMode, fullResults, parameterizedQuery, resultCallback });
+        return processQueryResult(rawResults, { arrayMode, fullResults, parameterizedQuery, resultCallback, types: sqlOpts.types });
       }
 
     } else {
@@ -282,8 +286,9 @@ function createNeonQueryPromise(
 
 function processQueryResult(
   rawResults: any,
-  { arrayMode, fullResults, parameterizedQuery, resultCallback }: ProcessQueryResultOptions
+  { arrayMode, fullResults, parameterizedQuery, resultCallback, types: customTypes }: ProcessQueryResultOptions
 ) {
+  const types = new TypeOverrides(customTypes);
   const colNames = rawResults.fields.map((field: any) => field.name);
   const parsers = rawResults.fields.map((field: any) => types.getTypeParser(field.dataTypeID));
 
@@ -312,6 +317,8 @@ function processQueryResult(
     rawResults.viaNeonFetch = true;
     rawResults.rowAsArray = arrayMode;
     rawResults.rows = rows;
+    rawResults._parsers = parsers;
+    rawResults._types = types;
     return rawResults;
   }
 
