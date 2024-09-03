@@ -124,7 +124,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
     queryErr = err;
   }
   if (queryErr === undefined) throw new Error('Error should have been raised for string passed to `transaction()`');
-  log('caught invalid query passed to `transaction()`\n');
+  log('successfully caught invalid query passed to `transaction()`\n');
 
   // wrong DB URL
   let connErr;
@@ -137,7 +137,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => { }) {
     connErr = err;
   }
   if (connErr === undefined) throw new Error('Error should have been raised for bad password');
-  log('caught invalid password passed to `neon()`\n');
+  log('successfully caught invalid password passed to `neon()`\n');
 }
 
 export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]) => { }): Promise<void> {
@@ -282,13 +282,13 @@ export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]
   try {
     await sql(errstatement);
   } catch (err) {
-    console.log('Error fields should match following, except for having no length field');
+    console.log('Fields of this expected error should match the following error, except for having no `length` field');
     console.log(err);
   }
   try {
     await poolRunQuery(1, env.NEON_DB_URL, ctx, { sql: errstatement, test: () => true });
   } catch (err) {
-    console.log('Error fields should match previous, except for having additional length field');
+    console.log('Fields of this expected error should match the previous error, except for having an additional `length` field');
     console.log(err);
   }
 

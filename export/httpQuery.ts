@@ -3,9 +3,9 @@ import { Socket } from '../shims/net';
 import { types as defaultTypes } from '.';
 
 // @ts-ignore -- this isn't officially exported by pg
-import { prepareValue } from '../node_modules/pg/lib/utils';
+import { prepareValue } from 'pg/lib/utils';
 // @ts-ignore -- this isn't officially exported by pg
-import TypeOverrides from '../node_modules/pg/lib/type-overrides';
+import TypeOverrides from 'pg/lib/type-overrides';
 
 export class NeonDbError extends Error {
   name = 'NeonDbError' as const;
