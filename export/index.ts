@@ -239,7 +239,7 @@ class NeonPool extends Pool {
 
       const sql = neon(connectionString, { fullResults: true, arrayMode: config.rowMode === 'array' });
 
-      // @ts-ignore -- TS doesn't know about this.options
+      // @ts-expect-error -- TS doesn't know about this.options
       sql(queryText, queryValues, { types: config.types ?? this.options?.types })
         .then(result => cb(undefined, result))
         .catch(err => cb(err));
