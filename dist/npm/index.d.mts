@@ -33,6 +33,9 @@ export {
   defaults,
   native,
 } from "pg";
+export {
+  default as TypeOverrides
+} from 'pg/lib/type-overrides';
 
 export interface NeonConfigGlobalOnly {
   /**

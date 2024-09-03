@@ -1,4 +1,4 @@
-# @neondatabase/serverless [BETA]
+# @neondatabase/serverless
 
 `@neondatabase/serverless` is [Neon](https://neon.tech)'s PostgreSQL driver for JavaScript and TypeScript. It's:
 
