@@ -2,8 +2,8 @@ name: Check Code Formatting
 
 on:
   pull_request:
-    # branches:
-    # - main
+    branches:
+      - main
 
 jobs:
   checks-format:
