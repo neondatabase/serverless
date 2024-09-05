@@ -1,0 +1,21 @@
+name: Check Code Formatting
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        run: bun install
+
+      - name: Run format check
+        run: npm run format
