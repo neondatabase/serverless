@@ -10,29 +10,34 @@ export function randomBytes(length: number) {
 // (2) these are very limited implementations: SHA-256/MD5 only, and you can only call `update` once!
 
 export function createHash(type: 'sha256') {
-  if (type === 'sha256') return {
-    update: function (data: string | Buffer | Uint8Array) {
-      return {
-        digest: function () {
-          return Buffer.from(sha256(data));
-        }
-      }
-    }
-  }
-  if (type === 'md5') return {
-    update: function (data: string | Buffer | Uint8Array) {
-      return {
-        digest: function () {
-          return typeof data === 'string' ? Md5.hashStr(data) : Md5.hashByteArray(data);
-        }
-      }
-    }
-  }
+  if (type === 'sha256')
+    return {
+      update: function (data: string | Buffer | Uint8Array) {
+        return {
+          digest: function () {
+            return Buffer.from(sha256(data));
+          },
+        };
+      },
+    };
+  if (type === 'md5')
+    return {
+      update: function (data: string | Buffer | Uint8Array) {
+        return {
+          digest: function () {
+            return typeof data === 'string'
+              ? Md5.hashStr(data)
+              : Md5.hashByteArray(data);
+          },
+        };
+      },
+    };
   throw new Error(`Hash type '${type}' not supported`);
 }
 
 export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
-  if (type !== 'sha256') throw new Error(`Only sha256 is supported (requested: '${type}')`);
+  if (type !== 'sha256')
+    throw new Error(`Only sha256 is supported (requested: '${type}')`);
   return {
     update: function (data: string | Buffer | Uint8Array) {
       return {
@@ -43,7 +48,6 @@ export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
           const keyLen = key.length;
           if (keyLen > 64) {
             key = sha256(key);
-
           } else if (keyLen < 64) {
             const tmp = new Uint8Array(64);
             tmp.set(key);
@@ -67,8 +71,8 @@ export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
           result.set(sha256(msg), 64);
 
           return Buffer.from(sha256(result));
-        }
-      }
-    }
-  }
+        },
+      };
+    },
+  };
 }
