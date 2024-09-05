@@ -44,7 +44,9 @@
     "nodeDebug": "npm run buildDebug && npm run launch",
     "bun": "npm run build && bun dist/node/index.mjs",
     "cfDev": "npm run build && wrangler dev",
-    "cfDeploy": "npm run build && wrangler deploy"
+    "cfDeploy": "npm run build && wrangler deploy",
+    "prettier:fmt:check": "prettier -c . '!./tmp' --log-level warn",
+    "prettier:fmt:fix": "prettier -w . '!./tmp' --log-level warn"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230115.0",
