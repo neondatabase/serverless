@@ -87,6 +87,8 @@ type GlobalOnlyDefaults =
   | 'fetchConnectionCache'
   | 'fetchFunction';
 
+const FIRST_WORD_REGEX = /^[^.]+\./;
+
 export class Socket extends EventEmitter {
   static defaults: SocketDefaults = {
     // these options relate to the fetch transport and take effect *only* when set globally
@@ -97,9 +99,9 @@ export class Socket extends EventEmitter {
         // If the caller sends in a JWT, we need to use the Neon Authorize API
         // endpoint instead (this goes to the Auth Broker instead of the Neon
         // Proxy).
-        newHost = host.replace(/^[^.]+\./, 'apiauth.');
+        newHost = host.replace(FIRST_WORD_REGEX, 'apiauth.');
       } else {
-        newHost = host.replace(/^[^.]+\./, 'api.');
+        newHost = host.replace(FIRST_WORD_REGEX, 'api.');
       }
 
       return 'https://' + newHost + '/sql';

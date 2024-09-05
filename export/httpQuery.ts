@@ -51,7 +51,7 @@ interface HTTPQueryOptions {
 
   // JWT auth token to be passed as the Bearer token in the Authorization
   // header
-  authToken?: string | (() => string);
+  authToken?: string | (() => Promise<string> | string);
 }
 
 interface HTTPTransactionOptions extends HTTPQueryOptions {
@@ -148,11 +148,10 @@ export function neon(
     );
   }
 
-  const { protocol, username, password, hostname, port, pathname } = db;
+  const { protocol, username, hostname, port, pathname } = db;
   if (
     (protocol !== 'postgres:' && protocol !== 'postgresql:') ||
     !username ||
-    !password ||
     !hostname ||
     !pathname
   ) {
@@ -224,7 +223,7 @@ export function neon(
     const url =
       typeof fetchEndpoint === 'function'
         ? fetchEndpoint(hostname, port, {
-            jwtAuth: Boolean(authToken),
+            jwtAuth: authToken !== undefined,
           })
         : fetchEndpoint;
 
@@ -282,7 +281,7 @@ export function neon(
     if (typeof authToken === 'string') {
       headers['Authorization'] = `Bearer ${authToken}`;
     } else if (typeof authToken === 'function') {
-      headers['Authorization'] = `Bearer ${authToken()}`;
+      headers['Authorization'] = `Bearer ${Promise.resolve(authToken())}`;
     }
 
     if (Array.isArray(parameterizedQuery)) {
