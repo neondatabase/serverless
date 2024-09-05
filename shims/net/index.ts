@@ -1,7 +1,7 @@
 /**
- * This file shims parts of the Node.js built-in net and tls packages, by 
- * implementing net.Socket and tls.connect() on top of WebSockets. It's 
- * designed to work both in browsers and in Cloudflare Workers (where 
+ * This file shims parts of the Node.js built-in net and tls packages, by
+ * implementing net.Socket and tls.connect() on top of WebSockets. It's
+ * designed to work both in browsers and in Cloudflare Workers (where
  * WebSockets work a bit differently). The calling client is assumed to be pg
  * (node-postgres).
  */
@@ -10,9 +10,9 @@ import { EventEmitter } from 'events';
 import type * as subtls from 'subtls';
 
 declare global {
-  const debug: boolean;  // e.g. --define:debug=false in esbuild command
+  const debug: boolean; // e.g. --define:debug=false in esbuild command
   interface WebSocket {
-    binaryType: 'arraybuffer' | 'blob';  // oddly not included in Cloudflare types
+    binaryType: 'arraybuffer' | 'blob'; // oddly not included in Cloudflare types
     accept: () => void;
   }
 }
@@ -24,16 +24,27 @@ enum TlsState {
 }
 
 function hexDump(data: Uint8Array) {
-  return `${data.length} bytes` + data.reduce((memo, byte) =>
-    memo + ' ' + byte.toString(16).padStart(2, '0'), '\nhex:') +
-    '\nstr: ' + new TextDecoder().decode(data);
+  return (
+    `${data.length} bytes` +
+    data.reduce(
+      (memo, byte) => memo + ' ' + byte.toString(16).padStart(2, '0'),
+      '\nhex:',
+    ) +
+    '\nstr: ' +
+    new TextDecoder().decode(data)
+  );
 }
 
 function log(...args: any[]) {
-  console.log(...args.map(arg =>
-    arg instanceof Uint8Array ? hexDump(arg) :
-      arg instanceof ArrayBuffer ? hexDump(new Uint8Array(arg)) :
-        arg));
+  console.log(
+    ...args.map((arg) =>
+      arg instanceof Uint8Array
+        ? hexDump(arg)
+        : arg instanceof ArrayBuffer
+          ? hexDump(new Uint8Array(arg))
+          : arg,
+    ),
+  );
 }
 
 export function isIP(input: string) {
@@ -60,23 +71,26 @@ export interface SocketDefaults {
   pipelineTLS: boolean;
   disableSNI: boolean;
 }
-type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache' | 'fetchFunction';
+type GlobalOnlyDefaults =
+  | 'poolQueryViaFetch'
+  | 'fetchEndpoint'
+  | 'fetchConnectionCache'
+  | 'fetchFunction';
 
 const transformHost = (host: string): string => {
   return host.replace(/^[^.]+\./, 'api.');
-}
+};
 
 export class Socket extends EventEmitter {
-
   static defaults: SocketDefaults = {
     // these options relate to the fetch transport and take effect *only* when set globally
     poolQueryViaFetch: false,
-    fetchEndpoint: host => 'https://' + transformHost(host) + '/sql',
+    fetchEndpoint: (host) => 'https://' + transformHost(host) + '/sql',
     fetchConnectionCache: true,
     fetchFunction: undefined,
     // these options relate to the WebSocket transport
     webSocketConstructor: undefined,
-    wsProxy: host => host + '/v2',
+    wsProxy: (host) => host + '/v2',
     useSecureWebSocket: true,
     forceDisablePgSSL: true,
     coalesceWrites: true,
@@ -91,74 +105,184 @@ export class Socket extends EventEmitter {
   static opts: Partial<SocketDefaults> = {};
   private opts: Partial<Omit<SocketDefaults, GlobalOnlyDefaults>> = {};
 
-  static get poolQueryViaFetch() { return Socket.opts.poolQueryViaFetch ?? Socket.defaults.poolQueryViaFetch; }
-  static set poolQueryViaFetch(newValue: SocketDefaults['poolQueryViaFetch']) { Socket.opts.poolQueryViaFetch = newValue; }
+  static get poolQueryViaFetch() {
+    return Socket.opts.poolQueryViaFetch ?? Socket.defaults.poolQueryViaFetch;
+  }
+  static set poolQueryViaFetch(newValue: SocketDefaults['poolQueryViaFetch']) {
+    Socket.opts.poolQueryViaFetch = newValue;
+  }
 
-  static get fetchEndpoint() { return Socket.opts.fetchEndpoint ?? Socket.defaults.fetchEndpoint; }
-  static set fetchEndpoint(newValue: SocketDefaults['fetchEndpoint']) { Socket.opts.fetchEndpoint = newValue; }
+  static get fetchEndpoint() {
+    return Socket.opts.fetchEndpoint ?? Socket.defaults.fetchEndpoint;
+  }
+  static set fetchEndpoint(newValue: SocketDefaults['fetchEndpoint']) {
+    Socket.opts.fetchEndpoint = newValue;
+  }
 
-  static get fetchConnectionCache() { return true; }
-  static set fetchConnectionCache(newValue: SocketDefaults['fetchConnectionCache']) { console.warn('The `fetchConnectionCache` option is deprecated (now always `true`)'); }
+  static get fetchConnectionCache() {
+    return true;
+  }
+  static set fetchConnectionCache(
+    newValue: SocketDefaults['fetchConnectionCache'],
+  ) {
+    console.warn(
+      'The `fetchConnectionCache` option is deprecated (now always `true`)',
+    );
+  }
 
-  static get fetchFunction() { return Socket.opts.fetchFunction ?? Socket.defaults.fetchFunction; }
-  static set fetchFunction(newValue: SocketDefaults['fetchFunction']) { Socket.opts.fetchFunction = newValue; }
+  static get fetchFunction() {
+    return Socket.opts.fetchFunction ?? Socket.defaults.fetchFunction;
+  }
+  static set fetchFunction(newValue: SocketDefaults['fetchFunction']) {
+    Socket.opts.fetchFunction = newValue;
+  }
 
-  static get webSocketConstructor() { return Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor; }
-  static set webSocketConstructor(newValue: SocketDefaults['webSocketConstructor']) { Socket.opts.webSocketConstructor = newValue; }
-  get webSocketConstructor() { return this.opts.webSocketConstructor ?? Socket.webSocketConstructor; }
-  set webSocketConstructor(newValue: SocketDefaults['webSocketConstructor']) { this.opts.webSocketConstructor = newValue; }
+  static get webSocketConstructor() {
+    return (
+      Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor
+    );
+  }
+  static set webSocketConstructor(
+    newValue: SocketDefaults['webSocketConstructor'],
+  ) {
+    Socket.opts.webSocketConstructor = newValue;
+  }
+  get webSocketConstructor() {
+    return this.opts.webSocketConstructor ?? Socket.webSocketConstructor;
+  }
+  set webSocketConstructor(newValue: SocketDefaults['webSocketConstructor']) {
+    this.opts.webSocketConstructor = newValue;
+  }
 
-  static get wsProxy() { return Socket.opts.wsProxy ?? Socket.defaults.wsProxy; }
-  static set wsProxy(newValue: SocketDefaults['wsProxy']) { Socket.opts.wsProxy = newValue; }
-  get wsProxy() { return this.opts.wsProxy ?? Socket.wsProxy; }
-  set wsProxy(newValue: SocketDefaults['wsProxy']) { this.opts.wsProxy = newValue; }
+  static get wsProxy() {
+    return Socket.opts.wsProxy ?? Socket.defaults.wsProxy;
+  }
+  static set wsProxy(newValue: SocketDefaults['wsProxy']) {
+    Socket.opts.wsProxy = newValue;
+  }
+  get wsProxy() {
+    return this.opts.wsProxy ?? Socket.wsProxy;
+  }
+  set wsProxy(newValue: SocketDefaults['wsProxy']) {
+    this.opts.wsProxy = newValue;
+  }
 
-  static get coalesceWrites() { return Socket.opts.coalesceWrites ?? Socket.defaults.coalesceWrites; }
-  static set coalesceWrites(newValue: SocketDefaults['coalesceWrites']) { Socket.opts.coalesceWrites = newValue; }
-  get coalesceWrites() { return this.opts.coalesceWrites ?? Socket.coalesceWrites; }
-  set coalesceWrites(newValue: SocketDefaults['coalesceWrites']) { this.opts.coalesceWrites = newValue; }
+  static get coalesceWrites() {
+    return Socket.opts.coalesceWrites ?? Socket.defaults.coalesceWrites;
+  }
+  static set coalesceWrites(newValue: SocketDefaults['coalesceWrites']) {
+    Socket.opts.coalesceWrites = newValue;
+  }
+  get coalesceWrites() {
+    return this.opts.coalesceWrites ?? Socket.coalesceWrites;
+  }
+  set coalesceWrites(newValue: SocketDefaults['coalesceWrites']) {
+    this.opts.coalesceWrites = newValue;
+  }
 
-  static get useSecureWebSocket() { return Socket.opts.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket; }
-  static set useSecureWebSocket(newValue: SocketDefaults['useSecureWebSocket']) { Socket.opts.useSecureWebSocket = newValue; }
-  get useSecureWebSocket() { return this.opts.useSecureWebSocket ?? Socket.useSecureWebSocket; }
-  set useSecureWebSocket(newValue: SocketDefaults['useSecureWebSocket']) { this.opts.useSecureWebSocket = newValue; }
+  static get useSecureWebSocket() {
+    return Socket.opts.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket;
+  }
+  static set useSecureWebSocket(
+    newValue: SocketDefaults['useSecureWebSocket'],
+  ) {
+    Socket.opts.useSecureWebSocket = newValue;
+  }
+  get useSecureWebSocket() {
+    return this.opts.useSecureWebSocket ?? Socket.useSecureWebSocket;
+  }
+  set useSecureWebSocket(newValue: SocketDefaults['useSecureWebSocket']) {
+    this.opts.useSecureWebSocket = newValue;
+  }
 
-  static get forceDisablePgSSL() { return Socket.opts.forceDisablePgSSL ?? Socket.defaults.forceDisablePgSSL; }
-  static set forceDisablePgSSL(newValue: SocketDefaults['forceDisablePgSSL']) { Socket.opts.forceDisablePgSSL = newValue; }
-  get forceDisablePgSSL() { return this.opts.forceDisablePgSSL ?? Socket.forceDisablePgSSL; }
-  set forceDisablePgSSL(newValue: SocketDefaults['forceDisablePgSSL']) { this.opts.forceDisablePgSSL = newValue; }
+  static get forceDisablePgSSL() {
+    return Socket.opts.forceDisablePgSSL ?? Socket.defaults.forceDisablePgSSL;
+  }
+  static set forceDisablePgSSL(newValue: SocketDefaults['forceDisablePgSSL']) {
+    Socket.opts.forceDisablePgSSL = newValue;
+  }
+  get forceDisablePgSSL() {
+    return this.opts.forceDisablePgSSL ?? Socket.forceDisablePgSSL;
+  }
+  set forceDisablePgSSL(newValue: SocketDefaults['forceDisablePgSSL']) {
+    this.opts.forceDisablePgSSL = newValue;
+  }
 
-  static get disableSNI() { return Socket.opts.disableSNI ?? Socket.defaults.disableSNI; }
-  static set disableSNI(newValue: SocketDefaults['disableSNI']) { Socket.opts.disableSNI = newValue; }
-  get disableSNI() { return this.opts.disableSNI ?? Socket.disableSNI; }
-  set disableSNI(newValue: SocketDefaults['disableSNI']) { this.opts.disableSNI = newValue; }
+  static get disableSNI() {
+    return Socket.opts.disableSNI ?? Socket.defaults.disableSNI;
+  }
+  static set disableSNI(newValue: SocketDefaults['disableSNI']) {
+    Socket.opts.disableSNI = newValue;
+  }
+  get disableSNI() {
+    return this.opts.disableSNI ?? Socket.disableSNI;
+  }
+  set disableSNI(newValue: SocketDefaults['disableSNI']) {
+    this.opts.disableSNI = newValue;
+  }
 
-  static get pipelineConnect() { return Socket.opts.pipelineConnect ?? Socket.defaults.pipelineConnect; }
-  static set pipelineConnect(newValue: SocketDefaults['pipelineConnect']) { Socket.opts.pipelineConnect = newValue; }
-  get pipelineConnect() { return this.opts.pipelineConnect ?? Socket.pipelineConnect; }
-  set pipelineConnect(newValue: SocketDefaults['pipelineConnect']) { this.opts.pipelineConnect = newValue; }
+  static get pipelineConnect() {
+    return Socket.opts.pipelineConnect ?? Socket.defaults.pipelineConnect;
+  }
+  static set pipelineConnect(newValue: SocketDefaults['pipelineConnect']) {
+    Socket.opts.pipelineConnect = newValue;
+  }
+  get pipelineConnect() {
+    return this.opts.pipelineConnect ?? Socket.pipelineConnect;
+  }
+  set pipelineConnect(newValue: SocketDefaults['pipelineConnect']) {
+    this.opts.pipelineConnect = newValue;
+  }
 
-  static get subtls() { return Socket.opts.subtls ?? Socket.defaults.subtls; }
-  static set subtls(newValue: SocketDefaults['subtls']) { Socket.opts.subtls = newValue; }
-  get subtls() { return this.opts.subtls ?? Socket.subtls; }
-  set subtls(newValue: SocketDefaults['subtls']) { this.opts.subtls = newValue; }
+  static get subtls() {
+    return Socket.opts.subtls ?? Socket.defaults.subtls;
+  }
+  static set subtls(newValue: SocketDefaults['subtls']) {
+    Socket.opts.subtls = newValue;
+  }
+  get subtls() {
+    return this.opts.subtls ?? Socket.subtls;
+  }
+  set subtls(newValue: SocketDefaults['subtls']) {
+    this.opts.subtls = newValue;
+  }
 
-  static get pipelineTLS() { return Socket.opts.pipelineTLS ?? Socket.defaults.pipelineTLS; }
-  static set pipelineTLS(newValue: SocketDefaults['pipelineTLS']) { Socket.opts.pipelineTLS = newValue; }
-  get pipelineTLS() { return this.opts.pipelineTLS ?? Socket.pipelineTLS; }
-  set pipelineTLS(newValue: SocketDefaults['pipelineTLS']) { this.opts.pipelineTLS = newValue; }
+  static get pipelineTLS() {
+    return Socket.opts.pipelineTLS ?? Socket.defaults.pipelineTLS;
+  }
+  static set pipelineTLS(newValue: SocketDefaults['pipelineTLS']) {
+    Socket.opts.pipelineTLS = newValue;
+  }
+  get pipelineTLS() {
+    return this.opts.pipelineTLS ?? Socket.pipelineTLS;
+  }
+  set pipelineTLS(newValue: SocketDefaults['pipelineTLS']) {
+    this.opts.pipelineTLS = newValue;
+  }
 
-  static get rootCerts() { return Socket.opts.rootCerts ?? Socket.defaults.rootCerts; }
-  static set rootCerts(newValue: SocketDefaults['rootCerts']) { Socket.opts.rootCerts = newValue; }
-  get rootCerts() { return this.opts.rootCerts ?? Socket.rootCerts; }
-  set rootCerts(newValue: SocketDefaults['rootCerts']) { this.opts.rootCerts = newValue; }
+  static get rootCerts() {
+    return Socket.opts.rootCerts ?? Socket.defaults.rootCerts;
+  }
+  static set rootCerts(newValue: SocketDefaults['rootCerts']) {
+    Socket.opts.rootCerts = newValue;
+  }
+  get rootCerts() {
+    return this.opts.rootCerts ?? Socket.rootCerts;
+  }
+  set rootCerts(newValue: SocketDefaults['rootCerts']) {
+    this.opts.rootCerts = newValue;
+  }
 
   wsProxyAddrForHost(host: string, port: number) {
     const wsProxy = this.wsProxy;
     if (wsProxy === undefined) {
-      throw new Error(`No WebSocket proxy is configured. Please see https://github.com/neondatabase/serverless/blob/main/CONFIG.md#wsproxy-string--host-string-port-number--string--string`);
+      throw new Error(
+        `No WebSocket proxy is configured. Please see https://github.com/neondatabase/serverless/blob/main/CONFIG.md#wsproxy-string--host-string-port-number--string--string`,
+      );
     }
-    return typeof wsProxy === 'function' ? wsProxy(host, port) : `${wsProxy}?address=${host}:${port}`;
+    return typeof wsProxy === 'function'
+      ? wsProxy(host, port)
+      : `${wsProxy}?address=${host}:${port}`;
   }
 
   connecting = false;
@@ -169,7 +293,7 @@ export class Socket extends EventEmitter {
   destroyed = false;
 
   private ws: WebSocket | null = null;
-  private writeBuffer: Uint8Array | undefined;  // used only if coalesceWrites === true
+  private writeBuffer: Uint8Array | undefined; // used only if coalesceWrites === true
   private tlsState = TlsState.None;
   private tlsRead: undefined | (() => Promise<Uint8Array | undefined>);
   private tlsWrite: undefined | ((data: Uint8Array) => Promise<void>);
@@ -201,7 +325,7 @@ export class Socket extends EventEmitter {
       this.pending = false;
       this.emit('connect');
       this.emit('ready');
-    }
+    };
 
     const configureWebSocket = (ws: WebSocket, immediateOpen = false) => {
       ws.binaryType = 'arraybuffer';
@@ -232,8 +356,10 @@ export class Socket extends EventEmitter {
 
     let wsAddr: string;
     try {
-      wsAddr = this.wsProxyAddrForHost(host, typeof port === 'string' ? parseInt(port, 10) : port);
-
+      wsAddr = this.wsProxyAddrForHost(
+        host,
+        typeof port === 'string' ? parseInt(port, 10) : port,
+      );
     } catch (err) {
       this.emit('error', err);
       this.emit('close');
@@ -249,13 +375,11 @@ export class Socket extends EventEmitter {
       if (this.webSocketConstructor !== undefined) {
         this.ws = new this.webSocketConstructor(wsAddrFull);
         configureWebSocket(this.ws);
-
       } else {
         try {
           // second, try a common-or-garden WebSocket, e.g. in a web browser
           this.ws = new WebSocket(wsAddrFull);
           configureWebSocket(this.ws);
-
         } catch (err) {
           debug && log('new WebSocket() failed');
 
@@ -264,7 +388,6 @@ export class Socket extends EventEmitter {
           configureWebSocket(this.ws!);
         }
       }
-
     } catch (err) {
       debug && log('WebSocket constructors failed');
 
@@ -273,18 +396,23 @@ export class Socket extends EventEmitter {
       const fetchAddrFull = wsProtocol + '//' + wsAddr;
 
       fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } })
-        .then(resp => {
+        .then((resp) => {
           // @ts-ignore webSocket is defined in the Cloudflare types, but there are conflicts
           this.ws = resp.webSocket;
-          if (this.ws == null) throw err;  // deliberate loose equality
+          if (this.ws == null) throw err; // deliberate loose equality
 
           this.ws.accept();
           configureWebSocket(this.ws, true);
           debug && log('Cloudflare WebSocket opened');
         })
-        .catch(err => {
+        .catch((err) => {
           debug && log(`fetch() with { Upgrade: "websocket" } failed`);
-          this.emit('error', new Error(`All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err.message}`));
+          this.emit(
+            'error',
+            new Error(
+              `All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err.message}`,
+            ),
+          );
           this.emit('close');
         });
     }
@@ -292,7 +420,10 @@ export class Socket extends EventEmitter {
 
   async startTls(host: string) {
     debug && log('starting TLS');
-    if (this.subtls === undefined) throw new Error('For Postgres SSL connections, you must set `neonConfig.subtls` to the subtls library. See https://github.com/neondatabase/serverless/blob/main/CONFIG.md for more information.');
+    if (this.subtls === undefined)
+      throw new Error(
+        'For Postgres SSL connections, you must set `neonConfig.subtls` to the subtls library. See https://github.com/neondatabase/serverless/blob/main/CONFIG.md for more information.',
+      );
 
     this.tlsState = TlsState.Handshake;
 
@@ -308,8 +439,8 @@ export class Socket extends EventEmitter {
       networkWrite,
       {
         useSNI: !this.disableSNI,
-        expectPreData: this.pipelineTLS ? new Uint8Array([0x53]) : undefined,  // expect (and discard) an 'S' before the TLS response if pipelineTLS is set
-      }
+        expectPreData: this.pipelineTLS ? new Uint8Array([0x53]) : undefined, // expect (and discard) an 'S' before the TLS response if pipelineTLS is set
+      },
     );
 
     this.tlsRead = tlsRead;
@@ -324,7 +455,8 @@ export class Socket extends EventEmitter {
     this.tlsReadLoop();
   }
 
-  async tlsReadLoop() {  // intended NOT to be awaited
+  async tlsReadLoop() {
+    // intended NOT to be awaited
     while (true) {
       debug && log('awaiting TLS data ...');
       const data = await this.tlsRead!();
@@ -332,7 +464,6 @@ export class Socket extends EventEmitter {
       if (data === undefined) {
         debug && log('no TLS data, breaking loop');
         break;
-
       } else {
         debug && log('emitting decrypted TLS data:', data);
         const buffer = Buffer.from(data);
@@ -353,7 +484,6 @@ export class Socket extends EventEmitter {
         this.ws!.send(this.writeBuffer!);
         this.writeBuffer = undefined;
       }, 0);
-
     } else {
       const newBuffer = new Uint8Array(this.writeBuffer.length + data.length);
       newBuffer.set(this.writeBuffer);
@@ -362,24 +492,29 @@ export class Socket extends EventEmitter {
     }
   }
 
-  write(data: Buffer | string, encoding = 'utf8', callback = (err?: any) => { }) {
+  write(
+    data: Buffer | string,
+    encoding = 'utf8',
+    callback = (err?: any) => {},
+  ) {
     if (data.length === 0) {
       callback();
       return true;
     }
 
-    if (typeof data === 'string') data = Buffer.from(data, encoding as BufferEncoding) as unknown as Buffer;
+    if (typeof data === 'string')
+      data = Buffer.from(data, encoding as BufferEncoding) as unknown as Buffer;
 
     if (this.tlsState === TlsState.None) {
       debug && log('sending data direct:', data);
       this.rawWrite(data);
       callback();
-
     } else if (this.tlsState === TlsState.Handshake) {
       // pg starts sending without waiting for the handshake to complete
       debug && log('TLS handshake in progress, queueing data:', data);
-      this.once('secureConnection', () => { this.write(data, encoding, callback); });
-
+      this.once('secureConnection', () => {
+        this.write(data, encoding, callback);
+      });
     } else {
       debug && log('encrypting data:', data);
       this.tlsWrite!(data);
@@ -389,7 +524,11 @@ export class Socket extends EventEmitter {
     return true;
   }
 
-  end(data: Buffer | string = Buffer.alloc(0) as unknown as Buffer, encoding = 'utf8', callback = () => { }) {
+  end(
+    data: Buffer | string = Buffer.alloc(0) as unknown as Buffer,
+    encoding = 'utf8',
+    callback = () => {},
+  ) {
     debug && log('ending socket');
     this.write(data, encoding, () => {
       this.ws!.close();
