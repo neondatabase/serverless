@@ -48,6 +48,10 @@ interface HTTPQueryOptions {
     rows: any,
     opts: any,
   ) => void;
+
+  // JWT auth token to be passed as the Bearer token in the Authorization
+  // header
+  authToken?: string | (() => string);
 }
 
 interface HTTPTransactionOptions extends HTTPQueryOptions {
@@ -124,6 +128,7 @@ export function neon(
     deferrable: neonOptDeferrable,
     queryCallback,
     resultCallback,
+    authToken,
   }: HTTPTransactionOptions = {},
 ) {
   // check the connection string
@@ -218,7 +223,9 @@ export function neon(
 
     const url =
       typeof fetchEndpoint === 'function'
-        ? fetchEndpoint(hostname, port)
+        ? fetchEndpoint(hostname, port, {
+            jwtAuth: Boolean(authToken),
+          })
         : fetchEndpoint;
 
     const bodyData = Array.isArray(parameterizedQuery)
@@ -271,6 +278,12 @@ export function neon(
       'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
     };
+
+    if (typeof authToken === 'string') {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    } else if (typeof authToken === 'function') {
+      headers['Authorization'] = `Bearer ${authToken()}`;
+    }
 
     if (Array.isArray(parameterizedQuery)) {
       // only send these headers for batch queries, where they matter
