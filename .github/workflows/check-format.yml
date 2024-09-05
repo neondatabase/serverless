@@ -6,16 +6,12 @@ on:
       # - main
 
 jobs:
-  check-format:
+  checks-format:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        run: bun install
-
-      - name: Run format check
-        run: npm run format
+      # run any `bun` or `bunx` command
+      - run: bun install
+      - run: bun run format
