@@ -1,15 +1,15 @@
-import { parse } from "../shims/url";
-import { Socket } from "../shims/net";
-import { types as defaultTypes } from ".";
-import type { Tracer } from "@opentelemetry/api";
+import { parse } from '../shims/url';
+import { Socket } from '../shims/net';
+import { types as defaultTypes } from '.';
+import type { Tracer } from '@opentelemetry/api';
 
 // @ts-ignore -- this isn't officially exported by pg
-import { prepareValue } from "pg/lib/utils";
+import { prepareValue } from 'pg/lib/utils';
 // @ts-ignore -- this isn't officially exported by pg
-import TypeOverrides from "pg/lib/type-overrides";
+import TypeOverrides from 'pg/lib/type-overrides';
 
 export class NeonDbError extends Error {
-  name = "NeonDbError" as const;
+  name = 'NeonDbError' as const;
 
   severity: string | undefined;
   code: string | undefined;
@@ -55,10 +55,10 @@ interface HTTPQueryOptions {
 interface HTTPTransactionOptions extends HTTPQueryOptions {
   // note that ReadUncommitted is really ReadCommitted in Postgres: https://www.postgresql.org/docs/current/transaction-iso.html
   isolationLevel?:
-    | "ReadUncommitted"
-    | "ReadCommitted"
-    | "RepeatableRead"
-    | "Serializable";
+    | 'ReadUncommitted'
+    | 'ReadCommitted'
+    | 'RepeatableRead'
+    | 'Serializable';
   readOnly?: boolean;
   deferrable?: boolean;
 }
@@ -72,29 +72,29 @@ interface ProcessQueryResultOptions {
   arrayMode: boolean;
   fullResults: boolean;
   parameterizedQuery: ParameterizedQuery;
-  resultCallback: HTTPQueryOptions["resultCallback"];
+  resultCallback: HTTPQueryOptions['resultCallback'];
   types?: typeof defaultTypes;
 }
 
 const txnArgErrMsg =
-  "transaction() expects an array of queries, or a function returning an array of queries";
+  'transaction() expects an array of queries, or a function returning an array of queries';
 const errorFields = [
-  "severity",
-  "code",
-  "detail",
-  "hint",
-  "position",
-  "internalPosition",
-  "internalQuery",
-  "where",
-  "schema",
-  "table",
-  "column",
-  "dataType",
-  "constraint",
-  "file",
-  "line",
-  "routine",
+  'severity',
+  'code',
+  'detail',
+  'hint',
+  'position',
+  'internalPosition',
+  'internalQuery',
+  'where',
+  'schema',
+  'table',
+  'column',
+  'dataType',
+  'constraint',
+  'file',
+  'line',
+  'routine',
 ] as const;
 
 /*
@@ -133,7 +133,7 @@ export function neon(
 
   if (!connectionString)
     throw new Error(
-      "No database connection string was provided to `neon()`. Perhaps an environment variable has not been set?",
+      'No database connection string was provided to `neon()`. Perhaps an environment variable has not been set?',
     );
 
   let db;
@@ -141,21 +141,21 @@ export function neon(
     db = parse(connectionString);
   } catch {
     throw new Error(
-      "Database connection string provided to `neon()` is not a valid URL. Connection string: " +
+      'Database connection string provided to `neon()` is not a valid URL. Connection string: ' +
         String(connectionString),
     );
   }
 
   const { protocol, username, password, hostname, port, pathname } = db;
   if (
-    (protocol !== "postgres:" && protocol !== "postgresql:") ||
+    (protocol !== 'postgres:' && protocol !== 'postgresql:') ||
     !username ||
     !password ||
     !hostname ||
     !pathname
   ) {
     throw new Error(
-      "Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value",
+      'Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value',
     );
   }
 
@@ -167,7 +167,7 @@ export function neon(
     let query;
     let queryOpts: HTTPQueryOptions | undefined;
 
-    if (typeof strings === "string") {
+    if (typeof strings === 'string') {
       // ordinary (non tagged-template) usage
       query = strings;
 
@@ -176,10 +176,10 @@ export function neon(
       params = params[0] ?? []; // the second argument, which is the first of the ...rest arguments
     } else {
       // tagged-template usage
-      query = "";
+      query = '';
       for (let i = 0; i < strings.length; i++) {
         query += strings[i];
-        if (i < params.length) query += "$" + (i + 1);
+        if (i < params.length) query += '$' + (i + 1);
       }
     }
 
@@ -196,11 +196,11 @@ export function neon(
     queries: NeonQueryPromise[] | ((sql: typeof resolve) => NeonQueryPromise[]),
     txnOpts?: HTTPTransactionOptions,
   ) => {
-    if (typeof queries === "function") queries = queries(resolve);
+    if (typeof queries === 'function') queries = queries(resolve);
 
     if (!Array.isArray(queries)) throw new Error(txnArgErrMsg);
     queries.forEach((query) => {
-      if (query[Symbol.toStringTag] !== "NeonQueryPromise")
+      if (query[Symbol.toStringTag] !== 'NeonQueryPromise')
         throw new Error(txnArgErrMsg);
     });
 
@@ -220,7 +220,7 @@ export function neon(
     const { fetchEndpoint, fetchFunction } = Socket;
 
     const url =
-      typeof fetchEndpoint === "function"
+      typeof fetchEndpoint === 'function'
         ? fetchEndpoint(hostname, port)
         : fetchEndpoint;
 
@@ -270,20 +270,20 @@ export function neon(
     // --- set headers ---
 
     const headers: Record<string, string> = {
-      "Neon-Connection-String": connectionString,
-      "Neon-Raw-Text-Output": "true", // because we do our own parsing with node-postgres
-      "Neon-Array-Mode": "true", // this saves data and post-processing even if we return objects, not arrays
+      'Neon-Connection-String': connectionString,
+      'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
+      'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
     };
 
     const isBatch = Array.isArray(parameterizedQuery);
     if (isBatch) {
       // only send these headers for batch queries, where they matter
       if (resolvedIsolationLevel !== undefined)
-        headers["Neon-Batch-Isolation-Level"] = resolvedIsolationLevel;
+        headers['Neon-Batch-Isolation-Level'] = resolvedIsolationLevel;
       if (resolvedReadOnly !== undefined)
-        headers["Neon-Batch-Read-Only"] = String(resolvedReadOnly);
+        headers['Neon-Batch-Read-Only'] = String(resolvedReadOnly);
       if (resolvedDeferrable !== undefined)
-        headers["Neon-Batch-Deferrable"] = String(resolvedDeferrable);
+        headers['Neon-Batch-Deferrable'] = String(resolvedDeferrable);
     }
 
     // -- handle span behaviour --
@@ -299,7 +299,7 @@ export function neon(
       // Wrap the query in a span.
       wrapper = (fn) =>
         currentTracer.startActiveSpan(
-          `${isBatch ? "batch " : ""}query`,
+          `${isBatch ? 'batch ' : ''}query`,
           {
             attributes,
           },
@@ -333,7 +333,7 @@ export function neon(
       let response;
       try {
         response = await (fetchFunction ?? fetch)(url, {
-          method: "POST",
+          method: 'POST',
           body: JSON.stringify(bodyData), // TODO: use json-custom-numbers to allow BigInts?
           headers,
           ...resolvedFetchOptions, // this is last, so it gets the final say
@@ -354,7 +354,7 @@ export function neon(
           const resultArray = rawResults.results;
           if (!Array.isArray(resultArray))
             throw new NeonDbError(
-              "Neon internal error: unexpected result format",
+              'Neon internal error: unexpected result format',
             );
           return resultArray.map((result, i) => {
             let sqlOpts = (allSqlOpts as HTTPQueryOptions[])[i] ?? {};
@@ -408,7 +408,7 @@ function createNeonQueryPromise(
   opts?: HTTPQueryOptions,
 ) {
   return {
-    [Symbol.toStringTag]: "NeonQueryPromise",
+    [Symbol.toStringTag]: 'NeonQueryPromise',
     parameterizedQuery,
     opts,
     then: (resolve, reject) =>
