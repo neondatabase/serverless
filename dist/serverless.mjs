@@ -1732,27 +1732,27 @@ t.expectUint8(ae,0);let[b,I]=t.expectASN1Length(0);for(;I()>0;){t.expectUint8(ae
 let j=Ho(t,We);this.subjectAltNames=j.filter(H=>H.type===(2|We)).map(H=>H.name),
 $()}else if(Q==="2.5.29.15"){t.expectUint8(Sr,0);let $=t.readASN1Boolean();t.expectUint8(
 De,0);let[j]=t.expectASN1Length(0);t.expectUint8(br,0);let H=t.readASN1BitString(),
-W=jo(H),O=new Set(Go.filter((Y,X)=>W&1<<X));j(),this.keyUsage={critical:$,usages:O}}else if(Q===
+W=jo(H),O=new Set(Go.filter((Z,X)=>W&1<<X));j(),this.keyUsage={critical:$,usages:O}}else if(Q===
 "2.5.29.37"){this.extKeyUsage={},t.expectUint8(De,0);let[$]=t.expectASN1Length(0);
 t.expectUint8(ae,0);let[j,H]=t.expectASN1Length(0);for(;H()>0;){t.expectUint8(Ge,
 0);let W=t.readASN1OID();W==="1.3.6.1.5.5.7.3.1"&&(this.extKeyUsage.serverTls=!0),
 W==="1.3.6.1.5.5.7.3.2"&&(this.extKeyUsage.clientTls=!0)}j(),$()}else if(Q==="2.\
 5.29.35"){t.expectUint8(De,0);let[$]=t.expectASN1Length(0);t.expectUint8(ae,0);let[
 j,H]=t.expectASN1Length(0);for(;H()>0;){let W=t.readUint8();if(W===(We|0)){let[O,
-Y]=t.expectASN1Length(0);this.authorityKeyIdentifier=t.readBytes(Y()),O()}else if(W===
-(We|1)){let[O,Y]=t.expectASN1Length(0);t.skip(Y(),0),O()}else if(W===(We|2)){let[
-O,Y]=t.expectASN1Length(0);t.skip(Y(),0),O()}else if(W===(We|33)){let[O,Y]=t.expectASN1Length(
-0);t.skip(Y(),0),O()}else throw new Error(`Unexpected data type ${W} in authorit\
+Z]=t.expectASN1Length(0);this.authorityKeyIdentifier=t.readBytes(Z()),O()}else if(W===
+(We|1)){let[O,Z]=t.expectASN1Length(0);t.skip(Z(),0),O()}else if(W===(We|2)){let[
+O,Z]=t.expectASN1Length(0);t.skip(Z(),0),O()}else if(W===(We|33)){let[O,Z]=t.expectASN1Length(
+0);t.skip(Z(),0),O()}else throw new Error(`Unexpected data type ${W} in authorit\
 yKeyIdentifier certificate extension`)}j(),$()}else if(Q==="2.5.29.14"){t.expectUint8(
 De,0);let[$]=t.expectASN1Length(0);t.expectUint8(De,0);let[j,H]=t.expectASN1Length(
 0);this.subjectKeyIdentifier=t.readBytes(H()),j(),$()}else if(Q==="2.5.29.19"){let $,
 j=t.readUint8();if(j===Sr&&($=t.readASN1Boolean(),j=t.readUint8()),j!==De)throw new Error(
 "Unexpected type in certificate basic constraints");let[H]=t.expectASN1Length(0);
-t.expectUint8(ae,0);let[W,O]=t.expectASN1Length(),Y;O()>0&&(t.expectUint8(Sr,0),
-Y=t.readASN1Boolean());let X;if(O()>0){t.expectUint8(Ot,0);let D=t.readASN1Length(
+t.expectUint8(ae,0);let[W,O]=t.expectASN1Length(),Z;O()>0&&(t.expectUint8(Sr,0),
+Z=t.readASN1Boolean());let X;if(O()>0){t.expectUint8(Ot,0);let D=t.readASN1Length(
 0);if(X=D===1?t.readUint8():D===2?t.readUint16():D===3?t.readUint24():void 0,X===
 void 0)throw new Error("Too many bytes in max path length in certificate basicCo\
-nstraints")}W(),H(),this.basicConstraints={critical:$,ca:Y,pathLength:X}}else t.
+nstraints")}W(),H(),this.basicConstraints={critical:$,ca:Z,pathLength:X}}else t.
 skip(N(),0);ne()}b(),w(),s(),this.signedData=t.data.subarray(i,t.offset),t.expectUint8(
 ae,0);let[R,q]=t.expectASN1Length(0);t.expectUint8(Ge,0);let M=t.readASN1OID();if(q()>
 0&&(t.expectUint8(Er,0),t.expectUint8(0,0)),R(),M!==this.algorithm)throw new Error(
@@ -1823,31 +1823,31 @@ if(await F.verify({name:"RSASSA-PKCS1-v1_5"},U,l.signature,l.signedData)!==!0)th
 pported signing algorithm");if(y){a=!0;break}}return a}o(Vo,"jt");var zo=new TextEncoder;
 async function Jo(r,e,t,n,i,s=!0,a=!0){let u=new Ft(await e());u.expectUint8(8,0);
 let[c]=u.expectLengthUint24(),[l,h]=u.expectLengthUint16(0);for(;h()>0;){let D=u.
-readUint16(0);if(D===0)u.expectUint16(0,0);else if(D===10){let[G,Z]=u.expectLengthUint16(
-"groups data");u.skip(Z(),0),G()}else throw new Error(`Unsupported server encryp\
+readUint16(0);if(D===0)u.expectUint16(0,0);else if(D===10){let[G,Y]=u.expectLengthUint16(
+"groups data");u.skip(Y(),0),G()}else throw new Error(`Unsupported server encryp\
 ted extension type 0x${Te([D]).padStart(4,"0")}`)}l(),c(),u.remaining()===0&&u.extend(
 await e());let f=!1,y=u.readUint8();if(y===13){f=!0;let[D]=u.expectLengthUint24(
-"certificate request data");u.expectUint8(0,0);let[G,Z]=u.expectLengthUint16("ce\
-rtificate request extensions");u.skip(Z(),0),G(),D(),u.remaining()===0&&u.extend(
+"certificate request data");u.expectUint8(0,0);let[G,Y]=u.expectLengthUint16("ce\
+rtificate request extensions");u.skip(Y(),0),G(),D(),u.remaining()===0&&u.extend(
 await e()),y=u.readUint8()}if(y!==11)throw new Error(`Unexpected handshake messa\
 ge type 0x${Te([y])}`);let[g]=u.expectLengthUint24(0);u.expectUint8(0,0);let[E,U]=u.
 expectLengthUint24(0),C=[];for(;U()>0;){let[D]=u.expectLengthUint24(0),G=new Lr(
-u);C.push(G),D();let[Z,K]=u.expectLengthUint16(),se=u.subarray(K());Z()}if(E(),g(),
+u);C.push(G),D();let[Y,K]=u.expectLengthUint16(),se=u.subarray(K());Y()}if(E(),g(),
 C.length===0)throw new Error("No certificates supplied");let v=C[0],A=u.data.subarray(
 0,u.offset),w=oe(n,A),b=await F.digest("SHA-256",w),I=new Uint8Array(b),R=oe(zo.
 encode(" ".repeat(64)+"TLS 1.3, server CertificateVerify"),[0],I);u.remaining()===
 0&&u.extend(await e()),u.expectUint8(15,0);let[q]=u.expectLengthUint24(0),M=u.readUint16();
 if(M===1027){let[D]=u.expectLengthUint16();await Ei(u,v.publicKey.all,R,"P-256",
-"SHA-256"),D()}else if(M===2052){let[D,G]=u.expectLengthUint16(),Z=u.subarray(G());
+"SHA-256"),D()}else if(M===2052){let[D,G]=u.expectLengthUint16(),Y=u.subarray(G());
 D();let K=await F.importKey("spki",v.publicKey.all,{name:"RSA-PSS",hash:"SHA-256"},
-!1,["verify"]);if(await F.verify({name:"RSA-PSS",saltLength:32},K,Z,R)!==!0)throw new Error(
+!1,["verify"]);if(await F.verify({name:"RSA-PSS",saltLength:32},K,Y,R)!==!0)throw new Error(
 "RSA-PSS-RSAE-SHA256 certificate verify failed")}else throw new Error(`Unsupport\
 ed certificate verify signature type 0x${Te([M]).padStart(4,"0")}`);q();let ne=u.
 data.subarray(0,u.offset),N=oe(n,ne),Q=await ue(t,"finished",new Uint8Array(0),32,
 256),$=await F.digest("SHA-256",N),j=await F.importKey("raw",Q,{name:"HMAC",hash:{
 name:"SHA-256"}},!1,["sign"]),H=await F.sign("HMAC",j,$),W=new Uint8Array(H);u.remaining()===
-0&&u.extend(await e()),u.expectUint8(20,0);let[O,Y]=u.expectLengthUint24(0),X=u.
-readBytes(Y());if(O(),u.remaining()!==0)throw new Error("Unexpected extra bytes \
+0&&u.extend(await e()),u.expectUint8(20,0);let[O,Z]=u.expectLengthUint24(0),X=u.
+readBytes(Z());if(O(),u.remaining()!==0)throw new Error("Unexpected extra bytes \
 in server handshake");if(ht(X,W)!==!0)throw new Error("Invalid server verify has\
 h");if(!await Vo(r,C,i,s,a))throw new Error("Validated certificate chain did not\
  end in a trusted root");return[u.data,f]}o(Jo,"Vt");async function Yo(r,e,t,n,{
@@ -1866,11 +1866,11 @@ t"]),N=new qt("decrypt",ne,M.serverHandshakeIV),Q=await F.importKey("raw",M.clie
 {name:"AES-GCM"},!1,["encrypt"]),$=new qt("encrypt",Q,M.clientHandshakeIV),j=o(async()=>{
 let ie=await vr(t,N,22);if(ie===void 0)throw new Error("Premature end of encrypt\
 ed server handshake");return ie},"C"),[H,W]=await Jo(r,j,M.serverSecret,q,e,s,a),
-O=new Ae(6);O.writeUint8(20,0),O.writeUint16(771,0);let Y=O.writeLengthUint16();
-O.writeUint8(1,0),Y();let X=O.array(),D=new Uint8Array(0);if(W){let ie=new Ae(8);
+O=new Ae(6);O.writeUint8(20,0),O.writeUint16(771,0);let Z=O.writeLengthUint16();
+O.writeUint8(1,0),Z();let X=O.array(),D=new Uint8Array(0);if(W){let ie=new Ae(8);
 ie.writeUint8(11,0);let ot=ie.writeLengthUint24("client certificate data");ie.writeUint8(
-0,0),ie.writeUint24(0,0),ot(),D=ie.array()}let G=oe(q,H,D),Z=await F.digest("SHA\
--256",G),K=new Uint8Array(Z),se=await ue(M.clientSecret,"finished",new Uint8Array(
+0,0),ie.writeUint24(0,0),ot(),D=ie.array()}let G=oe(q,H,D),Y=await F.digest("SHA\
+-256",G),K=new Uint8Array(Y),se=await ue(M.clientSecret,"finished",new Uint8Array(
 0),32,256),Ee=await F.importKey("raw",se,{name:"HMAC",hash:{name:"SHA-256"}},!1,
 ["sign"]),at=await F.sign("HMAC",Ee,K),ur=new Uint8Array(at),ke=new Ae(36);ke.writeUint8(
 20,0);let Fa=ke.writeLengthUint24(0);ke.writeBytes(ur),Fa();let Oa=ke.array(),kn=await fi(
@@ -2019,33 +2019,33 @@ w,N=n??{},Q=e??!1,$=t??!1,j=i,H=s,W=a;I!==void 0&&(I.fetchOptions!==void 0&&(N={
 ($=I.fullResults),I.isolationLevel!==void 0&&(j=I.isolationLevel),I.readOnly!==void 0&&
 (H=I.readOnly),I.deferrable!==void 0&&(W=I.deferrable)),b!==void 0&&!Array.isArray(
 b)&&b.fetchOptions!==void 0&&(N={...N,...b.fetchOptions});let O={"Neon-Connectio\
-n-String":r,"Neon-Raw-Text-Output":"true","Neon-Array-Mode":"true"},Y=Array.isArray(
-w);Y&&(j!==void 0&&(O["Neon-Batch-Isolation-Level"]=j),H!==void 0&&(O["Neon-Batc\
+n-String":r,"Neon-Raw-Text-Output":"true","Neon-Array-Mode":"true"},Z=Array.isArray(
+w);Z&&(j!==void 0&&(O["Neon-Batch-Isolation-Level"]=j),H!==void 0&&(O["Neon-Batc\
 h-Read-Only"]=String(H)),W!==void 0&&(O["Neon-Batch-Deferrable"]=String(W)));let X=o(
-G=>G(),"wrapper"),D=I?.tracer||l;if(D){let G=Y?{queries:w.map(Z=>Z.query)}:{query:w.
-query};X=o(Z=>D.startActiveSpan(`${Y?"batch ":""}query`,{attributes:G},async K=>{
-try{let se=await Z();return K.setStatus({code:1}),se}catch(se){let Ee=se instanceof
+G=>G(),"wrapper"),D=I?.tracer||l;if(D){let G=Z?{queries:w.map(Y=>Y.query)}:{query:w.
+query};X=o(Y=>D.startActiveSpan(`${Z?"batch ":""}query`,{attributes:G},async K=>{
+try{let se=await Y();return K.setStatus({code:1}),se}catch(se){let Ee=se instanceof
 Error?se.message:`${se}`;throw K.setStatus({code:2,message:Ee}),se}finally{K.end()}}),
 "wrapper")}return X(async()=>{let G;try{G=await(q??fetch)(M,{method:"POST",body:JSON.
-stringify(ne),headers:O,...N})}catch(Z){let K=new Fe(`Error connecting to databa\
-se: ${Z.message}`);throw K.sourceError=Z,K}if(G.ok){let Z=await G.json();if(Y){let K=Z.
-results;if(!Array.isArray(K))throw new Fe("Neon internal error: unexpected resul\
-t format");return K.map((se,Ee)=>{let at=b[Ee]??{},ur=at.arrayMode??Q,ke=at.fullResults??
-$;return Ra(se,{arrayMode:ur,fullResults:ke,parameterizedQuery:w[Ee],resultCallback:c,
-types:at.types})})}else{let K=b??{},se=K.arrayMode??Q,Ee=K.fullResults??$;return Ra(
-Z,{arrayMode:se,fullResults:Ee,parameterizedQuery:w,resultCallback:c,types:K.types})}}else{
-let{status:Z}=G;if(Z===400){let K=await G.json(),se=new Fe(K.message);for(let Ee of Ch)
-se[Ee]=K[Ee]??void 0;throw se}else{let K=await G.text();throw new Fe(`Server err\
-or (HTTP status ${Z}): ${K}`)}}return v})}o(A,"execute")}o(ve,"neon");function _h(r,e,t){
-return{[Symbol.toStringTag]:"NeonQueryPromise",parameterizedQuery:e,opts:t,then:o(
-(n,i)=>r(e,t).then(n,i),"then"),catch:o(n=>r(e,t).catch(n),"catch"),finally:o(n=>r(
-e,t).finally(n),"finally")}}o(_h,"createNeonQueryPromise");function Ra(r,{arrayMode:e,
-fullResults:t,parameterizedQuery:n,resultCallback:i,types:s}){let a=new Ma.default(
-s),u=r.fields.map(h=>h.name),c=r.fields.map(h=>a.getTypeParser(h.dataTypeID)),l=e===
-!0?r.rows.map(h=>h.map((f,y)=>f===null?null:c[y](f))):r.rows.map(h=>Object.fromEntries(
-h.map((f,y)=>[u[y],f===null?null:c[y](f)])));return i&&i(n,r,l,{arrayMode:e,fullResults:t}),
-t?(r.viaNeonFetch=!0,r.rowAsArray=e,r.rows=l,r._parsers=c,r._types=a,r):l}o(Ra,"\
-processQueryResult");var qa=Qe(Yt()),it=Qe(ar());var Re=class extends or.Client{constructor(t){super(t);this.config=t}static{o(this,
+stringify(ne),headers:O,...N})}catch(Y){let K=new Fe(`Error connecting to databa\
+se: ${Y.message}`);throw K.sourceError=Y,K}if(G.ok){let Y=await G.json();if(Array.
+isArray(w)){let K=Y.results;if(!Array.isArray(K))throw new Fe("Neon internal err\
+or: unexpected result format");return K.map((se,Ee)=>{let at=b[Ee]??{},ur=at.arrayMode??
+Q,ke=at.fullResults??$;return Ra(se,{arrayMode:ur,fullResults:ke,parameterizedQuery:w[Ee],
+resultCallback:c,types:at.types})})}else{let K=b??{},se=K.arrayMode??Q,Ee=K.fullResults??
+$;return Ra(Y,{arrayMode:se,fullResults:Ee,parameterizedQuery:w,resultCallback:c,
+types:K.types})}}else{let{status:Y}=G;if(Y===400){let K=await G.json(),se=new Fe(
+K.message);for(let Ee of Ch)se[Ee]=K[Ee]??void 0;throw se}else{let K=await G.text();
+throw new Fe(`Server error (HTTP status ${Y}): ${K}`)}}})}return o(A,"execute"),
+v}o(ve,"neon");function _h(r,e,t){return{[Symbol.toStringTag]:"NeonQueryPromise",
+parameterizedQuery:e,opts:t,then:o((n,i)=>r(e,t).then(n,i),"then"),catch:o(n=>r(
+e,t).catch(n),"catch"),finally:o(n=>r(e,t).finally(n),"finally")}}o(_h,"createNe\
+onQueryPromise");function Ra(r,{arrayMode:e,fullResults:t,parameterizedQuery:n,resultCallback:i,
+types:s}){let a=new Ma.default(s),u=r.fields.map(h=>h.name),c=r.fields.map(h=>a.
+getTypeParser(h.dataTypeID)),l=e===!0?r.rows.map(h=>h.map((f,y)=>f===null?null:c[y](
+f))):r.rows.map(h=>Object.fromEntries(h.map((f,y)=>[u[y],f===null?null:c[y](f)])));
+return i&&i(n,r,l,{arrayMode:e,fullResults:t}),t?(r.viaNeonFetch=!0,r.rowAsArray=
+e,r.rows=l,r._parsers=c,r._types=a,r):l}o(Ra,"processQueryResult");var qa=Qe(Yt()),it=Qe(ar());var Re=class extends or.Client{constructor(t){super(t);this.config=t}static{o(this,
 "NeonClient")}get neonConfig(){return this.connection.stream}connect(t){let{neonConfig:n}=this;
 n.forceDisablePgSSL&&(this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&
 console.warn("SSL is enabled for both Postgres (e.g. ?sslmode=require in the con\
@@ -2089,8 +2089,8 @@ b),R="n=*,r="+n.clientNonce,q="r="+u+",s="+c+",i="+h,M="c=biws,r="+u,ne=R+","+q+
 b.map((X,D)=>b[D]^Q[D])),j=$.toString("base64");let H=await x.subtle.importKey("\
 raw",A,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),W=await x.subtle.sign("H\
 MAC",H,y.encode("Server Key")),O=await x.subtle.importKey("raw",W,{name:"HMAC",hash:{
-name:"SHA-256"}},!1,["sign"]);var Y=m.from(await x.subtle.sign("HMAC",O,y.encode(
-ne)));n.message="SASLResponse",n.serverSignature=Y.toString("base64"),n.response=
+name:"SHA-256"}},!1,["sign"]);var Z=m.from(await x.subtle.sign("HMAC",O,y.encode(
+ne)));n.message="SASLResponse",n.serverSignature=Z.toString("base64"),n.response=
 M+",p="+j,this.connection.sendSCRAMClientFinalMessage(this.saslSession.response)}};
 function Lh(r,e){if(e)return{callback:e,result:void 0};let t,n,i=o(function(a,u){
 a?t(a):n(u)},"cb"),s=new r(function(a,u){n=a,t=u});return{callback:i,result:s}}o(

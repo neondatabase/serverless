@@ -349,7 +349,7 @@ export function neon(
       if (response.ok) {
         const rawResults = (await response.json()) as any;
 
-        if (isBatch) {
+        if (Array.isArray(parameterizedQuery)) {
           // batch query
           const resultArray = rawResults.results;
           if (!Array.isArray(resultArray))
@@ -396,10 +396,10 @@ export function neon(
           );
         }
       }
-
-      return resolve;
     });
   }
+
+  return resolve;
 }
 
 function createNeonQueryPromise(
