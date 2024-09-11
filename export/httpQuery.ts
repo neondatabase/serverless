@@ -1,6 +1,7 @@
 import { parse } from '../shims/url';
 import { Socket } from '../shims/net';
 import { types as defaultTypes } from '.';
+import type { NeonConfigGlobalOnly } from './neonConfig';
 
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from 'pg/lib/utils';
@@ -39,6 +40,8 @@ interface HTTPQueryOptions {
   arrayMode?: boolean; // default false
   fullResults?: boolean; // default false
   fetchOptions?: Record<string, any>;
+  fetchEndpoint?: NeonConfigGlobalOnly['fetchEndpoint'];
+  fetchFunction?: NeonConfigGlobalOnly['fetchFunction'];
   // these callback options are not currently exported:
   types?: typeof defaultTypes;
   queryCallback?: (query: ParameterizedQuery) => void;
@@ -95,17 +98,17 @@ const errorFields = [
   'routine',
 ] as const;
 
-/* 
+/*
 Most config options can be set in 3 places:
 
-* in a call to `neon`, 
-* in a call to `transaction`, 
+* in a call to `neon`,
+* in a call to `transaction`,
 * or in the call to `sql` (i.e. the function returned by `neon`).
 
 The option variables corresponding these levels are prefixed
 `neonOpt`, `txnOpt` and `sqlOpt` respectively.
 
-As you would expect, options at lower levels override higher levels. 
+As you would expect, options at lower levels override higher levels.
 That is:
 
 * `sql` options override `transaction` ones,
@@ -124,10 +127,11 @@ export function neon(
     deferrable: neonOptDeferrable,
     queryCallback,
     resultCallback,
+    fetchEndpoint,
+    fetchFunction,
   }: HTTPTransactionOptions = {},
 ) {
   // check the connection string
-
   if (!connectionString)
     throw new Error(
       'No database connection string was provided to `neon()`. Perhaps an environment variable has not been set?',
@@ -214,8 +218,7 @@ export function neon(
     allSqlOpts?: HTTPQueryOptions | HTTPQueryOptions[],
     txnOpts?: HTTPTransactionOptions,
   ) {
-    const { fetchEndpoint, fetchFunction } = Socket;
-
+    fetchEndpoint ??= Socket.fetchEndpoint;
     const url =
       typeof fetchEndpoint === 'function'
         ? fetchEndpoint(hostname, port)
@@ -286,7 +289,7 @@ export function neon(
 
     let response;
     try {
-      response = await (fetchFunction ?? fetch)(url, {
+      response = await (fetchFunction ?? Socket.fetchFunction ?? fetch)(url, {
         method: 'POST',
         body: JSON.stringify(bodyData), // TODO: use json-custom-numbers to allow BigInts?
         headers,
