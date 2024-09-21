@@ -324,10 +324,10 @@ class NeonPool extends Pool {
     cb = response.callback;
 
     try {
-      // @ts-ignore -- TS doesn't know about this.options
       const cp = new ConnectionParameters(
+        // @ts-expect-error -- TS doesn't know about this.options
         this.options,
-      ) as ConnectionParametersWithPassword;
+      ) as ConnectionParameters;
       const euc = encodeURIComponent,
         eu = encodeURI;
       const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
@@ -340,8 +340,8 @@ class NeonPool extends Pool {
         arrayMode: config.rowMode === 'array',
       });
 
-      // @ts-expect-error -- TS doesn't know about this.options
       sql(queryText, queryValues, {
+        // @ts-expect-error -- TS doesn't know about this.options
         types: config.types ?? this.options?.types,
       })
         .then((result) => cb(undefined, result))

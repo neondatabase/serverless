@@ -34,6 +34,10 @@ export {
   native,
 } from "pg";
 
+interface FetchEndpointOptions {
+  jwtAuth?: boolean;
+}
+
 export interface NeonConfigGlobalOnly {
   /**
    * Set `fetchEndpoint` to set the server endpoint to be sent queries via http
@@ -47,7 +51,7 @@ export interface NeonConfigGlobalOnly {
    * Default: `host => 'https://' + host + '/sql'`
    * 
    */
-  fetchEndpoint: string | ((host: string, port: number | string) => string);
+  fetchEndpoint: string | ((host: string, port: number | string, options?: FetchEndpointOptions) => string);
 
   /**
    * **Experimentally**, when `poolQueryViaFetch` is `true`, and no listeners
@@ -256,6 +260,13 @@ export interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends
    * options take precedence.
    */
   fetchOptions?: Record<string, any>;
+
+  /** 
+   * JWT auth token to be passed as the Bearer token in the Authorization header
+   * 
+   * Default: `undefined`
+  */
+  authToken?: string | (() => Promise<string> | string);
 }
 
 export interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
