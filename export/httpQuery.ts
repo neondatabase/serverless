@@ -1,6 +1,6 @@
-import { parse } from '../shims/url';
-import { Socket } from '../shims/net';
 import { types as defaultTypes } from '.';
+import { Socket } from '../shims/net';
+import { parse } from '../shims/url';
 
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from 'pg/lib/utils';
@@ -278,10 +278,9 @@ export function neon(
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
     };
 
-    if (typeof authToken === 'string') {
-      headers['Authorization'] = `Bearer ${authToken}`;
-    } else if (typeof authToken === 'function') {
-      headers['Authorization'] = `Bearer ${Promise.resolve(authToken())}`;
+    const validAuthToken = await getAuthToken(authToken);
+    if (validAuthToken) {
+      headers['Authorization'] = `Bearer ${validAuthToken}`;
     }
 
     if (Array.isArray(parameterizedQuery)) {
@@ -433,4 +432,22 @@ function processQueryResult(
   }
 
   return rows;
+}
+
+async function getAuthToken(authToken: HTTPQueryOptions['authToken']) {
+  if (typeof authToken === 'string') {
+    return authToken;
+  }
+
+  if (typeof authToken === 'function') {
+    try {
+      return await Promise.resolve(authToken());
+    } catch (err) {
+      let authError = new NeonDbError('Error getting auth token.');
+      if (err instanceof Error) {
+        authError = new NeonDbError(`Error getting auth token: ${err.message}`);
+      }
+      throw authError;
+    }
+  }
 }

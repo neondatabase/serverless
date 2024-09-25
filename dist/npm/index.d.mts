@@ -5,34 +5,11 @@
 
 // @neondatabase/serverless driver types, mimicking pg
 
-export { DatabaseError } from "pg-protocol";
 export {
-  ClientConfig,
-  ConnectionConfig,
-  Defaults,
-  PoolConfig,
-  QueryConfig,
-  CustomTypesConfig,
-  Submittable,
-  QueryArrayConfig,
-  FieldDef,
-  QueryResultBase,
-  QueryResultRow,
-  QueryResult,
-  QueryArrayResult,
-  Notification,
-  ResultBuilder,
-  QueryParse,
-  BindConfig,
-  ExecuteConfig,
-  MessageConfig,
-  Connection,
-  Query,
-  Events,
-  types,
-  defaults,
-  native,
+  BindConfig, ClientConfig, Connection, ConnectionConfig, CustomTypesConfig, Defaults, defaults, Events, ExecuteConfig, FieldDef, MessageConfig, native, Notification, PoolConfig, Query, QueryArrayConfig, QueryArrayResult, QueryConfig, QueryParse, QueryResult, QueryResultBase,
+  QueryResultRow, ResultBuilder, Submittable, types
 } from "pg";
+export { DatabaseError } from "pg-protocol";
 
 interface FetchEndpointOptions {
   jwtAuth?: boolean;
@@ -186,10 +163,10 @@ export interface NeonConfigGlobalAndClient {
 export interface NeonConfig extends NeonConfigGlobalOnly, NeonConfigGlobalAndClient { }
 
 import {
-  ClientBase as PgClientBase,
   Client as PgClient,
-  PoolClient as PgPoolClient,
+  ClientBase as PgClientBase,
   Pool as PgPool,
+  PoolClient as PgPoolClient,
 } from "pg";
 
 export class ClientBase extends PgClientBase {
