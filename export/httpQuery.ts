@@ -1,6 +1,7 @@
 import { parse } from '../shims/url';
 import { Socket } from '../shims/net';
 import { types as defaultTypes } from '.';
+import type { Tracer } from '@opentelemetry/api';
 
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from 'pg/lib/utils';
@@ -47,6 +48,7 @@ interface HTTPQueryOptions {
   arrayMode?: boolean; // default false
   fullResults?: boolean; // default false
   fetchOptions?: Record<string, any>;
+  tracer?: Tracer;
   // these callback options are not currently exported:
   types?: typeof defaultTypes;
   queryCallback?: (query: ParameterizedQuery) => void;
@@ -103,17 +105,17 @@ const errorFields = [
   'routine',
 ] as const;
 
-/* 
+/*
 Most config options can be set in 3 places:
 
-* in a call to `neon`, 
-* in a call to `transaction`, 
+* in a call to `neon`,
+* in a call to `transaction`,
 * or in the call to `sql` (i.e. the function returned by `neon`).
 
 The option variables corresponding these levels are prefixed
 `neonOpt`, `txnOpt` and `sqlOpt` respectively.
 
-As you would expect, options at lower levels override higher levels. 
+As you would expect, options at lower levels override higher levels.
 That is:
 
 * `sql` options override `transaction` ones,
@@ -132,6 +134,7 @@ export function neon(
     deferrable: neonOptDeferrable,
     queryCallback,
     resultCallback,
+    tracer,
   }: HTTPTransactionOptions = {},
 ) {
   // check the connection string
@@ -280,7 +283,8 @@ export function neon(
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
     };
 
-    if (Array.isArray(parameterizedQuery)) {
+    const isBatch = Array.isArray(parameterizedQuery);
+    if (isBatch) {
       // only send these headers for batch queries, where they matter
       if (resolvedIsolationLevel !== undefined)
         headers['Neon-Batch-Isolation-Level'] = resolvedIsolationLevel;
@@ -290,72 +294,117 @@ export function neon(
         headers['Neon-Batch-Deferrable'] = String(resolvedDeferrable);
     }
 
-    // --- run query ---
+    // -- handle span behaviour --
 
-    let response;
-    try {
-      response = await (fetchFunction ?? fetch)(url, {
-        method: 'POST',
-        body: JSON.stringify(bodyData), // TODO: use json-custom-numbers to allow BigInts?
-        headers,
-        ...resolvedFetchOptions, // this is last, so it gets the final say
-      });
-    } catch (err: any) {
-      const connectErr = new NeonDbError(
-        `Error connecting to database: ${err.message}`,
-      );
-      connectErr.sourceError = err;
-      throw connectErr;
+    let wrapper = <T>(fn: () => Promise<T>) => fn();
+    const currentTracer = txnOpts?.tracer || tracer;
+    if (currentTracer) {
+      // Get the attributes.
+      const attributes = isBatch
+        ? { queries: parameterizedQuery.map((q) => q.query) }
+        : { query: parameterizedQuery.query };
+
+      // Wrap the query in a span.
+      wrapper = (fn) =>
+        currentTracer.startActiveSpan(
+          `${isBatch ? 'batch ' : ''}query`,
+          {
+            attributes,
+          },
+          async (span) => {
+            try {
+              const x = await fn();
+              span.setStatus({
+                code: 1, // 1 is OK without needing to pull in the enum.
+              });
+              return x;
+            } catch (err) {
+              // Set the span to a failure state.
+              const message = err instanceof Error ? err.message : `${err}`;
+              span.setStatus({
+                code: 2, // 2 is ERROR without needing to pull in the enum.
+                message,
+              });
+
+              // In any case, re-throw.
+              throw err;
+            } finally {
+              span.end();
+            }
+          },
+        );
     }
 
-    if (response.ok) {
-      const rawResults = (await response.json()) as any;
+    // --- run query ---
 
-      if (Array.isArray(parameterizedQuery)) {
-        // batch query
-        const resultArray = rawResults.results;
-        if (!Array.isArray(resultArray))
-          throw new NeonDbError(
-            'Neon internal error: unexpected result format',
-          );
-        return resultArray.map((result, i) => {
-          let sqlOpts = (allSqlOpts as HTTPQueryOptions[])[i] ?? {};
+    return wrapper(async () => {
+      let response;
+      try {
+        response = await (fetchFunction ?? fetch)(url, {
+          method: 'POST',
+          body: JSON.stringify(bodyData), // TODO: use json-custom-numbers to allow BigInts?
+          headers,
+          ...resolvedFetchOptions, // this is last, so it gets the final say
+        });
+      } catch (err: any) {
+        const connectErr = new NeonDbError(
+          `Error connecting to database: ${err.message}`,
+        );
+        connectErr.sourceError = err;
+        throw connectErr;
+      }
+
+      if (response.ok) {
+        const rawResults = (await response.json()) as any;
+
+        if (Array.isArray(parameterizedQuery)) {
+          // batch query
+          const resultArray = rawResults.results;
+          if (!Array.isArray(resultArray))
+            throw new NeonDbError(
+              'Neon internal error: unexpected result format',
+            );
+          return resultArray.map((result, i) => {
+            let sqlOpts = (allSqlOpts as HTTPQueryOptions[])[i] ?? {};
+            let arrayMode = sqlOpts.arrayMode ?? resolvedArrayMode;
+            let fullResults = sqlOpts.fullResults ?? resolvedFullResults;
+            return processQueryResult(result, {
+              arrayMode,
+              fullResults,
+              parameterizedQuery: parameterizedQuery[i],
+              resultCallback,
+              types: sqlOpts.types,
+            });
+          });
+        } else {
+          // single query
+          let sqlOpts = (allSqlOpts as HTTPQueryOptions) ?? {};
           let arrayMode = sqlOpts.arrayMode ?? resolvedArrayMode;
           let fullResults = sqlOpts.fullResults ?? resolvedFullResults;
-          return processQueryResult(result, {
+          return processQueryResult(rawResults, {
             arrayMode,
             fullResults,
-            parameterizedQuery: parameterizedQuery[i],
+            parameterizedQuery,
             resultCallback,
             types: sqlOpts.types,
           });
-        });
+        }
       } else {
-        // single query
-        let sqlOpts = (allSqlOpts as HTTPQueryOptions) ?? {};
-        let arrayMode = sqlOpts.arrayMode ?? resolvedArrayMode;
-        let fullResults = sqlOpts.fullResults ?? resolvedFullResults;
-        return processQueryResult(rawResults, {
-          arrayMode,
-          fullResults,
-          parameterizedQuery,
-          resultCallback,
-          types: sqlOpts.types,
-        });
+        const { status } = response;
+        if (status === 400) {
+          const json = (await response.json()) as any;
+          const dbError = new NeonDbError(json.message);
+          for (const field of errorFields)
+            dbError[field] = json[field] ?? undefined;
+          throw dbError;
+        } else {
+          const text = await response.text();
+          throw new NeonDbError(
+            `Server error (HTTP status ${status}): ${text}`,
+          );
+        }
       }
-    } else {
-      const { status } = response;
-      if (status === 400) {
-        const json = (await response.json()) as any;
-        const dbError = new NeonDbError(json.message);
-        for (const field of errorFields)
-          dbError[field] = json[field] ?? undefined;
-        throw dbError;
-      } else {
-        const text = await response.text();
-        throw new NeonDbError(`Server error (HTTP status ${status}): ${text}`);
-      }
-    }
+    });
   }
 
   return resolve;
