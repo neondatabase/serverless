@@ -1,6 +1,6 @@
-import { parse } from '../shims/url';
-import { Socket } from '../shims/net';
 import { types as defaultTypes } from '.';
+import { Socket } from '../shims/net';
+import { parse } from '../shims/url';
 
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from 'pg/lib/utils';
@@ -56,6 +56,10 @@ interface HTTPQueryOptions {
     rows: any,
     opts: any,
   ) => void;
+
+  // JWT auth token to be passed as the Bearer token in the Authorization
+  // header
+  authToken?: string | (() => Promise<string> | string);
 }
 
 interface HTTPTransactionOptions extends HTTPQueryOptions {
@@ -132,6 +136,7 @@ export function neon(
     deferrable: neonOptDeferrable,
     queryCallback,
     resultCallback,
+    authToken,
   }: HTTPTransactionOptions = {},
 ) {
   // check the connection string
@@ -151,11 +156,10 @@ export function neon(
     );
   }
 
-  const { protocol, username, password, hostname, port, pathname } = db;
+  const { protocol, username, hostname, port, pathname } = db;
   if (
     (protocol !== 'postgres:' && protocol !== 'postgresql:') ||
     !username ||
-    !password ||
     !hostname ||
     !pathname
   ) {
@@ -226,7 +230,9 @@ export function neon(
 
     const url =
       typeof fetchEndpoint === 'function'
-        ? fetchEndpoint(hostname, port)
+        ? fetchEndpoint(hostname, port, {
+            jwtAuth: authToken !== undefined,
+          })
         : fetchEndpoint;
 
     const bodyData = Array.isArray(parameterizedQuery)
@@ -279,6 +285,11 @@ export function neon(
       'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
     };
+
+    const validAuthToken = await getAuthToken(authToken);
+    if (validAuthToken) {
+      headers['Authorization'] = `Bearer ${validAuthToken}`;
+    }
 
     if (Array.isArray(parameterizedQuery)) {
       // only send these headers for batch queries, where they matter
@@ -429,4 +440,22 @@ function processQueryResult(
   }
 
   return rows;
+}
+
+async function getAuthToken(authToken: HTTPQueryOptions['authToken']) {
+  if (typeof authToken === 'string') {
+    return authToken;
+  }
+
+  if (typeof authToken === 'function') {
+    try {
+      return await Promise.resolve(authToken());
+    } catch (err) {
+      let authError = new NeonDbError('Error getting auth token.');
+      if (err instanceof Error) {
+        authError = new NeonDbError(`Error getting auth token: ${err.message}`);
+      }
+      throw authError;
+    }
+  }
 }

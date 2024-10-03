@@ -52,10 +52,20 @@ export function isIP(input: string) {
   return 0;
 }
 
+interface FetchEndpointOptions {
+  jwtAuth?: boolean;
+}
+
 export interface SocketDefaults {
   // these options relate to the fetch transport and take effect *only* when set globally
   poolQueryViaFetch: boolean;
-  fetchEndpoint: string | ((host: string, port: number | string) => string);
+  fetchEndpoint:
+    | string
+    | ((
+        host: string,
+        port: number | string,
+        options?: FetchEndpointOptions,
+      ) => string);
   fetchConnectionCache: boolean;
   fetchFunction: any;
   // these options relate to the WebSocket transport
@@ -77,15 +87,25 @@ type GlobalOnlyDefaults =
   | 'fetchConnectionCache'
   | 'fetchFunction';
 
-const transformHost = (host: string): string => {
-  return host.replace(/^[^.]+\./, 'api.');
-};
+const FIRST_WORD_REGEX = /^[^.]+\./;
 
 export class Socket extends EventEmitter {
   static defaults: SocketDefaults = {
     // these options relate to the fetch transport and take effect *only* when set globally
     poolQueryViaFetch: false,
-    fetchEndpoint: (host) => 'https://' + transformHost(host) + '/sql',
+    fetchEndpoint: (host, _port, options) => {
+      let newHost;
+      if (options?.jwtAuth) {
+        // If the caller sends in a JWT, we need to use the Neon Authorize API
+        // endpoint instead (this goes to the Auth Broker instead of the Neon
+        // Proxy).
+        newHost = host.replace(FIRST_WORD_REGEX, 'apiauth.');
+      } else {
+        newHost = host.replace(FIRST_WORD_REGEX, 'api.');
+      }
+
+      return 'https://' + newHost + '/sql';
+    },
     fetchConnectionCache: true,
     fetchFunction: undefined,
     // these options relate to the WebSocket transport

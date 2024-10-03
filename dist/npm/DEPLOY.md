@@ -10,10 +10,9 @@ There are then two ways you can secure this:
 
 1. Set up nginx as a TLS proxy in front of `wsproxy`. Example shell commands to achieve this can be found below. Onward traffic to Postgres is not secured by this method, so Postgres should be running on the same machine or be reached over a private network.
 
-2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. You get this form of encryption if you set both `neonConfig.useSecureWebSocket`  and `neonConfig.forceDisablePgSSL` to `false`, and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end. **Please note that subtls is experimental software and this configuration is not recommended for production use.**
+2. Use experimental pure-JS Postgres connection encryption via [subtls](https://github.com/jawj/subtls). There's no need for nginx in this scenario, and the Postgres connection is encrypted end-to-end. You get this form of encryption if you set both `neonConfig.useSecureWebSocket` and `neonConfig.forceDisablePgSSL` to `false`, and append `?sslmode=verify-full` (or similar) to your connection string. TLS version 1.3 must be supported by the Postgres back-end. **Please note that subtls is experimental software and this configuration is not recommended for production use.**
 
 Second, you'll need to set some [configuration options](CONFIG.md) on this package: at a minimum the `wsProxy` option and (if using experimental encryption) `subtls` and `rootCerts`.
-
 
 ## Example shell commands
 
@@ -88,7 +87,7 @@ apt install -y golang nginx certbot python3-certbot-nginx
 
 echo "127.0.0.1 ${HOSTDOMAIN}" >> /etc/hosts
 
-echo "                                                                       
+echo "
 server {
   listen 80;
   listen [::]:80;
@@ -100,7 +99,7 @@ server {
     proxy_set_header Host \$host;
   }
 }
-" > /etc/nginx/sites-available/wsproxy   
+" > /etc/nginx/sites-available/wsproxy
 
 ln -s /etc/nginx/sites-available/wsproxy /etc/nginx/sites-enabled/wsproxy
 

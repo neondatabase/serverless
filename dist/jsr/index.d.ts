@@ -1,34 +1,15 @@
 
 // @neondatabase/serverless driver types, mimicking pg
 
-export { DatabaseError } from "pg-protocol";
 export {
-  ClientConfig,
-  ConnectionConfig,
-  Defaults,
-  PoolConfig,
-  QueryConfig,
-  CustomTypesConfig,
-  Submittable,
-  QueryArrayConfig,
-  FieldDef,
-  QueryResultBase,
-  QueryResultRow,
-  QueryResult,
-  QueryArrayResult,
-  Notification,
-  ResultBuilder,
-  QueryParse,
-  BindConfig,
-  ExecuteConfig,
-  MessageConfig,
-  Connection,
-  Query,
-  Events,
-  types,
-  defaults,
-  native,
+  BindConfig, ClientConfig, Connection, ConnectionConfig, CustomTypesConfig, Defaults, defaults, Events, ExecuteConfig, FieldDef, MessageConfig, native, Notification, PoolConfig, Query, QueryArrayConfig, QueryArrayResult, QueryConfig, QueryParse, QueryResult, QueryResultBase,
+  QueryResultRow, ResultBuilder, Submittable, types
 } from "pg";
+export { DatabaseError } from "pg-protocol";
+
+interface FetchEndpointOptions {
+  jwtAuth?: boolean;
+}
 
 export interface NeonConfigGlobalOnly {
   /**
@@ -43,7 +24,7 @@ export interface NeonConfigGlobalOnly {
    * Default: `host => 'https://' + host + '/sql'`
    * 
    */
-  fetchEndpoint: string | ((host: string, port: number | string) => string);
+  fetchEndpoint: string | ((host: string, port: number | string, options?: FetchEndpointOptions) => string);
 
   /**
    * **Experimentally**, when `poolQueryViaFetch` is `true`, and no listeners
@@ -178,10 +159,10 @@ export interface NeonConfigGlobalAndClient {
 export interface NeonConfig extends NeonConfigGlobalOnly, NeonConfigGlobalAndClient { }
 
 import {
-  ClientBase as PgClientBase,
   Client as PgClient,
-  PoolClient as PgPoolClient,
+  ClientBase as PgClientBase,
   Pool as PgPool,
+  PoolClient as PgPoolClient,
 } from "pg";
 
 export class ClientBase extends PgClientBase {
@@ -252,6 +233,13 @@ export interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends
    * options take precedence.
    */
   fetchOptions?: Record<string, any>;
+
+  /** 
+   * JWT auth token to be passed as the Bearer token in the Authorization header
+   * 
+   * Default: `undefined`
+  */
+  authToken?: string | (() => Promise<string> | string);
 }
 
 export interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
