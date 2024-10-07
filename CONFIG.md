@@ -110,7 +110,7 @@ clearTimeout(timeout);
 
 ### `authToken: string | (() => Promise<string> | string)`
 
-The `authToken` option can be passed to `neon(...)` to set the `Authorization` header for the `fetch` request. This allows seamless integration with third-party authentication systems, which ultimately allows for secure, authenticated requests to Neon, ensuring that access control and authorization are managed effectively across different systems.
+The `authToken` option can be passed to `neon(...)` to set the `Authorization` header for the `fetch` request. This allows you to authenticate database requests against third-party authentication providers. So, this mechanism can be used to ensure that access control and authorization are managed effectively across different systems.
 
 Example of usage:
 
@@ -118,7 +118,7 @@ Example of usage:
 import { neon } from '@neondatabase/serverless';
 // Retrieve the JWT token (implementation depends on your auth system)
 const authToken = getAuthToken();
-// Initialize the Neon client with connection string and auth token
+// Initialize the Neon client with a connection string and auth token
 const sql = neon(process.env.DATABASE_URL, { authToken });
 // Run a query
 const posts = await sql('SELECT * FROM posts');
