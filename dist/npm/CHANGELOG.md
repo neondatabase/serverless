@@ -1,3 +1,9 @@
+## 0.10.0 (2024-10-07)
+
+Capture stack traces in `NeonDbError`, if `Error.captureStackTrace` is available.
+
+Allow authentication through `JWT` by adding a `authToken` property to the `neon` HTTP connection options.
+
 ## 0.9.3 (2024-05-09)
 
 Expose all error information fields on `NeonDbError` objects thrown when using the http fetch transport.

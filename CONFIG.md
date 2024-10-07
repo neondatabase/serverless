@@ -108,6 +108,22 @@ const rows = await sql('SELECT * FROM posts WHERE id = $1', [postId], {
 clearTimeout(timeout);
 ```
 
+### `authToken: string | (() => Promise<string> | string)`
+
+The `authToken` option can be passed to `neon(...)` to set the `Authorization` header for the `fetch` request. This allows seamless integration with third-party authentication systems, which ultimately allows for secure, authenticated requests to Neon, ensuring that access control and authorization are managed effectively across different systems.
+
+Example of usage:
+
+```typescript
+import { neon } from '@neondatabase/serverless';
+// Retrieve the JWT token (implementation depends on your auth system)
+const authToken = getAuthToken();
+// Initialize the Neon client with connection string and auth token
+const sql = neon(process.env.DATABASE_URL, { authToken });
+// Run a query
+const posts = await sql('SELECT * FROM posts');
+```
+
 ## `transaction(...)` function
 
 The `transaction(queriesOrFn, options)` function is exposed as a property on the query function. It allows multiple queries to be executed within a single, non-interactive transaction.

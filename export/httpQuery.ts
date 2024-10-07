@@ -32,7 +32,10 @@ export class NeonDbError extends Error {
   constructor(message: string) {
     super(message);
 
-    if ("captureStackTrace" in Error && typeof Error.captureStackTrace === "function") {
+    if (
+      'captureStackTrace' in Error &&
+      typeof Error.captureStackTrace === 'function'
+    ) {
       Error.captureStackTrace(this, NeonDbError);
     }
   }
