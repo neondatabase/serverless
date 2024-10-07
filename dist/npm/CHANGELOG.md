@@ -1,3 +1,7 @@
+## 0.10.1 (2024-10-07)
+
+Fix `CONFIG.MD` documentation.
+
 ## 0.10.0 (2024-10-07)
 
 Capture stack traces in `NeonDbError`, if `Error.captureStackTrace` is available.
