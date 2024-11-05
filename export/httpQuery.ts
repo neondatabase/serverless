@@ -50,8 +50,9 @@ interface HTTPQueryOptions {
   arrayMode?: boolean; // default false
   fullResults?: boolean; // default false
   fetchOptions?: Record<string, any>;
-  // these callback options are not currently exported:
   types?: typeof defaultTypes;
+
+  // these callback options are not currently exported:
   queryCallback?: (query: ParameterizedQuery) => void;
   resultCallback?: (
     query: ParameterizedQuery,

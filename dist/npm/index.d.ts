@@ -163,6 +163,7 @@ import {
   ClientBase as PgClientBase,
   Pool as PgPool,
   PoolClient as PgPoolClient,
+  types as PgTypes
 } from "pg";
 
 export class ClientBase extends PgClientBase {
@@ -240,6 +241,12 @@ export interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends
    * Default: `undefined`
   */
   authToken?: string | (() => Promise<string> | string);
+
+  /**
+   * Custom type parsers
+   * See https://github.com/brianc/node-pg-types
+   */
+  types?: typeof PgTypes;
 }
 
 export interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
