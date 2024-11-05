@@ -1,3 +1,7 @@
+## 0.10.2 (2024-11-05)
+
+Expose `types` property on public HTTPQueryOptions type
+
 ## 0.10.1 (2024-10-07)
 
 Fix `CONFIG.MD` documentation.

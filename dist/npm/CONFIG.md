@@ -108,6 +108,29 @@ const rows = await sql('SELECT * FROM posts WHERE id = $1', [postId], {
 clearTimeout(timeout);
 ```
 
+### `types: typeof PgTypes`
+
+The `types` option can be passed to `neon(...)` to override the default PostgreSQL type parsers provided by `PgTypes`. This is useful if you want to define custom parsing behavior for specific PostgreSQL data types, allowing you to control how data is converted when retrieved from the database. Learn more in the [PgTypes official documentation](https://github.com/brianc/node-pg-types).
+
+Example of usage:
+
+```typescript
+import PgTypes from 'pg-types';
+import { neon } from '@neondatabase/serverless';
+
+// Define custom parsers for specific PostgreSQL types
+// Parse PostgreSQL `DATE` fields as JavaScript `Date` objects
+PgTypes.setTypeParser(PgTypes.builtins.DATE, (val) => new Date(val));
+
+// Parse PostgreSQL `NUMERIC` fields as JavaScript `float` values
+PgTypes.setTypeParser(PgTypes.builtins.NUMERIC, parseFloat);
+
+// Configure the Neon client with the custom `types` parser
+const sql = neon(process.env.DATABASE_URL, {
+  types: PgTypes, // Pass in the custom PgTypes object here
+});
+```
+
 ### `authToken: string | (() => Promise<string> | string)`
 
 The `authToken` option can be passed to `neon(...)` to set the `Authorization` header for the `fetch` request. This allows you to authenticate database requests against third-party authentication providers. So, this mechanism can be used to ensure that access control and authorization are managed effectively across different systems.
