@@ -1,3 +1,7 @@
+## UNRELEASED
+
+expose types property on public HTTPQueryOptions type
+
 ## 0.10.1 (2024-10-07)
 
 Fix `CONFIG.MD` documentation.
