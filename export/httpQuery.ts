@@ -282,6 +282,12 @@ export function neon(
       };
     }
 
+    // --- resolve auth token usage ---
+    let resolvedAuthToken = authToken;
+    if (!Array.isArray(allSqlOpts) && allSqlOpts?.authToken !== undefined) {
+      resolvedAuthToken = allSqlOpts.authToken;
+    }
+
     // --- set headers ---
 
     const headers: Record<string, string> = {
@@ -290,7 +296,8 @@ export function neon(
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
     };
 
-    const validAuthToken = await getAuthToken(authToken);
+    // --- add auth token to headers ---
+    const validAuthToken = await getAuthToken(resolvedAuthToken);
     if (validAuthToken) {
       headers['Authorization'] = `Bearer ${validAuthToken}`;
     }
