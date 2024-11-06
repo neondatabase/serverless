@@ -3,15 +3,7 @@ import { Socket } from '../shims/net';
 import { neon, NeonDbError } from './httpQuery';
 import type { NeonConfigGlobalAndClient } from './neonConfig';
 
-// @ts-ignore -- this isn't officially exported by pg
-import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
-
-interface ConnectionParameters {
-  user: string;
-  password: string;
-  host: string;
-  database: string;
-}
+import ConnectionParameters from 'pg/lib/connection-parameters';
 
 /**
  * We export the pg library mostly unchanged, but we do make a few tweaks.
@@ -290,6 +282,15 @@ function promisify(Promise: any, callback: any) {
   return { callback: cb, result: result };
 }
 
+// Type augmentation for pg Pool internals that don't have publicly exported types
+// - https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+declare module 'pg' {
+  interface Pool {
+    options: ConstructorParameters<typeof Pool>[0];
+    Promise: PromiseConstructorLike;
+  }
+}
+
 class NeonPool extends Pool {
   Client = NeonClient;
   hasFetchUnsupportedListeners = false;
@@ -302,7 +303,6 @@ class NeonPool extends Pool {
     return super.on(event as any, listener);
   }
 
-  // @ts-ignore -- is it even possible to make TS happy with these overloaded function types?
   query(config?: any, values?: any, cb?: any) {
     if (
       !Socket.poolQueryViaFetch ||
@@ -319,15 +319,11 @@ class NeonPool extends Pool {
     }
 
     // create a synthetic callback that resolves the returned Promise
-    // @ts-ignore -- TS doesn't know about this.Promise
     const response = promisify(this.Promise, cb);
     cb = response.callback;
 
     try {
-      const cp = new ConnectionParameters(
-        // @ts-expect-error -- TS doesn't know about this.options
-        this.options,
-      ) as ConnectionParameters;
+      const cp = new ConnectionParameters(this.options);
       const euc = encodeURIComponent,
         eu = encodeURI;
       const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
@@ -341,7 +337,6 @@ class NeonPool extends Pool {
       });
 
       sql(queryText, queryValues, {
-        // @ts-expect-error -- TS doesn't know about this.options
         types: config.types ?? this.options?.types,
       })
         .then((result) => cb(undefined, result))
