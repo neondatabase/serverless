@@ -2,9 +2,8 @@ import { types as defaultTypes } from '.';
 import { Socket } from '../shims/net';
 import { parse } from '../shims/url';
 
-// @ts-ignore -- this isn't officially exported by pg
+// not officially exported by pg - types declared in pg.internals.types.ts
 import { prepareValue } from 'pg/lib/utils';
-// @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
 
 export class NeonDbError extends Error {
