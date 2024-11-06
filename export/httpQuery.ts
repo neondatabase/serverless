@@ -1,4 +1,4 @@
-import { types as defaultTypes } from '.';
+import type { CustomTypesConfig } from 'pg';
 import { Socket } from '../shims/net';
 import { parse } from '../shims/url';
 
@@ -50,7 +50,7 @@ interface HTTPQueryOptions {
   arrayMode?: boolean; // default false
   fullResults?: boolean; // default false
   fetchOptions?: Record<string, any>;
-  types?: typeof defaultTypes;
+  types?: CustomTypesConfig;
 
   // these callback options are not currently exported:
   queryCallback?: (query: ParameterizedQuery) => void;
@@ -87,7 +87,7 @@ interface ProcessQueryResultOptions {
   fullResults: boolean;
   parameterizedQuery: ParameterizedQuery;
   resultCallback: HTTPQueryOptions['resultCallback'];
-  types?: typeof defaultTypes;
+  types?: CustomTypesConfig;
 }
 
 const txnArgErrMsg =
