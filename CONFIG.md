@@ -108,7 +108,7 @@ const rows = await sql('SELECT * FROM posts WHERE id = $1', [postId], {
 clearTimeout(timeout);
 ```
 
-### `types: typeof PgTypes`
+### `types: CustomTypesConfig`
 
 The `types` option can be passed to `neon(...)` to override the default PostgreSQL type parsers provided by `PgTypes`. This is useful if you want to define custom parsing behavior for specific PostgreSQL data types, allowing you to control how data is converted when retrieved from the database. Learn more in the [PgTypes official documentation](https://github.com/brianc/node-pg-types).
 
