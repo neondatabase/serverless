@@ -1,3 +1,7 @@
+## 0.10.3 (2024-11-06)
+
+Fixes `authToken` overriding in `sql` HTTP request.
+
 ## 0.10.2 (2024-11-05)
 
 Expose `types` property on public HTTPQueryOptions type
