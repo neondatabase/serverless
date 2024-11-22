@@ -7,6 +7,15 @@ import { prepareValue } from 'pg/lib/utils';
 // @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
 
+function encodeBuffersAsBytea(value: unknown): unknown {
+  if (value instanceof Buffer) {
+    // convert Buffer to bytea hex format
+    // https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
+    return '\\x' + value.toString('hex');
+  }
+  return value;
+}
+
 export class NeonDbError extends Error {
   name = 'NeonDbError' as const;
 
@@ -197,7 +206,7 @@ export function neon(
     }
 
     // prepare the query params to make timezones and array types consistent with ordinary node-postgres/pg
-    params = params.map((param) => prepareValue(param));
+    params = params.map((param) => encodeBuffersAsBytea(prepareValue(param)));
 
     const parameterizedQuery = { query, params };
     if (queryCallback) queryCallback(parameterizedQuery);
