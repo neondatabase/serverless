@@ -1,6 +1,7 @@
 ## Unreleased
 
 Correctly insert `Buffer`/`ArrayBuffer` values into `BYTEA` fields when using HTTP fetch queries
+Fixes only passing `authToken` in the `sql` HTTP request and not in the `neon` connection setup.
 
 ## 0.10.3 (2024-11-06)
 
