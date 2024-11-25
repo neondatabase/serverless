@@ -161,9 +161,9 @@ export interface NeonConfig extends NeonConfigGlobalOnly, NeonConfigGlobalAndCli
 import {
   Client as PgClient,
   ClientBase as PgClientBase,
+  CustomTypesConfig,
   Pool as PgPool,
-  PoolClient as PgPoolClient,
-  types as PgTypes
+  PoolClient as PgPoolClient
 } from "pg";
 
 export class ClientBase extends PgClientBase {
@@ -246,7 +246,7 @@ export interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends
    * Custom type parsers
    * See https://github.com/brianc/node-pg-types
    */
-  types?: typeof PgTypes;
+  types?: CustomTypesConfig;
 }
 
 export interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
