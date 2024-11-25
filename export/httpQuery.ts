@@ -241,13 +241,6 @@ export function neon(
   ) {
     const { fetchEndpoint, fetchFunction } = Socket;
 
-    const url =
-      typeof fetchEndpoint === 'function'
-        ? fetchEndpoint(hostname, port, {
-            jwtAuth: authToken !== undefined,
-          })
-        : fetchEndpoint;
-
     const bodyData = Array.isArray(parameterizedQuery)
       ? { queries: parameterizedQuery }
       : parameterizedQuery;
@@ -297,8 +290,15 @@ export function neon(
       resolvedAuthToken = allSqlOpts.authToken;
     }
 
-    // --- set headers ---
+    // --- set up the URL ---
+    const url =
+      typeof fetchEndpoint === 'function'
+        ? fetchEndpoint(hostname, port, {
+            jwtAuth: resolvedAuthToken !== undefined,
+          })
+        : fetchEndpoint;
 
+    // --- set headers ---
     const headers: Record<string, string> = {
       'Neon-Connection-String': connectionString,
       'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
