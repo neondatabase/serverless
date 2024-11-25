@@ -32,15 +32,9 @@ e===0&&1/e<0?1:0;for(e=Math.abs(e),isNaN(e)||e===1/0?(u=isNaN(e)?1:0,o=l):(o=Mat
 floor(Math.log(e)/Math.LN2),e*(c=Math.pow(2,-o))<1&&(o--,c*=2),o+d>=1?e+=b/c:e+=
 b*Math.pow(2,1-d),e*c>=2&&(o++,c/=2),o+d>=l?(u=0,o=l):o+d>=1?(u=(e*c-1)*Math.pow(
 2,i),o=o+d):(u=e*Math.pow(2,d-1)*Math.pow(2,i),o=0));i>=8;r[t+C]=u&255,C+=B,u/=256,
-<<<<<<< HEAD
-i-=8);for(o=o<<i|u,h+=i;h>0;r[t+C]=o&255,C+=B,o/=256,h-=8);r[t+C-B]|=Q*128}});var Yn=I(Fe=>{"use strict";p();var Dt=Rn(),Le=Fn(),Mn=typeof Symbol=="function"&&
-typeof Symbol.for=="function"?Symbol.for("nodejs.util.inspect.custom"):null;Fe.Buffer=
-f;Fe.SlowBuffer=vo;Fe.INSPECT_MAX_BYTES=50;var ot=2147483647;Fe.kMaxLength=ot;f.
-=======
 i-=8);for(o=o<<i|u,h+=i;h>0;r[t+C]=o&255,C+=B,o/=256,h-=8);r[t+C-B]|=Q*128}});var Yn=I(Re=>{"use strict";p();var Dt=Rn(),Be=Fn(),Mn=typeof Symbol=="function"&&
 typeof Symbol.for=="function"?Symbol.for("nodejs.util.inspect.custom"):null;Re.Buffer=
-f;Re.SlowBuffer=xo;Re.INSPECT_MAX_BYTES=50;var ot=2147483647;Re.kMaxLength=ot;f.
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
+f;Re.SlowBuffer=vo;Re.INSPECT_MAX_BYTES=50;var ot=2147483647;Re.kMaxLength=ot;f.
 TYPED_ARRAY_SUPPORT=wo();!f.TYPED_ARRAY_SUPPORT&&typeof console<"u"&&typeof console.
 error=="function"&&console.error("This browser lacks typed array (Uint8Array) su\
 pport which is required by `buffer` v5.x. Use `buffer` v4.x if you require old b\
@@ -77,13 +71,8 @@ function(r){return Nt(r)};function So(r,e){if((typeof e!="string"||e==="")&&(e="
 utf8"),!f.isEncoding(e))throw new TypeError("Unknown encoding: "+e);let t=qn(r,e)|
 0,n=pe(t),i=n.write(r,e);return i!==t&&(n=n.slice(0,i)),n}a(So,"fromString");function kt(r){
 let e=r.length<0?0:qt(r.length)|0,t=pe(e);for(let n=0;n<e;n+=1)t[n]=r[n]&255;return t}
-<<<<<<< HEAD
-a(kt,"fromArrayLike");function xo(r){if(ue(r,Uint8Array)){let e=new Uint8Array(r);
+a(kt,"fromArrayLike");function xo(r){if(ce(r,Uint8Array)){let e=new Uint8Array(r);
 return Ut(e.buffer,e.byteOffset,e.byteLength)}return kt(r)}a(xo,"fromArrayView");
-=======
-a(kt,"fromArrayLike");function Eo(r){if(ce(r,Uint8Array)){let e=new Uint8Array(r);
-return Ut(e.buffer,e.byteOffset,e.byteLength)}return kt(r)}a(Eo,"fromArrayView");
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
 function Ut(r,e,t){if(e<0||r.byteLength<e)throw new RangeError('"offset" is outs\
 ide of buffer bounds');if(r.byteLength<e+(t||0))throw new RangeError('"length" i\
 s outside of buffer bounds');let n;return e===void 0&&t===void 0?n=new Uint8Array(
@@ -93,17 +82,10 @@ r.length)|0,t=pe(e);return t.length===0||r.copy(t,0,0,e),t}if(r.length!==void 0)
 return typeof r.length!="number"||jt(r.length)?pe(0):kt(r);if(r.type==="Buffer"&&
 Array.isArray(r.data))return kt(r.data)}a(Eo,"fromObject");function qt(r){if(r>=
 ot)throw new RangeError("Attempt to allocate Buffer larger than maximum size: 0x"+
-<<<<<<< HEAD
 ot.toString(16)+" bytes");return r|0}a(qt,"checked");function vo(r){return+r!=r&&
 (r=0),f.alloc(+r)}a(vo,"SlowBuffer");f.isBuffer=a(function(e){return e!=null&&e.
-_isBuffer===!0&&e!==f.prototype},"isBuffer");f.compare=a(function(e,t){if(ue(e,Uint8Array)&&
-(e=f.from(e,e.offset,e.byteLength)),ue(t,Uint8Array)&&(t=f.from(t,t.offset,t.byteLength)),
-=======
-ot.toString(16)+" bytes");return r|0}a(qt,"checked");function xo(r){return+r!=r&&
-(r=0),f.alloc(+r)}a(xo,"SlowBuffer");f.isBuffer=a(function(e){return e!=null&&e.
 _isBuffer===!0&&e!==f.prototype},"isBuffer");f.compare=a(function(e,t){if(ce(e,Uint8Array)&&
 (e=f.from(e,e.offset,e.byteLength)),ce(t,Uint8Array)&&(t=f.from(t,t.offset,t.byteLength)),
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
 !f.isBuffer(e)||!f.isBuffer(t))throw new TypeError('The "buf1", "buf2" arguments\
  must be one of type Buffer or Uint8Array');if(e===t)return 0;let n=e.length,i=t.
 length;for(let s=0,o=Math.min(n,i);s<o;++s)if(e[s]!==t[s]){n=e[s],i=t[s];break}return n<
@@ -385,15 +367,9 @@ r,0)),E=globalThis.clearImmediate??(r=>clearTimeout(r)),w=globalThis.crypto??{};
 w.subtle??(w.subtle={});y=typeof globalThis.Buffer=="function"&&typeof globalThis.
 Buffer.allocUnsafe=="function"?globalThis.Buffer:Yn().Buffer,m=globalThis.process??
 {};m.env??(m.env={});try{m.nextTick(()=>{})}catch{let e=Promise.resolve();m.nextTick=
-<<<<<<< HEAD
-e.then.bind(e)}});var we=I((ih,Wt)=>{"use strict";p();var Me=typeof Reflect=="object"?Reflect:null,
-Zn=Me&&typeof Me.apply=="function"?Me.apply:a(function(e,t,n){return Function.prototype.
-apply.call(e,t,n)},"ReflectApply"),ut;Me&&typeof Me.ownKeys=="function"?ut=Me.ownKeys:
-=======
-e.then.bind(e)}});var we=I((nh,Wt)=>{"use strict";p();var Fe=typeof Reflect=="object"?Reflect:null,
+e.then.bind(e)}});var we=I((ih,Wt)=>{"use strict";p();var Fe=typeof Reflect=="object"?Reflect:null,
 Zn=Fe&&typeof Fe.apply=="function"?Fe.apply:a(function(e,t,n){return Function.prototype.
 apply.call(e,t,n)},"ReflectApply"),ut;Fe&&typeof Fe.ownKeys=="function"?ut=Fe.ownKeys:
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
 Object.getOwnPropertySymbols?ut=a(function(e){return Object.getOwnPropertyNames(
 e).concat(Object.getOwnPropertySymbols(e))},"ReflectOwnKeys"):ut=a(function(e){return Object.
 getOwnPropertyNames(e)},"ReflectOwnKeys");function Wo(r){console&&console.warn&&
@@ -485,17 +461,10 @@ o=2600822924,u=528734635,c=1541459225,h=0,l=0,d=[1116352408,1899447441,304932347
 "rrot"),C=new Uint32Array(64),B=new Uint8Array(64),Q=a(()=>{for(let R=0,$=0;R<16;R++,
 $+=4)C[R]=B[$]<<24|B[$+1]<<16|B[$+2]<<8|B[$+3];for(let R=16;R<64;R++){let $=b(C[R-
 15],7)^b(C[R-15],18)^C[R-15]>>>3,le=b(C[R-2],17)^b(C[R-2],19)^C[R-2]>>>10;C[R]=C[R-
-<<<<<<< HEAD
-16]+$+C[R-7]+le|0}let A=e,g=t,P=n,K=i,k=s,j=o,he=u,ee=c;for(let R=0;R<64;R++){let $=b(
-k,6)^b(k,11)^b(k,25),le=k&j^~k&he,me=ee+$+le+d[R]+C[R]|0,Ee=b(A,2)^b(A,13)^b(A,22),
-Ce=A&g^A&P^g&P,fe=Ee+Ce|0;ee=he,he=j,j=k,k=K+me|0,K=P,P=g,g=A,A=me+fe|0}e=e+A|0,
-t=t+g|0,n=n+P|0,i=i+K|0,s=s+k|0,o=o+j|0,u=u+he|0,c=c+ee|0,l=0},"process"),X=a(A=>{
-=======
 16]+$+C[R-7]+le|0}let A=e,g=t,P=n,K=i,k=s,j=o,ee=u,ae=c;for(let R=0;R<64;R++){let $=b(
-k,6)^b(k,11)^b(k,25),le=k&j^~k&ee,me=ae+$+le+d[R]+C[R]|0,ve=b(A,2)^b(A,13)^b(A,22),
-je=A&g^A&P^g&P,fe=ve+je|0;ae=ee,ee=j,j=k,k=K+me|0,K=P,P=g,g=A,A=me+fe|0}e=e+A|0,
+k,6)^b(k,11)^b(k,25),le=k&j^~k&ee,me=ae+$+le+d[R]+C[R]|0,Ee=b(A,2)^b(A,13)^b(A,22),
+je=A&g^A&P^g&P,fe=Ee+je|0;ae=ee,ee=j,j=k,k=K+me|0,K=P,P=g,g=A,A=me+fe|0}e=e+A|0,
 t=t+g|0,n=n+P|0,i=i+K|0,s=s+k|0,o=o+j|0,u=u+ee|0,c=c+ae|0,l=0},"process"),X=a(A=>{
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
 typeof A=="string"&&(A=new TextEncoder().encode(A));for(let g=0;g<A.length;g++)B[l++]=
 A[g],l===64&&Q();h+=A.length},"add"),ye=a(()=>{if(B[l++]=128,l==64&&Q(),l+8>64){
 for(;l<64;)B[l++]=0;Q()}for(;l<58;)B[l++]=0;let A=h*8;B[l++]=A/1099511627776&255,
@@ -629,15 +598,9 @@ e[3]||0,10)*60+parseInt(e[4]||0,10);return i*n*1e3}}a(oa,"timeZoneOffset");funct
 return-(r-1)}a(li,"bcYearToNegativeYear");function zt(r){return r>=0&&r<100}a(zt,
 "is0To99")});var yi=I((Th,di)=>{p();di.exports=ua;var aa=Object.prototype.hasOwnProperty;function ua(r){
 for(var e=1;e<arguments.length;e++){var t=arguments[e];for(var n in t)aa.call(t,
-<<<<<<< HEAD
-n)&&(r[n]=t[n])}return r}a(ua,"extend")});var wi=I((Bh,gi)=>{"use strict";p();var ca=yi();gi.exports=De;function De(r){if(!(this instanceof
-De))return new De(r);ca(this,xa(r))}a(De,"PostgresInterval");var ha=["seconds","\
-minutes","hours","days","months","years"];De.prototype.toPostgres=function(){var r=ha.
-=======
-n)&&(r[n]=t[n])}return r}a(ua,"extend")});var wi=I((Ph,gi)=>{"use strict";p();var ca=yi();gi.exports=Me;function Me(r){if(!(this instanceof
-Me))return new Me(r);ca(this,Ea(r))}a(Me,"PostgresInterval");var ha=["seconds","\
+n)&&(r[n]=t[n])}return r}a(ua,"extend")});var wi=I((Bh,gi)=>{"use strict";p();var ca=yi();gi.exports=Me;function Me(r){if(!(this instanceof
+Me))return new Me(r);ca(this,xa(r))}a(Me,"PostgresInterval");var ha=["seconds","\
 minutes","hours","days","months","years"];Me.prototype.toPostgres=function(){var r=ha.
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
 filter(this.hasOwnProperty,this);return this.milliseconds&&r.indexOf("seconds")<
 0&&r.push("seconds"),r.length===0?"0":r.map(function(e){var t=this[e]||0;return e===
 "seconds"&&this.milliseconds&&(t=(t+this.milliseconds/1e3).toFixed(6).replace(/\.?0+$/,
@@ -741,17 +704,10 @@ Ze.binary[r]=e})});var et=I((Yh,rr)=>{"use strict";p();rr.exports={host:"localho
 port:5432,rows:0,binary:!1,max:10,idleTimeoutMillis:3e4,client_encoding:"",ssl:!1,
 application_name:void 0,fallback_application_name:void 0,options:void 0,parseInputDatesAsUTC:!1,
 statement_timeout:!1,lock_timeout:!1,idle_in_transaction_session_timeout:!1,query_timeout:!1,
-<<<<<<< HEAD
-connect_timeout:0,keepalives:1,keepalives_idle:0};var ke=Xe(),Ga=ke.getTypeParser(
-20,"text"),$a=ke.getTypeParser(1016,"text");rr.exports.__defineSetter__("parseIn\
-t8",function(r){ke.setTypeParser(20,"text",r?ke.getTypeParser(23,"text"):Ga),ke.
-setTypeParser(1016,"text",r?ke.getTypeParser(1007,"text"):$a)})});var tt=I((Jh,Ni)=>{"use strict";p();var Va=(Gt(),O(Ht)),Ka=et();function za(r){var e=r.
-=======
 connect_timeout:0,keepalives:1,keepalives_idle:0};var De=Xe(),Ga=De.getTypeParser(
 20,"text"),$a=De.getTypeParser(1016,"text");rr.exports.__defineSetter__("parseIn\
 t8",function(r){De.setTypeParser(20,"text",r?De.getTypeParser(23,"text"):Ga),De.
-setTypeParser(1016,"text",r?De.getTypeParser(1007,"text"):$a)})});var tt=I((Zh,Ni)=>{"use strict";p();var Va=(Gt(),O(Ht)),Ka=et();function za(r){var e=r.
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
+setTypeParser(1016,"text",r?De.getTypeParser(1007,"text"):$a)})});var tt=I((Jh,Ni)=>{"use strict";p();var Va=(Gt(),O(Ht)),Ka=et();function za(r){var e=r.
 replace(/\\/g,"\\\\").replace(/"/g,'\\"');return'"'+e+'"'}a(za,"escapeElement");
 function Oi(r){for(var e="{",t=0;t<r.length;t++)t>0&&(e=e+","),r[t]===null||typeof r[t]>
 "u"?e=e+"NULL":Array.isArray(r[t])?e=e+Oi(r[t]):r[t]instanceof y?e+="\\\\x"+r[t].
@@ -845,17 +801,10 @@ typeof r=="function"?(t=e,e=r,r=/\r?\n/):typeof e=="object"&&(t=e,e=Vi)}t=Object
 assign({},t),t.autoDestroy=!0,t.transform=du,t.flush=yu,t.readableObjectMode=!0;
 let n=new fu(t);return n[be]="",n[dt]=new pu("utf8"),n.matcher=r,n.mapper=e,n.maxLength=
 t.maxLength,n.skipOverflow=t.skipOverflow||!1,n.overflow=!1,n._destroy=function(i,s){
-<<<<<<< HEAD
 this._writableState.errorEmitted=!1,s(i)},n}a(mu,"split");zi.exports=mu});var Xi=I((dl,de)=>{"use strict";p();var Zi=(or(),O(sr)),gu=(hr(),O(cr)).Stream,wu=Yi(),
 Ji=(Ge(),O(He)),bu=5432,yt=m.platform==="win32",rt=m.stderr,Su=56,xu=7,Eu=61440,
-vu=32768;function _u(r){return(r&Eu)==vu}a(_u,"isRegFile");var Oe=["host","port",
-"database","user","password"],pr=Oe.length,Au=Oe[pr-1];function dr(){var r=rt instanceof
-=======
-this._writableState.errorEmitted=!1,s(i)},n}a(mu,"split");zi.exports=mu});var Xi=I((pl,de)=>{"use strict";p();var Zi=(or(),O(sr)),gu=(hr(),O(cr)).Stream,wu=Yi(),
-Ji=(Ge(),O(He)),bu=5432,yt=m.platform==="win32",rt=m.stderr,Su=56,Eu=7,vu=61440,
-xu=32768;function _u(r){return(r&vu)==xu}a(_u,"isRegFile");var Ue=["host","port",
+vu=32768;function _u(r){return(r&Eu)==vu}a(_u,"isRegFile");var Ue=["host","port",
 "database","user","password"],pr=Ue.length,Au=Ue[pr-1];function dr(){var r=rt instanceof
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
 gu&&rt.writable===!0;if(r){var e=Array.prototype.slice.call(arguments).concat(`
 `);rt.write(Ji.format.apply(Ji,e))}}a(dr,"warn");Object.defineProperty(de.exports,
 "isWin",{get:a(function(){return yt},"get"),set:a(function(r){yt=r},"set")});de.
@@ -880,13 +829,8 @@ h>=0&&e==":"&&t!=="\\"&&(c(n,i,h+1),i=h+2,n+=1)}return o=Object.keys(o).length==
 pr?o:null,o},Iu=de.exports.isValidEntry=function(r){for(var e={0:function(o){return o.
 length>0},1:function(o){return o==="*"?!0:(o=Number(o),isFinite(o)&&o>0&&o<9007199254740992&&
 Math.floor(o)===o)},2:function(o){return o.length>0},3:function(o){return o.length>
-<<<<<<< HEAD
-0},4:function(o){return o.length>0}},t=0;t<Oe.length;t+=1){var n=e[t],i=r[Oe[t]]||
-"",s=n(i);if(!s)return!1}return!0}});var ts=I((wl,yr)=>{"use strict";p();var gl=(or(),O(sr)),es=(ur(),O(ar)),mt=Xi();
-=======
 0},4:function(o){return o.length>0}},t=0;t<Ue.length;t+=1){var n=e[t],i=r[Ue[t]]||
-"",s=n(i);if(!s)return!1}return!0}});var ts=I((gl,yr)=>{"use strict";p();var ml=(or(),O(sr)),es=(ur(),O(ar)),mt=Xi();
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
+"",s=n(i);if(!s)return!1}return!0}});var ts=I((wl,yr)=>{"use strict";p();var gl=(or(),O(sr)),es=(ur(),O(ar)),mt=Xi();
 yr.exports=function(r,e){var t=mt.getFileName();es.stat(t,function(n,i){if(n||!mt.
 usePgPass(i,t))return e(void 0);var s=es.createReadStream(t);mt.getPassword(r,s,
 e)})};yr.exports.warnTo=mt.warnTo});var wt=I((Sl,rs)=>{"use strict";p();var Pu=Xe();function gt(r){this._types=r||Pu,
@@ -920,13 +864,8 @@ e[r]||t||cs[r]},"val"),Fu=a(function(){switch(m.env.PGSSLMODE){case"disable":ret
 prefer":case"require":case"verify-ca":case"verify-full":return!0;case"no-verify":
 return{rejectUnauthorized:!1}}return cs.ssl},"readSSLConfigFromEnvironment"),Oe=a(
 function(r){return"'"+(""+r).replace(/\\/g,"\\\\").replace(/'/g,"\\'")+"'"},"quo\
-<<<<<<< HEAD
-teParamValue"),se=a(function(r,e,t){var n=e[t];n!=null&&r.push(t+"="+Ne(n))},"ad\
-d"),xr=class xr{constructor(e){e=typeof e=="string"?us(e):e||{},e.connectionString&&
-=======
 teParamValue"),se=a(function(r,e,t){var n=e[t];n!=null&&r.push(t+"="+Oe(n))},"ad\
-d"),Er=class Er{constructor(e){e=typeof e=="string"?us(e):e||{},e.connectionString&&
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
+d"),xr=class xr{constructor(e){e=typeof e=="string"?us(e):e||{},e.connectionString&&
 (e=Object.assign({},e,us(e.connectionString))),this.user=V("user",e),this.database=
 V("database",e),this.database===void 0&&(this.database=this.user),this.port=parseInt(
 V("port",e),10),this.host=V("host",e),Object.defineProperty(this,"password",{configurable:!0,
@@ -951,17 +890,10 @@ ssl}:{};if(se(t,n,"sslmode"),se(t,n,"sslca"),se(t,n,"sslkey"),se(t,n,"sslcert"),
 se(t,n,"sslrootcert"),this.database&&t.push("dbname="+Oe(this.database)),this.replication&&
 t.push("replication="+Oe(this.replication)),this.host&&t.push("host="+Oe(this.host)),
 this.isDomainSocket)return e(null,t.join(" "));this.client_encoding&&t.push("cli\
-<<<<<<< HEAD
-ent_encoding="+Ne(this.client_encoding)),Ru.lookup(this.host,function(i,s){return i?
-e(i,null):(t.push("hostaddr="+Ne(s)),e(null,t.join(" ")))})}};a(xr,"ConnectionPa\
+ent_encoding="+Oe(this.client_encoding)),Ru.lookup(this.host,function(i,s){return i?
+e(i,null):(t.push("hostaddr="+Oe(s)),e(null,t.join(" ")))})}};a(xr,"ConnectionPa\
 rameters");var Sr=xr;hs.exports=Sr});var ps=I((Rl,fs)=>{"use strict";p();var Mu=Xe(),ls=/^([A-Za-z]+)(?: (\d+))?(?: (\d+))?/,
 vr=class vr{constructor(e,t){this.command=null,this.rowCount=null,this.oid=null,
-=======
-ent_encoding="+Oe(this.client_encoding)),Ru.lookup(this.host,function(i,s){return i?
-e(i,null):(t.push("hostaddr="+Oe(s)),e(null,t.join(" ")))})}};a(Er,"ConnectionPa\
-rameters");var Sr=Er;hs.exports=Sr});var ps=I((Ll,fs)=>{"use strict";p();var Mu=Xe(),ls=/^([A-Za-z]+)(?: (\d+))?(?: (\d+))?/,
-xr=class xr{constructor(e,t){this.command=null,this.rowCount=null,this.oid=null,
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
 this.rows=[],this.fields=[],this._parsers=void 0,this._types=t,this.RowCtor=null,
 this.rowAsArray=e==="array",this.rowAsArray&&(this.parseRow=this._parseRowAsArray)}addCommandComplete(e){
 var t;e.text?t=ls.exec(e.text):t=ls.exec(e.command),t&&(this.command=t[1],t[3]?(this.
@@ -1006,13 +938,8 @@ try{e.bind({portal:this.portal,statement:this.name,values:this.values,binary:thi
 binary,valueMapper:ys.prepareValue})}catch(t){this.handleError(t,e);return}e.describe(
 {type:"P",name:this.portal||""}),this._getRows(e,this.rows)}handleCopyInResponse(e){
 e.sendCopyFail("No source stream defined")}handleCopyData(e,t){}};a(Ar,"Query");
-<<<<<<< HEAD
 var _r=Ar;ms.exports=_r});var Ss={};re(Ss,{Socket:()=>Se,isIP:()=>ku});function ku(r){return 0}var bs,ws,v,
-Se,St=z(()=>{"use strict";p();bs=Pe(we(),1);a(ku,"isIP");ws=/^[^.]+\./,v=class v extends bs.EventEmitter{constructor(){
-=======
-var _r=Ar;ms.exports=_r});var Ss={};re(Ss,{Socket:()=>Se,isIP:()=>ku});function ku(r){return 0}var bs,ws,x,
-Se,St=z(()=>{"use strict";p();bs=Ie(we(),1);a(ku,"isIP");ws=/^[^.]+\./,x=class x extends bs.EventEmitter{constructor(){
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
+Se,St=z(()=>{"use strict";p();bs=Ie(we(),1);a(ku,"isIP");ws=/^[^.]+\./,v=class v extends bs.EventEmitter{constructor(){
 super(...arguments);_(this,"opts",{});_(this,"connecting",!1);_(this,"pending",!0);
 _(this,"writable",!0);_(this,"encrypted",!1);_(this,"authorized",!1);_(this,"des\
 troyed",!1);_(this,"ws",null);_(this,"writeBuffer");_(this,"tlsState",0);_(this,
@@ -1160,21 +1087,12 @@ r=>M.addCString(r).flush(81),"query"),Es=[],Wu=a(r=>{let e=r.name||"";e.length>6
 console.error("You supplied %s (%s)",e,e.length),console.error("This can cause c\
 onflicts and silent errors executing queries"));let t=r.types||Es;for(var n=t.length,
 i=M.addCString(e).addCString(r.text).addInt16(n),s=0;s<n;s++)i.addInt32(t[s]);return M.
-<<<<<<< HEAD
-flush(80)},"parse"),qe=new nn.Writer,Hu=a(function(r,e){for(let t=0;t<r.length;t++){
-let n=e?e(r[t],t):r[t];n==null?(M.addInt16(0),qe.addInt32(-1)):n instanceof y?(M.
-addInt16(1),qe.addInt32(n.length),qe.add(n)):(M.addInt16(0),qe.addInt32(y.byteLength(
-n)),qe.addString(n))}},"writeValues"),Gu=a((r={})=>{let e=r.portal||"",t=r.statement||
-"",n=r.binary||!1,i=r.values||Es,s=i.length;return M.addCString(e).addCString(t),
-M.addInt16(s),Hu(i,r.valueMapper),M.addInt16(s),M.add(qe.flush()),M.addInt16(n?1:
-=======
 flush(80)},"parse"),Ne=new nn.Writer,Hu=a(function(r,e){for(let t=0;t<r.length;t++){
 let n=e?e(r[t],t):r[t];n==null?(M.addInt16(0),Ne.addInt32(-1)):n instanceof y?(M.
 addInt16(1),Ne.addInt32(n.length),Ne.add(n)):(M.addInt16(0),Ne.addInt32(y.byteLength(
 n)),Ne.addString(n))}},"writeValues"),Gu=a((r={})=>{let e=r.portal||"",t=r.statement||
-"",n=r.binary||!1,i=r.values||vs,s=i.length;return M.addCString(e).addCString(t),
+"",n=r.binary||!1,i=r.values||Es,s=i.length;return M.addCString(e).addCString(t),
 M.addInt16(s),Hu(i,r.valueMapper),M.addInt16(s),M.add(Ne.flush()),M.addInt16(n?1:
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
 0),M.flush(66)},"bind"),$u=y.from([69,0,0,0,9,0,0,0,0,0]),Vu=a(r=>{if(!r||!r.portal&&
 !r.rows)return $u;let e=r.portal||"",t=r.rows||0,n=y.byteLength(e),i=4+n+1+4,s=y.
 allocUnsafe(1+i);return s[0]=69,s.writeInt32BE(i,1),s.write(e,5,"utf-8"),s[n+5]=
@@ -1507,13 +1425,8 @@ pes":"^2.1.0",pgpass:"1.x"},devDependencies:{async:"2.6.4",bluebird:"3.5.2",co:"
 4.6.0","pg-copy-streams":"0.3.0"},peerDependencies:{"pg-native":">=3.0.1"},peerDependenciesMeta:{
 "pg-native":{optional:!0}},scripts:{test:"make test-all"},files:["lib","SPONSORS\
 .md"],license:"MIT",engines:{node:">= 8.0.0"},gitHead:"c99fb2c127ddf8d712500db2c\
-<<<<<<< HEAD
 7b9a5491a178655"}});var Gs=I((bf,Hs)=>{"use strict";p();var Ws=we().EventEmitter,Bc=(Ge(),O(He)),En=tt(),
-je=Hs.exports=function(r,e,t){Ws.call(this),r=En.normalizeQueryConfig(r,e,t),this.
-=======
-7b9a5491a178655"}});var Gs=I((wf,Hs)=>{"use strict";p();var Ws=we().EventEmitter,Bc=(Ge(),O(He)),vn=tt(),
-Qe=Hs.exports=function(r,e,t){Ws.call(this),r=vn.normalizeQueryConfig(r,e,t),this.
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
+Qe=Hs.exports=function(r,e,t){Ws.call(this),r=En.normalizeQueryConfig(r,e,t),this.
 text=r.text,this.values=r.values,this.name=r.name,this.callback=r.callback,this.
 state="new",this._arrayMode=r.rowMode==="array",this._emitRowEvents=!1,this.on("\
 newListener",function(n){n==="row"&&(this._emitRowEvents=!0)}.bind(this))};Bc.inherits(
@@ -1596,18 +1509,17 @@ types=Xe(),this.DatabaseError=qc},"PG");typeof m.env.NODE_PG_FORCE_NATIVE<"u"?nt
 exports=new _n(vn()):(nt.exports=new _n(kc),Object.defineProperty(nt.exports,"na\
 tive",{configurable:!0,enumerable:!1,get(){var r=null;try{r=new _n(vn())}catch(e){
 if(e.code!=="MODULE_NOT_FOUND")throw e}return Object.defineProperty(nt.exports,"\
-<<<<<<< HEAD
 native",{value:r}),r}}))});var Vc={};re(Vc,{Client:()=>Bt,ClientBase:()=>oe.ClientBase,Connection:()=>oe.Connection,
-DatabaseError:()=>oe.DatabaseError,NeonDbError:()=>ce,Pool:()=>Cn,Query:()=>oe.Query,
+DatabaseError:()=>oe.DatabaseError,NeonDbError:()=>he,Pool:()=>Cn,Query:()=>oe.Query,
 defaults:()=>oe.defaults,neon:()=>An,neonConfig:()=>Se,types:()=>oe.types});module.
-exports=O(Vc);p();var Lt=Pe(It());St();p();St();gr();var Xs=Pe(tt()),eo=Pe(wt());function jc(r){return r instanceof y?"\\x"+r.toString("hex"):r}a(jc,"encodeBuffe\
+exports=O(Vc);p();var Lt=Ie(It());St();p();St();gr();var Xs=Ie(tt()),eo=Ie(wt());function jc(r){return r instanceof y?"\\x"+r.toString("hex"):r}a(jc,"encodeBuffe\
 rsAsBytea");var Pt=class Pt extends Error{constructor(t){super(t);_(this,"name",
 "NeonDbError");_(this,"severity");_(this,"code");_(this,"detail");_(this,"hint");
 _(this,"position");_(this,"internalPosition");_(this,"internalQuery");_(this,"wh\
 ere");_(this,"schema");_(this,"table");_(this,"column");_(this,"dataType");_(this,
 "constraint");_(this,"file");_(this,"line");_(this,"routine");_(this,"sourceErro\
 r");"captureStackTrace"in Error&&typeof Error.captureStackTrace=="function"&&Error.
-captureStackTrace(this,Pt)}};a(Pt,"NeonDbError");var ce=Pt,Zs="transaction() exp\
+captureStackTrace(this,Pt)}};a(Pt,"NeonDbError");var he=Pt,Zs="transaction() exp\
 ects an array of queries, or a function returning an array of queries",Wc=["seve\
 rity","code","detail","hint","position","internalPosition","internalQuery","wher\
 e","schema","table","column","dataType","constraint","file","line","routine"];function An(r,{
@@ -1625,103 +1537,40 @@ query:P,params:g};return u&&u(k),Hc(ye,k,K)}a(X,"resolve"),X.transaction=async(A
 if(typeof A=="function"&&(A=A(X)),!Array.isArray(A))throw new Error(Zs);A.forEach(
 k=>{if(k[Symbol.toStringTag]!=="NeonQueryPromise")throw new Error(Zs)});let P=A.
 map(k=>k.parameterizedQuery),K=A.map(k=>k.opts??{});return ye(P,K,g)};async function ye(A,g,P){
-let{fetchEndpoint:K,fetchFunction:k}=Se,j=typeof K=="function"?K(C,B,{jwtAuth:h!==
-void 0}):K,he=Array.isArray(A)?{queries:A}:A,ee=n??{},R=e??!1,$=t??!1,le=i,me=s,
-Ee=o;P!==void 0&&(P.fetchOptions!==void 0&&(ee={...ee,...P.fetchOptions}),P.arrayMode!==
-void 0&&(R=P.arrayMode),P.fullResults!==void 0&&($=P.fullResults),P.isolationLevel!==
-void 0&&(le=P.isolationLevel),P.readOnly!==void 0&&(me=P.readOnly),P.deferrable!==
-void 0&&(Ee=P.deferrable)),g!==void 0&&!Array.isArray(g)&&g.fetchOptions!==void 0&&
-(ee={...ee,...g.fetchOptions});let Ce=h;!Array.isArray(g)&&g?.authToken!==void 0&&
-(Ce=g.authToken);let fe={"Neon-Connection-String":r,"Neon-Raw-Text-Output":"true",
-"Neon-Array-Mode":"true"},it=await Gc(Ce);it&&(fe.Authorization=`Bearer ${it}`),
-Array.isArray(A)&&(le!==void 0&&(fe["Neon-Batch-Isolation-Level"]=le),me!==void 0&&
-(fe["Neon-Batch-Read-Only"]=String(me)),Ee!==void 0&&(fe["Neon-Batch-Deferrable"]=
-String(Ee)));let te;try{te=await(k??fetch)(j,{method:"POST",body:JSON.stringify(
-he),headers:fe,...ee})}catch(W){let H=new ce(`Error connecting to database: ${W.
-message}`);throw H.sourceError=W,H}if(te.ok){let W=await te.json();if(Array.isArray(
-A)){let H=W.results;if(!Array.isArray(H))throw new ce("Neon internal error: unex\
-pected result format");return H.map((Te,ve)=>{let Rt=g[ve]??{},ro=Rt.arrayMode??
-R,no=Rt.fullResults??$;return Js(Te,{arrayMode:ro,fullResults:no,parameterizedQuery:A[ve],
-resultCallback:c,types:Rt.types})})}else{let H=g??{},Te=H.arrayMode??R,ve=H.fullResults??
-$;return Js(W,{arrayMode:Te,fullResults:ve,parameterizedQuery:A,resultCallback:c,
-types:H.types})}}else{let{status:W}=te;if(W===400){let H=await te.json(),Te=new ce(
-H.message);for(let ve of Wc)Te[ve]=H[ve]??void 0;throw Te}else{let H=await te.text();
-throw new ce(`Server error (HTTP status ${W}): ${H}`)}}}return a(ye,"execute"),X}
-a(An,"neon");function Hc(r,e,t){return{[Symbol.toStringTag]:"NeonQueryPromise",parameterizedQuery:e,
-opts:t,then:a((n,i)=>r(e,t).then(n,i),"then"),catch:a(n=>r(e,t).catch(n),"catch"),
-finally:a(n=>r(e,t).finally(n),"finally")}}a(Hc,"createNeonQueryPromise");function Js(r,{
-arrayMode:e,fullResults:t,parameterizedQuery:n,resultCallback:i,types:s}){let o=new eo.default(
+let{fetchEndpoint:K,fetchFunction:k}=Se,j=Array.isArray(A)?{queries:A}:A,ee=n??{},
+ae=e??!1,R=t??!1,$=i,le=s,me=o;P!==void 0&&(P.fetchOptions!==void 0&&(ee={...ee,
+...P.fetchOptions}),P.arrayMode!==void 0&&(ae=P.arrayMode),P.fullResults!==void 0&&
+(R=P.fullResults),P.isolationLevel!==void 0&&($=P.isolationLevel),P.readOnly!==void 0&&
+(le=P.readOnly),P.deferrable!==void 0&&(me=P.deferrable)),g!==void 0&&!Array.isArray(
+g)&&g.fetchOptions!==void 0&&(ee={...ee,...g.fetchOptions});let Ee=h;!Array.isArray(
+g)&&g?.authToken!==void 0&&(Ee=g.authToken);let je=typeof K=="function"?K(C,B,{jwtAuth:Ee!==
+void 0}):K,fe={"Neon-Connection-String":r,"Neon-Raw-Text-Output":"true","Neon-Ar\
+ray-Mode":"true"},it=await Gc(Ee);it&&(fe.Authorization=`Bearer ${it}`),Array.isArray(
+A)&&($!==void 0&&(fe["Neon-Batch-Isolation-Level"]=$),le!==void 0&&(fe["Neon-Bat\
+ch-Read-Only"]=String(le)),me!==void 0&&(fe["Neon-Batch-Deferrable"]=String(me)));
+let te;try{te=await(k??fetch)(je,{method:"POST",body:JSON.stringify(j),headers:fe,
+...ee})}catch(W){let H=new he(`Error connecting to database: ${W.message}`);throw H.
+sourceError=W,H}if(te.ok){let W=await te.json();if(Array.isArray(A)){let H=W.results;
+if(!Array.isArray(H))throw new he("Neon internal error: unexpected result format");
+return H.map((Ce,ve)=>{let Rt=g[ve]??{},ro=Rt.arrayMode??ae,no=Rt.fullResults??R;
+return Js(Ce,{arrayMode:ro,fullResults:no,parameterizedQuery:A[ve],resultCallback:c,
+types:Rt.types})})}else{let H=g??{},Ce=H.arrayMode??ae,ve=H.fullResults??R;return Js(
+W,{arrayMode:Ce,fullResults:ve,parameterizedQuery:A,resultCallback:c,types:H.types})}}else{
+let{status:W}=te;if(W===400){let H=await te.json(),Ce=new he(H.message);for(let ve of Wc)
+Ce[ve]=H[ve]??void 0;throw Ce}else{let H=await te.text();throw new he(`Server er\
+ror (HTTP status ${W}): ${H}`)}}}return a(ye,"execute"),X}a(An,"neon");function Hc(r,e,t){
+return{[Symbol.toStringTag]:"NeonQueryPromise",parameterizedQuery:e,opts:t,then:a(
+(n,i)=>r(e,t).then(n,i),"then"),catch:a(n=>r(e,t).catch(n),"catch"),finally:a(n=>r(
+e,t).finally(n),"finally")}}a(Hc,"createNeonQueryPromise");function Js(r,{arrayMode:e,
+fullResults:t,parameterizedQuery:n,resultCallback:i,types:s}){let o=new eo.default(
 s),u=r.fields.map(l=>l.name),c=r.fields.map(l=>o.getTypeParser(l.dataTypeID)),h=e===
 !0?r.rows.map(l=>l.map((d,b)=>d===null?null:c[b](d))):r.rows.map(l=>Object.fromEntries(
 l.map((d,b)=>[u[b],d===null?null:c[b](d)])));return i&&i(n,r,h,{arrayMode:e,fullResults:t}),
 t?(r.viaNeonFetch=!0,r.rowAsArray=e,r.rows=h,r._parsers=c,r._types=o,r):h}a(Js,"\
 processQueryResult");async function Gc(r){if(typeof r=="string")return r;if(typeof r==
-"function")try{return await Promise.resolve(r())}catch(e){let t=new ce("Error ge\
-tting auth token.");throw e instanceof Error&&(t=new ce(`Error getting auth toke\
-n: ${e.message}`)),t}}a(Gc,"getAuthToken");var to=Pe(bt()),oe=Pe(It());var Tn=class Tn extends Lt.Client{constructor(t){super(t);this.config=t}get neonConfig(){
-=======
-native",{value:r}),r}}))});var $c={};re($c,{Client:()=>Bt,ClientBase:()=>oe.ClientBase,Connection:()=>oe.Connection,
-DatabaseError:()=>oe.DatabaseError,NeonDbError:()=>he,Pool:()=>Cn,Query:()=>oe.Query,
-defaults:()=>oe.defaults,neon:()=>An,neonConfig:()=>Se,types:()=>oe.types});module.
-exports=O($c);p();var Lt=Ie(It());St();p();St();gr();var Xs=Ie(tt()),eo=Ie(wt());var Pt=class Pt extends Error{constructor(t){super(t);_(this,"name","NeonDbError");
-_(this,"severity");_(this,"code");_(this,"detail");_(this,"hint");_(this,"positi\
-on");_(this,"internalPosition");_(this,"internalQuery");_(this,"where");_(this,"\
-schema");_(this,"table");_(this,"column");_(this,"dataType");_(this,"constraint");
-_(this,"file");_(this,"line");_(this,"routine");_(this,"sourceError");"captureSt\
-ackTrace"in Error&&typeof Error.captureStackTrace=="function"&&Error.captureStackTrace(
-this,Pt)}};a(Pt,"NeonDbError");var he=Pt,Zs="transaction() expects an array of q\
-ueries, or a function returning an array of queries",jc=["severity","code","deta\
-il","hint","position","internalPosition","internalQuery","where","schema","table",
-"column","dataType","constraint","file","line","routine"];function An(r,{arrayMode:e,
-fullResults:t,fetchOptions:n,isolationLevel:i,readOnly:s,deferrable:o,queryCallback:u,
-resultCallback:c,authToken:h}={}){if(!r)throw new Error("No database connection \
-string was provided to `neon()`. Perhaps an environment variable has not been se\
-t?");let l;try{l=mr(r)}catch{throw new Error("Database connection string provide\
-d to `neon()` is not a valid URL. Connection string: "+String(r))}let{protocol:d,
-username:b,hostname:C,port:B,pathname:Q}=l;if(d!=="postgres:"&&d!=="postgresql:"||
-!b||!C||!Q)throw new Error("Database connection string format for `neon()` shoul\
-d be: postgresql://user:password@host.tld/dbname?option=value");function X(A,...g){
-let P,K;if(typeof A=="string")P=A,K=g[1],g=g[0]??[];else{P="";for(let j=0;j<A.length;j++)
-P+=A[j],j<g.length&&(P+="$"+(j+1))}g=g.map(j=>(0,Xs.prepareValue)(j));let k={query:P,
-params:g};return u&&u(k),Wc(ye,k,K)}a(X,"resolve"),X.transaction=async(A,g)=>{if(typeof A==
-"function"&&(A=A(X)),!Array.isArray(A))throw new Error(Zs);A.forEach(k=>{if(k[Symbol.
-toStringTag]!=="NeonQueryPromise")throw new Error(Zs)});let P=A.map(k=>k.parameterizedQuery),
-K=A.map(k=>k.opts??{});return ye(P,K,g)};async function ye(A,g,P){let{fetchEndpoint:K,
-fetchFunction:k}=Se,j=Array.isArray(A)?{queries:A}:A,ee=n??{},ae=e??!1,R=t??!1,$=i,
-le=s,me=o;P!==void 0&&(P.fetchOptions!==void 0&&(ee={...ee,...P.fetchOptions}),P.
-arrayMode!==void 0&&(ae=P.arrayMode),P.fullResults!==void 0&&(R=P.fullResults),P.
-isolationLevel!==void 0&&($=P.isolationLevel),P.readOnly!==void 0&&(le=P.readOnly),
-P.deferrable!==void 0&&(me=P.deferrable)),g!==void 0&&!Array.isArray(g)&&g.fetchOptions!==
-void 0&&(ee={...ee,...g.fetchOptions});let ve=h;!Array.isArray(g)&&g?.authToken!==
-void 0&&(ve=g.authToken);let je=typeof K=="function"?K(C,B,{jwtAuth:ve!==void 0}):
-K,fe={"Neon-Connection-String":r,"Neon-Raw-Text-Output":"true","Neon-Array-Mode":"\
-true"},it=await Hc(ve);it&&(fe.Authorization=`Bearer ${it}`),Array.isArray(A)&&($!==
-void 0&&(fe["Neon-Batch-Isolation-Level"]=$),le!==void 0&&(fe["Neon-Batch-Read-O\
-nly"]=String(le)),me!==void 0&&(fe["Neon-Batch-Deferrable"]=String(me)));let te;
-try{te=await(k??fetch)(je,{method:"POST",body:JSON.stringify(j),headers:fe,...ee})}catch(W){
-let H=new he(`Error connecting to database: ${W.message}`);throw H.sourceError=W,
-H}if(te.ok){let W=await te.json();if(Array.isArray(A)){let H=W.results;if(!Array.
-isArray(H))throw new he("Neon internal error: unexpected result format");return H.
-map((Ce,xe)=>{let Rt=g[xe]??{},ro=Rt.arrayMode??ae,no=Rt.fullResults??R;return Js(
-Ce,{arrayMode:ro,fullResults:no,parameterizedQuery:A[xe],resultCallback:c,types:Rt.
-types})})}else{let H=g??{},Ce=H.arrayMode??ae,xe=H.fullResults??R;return Js(W,{arrayMode:Ce,
-fullResults:xe,parameterizedQuery:A,resultCallback:c,types:H.types})}}else{let{status:W}=te;
-if(W===400){let H=await te.json(),Ce=new he(H.message);for(let xe of jc)Ce[xe]=H[xe]??
-void 0;throw Ce}else{let H=await te.text();throw new he(`Server error (HTTP stat\
-us ${W}): ${H}`)}}}return a(ye,"execute"),X}a(An,"neon");function Wc(r,e,t){return{
-[Symbol.toStringTag]:"NeonQueryPromise",parameterizedQuery:e,opts:t,then:a((n,i)=>r(
-e,t).then(n,i),"then"),catch:a(n=>r(e,t).catch(n),"catch"),finally:a(n=>r(e,t).finally(
-n),"finally")}}a(Wc,"createNeonQueryPromise");function Js(r,{arrayMode:e,fullResults:t,
-parameterizedQuery:n,resultCallback:i,types:s}){let o=new eo.default(s),u=r.fields.
-map(l=>l.name),c=r.fields.map(l=>o.getTypeParser(l.dataTypeID)),h=e===!0?r.rows.
-map(l=>l.map((d,b)=>d===null?null:c[b](d))):r.rows.map(l=>Object.fromEntries(l.map(
-(d,b)=>[u[b],d===null?null:c[b](d)])));return i&&i(n,r,h,{arrayMode:e,fullResults:t}),
-t?(r.viaNeonFetch=!0,r.rowAsArray=e,r.rows=h,r._parsers=c,r._types=o,r):h}a(Js,"\
-processQueryResult");async function Hc(r){if(typeof r=="string")return r;if(typeof r==
 "function")try{return await Promise.resolve(r())}catch(e){let t=new he("Error ge\
 tting auth token.");throw e instanceof Error&&(t=new he(`Error getting auth toke\
-n: ${e.message}`)),t}}a(Hc,"getAuthToken");var to=Ie(bt()),oe=Ie(It());var Tn=class Tn extends Lt.Client{constructor(t){super(t);this.config=t}get neonConfig(){
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
+n: ${e.message}`)),t}}a(Gc,"getAuthToken");var to=Ie(bt()),oe=Ie(It());var Tn=class Tn extends Lt.Client{constructor(t){super(t);this.config=t}get neonConfig(){
 return this.connection.stream}connect(t){let{neonConfig:n}=this;n.forceDisablePgSSL&&
 (this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&console.warn("\
 SSL is enabled for both Postgres (e.g. ?sslmode=require in the connection string\
@@ -1759,29 +1608,16 @@ C=b.encode(i),B=await w.subtle.importKey("raw",C,{name:"HMAC",hash:{name:"SHA-25
 "HMAC",B,Q)),X=y.from(X.map((te,W)=>X[W]^Q[W]));let A=X,g=await w.subtle.importKey(
 "raw",A,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),P=new Uint8Array(await w.
 subtle.sign("HMAC",g,b.encode("Client Key"))),K=await w.subtle.digest("SHA-256",
-<<<<<<< HEAD
-P),k="n=*,r="+n.clientNonce,j="r="+u+",s="+c+",i="+l,he="c=biws,r="+u,ee=k+","+j+
-","+he,R=await w.subtle.importKey("raw",K,{name:"HMAC",hash:{name:"SHA-256"}},!1,
-["sign"]);var $=new Uint8Array(await w.subtle.sign("HMAC",R,b.encode(ee))),le=y.
-from(P.map((te,W)=>P[W]^$[W])),me=le.toString("base64");let Ee=await w.subtle.importKey(
-"raw",A,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),Ce=await w.subtle.sign(
-"HMAC",Ee,b.encode("Server Key")),fe=await w.subtle.importKey("raw",Ce,{name:"HM\
-AC",hash:{name:"SHA-256"}},!1,["sign"]);var it=y.from(await w.subtle.sign("HMAC",
-fe,b.encode(ee)));n.message="SASLResponse",n.serverSignature=it.toString("base64"),
-n.response=he+",p="+me,this.connection.sendSCRAMClientFinalMessage(this.saslSession.
-response)}};a(Tn,"NeonClient");var Bt=Tn;function $c(r,e){if(e)return{callback:e,
-=======
 P),k="n=*,r="+n.clientNonce,j="r="+u+",s="+c+",i="+l,ee="c=biws,r="+u,ae=k+","+j+
 ","+ee,R=await w.subtle.importKey("raw",K,{name:"HMAC",hash:{name:"SHA-256"}},!1,
 ["sign"]);var $=new Uint8Array(await w.subtle.sign("HMAC",R,b.encode(ae))),le=y.
-from(P.map((te,W)=>P[W]^$[W])),me=le.toString("base64");let ve=await w.subtle.importKey(
+from(P.map((te,W)=>P[W]^$[W])),me=le.toString("base64");let Ee=await w.subtle.importKey(
 "raw",A,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),je=await w.subtle.sign(
-"HMAC",ve,b.encode("Server Key")),fe=await w.subtle.importKey("raw",je,{name:"HM\
+"HMAC",Ee,b.encode("Server Key")),fe=await w.subtle.importKey("raw",je,{name:"HM\
 AC",hash:{name:"SHA-256"}},!1,["sign"]);var it=y.from(await w.subtle.sign("HMAC",
 fe,b.encode(ae)));n.message="SASLResponse",n.serverSignature=it.toString("base64"),
 n.response=ee+",p="+me,this.connection.sendSCRAMClientFinalMessage(this.saslSession.
-response)}};a(Tn,"NeonClient");var Bt=Tn;function Gc(r,e){if(e)return{callback:e,
->>>>>>> c50ed4e (fix: passing authtoken only in http request)
+response)}};a(Tn,"NeonClient");var Bt=Tn;function $c(r,e){if(e)return{callback:e,
 result:void 0};let t,n,i=a(function(o,u){o?t(o):n(u)},"cb"),s=new r(function(o,u){
 n=o,t=u});return{callback:i,result:s}}a($c,"promisify");var In=class In extends Lt.Pool{constructor(){
 super(...arguments);_(this,"Client",Bt);_(this,"hasFetchUnsupportedListeners",!1)}on(t,n){
