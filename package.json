@@ -47,7 +47,8 @@
     "cfDev": "npm run build && wrangler dev",
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
-    "format:fix": "prettier -w ."
+    "format:fix": "prettier -w .",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230115.0",
@@ -59,6 +60,7 @@
     "fast-equals": "^5.0.1",
     "subtls": "^0.3.0",
     "typescript": "^5.0.4",
+    "vitest": "^2.1.6",
     "wrangler": "^3.0.1"
   }
 }

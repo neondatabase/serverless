@@ -325,7 +325,6 @@ class NeonPool extends Pool {
 
     try {
       const cp = new ConnectionParameters(
-        // @ts-expect-error -- TS doesn't know about this.options
         this.options,
       ) as ConnectionParameters;
       const euc = encodeURIComponent,
@@ -341,7 +340,6 @@ class NeonPool extends Pool {
       });
 
       sql(queryText, queryValues, {
-        // @ts-expect-error -- TS doesn't know about this.options
         types: config.types ?? this.options?.types,
       })
         .then((result) => cb(undefined, result))
