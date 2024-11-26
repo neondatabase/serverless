@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  checks-format:
+  run-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
