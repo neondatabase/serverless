@@ -324,9 +324,7 @@ class NeonPool extends Pool {
     cb = response.callback;
 
     try {
-      const cp = new ConnectionParameters(
-        this.options,
-      ) as ConnectionParameters;
+      const cp = new ConnectionParameters(this.options) as ConnectionParameters;
       const euc = encodeURIComponent,
         eu = encodeURI;
       const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
