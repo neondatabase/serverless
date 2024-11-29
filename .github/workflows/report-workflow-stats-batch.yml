@@ -14,13 +14,13 @@ jobs:
     permissions:
       actions: read
     steps:
-    - name: Export Workflow Run for the past 2 hours
-      uses: neondatabase/gh-workflow-stats-action@v0.2.1
-      with:
-        db_uri: ${{ secrets.GH_REPORT_STATS_DB_RW_CONNSTR }}
-        db_table: "gh_workflow_stats_serverless"
-        gh_token: ${{ secrets.GITHUB_TOKEN }}
-        duration: '2h'
+      - name: Export Workflow Run for the past 2 hours
+        uses: neondatabase/gh-workflow-stats-action@v0.2.1
+        with:
+          db_uri: ${{ secrets.GH_REPORT_STATS_DB_RW_CONNSTR }}
+          db_table: 'gh_workflow_stats_serverless'
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          duration: '2h'
 
   gh-workflow-stats-batch-48h:
     name: GitHub Workflow Stats Batch 48 hours
@@ -29,13 +29,13 @@ jobs:
     permissions:
       actions: read
     steps:
-    - name: Export Workflow Run for the past 48 hours
-      uses: neondatabase/gh-workflow-stats-action@v0.2.1
-      with:
-        db_uri: ${{ secrets.GH_REPORT_STATS_DB_RW_CONNSTR }}
-        db_table: "gh_workflow_stats_serverless"
-        gh_token: ${{ secrets.GITHUB_TOKEN }}
-        duration: '48h'
+      - name: Export Workflow Run for the past 48 hours
+        uses: neondatabase/gh-workflow-stats-action@v0.2.1
+        with:
+          db_uri: ${{ secrets.GH_REPORT_STATS_DB_RW_CONNSTR }}
+          db_table: 'gh_workflow_stats_serverless'
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          duration: '48h'
 
   gh-workflow-stats-batch-30d:
     name: GitHub Workflow Stats Batch 30 days
@@ -44,10 +44,10 @@ jobs:
     permissions:
       actions: read
     steps:
-    - name: Export Workflow Run for the past 30 days
-      uses: neondatabase/gh-workflow-stats-action@v0.2.1
-      with:
-        db_uri: ${{ secrets.GH_REPORT_STATS_DB_RW_CONNSTR }}
-        db_table: "gh_workflow_stats_serverless"
-        gh_token: ${{ secrets.GITHUB_TOKEN }}
-        duration: '720h'
+      - name: Export Workflow Run for the past 30 days
+        uses: neondatabase/gh-workflow-stats-action@v0.2.1
+        with:
+          db_uri: ${{ secrets.GH_REPORT_STATS_DB_RW_CONNSTR }}
+          db_table: 'gh_workflow_stats_serverless'
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          duration: '720h'
