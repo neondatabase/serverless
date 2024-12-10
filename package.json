@@ -17,7 +17,7 @@
     "path": "file:shims/path",
     "pg": "8.8.0",
     "pg-native": "file:shims/pg-native",
-    "prettier": "3.3.3",
+    "prettier": "^3.4.1",
     "serve": "^14.1.2",
     "stream": "file:shims/stream",
     "string_decoder": "file:shims/string_decoder",
@@ -43,11 +43,12 @@
     "launch": "DOTENV_CONFIG_PATH=.dev.vars node -r dotenv/config --no-warnings dist/node/index.mjs",
     "node": "npm run build && npm run launch",
     "nodeDebug": "npm run buildDebug && npm run launch",
-    "bun": "npm run build && bun dist/node/index.mjs",
+    "bun": "npm run build && DOTENV_CONFIG_PATH=.dev.vars bun -r dotenv/config dist/node/index.mjs",
     "cfDev": "npm run build && wrangler dev",
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
-    "format:fix": "prettier -w ."
+    "format:fix": "prettier -w .",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230115.0",
@@ -55,10 +56,11 @@
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.4",
     "dotenv": "^16.0.3",
-    "esbuild": "^0.21.1",
+    "esbuild": "^0.24.0",
     "fast-equals": "^5.0.1",
     "subtls": "^0.3.0",
     "typescript": "^5.0.4",
+    "vitest": "^2.1.6",
     "wrangler": "^3.0.1"
   }
 }
