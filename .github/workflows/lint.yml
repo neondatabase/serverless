@@ -6,13 +6,17 @@ on:
       - main
 
 jobs:
-  prepare:
-    uses: ./.github/workflows/prepare.yml
-
   lint:
-    needs: prepare
     runs-on: ubuntu-latest
     steps:
+      # setup
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install package dependencies
+        run: bun install
+
+      # goal
       - name: Check TypeScript types
         run: bun run check
 

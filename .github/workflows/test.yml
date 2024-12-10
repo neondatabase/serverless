@@ -1,4 +1,4 @@
-name: Run tests
+name: Test
 
 on:
   pull_request:
@@ -6,12 +6,16 @@ on:
       - main
 
 jobs:
-  prepare:
-    uses: ./.github/workflows/prepare.yml
-
   test:
-    needs: prepare
     runs-on: ubuntu-latest
     steps:
+      # setup
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install package dependencies
+        run: bun install
+
+      # goal
       - name: Run tests
         run: bun run test
