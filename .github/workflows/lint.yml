@@ -6,11 +6,13 @@ on:
       - main
 
 jobs:
-  check-format:
+  prepare:
+    uses: ./.github/workflows/prepare.yml
+
+  lint:
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/prepare.yml
-
       - name: Check TypeScript types
         run: bun run check
 

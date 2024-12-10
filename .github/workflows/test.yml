@@ -6,10 +6,12 @@ on:
       - main
 
 jobs:
-  run-tests:
+  prepare:
+    uses: ./.github/workflows/prepare.yml
+
+  test:
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/prepare.yml
-
       - name: Run tests
         run: bun run test
