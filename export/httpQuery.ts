@@ -205,7 +205,11 @@ export function neon(
         if (j < params.length) {
           const param = params[j];
 
-          if (param !== null && typeof param === 'object' && param[Symbol.toStringTag] === 'NeonQueryPromise') {
+          if (
+            param !== null &&
+            typeof param === 'object' &&
+            param[Symbol.toStringTag] === 'NeonQueryPromise'
+          ) {
             if ((param as NeonQueryPromise).parameterizedQuery.params.length)
               throw new Error(
                 'Tagged-template queries with parameters are not currently composable',
@@ -225,7 +229,6 @@ export function neon(
     params = params.map((param) => encodeBuffersAsBytea(prepareValue(param)));
 
     const parameterizedQuery = { query, params };
-    console.log(parameterizedQuery);
     if (queryCallback) queryCallback(parameterizedQuery);
 
     return createNeonQueryPromise(execute, parameterizedQuery, queryOpts);
