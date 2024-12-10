@@ -1,0 +1,19 @@
+name: Lint
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/prepare.yml
+
+      - name: Check TypeScript types
+        run: bun run check
+
+      - name: Check code formatting
+        run: bun run format
+
