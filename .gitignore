@@ -2,3 +2,4 @@
 .env.local
 node_modules
 tmp
+.DS_Store

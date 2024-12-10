@@ -199,9 +199,25 @@ export function neon(
     } else {
       // tagged-template usage
       query = '';
-      for (let i = 0; i < strings.length; i++) {
+      for (let i = 0, j = 0; i < strings.length; i++) {
         query += strings[i];
-        if (i < params.length) query += '$' + (i + 1);
+
+        if (j < params.length) {
+          const param = params[j];
+
+          if (param !== null && typeof param === 'object' && param[Symbol.toStringTag] === 'NeonQueryPromise') {
+            if ((param as NeonQueryPromise).parameterizedQuery.params.length)
+              throw new Error(
+                'Tagged-template queries with parameters are not currently composable',
+              );
+
+            query += (param as NeonQueryPromise).parameterizedQuery.query;
+            params.splice(j, 1);
+          } else {
+            query += '$' + (i + 1);
+            j++;
+          }
+        }
       }
     }
 

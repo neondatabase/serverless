@@ -287,6 +287,10 @@ export async function latencies(
   await sql`SELECT ${now} AS timenow_uncast`; // us: '2023-05-26T13:35:22.616Z', pg: '2023-05-26T14:35:22.616+01:00' <-- different representations
   await sql`SELECT ${now}::timestamp AS timestampnow`; // us: 2023-05-26T12:35:22.696Z, pg: 2023-05-26T13:35:22.696Z <-- different TZs
 
+  // composed sql for literal strings (SQL injection risk)
+  const func = 'pi'
+  await sql`SELECT ${sql(func)}() AS composed_func_result`
+
   // non-template usage
   await sql('SELECT $1::timestamp AS timestampnow', [now]);
   await sql("SELECT $1 || ' ' || $2 AS greeting", ['hello', 'world']);

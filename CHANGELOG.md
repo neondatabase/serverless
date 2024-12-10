@@ -1,3 +1,5 @@
+Insert raw text into tagged-template `sql` queries by wrapping with the `sql()` function (issue #120).
+
 ## 0.10.4 (2024-11-25)
 
 Fixes insert `Buffer`/`ArrayBuffer` values into `BYTEA` fields when using HTTP fetch queries
