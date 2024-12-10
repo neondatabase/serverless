@@ -22,4 +22,3 @@ jobs:
 
       - name: Check code formatting
         run: bun run format
-
