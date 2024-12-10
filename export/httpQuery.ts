@@ -214,7 +214,7 @@ export function neon(
             query += (param as NeonQueryPromise).parameterizedQuery.query;
             params.splice(j, 1);
           } else {
-            query += '$' + (i + 1);
+            query += '$' + (j + 1);
             j++;
           }
         }
@@ -225,6 +225,7 @@ export function neon(
     params = params.map((param) => encodeBuffersAsBytea(prepareValue(param)));
 
     const parameterizedQuery = { query, params };
+    console.log(parameterizedQuery);
     if (queryCallback) queryCallback(parameterizedQuery);
 
     return createNeonQueryPromise(execute, parameterizedQuery, queryOpts);

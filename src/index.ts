@@ -288,8 +288,9 @@ export async function latencies(
   await sql`SELECT ${now}::timestamp AS timestampnow`; // us: 2023-05-26T12:35:22.696Z, pg: 2023-05-26T13:35:22.696Z <-- different TZs
 
   // composed sql for literal strings (SQL injection risk)
-  const func = 'pi'
-  await sql`SELECT ${sql(func)}() AS composed_func_result`
+  const func = 'pi()'
+  await sql`SELECT ${sql(func)} AS composed_func_result`;
+  await sql`SELECT ${11} AS eleven, ${sql(func)} AS composed_func_result, ${12} AS twelve`;
 
   // non-template usage
   await sql('SELECT $1::timestamp AS timestampnow', [now]);

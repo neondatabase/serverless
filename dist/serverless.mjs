@@ -459,10 +459,10 @@ a=2600822924,u=528734635,c=1541459225,l=0,h=0,f=[1116352408,1899447441,304932347
 "rrot"),x=new Uint32Array(64),E=new Uint8Array(64),L=o(()=>{for(let D=0,$=0;D<16;D++,
 $+=4)x[D]=E[$]<<24|E[$+1]<<16|E[$+2]<<8|E[$+3];for(let D=16;D<64;D++){let $=y(x[D-
 15],7)^y(x[D-15],18)^x[D-15]>>>3,j=y(x[D-2],17)^y(x[D-2],19)^x[D-2]>>>10;x[D]=x[D-
-16]+$+x[D-7]+j|0}let S=e,m=t,b=n,B=i,R=s,q=a,P=u,K=c;for(let D=0;D<64;D++){let $=y(
-R,6)^y(R,11)^y(R,25),j=R&q^~R&P,H=K+$+j+f[D]+x[D]|0,W=y(S,2)^y(S,13)^y(S,22),Y=S&
-m^S&b^m&b,F=W+Y|0;K=P,P=q,q=R,R=B+H|0,B=b,b=m,m=S,S=H+F|0}e=e+S|0,t=t+m|0,n=n+b|
-0,i=i+B|0,s=s+R|0,a=a+q|0,u=u+P|0,c=c+K|0,h=0},"process"),T=o(S=>{typeof S=="str\
+16]+$+x[D-7]+j|0}let S=e,m=t,b=n,R=i,B=s,q=a,P=u,K=c;for(let D=0;D<64;D++){let $=y(
+B,6)^y(B,11)^y(B,25),j=B&q^~B&P,H=K+$+j+f[D]+x[D]|0,W=y(S,2)^y(S,13)^y(S,22),Y=S&
+m^S&b^m&b,F=W+Y|0;K=P,P=q,q=B,B=R+H|0,R=b,b=m,m=S,S=H+F|0}e=e+S|0,t=t+m|0,n=n+b|
+0,i=i+R|0,s=s+B|0,a=a+q|0,u=u+P|0,c=c+K|0,h=0},"process"),T=o(S=>{typeof S=="str\
 ing"&&(S=new TextEncoder().encode(S));for(let m=0;m<S.length;m++)E[h++]=S[m],h===
 64&&L();l+=S.length},"add"),U=o(()=>{if(E[h++]=128,h==64&&L(),h+8>64){for(;h<64;)
 E[h++]=0;L()}for(;h<58;)E[h++]=0;let S=l*8;E[h++]=S/1099511627776&255,E[h++]=S/4294967296&
@@ -1567,16 +1567,16 @@ ${br.repeat(t)}`)}return e}};function Po(r,e,t,n=!0){let i=new be(1024);i.writeU
 writeLengthUint24();i.writeUint16(771,0),A.getRandomValues(i.subarray(32));let u=i.
 writeLengthUint8(0);i.writeBytes(t),u();let c=i.writeLengthUint16(0);i.writeUint16(
 4865,0),c();let l=i.writeLengthUint8(0);i.writeUint8(0,0),l();let h=i.writeLengthUint16(
-0);if(n){i.writeUint16(0,0);let R=i.writeLengthUint16(0),q=i.writeLengthUint16(0);
-i.writeUint8(0,0);let P=i.writeLengthUint16(0);i.writeUTF8String(r),P(),q(),R()}
+0);if(n){i.writeUint16(0,0);let B=i.writeLengthUint16(0),q=i.writeLengthUint16(0);
+i.writeUint8(0,0);let P=i.writeLengthUint16(0);i.writeUTF8String(r),P(),q(),B()}
 i.writeUint16(11,0);let f=i.writeLengthUint16(0),y=i.writeLengthUint8(0);i.writeUint8(
 0,0),y(),f(),i.writeUint16(10,0);let x=i.writeLengthUint16(0),E=i.writeLengthUint16(
 0);i.writeUint16(23,0),E(),x(),i.writeUint16(13,0);let L=i.writeLengthUint16(0),
 T=i.writeLengthUint16(0);i.writeUint16(1027,0),i.writeUint16(2052,0),T(),L(),i.writeUint16(
 43,0);let U=i.writeLengthUint16(0),S=i.writeLengthUint8(0);i.writeUint16(772,0),
 S(),U(),i.writeUint16(51,0);let m=i.writeLengthUint16(0),b=i.writeLengthUint16(0);
-i.writeUint16(23,0);let B=i.writeLengthUint16(0);return i.writeBytes(new Uint8Array(
-e)),B(),b(),m(),h(),a(),s(),i}o(Po,"St");function Te(r,e=""){return[...r].map(t=>t.
+i.writeUint16(23,0);let R=i.writeLengthUint16(0);return i.writeBytes(new Uint8Array(
+e)),R(),b(),m(),h(),a(),s(),i}o(Po,"St");function Te(r,e=""){return[...r].map(t=>t.
 toString(16).padStart(2,"0")).join(e)}o(Te,"K");function Bo(r,e){let t,n,[i]=r.expectLength(
 r.remaining());r.expectUint8(2,0);let[s]=r.expectLengthUint24(0);r.expectUint16(
 771,0);let a=r.readBytes(32);if(ut(a,[207,33,173,116,229,154,97,17,190,29,140,2,
@@ -1624,8 +1624,8 @@ HA-256",t),f=new Uint8Array(h),y=await vr(new Uint8Array(1),a,n),x=await O.diges
 `SHA-${n}`,new Uint8Array(0)),E=new Uint8Array(x),L=await ae(y,"derived",E,s,n),
 T=await vr(L,l,n),U=await ae(T,"c hs traffic",f,s,n),S=await ae(T,"s hs traffic",
 f,s,n),m=await ae(U,"key",new Uint8Array(0),i,n),b=await ae(S,"key",new Uint8Array(
-0),i,n),B=await ae(U,"iv",new Uint8Array(0),12,n),R=await ae(S,"iv",new Uint8Array(
-0),12,n);return{serverHandshakeKey:b,serverHandshakeIV:R,clientHandshakeKey:m,clientHandshakeIV:B,
+0),i,n),R=await ae(U,"iv",new Uint8Array(0),12,n),B=await ae(S,"iv",new Uint8Array(
+0),12,n);return{serverHandshakeKey:b,serverHandshakeIV:B,clientHandshakeKey:m,clientHandshakeIV:R,
 handshakeSecret:T,clientSecret:U,serverSecret:S}}o(Do,"Kt");async function qo(r,e,t,n){
 let i=t>>>3,s=new Uint8Array(i),a=await O.digest(`SHA-${t}`,new Uint8Array(0)),u=new Uint8Array(
 a),c=await ae(r,"derived",u,i,t),l=await vr(c,s,t),h=await ae(l,"c ap traffic",e,
@@ -1725,7 +1725,7 @@ this.subject=yi(t,"subject");let x=t.offset;t.expectUint8(ie,0);let[E]=t.expectA
 readUint8();if(K===Ke){let D=t.readASN1OID();U.push(D)}else K===Sr&&t.expectUint8(
 0,0)}L(),t.expectUint8(Er,0);let S=t.readASN1BitString();this.publicKey={identifiers:U,
 data:S,all:t.data.subarray(x,t.offset)},E(),t.expectUint8($o,0);let[m]=t.expectASN1Length();
-t.expectUint8(ie,0);let[b,B]=t.expectASN1Length(0);for(;B()>0;){t.expectUint8(ie,
+t.expectUint8(ie,0);let[b,R]=t.expectASN1Length(0);for(;R()>0;){t.expectUint8(ie,
 0);let[K,D]=t.expectASN1Length();t.expectUint8(Ke,0);let $=t.readASN1OID();if($===
 "2.5.29.17"){t.expectUint8(De,0);let[j]=t.expectASN1Length(0);t.expectUint8(ie,0);
 let H=Ko(t,He);this.subjectAltNames=H.filter(W=>W.type===(2|He)).map(W=>W.name),
@@ -1753,8 +1753,8 @@ Z=t.readASN1Boolean());let G;if(F()>0){t.expectUint8(qt,0);let M=t.readASN1Lengt
 void 0)throw new Error("Too many bytes in max path length in certificate basicCo\
 nstraints")}Y(),W(),this.basicConstraints={critical:j,ca:Z,pathLength:G}}else t.
 skip(D(),0);K()}b(),m(),s(),this.signedData=t.data.subarray(i,t.offset),t.expectUint8(
-ie,0);let[R,q]=t.expectASN1Length(0);t.expectUint8(Ke,0);let P=t.readASN1OID();if(q()>
-0&&(t.expectUint8(Sr,0),t.expectUint8(0,0)),R(),P!==this.algorithm)throw new Error(
+ie,0);let[B,q]=t.expectASN1Length(0);t.expectUint8(Ke,0);let P=t.readASN1OID();if(q()>
+0&&(t.expectUint8(Sr,0),t.expectUint8(0,0)),B(),P!==this.algorithm)throw new Error(
 `Certificate specifies different signature algorithms inside (${this.algorithm})\
  and out (${P})`);t.expectUint8(Er,0),this.signature=t.readASN1BitString(),n()}static fromPEM(e){
 let t="[A-Z0-9 ]+",n=new RegExp(`-{5}BEGIN ${t}-{5}([a-zA-Z0-9=+\\/\\n\\r]+)-{5}END\
@@ -1833,13 +1833,13 @@ ge type 0x${Te([y])}`);let[x]=u.expectLengthUint24(0);u.expectUint8(0,0);let[E,L
 expectLengthUint24(0),T=[];for(;L()>0;){let[M]=u.expectLengthUint24(0),k=new _r(
 u);T.push(k),M();let[ne,ce]=u.expectLengthUint16(),Fe=u.subarray(ce());ne()}if(E(),
 x(),T.length===0)throw new Error("No certificates supplied");let U=T[0],S=u.data.
-subarray(0,u.offset),m=se(n,S),b=await O.digest("SHA-256",m),B=new Uint8Array(b),
-R=se(Jo.encode(" ".repeat(64)+"TLS 1.3, server CertificateVerify"),[0],B);u.remaining()===
+subarray(0,u.offset),m=se(n,S),b=await O.digest("SHA-256",m),R=new Uint8Array(b),
+B=se(Jo.encode(" ".repeat(64)+"TLS 1.3, server CertificateVerify"),[0],R);u.remaining()===
 0&&u.extend(await e()),u.expectUint8(15,0);let[q]=u.expectLengthUint24(0),P=u.readUint16();
-if(P===1027){let[M]=u.expectLengthUint16();await Si(u,U.publicKey.all,R,"P-256",
+if(P===1027){let[M]=u.expectLengthUint16();await Si(u,U.publicKey.all,B,"P-256",
 "SHA-256"),M()}else if(P===2052){let[M,k]=u.expectLengthUint16(),ne=u.subarray(k());
 M();let ce=await O.importKey("spki",U.publicKey.all,{name:"RSA-PSS",hash:"SHA-25\
-6"},!1,["verify"]);if(await O.verify({name:"RSA-PSS",saltLength:32},ce,ne,R)!==!0)
+6"},!1,["verify"]);if(await O.verify({name:"RSA-PSS",saltLength:32},ce,ne,B)!==!0)
 throw new Error("RSA-PSS-RSAE-SHA256 certificate verify failed")}else throw new Error(
 `Unsupported certificate verify signature type 0x${Te([P]).padStart(4,"0")}`);q();
 let K=u.data.subarray(0,u.offset),D=se(n,K),$=await ae(t,"finished",new Uint8Array(
@@ -1859,7 +1859,7 @@ E=u?se(u,x):x;if(n(E),c){let re=await t(c.length);if(!re||!ut(re,c))throw new Er
 "Connection closed while awaiting server hello");let T=new be(L.content),U=Bo(T,
 y),S=await xr(t,20);if(S===void 0)throw new Error("Connection closed awaiting se\
 rver cipher change");let m=new be(S.content),[b]=m.expectLength(1);m.expectUint8(
-1,0),b();let B=x.subarray(5),R=L.content,q=se(B,R),P=await Do(U,h.privateKey,q,256,
+1,0),b();let R=x.subarray(5),B=L.content,q=se(R,B),P=await Do(U,h.privateKey,q,256,
 16),K=await O.importKey("raw",P.serverHandshakeKey,{name:"AES-GCM"},!1,["decrypt"]),
 D=new Nt("decrypt",K,P.serverHandshakeIV),$=await O.importKey("raw",P.clientHandshakeKey,
 {name:"AES-GCM"},!1,["encrypt"]),j=new Nt("encrypt",$,P.clientHandshakeIV),H=o(async()=>{
@@ -2009,27 +2009,27 @@ d to `neon()` is not a valid URL. Connection string: "+String(r))}let{protocol:f
 username:y,hostname:x,port:E,pathname:L}=h;if(f!=="postgres:"&&f!=="postgresql:"||
 !y||!x||!L)throw new Error("Database connection string format for `neon()` shoul\
 d be: postgresql://user:password@host.tld/dbname?option=value");function T(S,...m){
-let b,B;if(typeof S=="string")b=S,B=m[1],m=m[0]??[];else{b="";for(let q=0,P=0;q<
+let b,R;if(typeof S=="string")b=S,R=m[1],m=m[0]??[];else{b="";for(let q=0,P=0;q<
 S.length;q++)if(b+=S[q],P<m.length){let K=m[P];if(K!==null&&typeof K=="object"&&
 K[Symbol.toStringTag]==="NeonQueryPromise"){if(K.parameterizedQuery.params.length)
 throw new Error("Tagged-template queries with parameters are not currently compo\
-sable");b+=K.parameterizedQuery.query,m.splice(P,1)}else b+="$"+(q+1),P++}}m=m.map(
-q=>Ch((0,Na.prepareValue)(q)));let R={query:b,params:m};return u&&u(R),Th(U,R,B)}
-o(T,"resolve"),T.transaction=async(S,m)=>{if(typeof S=="function"&&(S=S(T)),!Array.
-isArray(S))throw new Error(Ba);S.forEach(R=>{if(R[Symbol.toStringTag]!=="NeonQue\
-ryPromise")throw new Error(Ba)});let b=S.map(R=>R.parameterizedQuery),B=S.map(R=>R.
-opts??{});return U(b,B,m)};async function U(S,m,b){let{fetchEndpoint:B,fetchFunction:R}=ge,
-q=Array.isArray(S)?{queries:S}:S,P=n??{},K=e??!1,D=t??!1,$=i,j=s,H=a;b!==void 0&&
-(b.fetchOptions!==void 0&&(P={...P,...b.fetchOptions}),b.arrayMode!==void 0&&(K=
-b.arrayMode),b.fullResults!==void 0&&(D=b.fullResults),b.isolationLevel!==void 0&&
-($=b.isolationLevel),b.readOnly!==void 0&&(j=b.readOnly),b.deferrable!==void 0&&
-(H=b.deferrable)),m!==void 0&&!Array.isArray(m)&&m.fetchOptions!==void 0&&(P={...P,
-...m.fetchOptions});let W=l;!Array.isArray(m)&&m?.authToken!==void 0&&(W=m.authToken);
-let Y=typeof B=="function"?B(x,E,{jwtAuth:W!==void 0}):B,F={"Neon-Connection-Str\
-ing":r,"Neon-Raw-Text-Output":"true","Neon-Array-Mode":"true"},Z=await Lh(W);Z&&
-(F.Authorization=`Bearer ${Z}`),Array.isArray(S)&&($!==void 0&&(F["Neon-Batch-Is\
-olation-Level"]=$),j!==void 0&&(F["Neon-Batch-Read-Only"]=String(j)),H!==void 0&&
-(F["Neon-Batch-Deferrable"]=String(H)));let G;try{G=await(R??fetch)(Y,{method:"P\
+sable");b+=K.parameterizedQuery.query,m.splice(P,1)}else b+="$"+(P+1),P++}}m=m.map(
+q=>Ch((0,Na.prepareValue)(q)));let B={query:b,params:m};return console.log(B),u&&
+u(B),Th(U,B,R)}o(T,"resolve"),T.transaction=async(S,m)=>{if(typeof S=="function"&&
+(S=S(T)),!Array.isArray(S))throw new Error(Ba);S.forEach(B=>{if(B[Symbol.toStringTag]!==
+"NeonQueryPromise")throw new Error(Ba)});let b=S.map(B=>B.parameterizedQuery),R=S.
+map(B=>B.opts??{});return U(b,R,m)};async function U(S,m,b){let{fetchEndpoint:R,
+fetchFunction:B}=ge,q=Array.isArray(S)?{queries:S}:S,P=n??{},K=e??!1,D=t??!1,$=i,
+j=s,H=a;b!==void 0&&(b.fetchOptions!==void 0&&(P={...P,...b.fetchOptions}),b.arrayMode!==
+void 0&&(K=b.arrayMode),b.fullResults!==void 0&&(D=b.fullResults),b.isolationLevel!==
+void 0&&($=b.isolationLevel),b.readOnly!==void 0&&(j=b.readOnly),b.deferrable!==
+void 0&&(H=b.deferrable)),m!==void 0&&!Array.isArray(m)&&m.fetchOptions!==void 0&&
+(P={...P,...m.fetchOptions});let W=l;!Array.isArray(m)&&m?.authToken!==void 0&&(W=
+m.authToken);let Y=typeof R=="function"?R(x,E,{jwtAuth:W!==void 0}):R,F={"Neon-C\
+onnection-String":r,"Neon-Raw-Text-Output":"true","Neon-Array-Mode":"true"},Z=await Lh(
+W);Z&&(F.Authorization=`Bearer ${Z}`),Array.isArray(S)&&($!==void 0&&(F["Neon-Ba\
+tch-Isolation-Level"]=$),j!==void 0&&(F["Neon-Batch-Read-Only"]=String(j)),H!==void 0&&
+(F["Neon-Batch-Deferrable"]=String(H)));let G;try{G=await(B??fetch)(Y,{method:"P\
 OST",body:JSON.stringify(q),headers:F,...P})}catch(M){let k=new Ce(`Error connec\
 ting to database: ${M.message}`);throw k.sourceError=M,k}if(G.ok){let M=await G.
 json();if(Array.isArray(S)){let k=M.results;if(!Array.isArray(k))throw new Ce("N\
@@ -2089,9 +2089,9 @@ x=y.encode(i),E=await A.subtle.importKey("raw",x,{name:"HMAC",hash:{name:"SHA-25
 [0,0,0,1])]))),T=L;for(var U=0;U<h-1;U++)L=new Uint8Array(await A.subtle.sign("H\
 MAC",E,L)),T=w.from(T.map((G,M)=>T[M]^L[M]));let S=T,m=await A.subtle.importKey(
 "raw",S,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),b=new Uint8Array(await A.
-subtle.sign("HMAC",m,y.encode("Client Key"))),B=await A.subtle.digest("SHA-256",
-b),R="n=*,r="+n.clientNonce,q="r="+u+",s="+c+",i="+h,P="c=biws,r="+u,K=R+","+q+"\
-,"+P,D=await A.subtle.importKey("raw",B,{name:"HMAC",hash:{name:"SHA-256"}},!1,[
+subtle.sign("HMAC",m,y.encode("Client Key"))),R=await A.subtle.digest("SHA-256",
+b),B="n=*,r="+n.clientNonce,q="r="+u+",s="+c+",i="+h,P="c=biws,r="+u,K=B+","+q+"\
+,"+P,D=await A.subtle.importKey("raw",R,{name:"HMAC",hash:{name:"SHA-256"}},!1,[
 "sign"]);var $=new Uint8Array(await A.subtle.sign("HMAC",D,y.encode(K))),j=w.from(
 b.map((G,M)=>b[M]^$[M])),H=j.toString("base64");let W=await A.subtle.importKey("\
 raw",S,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),Y=await A.subtle.sign("H\
@@ -2156,7 +2156,7 @@ await t.transaction(b=>[b`SELECT ${1}::int AS "batchInt"`,`SELECT 'hello' AS "ba
 tchStr"`])}catch(b){S=b}if(S===void 0)throw new Error("Error should have been ra\
 ised for string passed to `transaction()`");e("successfully caught invalid query\
  passed to `transaction()`\n");let m;try{let b=r.NEON_DB_URL.replace(/@/,"x@");await xe(
-b).transaction(B=>[B`SELECT 'never' AS this_should_be_seen_precisely`])}catch(b){
+b).transaction(R=>[R`SELECT 'never' AS this_should_be_seen_precisely`])}catch(b){
 m=b}if(m===void 0)throw new Error("Error should have been raised for bad passwor\
 d");e("successfully caught invalid password passed to `neon()`\n")}o(Ph,"batchQu\
 eryTest");async function l0(r,e,t=(...n)=>{}){let n=[1,3],i=9;t(`Warm-up ...
@@ -2167,8 +2167,8 @@ eryTest");async function l0(r,e,t=(...n)=>{}){let n=[1,3],i=9;t(`Warm-up ...
 `);let a=new Set(["command","rowCount","rows","fields"]),u=await new qe({connectionString:r.
 NEON_DB_URL}),c=xe(r.NEON_DB_URL,{resultCallback:o(async(E,L,T,U)=>{let S=await u.
 query({text:E.query,values:E.params,...U.arrayMode?{rowMode:"array"}:{}}),m=L.command===
-S.command,b=L.rowCount===S.rowCount,B=Lr(L.fields.map(P=>P.dataTypeID),S.fields.
-map(P=>P.dataTypeID)),R=Lr(T,S.rows);t(m&&b&&R&&B?"\u2713":"X",JSON.stringify(E),
+S.command,b=L.rowCount===S.rowCount,R=Lr(L.fields.map(P=>P.dataTypeID),S.fields.
+map(P=>P.dataTypeID)),B=Lr(T,S.rows);t(m&&b&&B&&R?"\u2713":"X",JSON.stringify(E),
 `
   -> us:`,JSON.stringify(T),`
   -> pg:`,JSON.stringify(S.rows),`
@@ -2191,24 +2191,24 @@ await c`SELECT ${["(2, 3)"]}::point[] AS arrpoint`,await c`SELECT ${["<(2, 3), 1
 >"]}::circle[] AS arrcircle`,await c`SELECT ${["\\xDEADBEEF","\\xDEADBEEF"]}::bytea[] AS arrbytea`,
 await c`SELECT null AS null`,await c`SELECT ${null} AS null`,await c`SELECT ${"N\
 ULL"} AS null_str`,await c`SELECT ${[1,2,3]} AS arrnum_uncast`,await c`SELECT ${[
-[2],[4]]} AS arrnumnested_uncast`,await c`SELECT ${l} AS timenow_uncast`,await c`SELECT ${l}::timestamp AS timestampnow`,
-await c`SELECT ${c("pi")}() AS composed_func_result`,await c("SELECT $1::timesta\
-mp AS timestampnow",[l]),await c("SELECT $1 || ' ' || $2 AS greeting",["hello","\
-world"]),await c("SELECT 123 AS num"),await c("SELECT 123 AS num",[],{arrayMode:!0,
-fullResults:!0});function f(E,L,T=3){return async function(U,...S){let m="";for(let b=0;b<
-U.length;b++)m+=U[b],b<S.length&&(m+="$"+(b+1));for(let b=1;;b++){let B=new AbortController,
-R=setTimeout(()=>B.abort("fetch timed out"),L);try{let{signal:q}=B;return await E(
-m,S,{fetchOptions:{signal:q}})}catch(q){if(!(q.sourceError&&q.sourceError instanceof
-DOMException&&q.sourceError.name==="AbortError")||b>=T)throw q}finally{clearTimeout(
-R)}}}}o(f,"sqlWithRetries"),await f(c,5e3)`SELECT ${"did this time out?"} AS str`,
-await Ph(r,t),ge.fetchFunction=(E,L)=>(console.log("custom fetch:",E,L),fetch(E,
-L)),await c`SELECT ${"customFetch"} AS str`;let x="SELECT 123::int[] WHERE x";try{
-await c(x)}catch(E){console.log("Fields of this expected error should match the \
-following error, except for having no `length` field"),console.log(E)}try{await _t(
-1,r.NEON_DB_URL,Re,{sql:x,test:o(()=>!0,"test")})}catch(E){console.log("Fields o\
-f this expected error should match the previous error, except for having an addi\
-tional `length` field"),console.log(E)}await new Promise(E=>setTimeout(E,1e3)),u.
-end(),t(`
+[2],[4]]} AS arrnumnested_uncast`,await c`SELECT ${l} AS timenow_uncast`,await c`SELECT ${l}::timestamp AS timestampnow`;
+let h="pi()";await c`SELECT ${c(h)} AS composed_func_result`,await c`SELECT ${11} AS eleven, ${c(
+h)} AS composed_func_result, ${12} AS twelve`,await c("SELECT $1::timestamp AS t\
+imestampnow",[l]),await c("SELECT $1 || ' ' || $2 AS greeting",["hello","world"]),
+await c("SELECT 123 AS num"),await c("SELECT 123 AS num",[],{arrayMode:!0,fullResults:!0});
+function f(E,L,T=3){return async function(U,...S){let m="";for(let b=0;b<U.length;b++)
+m+=U[b],b<S.length&&(m+="$"+(b+1));for(let b=1;;b++){let R=new AbortController,B=setTimeout(
+()=>R.abort("fetch timed out"),L);try{let{signal:q}=R;return await E(m,S,{fetchOptions:{
+signal:q}})}catch(q){if(!(q.sourceError&&q.sourceError instanceof DOMException&&
+q.sourceError.name==="AbortError")||b>=T)throw q}finally{clearTimeout(B)}}}}o(f,
+"sqlWithRetries"),await f(c,5e3)`SELECT ${"did this time out?"} AS str`,await Ph(
+r,t),ge.fetchFunction=(E,L)=>(console.log("custom fetch:",E,L),fetch(E,L)),await c`SELECT ${"\
+customFetch"} AS str`;let x="SELECT 123::int[] WHERE x";try{await c(x)}catch(E){
+console.log("Fields of this expected error should match the following error, exc\
+ept for having no `length` field"),console.log(E)}try{await _t(1,r.NEON_DB_URL,Re,
+{sql:x,test:o(()=>!0,"test")})}catch(E){console.log("Fields of this expected err\
+or should match the previous error, except for having an additional `length` fie\
+ld"),console.log(E)}await new Promise(E=>setTimeout(E,1e3)),u.end(),t(`
 
 ===== Pool/Client tests =====
 `);for(let E of Tt){t(`
@@ -2216,10 +2216,10 @@ end(),t(`
 
 `);async function L(U,S){let m=String.fromCharCode(s+(s>25?23:65));t(`${m}
 `);try{await fetch(`http://localhost:443/${m}`)}catch{}t('<span class="live">Liv\
-e:</span>    ');let[,b]=await nt(i,()=>S(U),B=>t(`<span class="live">${B.toFixed()}\
+e:</span>    ');let[,b]=await nt(i,()=>S(U),R=>t(`<span class="live">${R.toFixed()}\
 ms</span> `));t(`
-Sorted:  `),b.map(([B])=>B).sort((B,R)=>B-R).forEach((B,R)=>{t(R===(i-1)/2?`<spa\
-n class="median">${B.toFixed()}ms</span> `:`${B.toFixed()}ms `)}),t(`
+Sorted:  `),b.map(([R])=>R).sort((R,B)=>R-B).forEach((R,B)=>{t(B===(i-1)/2?`<spa\
+n class="median">${R.toFixed()}ms</span> `:`${R.toFixed()}ms `)}),t(`
 
 `),s+=1}o(L,"section");async function T(U,S){t(`----- ${U} -----
 
