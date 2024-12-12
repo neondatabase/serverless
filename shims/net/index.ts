@@ -501,7 +501,9 @@ export class Socket extends EventEmitter {
     if (this.writeBuffer === undefined) {
       this.writeBuffer = data;
       setTimeout(() => {
-        this.ws!.send(this.writeBuffer!);
+        if(this.ws) {
+          this.ws!.send(this.writeBuffer!);
+        }
         this.writeBuffer = undefined;
       }, 0);
     } else {
