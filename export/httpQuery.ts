@@ -333,7 +333,7 @@ export function neon(
       });
     } catch (err: any) {
       const connectErr = new NeonDbError(
-        `Error connecting to database: ${err.message}`,
+        `Error connecting to database: ${err}`,
       );
       connectErr.sourceError = err;
       throw connectErr;
