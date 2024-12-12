@@ -67,6 +67,12 @@ test('tagged-template http query results match WebSocket query results', { timeo
   await compare(sql`SELECT ${new Uint8Array([65, 66, 67])} AS bytea`);
   await compare(sql`SELECT ${Buffer.from([65, 66, 67])} AS bytea`);
 
+  // non-template usage
+  await compare(sql('SELECT $1::timestamp AS timestampnow', [now]));
+  await compare(sql("SELECT $1 || ' ' || $2 AS greeting", ['hello', 'world']));
+  await compare(sql('SELECT 123 AS num'));
+  await compare(sql('SELECT 123 AS num', []));
+
   client.release();
 });
 
