@@ -38,7 +38,7 @@ test('custom fetch', async () => {
     fn(url);
     return fetch(url, options);
   };
-  await expect(sql`SELECT ${'customFetch'} AS str`).resolves.toMatchObject([{ str: 'customFetch' }]);
+  await expect(sql`SELECT ${'customFetch'} AS str`).resolves.toStrictEqual([{ str: 'customFetch' }]);
   expect(fn).toHaveBeenCalledOnce();
 });
 

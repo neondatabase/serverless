@@ -19,7 +19,7 @@ test('WebSockets query results match pg/TCP query results', { timeout: 30000 }, 
        wsClient.query(query, params),
        pgClient.query(query, params),
     ]);
-    expect(wsResult).toMatchObject(pgResult);
+    expect(wsResult).toStrictEqual(pgResult);
   }
 
   wsClient.release();
