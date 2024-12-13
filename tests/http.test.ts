@@ -1,5 +1,5 @@
-import { expect, test } from 'vitest';
-import { neon, Pool } from '../export'
+import { expect, test, vi } from 'vitest';
+import { neon, neonConfig, Pool } from '../export'
 
 const DB_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DB_URL);
@@ -7,12 +7,9 @@ const sqlfr = neon(DB_URL, { fullResults: true });
 const pool = new Pool({ connectionString: DB_URL });
 
 test('http query results match WebSocket query results', { timeout: 30000 }, async () => {
-
   // check that http and WebSocket responses match across a range of queries,
-  // subject to the following known differences:
-  // * http results are plain Objects, not Result instances
-  // * http results lack `oid` and `RowCtor` fields (which are both usually `null`)
-
+  // subject to some known differences
+  
   const client = await pool.connect();
   const now = new Date();
 
@@ -22,15 +19,22 @@ test('http query results match WebSocket query results', { timeout: 30000 }, asy
       queryPromise,
       client.query(query, params),
     ]);
-    const httpResultWithNullExtras = { ...httpResult, oid: null, RowCtor: null };
-    const wsResultAsRawObject = { ...wsResult };
-    expect(httpResultWithNullExtras).toMatchObject(wsResultAsRawObject);
+
+    // * http results are plain Objects, not Result instances
+    // * http results lack `oid` and `RowCtor` fields (which are both usually `null`)
+    const httpResultProcessed = { ...httpResult, oid: null, RowCtor: null };
+  
+    // * http result `fields` array contains plain Objects, not Field instances 
+    // * http results have `"viaNeonFetch": true`
+    const wsResultProcessed = { ...wsResult, fields: wsResult.fields.map(f => ({ ...f })), viaNeonFetch: true };
+
+    expect(httpResultProcessed).toStrictEqual(wsResultProcessed);
   }
 
   await compare(sqlfr`SELECT ${1} AS int_uncast`);
-  await compare(sqlfr`SELECT ${1}::int AS int`);
+  await compare(sqlfr`SELECT ${-1}::int AS int`);
   await compare(sqlfr`SELECT ${1}::int8 AS int8num`);
-  await compare(sqlfr`SELECT ${1}::decimal AS decimalnum`);
+  await compare(sqlfr`SELECT ${-1}::decimal AS decimalnum`);
   await compare(sqlfr`SELECT ${2n} AS bigint`);
   await compare(sqlfr`SELECT ${9007199254740993n} AS bigint`);
   await compare(sqlfr`SELECT ${Math.PI} AS pi`);
@@ -56,6 +60,7 @@ test('http query results match WebSocket query results', { timeout: 30000 }, asy
   await compare(sqlfr`SELECT ${['a', 'b', 'c']}::text[] AS arrstr`);
   await compare(sqlfr`SELECT ${{ x: 'y' }}::jsonb AS jsonb_obj`);
   await compare(sqlfr`SELECT ${{ x: 'y' }}::json AS json_obj`);
+  await compare(sqlfr`SELECT ${{ x: 'y' }} AS json_obj_uncast`);
   await compare(sqlfr`SELECT ${['11:22:33:44:55:66']}::macaddr[] AS arrmacaddr`);
   await compare(sqlfr`SELECT ${['10.10.10.0/24']}::cidr[] AS arrcidr`);
   await compare(sqlfr`SELECT ${true}::boolean AS bool`);
@@ -71,6 +76,7 @@ test('http query results match WebSocket query results', { timeout: 30000 }, asy
   await compare(sqlfr`SELECT ${now} AS timenow_uncast`);
   await compare(sqlfr`SELECT ${now}::timestamp AS timestampnow`);
   await compare(sqlfr`SELECT ${new Uint8Array([65, 66, 67])} AS bytea`);
+  await compare(sqlfr`SELECT ${new Uint8Array(65536).fill(128)} AS bytea`);
   await compare(sqlfr`SELECT ${Buffer.from([65, 66, 67])} AS bytea`);
 
   // non-template usage
@@ -82,12 +88,45 @@ test('http query results match WebSocket query results', { timeout: 30000 }, asy
   client.release();
 });
 
+test('custom fetch', async () => {
+  const fn = vi.fn();
+  neonConfig.fetchFunction = (url: string, options: any) => {
+    fn(url);
+    return fetch(url, options);
+  };
+  await expect(sql`SELECT ${'customFetch'} AS str`).resolves.toMatchObject([{ str: 'customFetch' }]);
+  expect(fn).toHaveBeenCalledOnce();
+});
+
+test('errors match WebSocket query errors', async () => {
+  const q = 'SELECT 123 WHERE x';
+
+  await Promise.all([
+    expect(sql(q)).rejects.toThrowError('column "x" does not exist'),
+    expect(pool.query(q)).rejects.toThrowError('column "x" does not exist'),
+  ]);
+
+  // now compare all other properties (`code`, `routine`, `severity`, etc.)
+  const [httpErr, wsErr] = await Promise.all([
+    new Promise(resolve => sql(q).catch((e: Error) => resolve(e))),
+    new Promise(resolve => pool.query(q).catch((e: Error) => resolve(e))),
+  ]) as [any, any];
+
+  // account for known/accepted differences
+  httpErr.length = wsErr.length;  // http errors don't have a `length` property
+  httpErr.name = wsErr.name;  // http errors are named 'NeonDbError' rather than plain 'error'
+  wsErr.sourceError = undefined;  // this property is unique to http errors
+
+  // convert the errors into ordinary Objects, because vitest compares Errors only by message
+  expect({ ...httpErr }).toStrictEqual({ ...wsErr });
+});
+
 test('http queries with too few or too many parameters', async () => {
   await expect(sql('SELECT $1', []))
-  .rejects.toThrowError('bind message supplies 0 parameters');
+    .rejects.toThrowError('bind message supplies 0 parameters');
 
   await expect(sql('SELECT $1', [1, 2]))
-  .rejects.toThrowError('bind message supplies 2 parameters');
+    .rejects.toThrowError('bind message supplies 2 parameters');
 });
 
 test('timeout aborting an http query', { timeout: 5000 }, async () => {
@@ -107,7 +146,7 @@ test('timeout not aborting an http query', { timeout: 5000 }, async () => {
 
   await expect(
     sql('SELECT pg_sleep(.5)', [], { fetchOptions: { signal } })
-  ).resolves;
+  ).resolves.toStrictEqual([{ pg_sleep: '' }]);
 
   clearTimeout(timeout);
 });
@@ -116,42 +155,42 @@ test('database URL with wrong user to `neon()`', async () => {
   const urlWithBadHost = DB_URL.replace('//', '//x');
   const sqlBad = neon(urlWithBadHost);
   await expect(sqlBad`SELECT ${1}::int AS one`)
-  .rejects.toThrowError('password authentication failed');
+    .rejects.toThrowError('password authentication failed');
 });
 
 test('database URL with wrong password to `neon()`', async () => {
   const urlWithBadPassword = DB_URL.replace('@', 'x@');
   const sqlBad = neon(urlWithBadPassword);
   await expect(sqlBad`SELECT ${1}::int AS one`)
-  .rejects.toThrowError('password authentication failed');
+    .rejects.toThrowError('password authentication failed');
 });
 
 test('database URL with wrong project to `neon()`', async () => {
   const urlWithBadHost = DB_URL.replace('@', '@x');
   const sqlBad = neon(urlWithBadHost);
   await expect(sqlBad`SELECT ${1}::int AS one`)
-  .rejects.toThrowError('password authentication failed');
+    .rejects.toThrowError('password authentication failed');
 });
 
 test('database URL with wrong host to `neon()`', { timeout: 10000 }, async () => {
   const urlWithBadHost = DB_URL.replace('.neon.tech', '.neon.techh');
   const sqlBad = neon(urlWithBadHost);
   await expect(sqlBad`SELECT ${1}::int AS one`)
-  .rejects.toThrowError('fetch failed');
+    .rejects.toThrowError('fetch failed');
 });
 
 test('undefined database URL', async () => {
   expect(() => neon(undefined as unknown as string))
-  .toThrowError('No database connection string was provided');
+    .toThrowError('No database connection string was provided');
 });
 
 test('empty database URL to `neon()`', async () => {
   expect(() => neon(''))
-  .toThrowError('No database connection string was provided');
+    .toThrowError('No database connection string was provided');
 });
 
 test('wrong-scheme database URL to `neon()`', async () => {
   expect(() => neon(DB_URL.replace(/^/, 'x')))
-  .toThrowError('Database connection string format for `neon()` should be');
+    .toThrowError('Database connection string format for `neon()` should be');
 });
 
