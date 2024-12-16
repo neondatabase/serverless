@@ -48,7 +48,7 @@
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "makeTypes": "npx tsc && (npx @microsoft/api-extractor run --local || true) && cp dist/npm/index.d.ts dist/npm/index.d.mts",
+    "makeTypes": "npx tsc && sed -i.orig -r '/^declare global [{]$/,/^[}]$/d' dist/dts/shims/net/index.d.ts && npx @microsoft/api-extractor run --local && cp dist/npm/index.d.ts dist/npm/index.d.mts",
     "test": "npm run export && vitest run --no-file-parallelism"
   },
   "devDependencies": {

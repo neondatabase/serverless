@@ -78,7 +78,7 @@ declare interface HTTPTransactionOptions extends HTTPQueryOptions {
 
 export declare function neon(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, queryCallback, resultCallback, authToken, }?: HTTPTransactionOptions): {
     (strings: TemplateStringsArray | string, ...params: any[]): NeonQueryPromise;
-    transaction(queries: NeonQueryPromise[] | ((sql: /*elided*/ any) => NeonQueryPromise[]), txnOpts?: HTTPTransactionOptions): Promise<any>;
+    transaction(queries: NeonQueryPromise[] | ((sql: (strings: TemplateStringsArray | string, ...params: any[]) => NeonQueryPromise) => NeonQueryPromise[]), txnOpts?: HTTPTransactionOptions): Promise<any>;
 };
 
 export declare class neonConfig extends EventEmitter {

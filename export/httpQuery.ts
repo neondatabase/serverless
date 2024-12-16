@@ -194,7 +194,7 @@ export function neon(
   }
 
   resolve.transaction = async (
-    queries: NeonQueryPromise[] | ((sql: typeof resolve) => NeonQueryPromise[]),
+    queries: NeonQueryPromise[] | ((sql: (strings: TemplateStringsArray | string, ...params: any[]) => NeonQueryPromise) => NeonQueryPromise[]),
     txnOpts?: HTTPTransactionOptions,
   ) => {
     if (typeof queries === 'function') queries = queries(resolve);

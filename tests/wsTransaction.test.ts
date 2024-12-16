@@ -1,4 +1,4 @@
-import { expect, test, vi } from 'vitest';
+import { expect, test } from 'vitest';
 
 // client/pool.connect + transactions work
 // pool.query + transaction doesn't?
