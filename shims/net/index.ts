@@ -13,8 +13,12 @@ declare global {
   const debug: boolean; // e.g. --define:debug=false in esbuild command
   interface WebSocket {
     binaryType: 'arraybuffer' | 'blob'; // oddly not included in Cloudflare types
-    accept: () => void;
+    accept?: () => void;  // available in Cloudflare
   }
+  interface Response {
+    webSocket: WebSocket;
+  }
+  class __unstable_WebSocket extends WebSocket {}
 }
 
 enum TlsState {
@@ -26,10 +30,7 @@ enum TlsState {
 function hexDump(data: Uint8Array) {
   return (
     `${data.length} bytes` +
-    data.reduce(
-      (memo, byte) => memo + ' ' + byte.toString(16).padStart(2, '0'),
-      '\nhex:',
-    ) +
+    data.reduce((memo, byte) => memo + ' ' + byte.toString(16).padStart(2, '0'), '\nhex:') +
     '\nstr: ' +
     new TextDecoder().decode(data)
   );
@@ -59,13 +60,7 @@ interface FetchEndpointOptions {
 export interface SocketDefaults {
   // these options relate to the fetch transport and take effect *only* when set globally
   poolQueryViaFetch: boolean;
-  fetchEndpoint:
-    | string
-    | ((
-        host: string,
-        port: number | string,
-        options?: FetchEndpointOptions,
-      ) => string);
+  fetchEndpoint: string | ((host: string, port: number | string, options?: FetchEndpointOptions) => string);
   fetchConnectionCache: boolean;
   fetchFunction: any;
   // these options relate to the WebSocket transport
@@ -81,11 +76,7 @@ export interface SocketDefaults {
   pipelineTLS: boolean;
   disableSNI: boolean;
 }
-type GlobalOnlyDefaults =
-  | 'poolQueryViaFetch'
-  | 'fetchEndpoint'
-  | 'fetchConnectionCache'
-  | 'fetchFunction';
+type GlobalOnlyDefaults = 'poolQueryViaFetch' | 'fetchEndpoint' | 'fetchConnectionCache' | 'fetchFunction';
 
 const FIRST_WORD_REGEX = /^[^.]+\./;
 
@@ -142,12 +133,8 @@ export class Socket extends EventEmitter {
   static get fetchConnectionCache() {
     return true;
   }
-  static set fetchConnectionCache(
-    newValue: SocketDefaults['fetchConnectionCache'],
-  ) {
-    console.warn(
-      'The `fetchConnectionCache` option is deprecated (now always `true`)',
-    );
+  static set fetchConnectionCache(newValue: SocketDefaults['fetchConnectionCache']) {
+    console.warn('The `fetchConnectionCache` option is deprecated (now always `true`)');
   }
 
   static get fetchFunction() {
@@ -158,13 +145,9 @@ export class Socket extends EventEmitter {
   }
 
   static get webSocketConstructor() {
-    return (
-      Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor
-    );
+    return Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor;
   }
-  static set webSocketConstructor(
-    newValue: SocketDefaults['webSocketConstructor'],
-  ) {
+  static set webSocketConstructor(newValue: SocketDefaults['webSocketConstructor']) {
     Socket.opts.webSocketConstructor = newValue;
   }
   get webSocketConstructor() {
@@ -203,9 +186,7 @@ export class Socket extends EventEmitter {
   static get useSecureWebSocket() {
     return Socket.opts.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket;
   }
-  static set useSecureWebSocket(
-    newValue: SocketDefaults['useSecureWebSocket'],
-  ) {
+  static set useSecureWebSocket(newValue: SocketDefaults['useSecureWebSocket']) {
     Socket.opts.useSecureWebSocket = newValue;
   }
   get useSecureWebSocket() {
@@ -300,9 +281,7 @@ export class Socket extends EventEmitter {
         `No WebSocket proxy is configured. Please see https://github.com/neondatabase/serverless/blob/main/CONFIG.md#wsproxy-string--host-string-port-number--string--string`,
       );
     }
-    return typeof wsProxy === 'function'
-      ? wsProxy(host, port)
-      : `${wsProxy}?address=${host}:${port}`;
+    return typeof wsProxy === 'function' ? wsProxy(host, port) : `${wsProxy}?address=${host}:${port}`;
   }
 
   connecting = false;
@@ -376,10 +355,7 @@ export class Socket extends EventEmitter {
 
     let wsAddr: string;
     try {
-      wsAddr = this.wsProxyAddrForHost(
-        host,
-        typeof port === 'string' ? parseInt(port, 10) : port,
-      );
+      wsAddr = this.wsProxyAddrForHost(host, typeof port === 'string' ? parseInt(port, 10) : port);
     } catch (err) {
       this.emit('error', err);
       this.emit('close');
@@ -403,7 +379,6 @@ export class Socket extends EventEmitter {
         } catch (err) {
           debug && log('new WebSocket() failed');
 
-          // @ts-ignore -- third, how about a Vercel Edge Functions __unstable_WebSocket (as at early 2023)?Í
           this.ws = new __unstable_WebSocket(wsAddrFull);
           configureWebSocket(this.ws!);
         }
@@ -421,7 +396,7 @@ export class Socket extends EventEmitter {
           this.ws = resp.webSocket;
           if (this.ws == null) throw err; // deliberate loose equality
 
-          this.ws.accept();
+          this.ws.accept!();  // if we're here, then there's an accept method
           configureWebSocket(this.ws, true);
           debug && log('Cloudflare WebSocket opened');
         })
@@ -430,7 +405,7 @@ export class Socket extends EventEmitter {
           this.emit(
             'error',
             new Error(
-              `All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err.message}`,
+              `All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err}`,
             ),
           );
           this.emit('close');
@@ -452,16 +427,10 @@ export class Socket extends EventEmitter {
     const networkRead = readQueue.read.bind(readQueue);
     const networkWrite = this.rawWrite.bind(this);
 
-    const [tlsRead, tlsWrite] = await this.subtls.startTls(
-      host,
-      rootCerts,
-      networkRead,
-      networkWrite,
-      {
-        useSNI: !this.disableSNI,
-        expectPreData: this.pipelineTLS ? new Uint8Array([0x53]) : undefined, // expect (and discard) an 'S' before the TLS response if pipelineTLS is set
-      },
-    );
+    const [tlsRead, tlsWrite] = await this.subtls.startTls(host, rootCerts, networkRead, networkWrite, {
+      useSNI: !this.disableSNI,
+      expectPreData: this.pipelineTLS ? new Uint8Array([0x53]) : undefined, // expect (and discard) an 'S' before the TLS response if pipelineTLS is set
+    });
 
     this.tlsRead = tlsRead;
     this.tlsWrite = tlsWrite;
@@ -512,18 +481,13 @@ export class Socket extends EventEmitter {
     }
   }
 
-  write(
-    data: Buffer | string,
-    encoding = 'utf8',
-    callback = (err?: any) => {},
-  ) {
+  write(data: Buffer | string, encoding = 'utf8', callback = (err?: any) => {}) {
     if (data.length === 0) {
       callback();
       return true;
     }
 
-    if (typeof data === 'string')
-      data = Buffer.from(data, encoding as BufferEncoding) as unknown as Buffer;
+    if (typeof data === 'string') data = Buffer.from(data, encoding as BufferEncoding) as unknown as Buffer;
 
     if (this.tlsState === TlsState.None) {
       debug && log('sending data direct:', data);
@@ -544,11 +508,7 @@ export class Socket extends EventEmitter {
     return true;
   }
 
-  end(
-    data: Buffer | string = Buffer.alloc(0) as unknown as Buffer,
-    encoding = 'utf8',
-    callback = () => {},
-  ) {
+  end(data: Buffer | string = Buffer.alloc(0) as unknown as Buffer, encoding = 'utf8', callback = () => {}) {
     debug && log('ending socket');
     this.write(data, encoding, () => {
       this.ws!.close();

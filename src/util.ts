@@ -25,51 +25,28 @@ export async function timedRepeats(
   return [total, results] as const;
 }
 
-export async function runQuery(
-  queryable: ClientBase | Pool | ReturnType<typeof neon>,
-  query: Query,
-) {
+export async function runQuery(queryable: ClientBase | Pool | ReturnType<typeof neon>, query: Query) {
   const { sql, test } = query;
-  const { rows } = await (typeof queryable === 'function'
-    ? queryable(sql)
-    : queryable.query(sql));
-  if (!test(rows))
-    throw new Error(
-      `Result fails test\nQuery: ${sql}\nResult: ${JSON.stringify(rows)}`,
-    );
+  const { rows } = await (typeof queryable === 'function' ? queryable(sql) : queryable.query(sql));
+  if (!test(rows)) throw new Error(`Result fails test\nQuery: ${sql}\nResult: ${JSON.stringify(rows)}`);
   return rows;
 }
 
-export async function clientRunQuery(
-  n: number,
-  client: Client,
-  ctx: ExecutionContext,
-  query: Query,
-) {
+export async function clientRunQuery(n: number, client: Client, ctx: ExecutionContext, query: Query) {
   await client.connect();
   const tPlusResults = await timedRepeats(n, () => runQuery(client, query));
   ctx.waitUntil(client.end());
   return tPlusResults;
 }
 
-export async function poolRunQuery(
-  n: number,
-  dbUrl: string,
-  ctx: ExecutionContext,
-  query: Query,
-) {
+export async function poolRunQuery(n: number, dbUrl: string, ctx: ExecutionContext, query: Query) {
   const pool = new Pool({ connectionString: dbUrl });
   const tPlusResults = await timedRepeats(n, () => runQuery(pool, query));
   ctx.waitUntil(pool.end());
   return tPlusResults;
 }
 
-export async function httpRunQuery(
-  n: number,
-  dbUrl: string,
-  ctx: ExecutionContext,
-  query: Query,
-) {
+export async function httpRunQuery(n: number, dbUrl: string, ctx: ExecutionContext, query: Query) {
   const sql = neon(dbUrl, { fullResults: true });
   const tPlusResults = await timedRepeats(n, () => runQuery(sql, query));
   return tPlusResults;
@@ -85,11 +62,7 @@ export function stableStringify(
       k,
       typeof v !== 'object' || v === null || Array.isArray(v)
         ? v
-        : Object.fromEntries(
-            Object.entries(v).sort(([ka], [kb]) =>
-              ka < kb ? -1 : ka > kb ? 1 : 0,
-            ),
-          ),
+        : Object.fromEntries(Object.entries(v).sort(([ka], [kb]) => (ka < kb ? -1 : ka > kb ? 1 : 0))),
     );
 
   return JSON.stringify(x, deterministicReplacer, indent);

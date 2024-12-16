@@ -15,13 +15,7 @@ import isrgRootX1 from './isrgrootx1.pem';
 
 import { deepEqual } from 'fast-equals';
 import { Client, Pool, neon, neonConfig } from '../export';
-import {
-  timedRepeats,
-  runQuery,
-  clientRunQuery,
-  poolRunQuery,
-  httpRunQuery,
-} from './util';
+import { timedRepeats, runQuery, clientRunQuery, poolRunQuery, httpRunQuery } from './util';
 import { queries } from './queries';
 
 import type { ExecutionContext } from '@cloudflare/workers-types';
@@ -35,11 +29,7 @@ export interface Env {
 
 // simple tests for Cloudflare Workers
 
-export async function cf(
-  request: Request,
-  env: Env,
-  ctx: ExecutionContext,
-): Promise<Response> {
+export async function cf(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   let results: any[] = [];
 
   for (const query of queries) {
@@ -73,8 +63,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => {}) {
     sql`SELECT ${'hello'} AS "batchStr"`,
   ]);
   log('batch results:', JSON.stringify(ra), JSON.stringify(rb), '\n');
-  if (ra.batchInt !== 1 || rb.batchStr !== 'hello')
-    throw new Error('Batch query problem');
+  if (ra.batchInt !== 1 || rb.batchStr !== 'hello') throw new Error('Batch query problem');
 
   // basic batch query
   const [[r1], [r2]] = await sql.transaction((txn) => [
@@ -82,8 +71,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => {}) {
     txn`SELECT ${'hello'} AS "batchStr"`,
   ]);
   log('batch results:', JSON.stringify(r1), JSON.stringify(r2), '\n');
-  if (r1.batchInt !== 1 || r2.batchStr !== 'hello')
-    throw new Error('Batch query problem');
+  if (r1.batchInt !== 1 || r2.batchStr !== 'hello') throw new Error('Batch query problem');
 
   // empty batch query
   const emptyResult = await sql.transaction((txn) => []);
@@ -91,18 +79,10 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => {}) {
 
   // option setting on `transaction()`
   const [[[r3]], [[r4]]] = await sql.transaction(
-    (txn) => [
-      txn`SELECT ${1}::int AS "batchInt"`,
-      txn`SELECT ${'hello'} AS "batchStr"`,
-    ],
+    (txn) => [txn`SELECT ${1}::int AS "batchInt"`, txn`SELECT ${'hello'} AS "batchStr"`],
     { arrayMode: true, isolationLevel: 'Serializable', readOnly: true },
   );
-  log(
-    'array mode (via transaction options) batch results:',
-    JSON.stringify(r3),
-    JSON.stringify(r4),
-    '\n',
-  );
+  log('array mode (via transaction options) batch results:', JSON.stringify(r3), JSON.stringify(r4), '\n');
   if (r3 !== 1 || r4 !== 'hello') throw new Error('Batch query problem');
 
   // option setting on `neon()`
@@ -114,61 +94,36 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => {}) {
     txn`SELECT ${1}::int AS "batchInt"`,
     txn`SELECT ${'hello'} AS "batchStr"`,
   ]);
-  log(
-    'array mode (via neon options) batch results:',
-    JSON.stringify(r5),
-    JSON.stringify(r6),
-    '\n',
-  );
+  log('array mode (via neon options) batch results:', JSON.stringify(r5), JSON.stringify(r6), '\n');
   if (r5 !== 1 || r6 !== 'hello') throw new Error('Batch query problem');
 
   // option setting in transaction overrides option setting on Neon
   const sqlArr2 = neon(env.NEON_DB_URL, { arrayMode: true });
   const [[r7], [r8]] = await sqlArr2.transaction(
-    (txn) => [
-      txn`SELECT ${1}::int AS "batchInt"`,
-      txn`SELECT ${'hello'} AS "batchStr"`,
-    ],
+    (txn) => [txn`SELECT ${1}::int AS "batchInt"`, txn`SELECT ${'hello'} AS "batchStr"`],
     { arrayMode: false },
   );
-  log(
-    'ordinary (via overridden options) batch results:',
-    JSON.stringify(r7),
-    JSON.stringify(r8),
-    '\n',
-  );
-  if (r7.batchInt !== 1 || r8.batchStr !== 'hello')
-    throw new Error('Batch query problem');
+  log('ordinary (via overridden options) batch results:', JSON.stringify(r7), JSON.stringify(r8), '\n');
+  if (r7.batchInt !== 1 || r8.batchStr !== 'hello') throw new Error('Batch query problem');
 
   // option setting on individual queries within a batch: should be honoured (despite types not supporting it)
   const [[r9], [r10]] = await sql.transaction((txn) => [
     txn`SELECT ${1}::int AS "batchInt"`,
     txn('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: true }),
   ]);
-  log(
-    'query options on individual batch queries:',
-    JSON.stringify(r9),
-    JSON.stringify(r10),
-    '\n',
-  );
-  if (r9.batchInt !== 1 || r10[0] !== 'hello')
-    throw new Error('Batch query problem');
+  log('query options on individual batch queries:', JSON.stringify(r9), JSON.stringify(r10), '\n');
+  if (r9.batchInt !== 1 || r10[0] !== 'hello') throw new Error('Batch query problem');
 
   // invalid query to `transaction()`
   let queryErr = undefined;
   try {
     // @ts-ignore
-    await sql.transaction((txn) => [
-      txn`SELECT ${1}::int AS "batchInt"`,
-      `SELECT 'hello' AS "batchStr"`,
-    ]);
+    await sql.transaction((txn) => [txn`SELECT ${1}::int AS "batchInt"`, `SELECT 'hello' AS "batchStr"`]);
   } catch (err) {
     queryErr = err;
   }
   if (queryErr === undefined)
-    throw new Error(
-      'Error should have been raised for string passed to `transaction()`',
-    );
+    throw new Error('Error should have been raised for string passed to `transaction()`');
   log('successfully caught invalid query passed to `transaction()`\n');
 
   // wrong DB URL
@@ -181,16 +136,11 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => {}) {
   } catch (err) {
     connErr = err;
   }
-  if (connErr === undefined)
-    throw new Error('Error should have been raised for bad password');
+  if (connErr === undefined) throw new Error('Error should have been raised for bad password');
   log('successfully caught invalid password passed to `neon()`\n');
 }
 
-export async function latencies(
-  env: Env,
-  useSubtls: boolean,
-  log = (...s: any[]) => {},
-): Promise<void> {
+export async function latencies(env: Env, useSubtls: boolean, log = (...s: any[]) => {}): Promise<void> {
   const queryRepeats = [1, 3];
   const connectRepeats = 9;
 
@@ -220,8 +170,7 @@ export async function latencies(
         pgRes.fields.map((f: any) => f.dataTypeID),
       );
       const rowsMatch = deepEqual(rows, pgRes.rows);
-      const ok =
-        commandMatches && rowCountMatches && rowsMatch && dataTypesMatch;
+      const ok = commandMatches && rowCountMatches && rowsMatch && dataTypesMatch;
 
       log(
         ok ? '\u2713' : 'X',
@@ -294,11 +243,7 @@ export async function latencies(
   await sql('SELECT 123 AS num', [], { arrayMode: true, fullResults: true });
 
   // timeout
-  function sqlWithRetries(
-    sql: ReturnType<typeof neon>,
-    timeoutMs: number,
-    attempts = 3,
-  ) {
+  function sqlWithRetries(sql: ReturnType<typeof neon>, timeoutMs: number, attempts = 3) {
     return async function (strings: TemplateStringsArray, ...params: any[]) {
       // reassemble template string
       let query = '';
@@ -309,10 +254,7 @@ export async function latencies(
       // run query with timeout and retries
       for (let i = 1; ; i++) {
         const abortController = new AbortController();
-        const timeout = setTimeout(
-          () => abortController.abort('fetch timed out'),
-          timeoutMs,
-        );
+        const timeout = setTimeout(() => abortController.abort('fetch timed out'), timeoutMs);
 
         try {
           const { signal } = abortController;
@@ -374,13 +316,8 @@ export async function latencies(
   for (const query of queries) {
     log(`\n----- ${query.sql} -----\n\n`);
 
-    async function section(
-      queryRepeat: number,
-      f: (n: number) => Promise<void>,
-    ) {
-      const marker = String.fromCharCode(
-        counter + (counter > 25 ? 49 - 26 : 65),
-      ); // A - Z, 1 - 9
+    async function section(queryRepeat: number, f: (n: number) => Promise<void>) {
+      const marker = String.fromCharCode(counter + (counter > 25 ? 49 - 26 : 65)); // A - Z, 1 - 9
       log(`${marker}\n`);
 
       // this will error, but makes for a handy heading in the dev tools Network pane (or Wireshark)
@@ -436,23 +373,17 @@ export async function latencies(
       await clientRunQuery(n, client, ctx, query);
     });
 
-    await sections(
-      'Neon/wss, pipelined connect using Pool.query',
-      async (n) => {
-        await poolRunQuery(n, env.NEON_DB_URL, ctx, query);
-      },
-    );
+    await sections('Neon/wss, pipelined connect using Pool.query', async (n) => {
+      await poolRunQuery(n, env.NEON_DB_URL, ctx, query);
+    });
 
-    await sections(
-      'Neon/wss, pipelined connect using Pool.connect',
-      async (n) => {
-        const pool = new Pool({ connectionString: env.NEON_DB_URL });
-        const poolClient = await pool.connect();
-        await timedRepeats(n, () => runQuery(poolClient, query));
-        poolClient.release();
-        ctx.waitUntil(pool.end());
-      },
-    );
+    await sections('Neon/wss, pipelined connect using Pool.connect', async (n) => {
+      const pool = new Pool({ connectionString: env.NEON_DB_URL });
+      const poolClient = await pool.connect();
+      await timedRepeats(n, () => runQuery(poolClient, query));
+      poolClient.release();
+      ctx.waitUntil(pool.end());
+    });
 
     if (useSubtls) {
       neonConfig.subtls = subtls;
@@ -462,8 +393,7 @@ export async function latencies(
         const client = new Client(env.NEON_DB_URL);
         client.neonConfig.wsProxy = (host, port) =>
           `subtls-wsproxy.jawj.workers.dev/?address=${host}:${port}`;
-        client.neonConfig.forceDisablePgSSL =
-          client.neonConfig.useSecureWebSocket = false;
+        client.neonConfig.forceDisablePgSSL = client.neonConfig.useSecureWebSocket = false;
         client.neonConfig.pipelineTLS = false; // only works with patched pg
         client.neonConfig.pipelineConnect = false; // only works with password auth, which we aren't offered this way
         try {

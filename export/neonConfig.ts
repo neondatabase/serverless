@@ -60,10 +60,7 @@ export interface NeonConfigGlobalAndClient {
    *
    * Default: `host => host + '/v2'`
    */
-  wsProxy:
-    | string
-    | ((host: string, port: number | string) => string)
-    | undefined;
+  wsProxy: string | ((host: string, port: number | string) => string) | undefined;
 
   /**
    * Use a secure (`wss:`) connection to the WebSocket proxy.
@@ -144,6 +141,4 @@ export interface NeonConfigGlobalAndClient {
   disableSNI: boolean;
 }
 
-export interface NeonConfig
-  extends NeonConfigGlobalOnly,
-    NeonConfigGlobalAndClient {}
+export interface NeonConfig extends NeonConfigGlobalOnly, NeonConfigGlobalAndClient {}

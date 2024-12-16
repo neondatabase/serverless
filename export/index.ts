@@ -117,9 +117,7 @@ class NeonClient extends Client {
 
       con.removeAllListeners('authenticationCleartextPassword');
       con.removeAllListeners('readyForQuery');
-      con.once('readyForQuery', () =>
-        con.on('readyForQuery', this._handleReadyForQuery.bind(this)),
-      );
+      con.once('readyForQuery', () => con.on('readyForQuery', this._handleReadyForQuery.bind(this)));
 
       const connectEvent = this.ssl ? 'sslconnect' : 'connect';
       con.on(connectEvent, () => {
@@ -145,8 +143,7 @@ class NeonClient extends Client {
 
     const attrPairs = Object.fromEntries(
       serverData.split(',').map((attrValue) => {
-        if (!/^.=/.test(attrValue))
-          throw new Error('SASL: Invalid attribute pair entry');
+        if (!/^.=/.test(attrValue)) throw new Error('SASL: Invalid attribute pair entry');
         const name = attrValue[0];
         const value = attrValue.substring(2);
         return [name, value];
@@ -158,30 +155,15 @@ class NeonClient extends Client {
     const iterationText = attrPairs.i;
 
     if (!nonce || !/^[!-+--~]+$/.test(nonce))
-      throw new Error(
-        'SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce missing/unprintable',
-      );
-    if (
-      !salt ||
-      !/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.test(
-        salt,
-      )
-    )
-      throw new Error(
-        'SASL: SCRAM-SERVER-FIRST-MESSAGE: salt missing/not base64',
-      );
+      throw new Error('SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce missing/unprintable');
+    if (!salt || !/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.test(salt))
+      throw new Error('SASL: SCRAM-SERVER-FIRST-MESSAGE: salt missing/not base64');
     if (!iterationText || !/^[1-9][0-9]*$/.test(iterationText))
-      throw new Error(
-        'SASL: SCRAM-SERVER-FIRST-MESSAGE: missing/invalid iteration count',
-      );
+      throw new Error('SASL: SCRAM-SERVER-FIRST-MESSAGE: missing/invalid iteration count');
     if (!nonce.startsWith(session.clientNonce))
-      throw new Error(
-        'SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce does not start with client nonce',
-      );
+      throw new Error('SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce does not start with client nonce');
     if (nonce.length === session.clientNonce.length)
-      throw new Error(
-        'SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce is too short',
-      );
+      throw new Error('SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce is too short');
 
     const iterations = parseInt(iterationText, 10);
     const saltBytes = Buffer.from(salt, 'base64');
@@ -195,11 +177,7 @@ class NeonClient extends Client {
       ['sign'],
     );
     let ui1 = new Uint8Array(
-      await crypto.subtle.sign(
-        'HMAC',
-        iterHmacKey,
-        Buffer.concat([saltBytes, Buffer.from([0, 0, 0, 1])]),
-      ),
+      await crypto.subtle.sign('HMAC', iterHmacKey, Buffer.concat([saltBytes, Buffer.from([0, 0, 0, 1])])),
     );
     let ui = ui1;
     for (var i = 0; i < iterations - 1; i++) {
@@ -215,20 +193,14 @@ class NeonClient extends Client {
       false,
       ['sign'],
     );
-    const clientKey = new Uint8Array(
-      await crypto.subtle.sign('HMAC', ckHmacKey, enc.encode('Client Key')),
-    );
+    const clientKey = new Uint8Array(await crypto.subtle.sign('HMAC', ckHmacKey, enc.encode('Client Key')));
     const storedKey = await crypto.subtle.digest('SHA-256', clientKey);
 
     const clientFirstMessageBare = 'n=*,r=' + session.clientNonce;
     const serverFirstMessage = 'r=' + nonce + ',s=' + salt + ',i=' + iterations;
     const clientFinalMessageWithoutProof = 'c=biws,r=' + nonce;
     const authMessage =
-      clientFirstMessageBare +
-      ',' +
-      serverFirstMessage +
-      ',' +
-      clientFinalMessageWithoutProof;
+      clientFirstMessageBare + ',' + serverFirstMessage + ',' + clientFinalMessageWithoutProof;
 
     const csHmacKey = await crypto.subtle.importKey(
       'raw',
@@ -240,9 +212,7 @@ class NeonClient extends Client {
     var clientSignature = new Uint8Array(
       await crypto.subtle.sign('HMAC', csHmacKey, enc.encode(authMessage)),
     );
-    var clientProofBytes = Buffer.from(
-      clientKey.map((_, i) => clientKey[i] ^ clientSignature[i]),
-    );
+    var clientProofBytes = Buffer.from(clientKey.map((_, i) => clientKey[i] ^ clientSignature[i]));
     var clientProof = clientProofBytes.toString('base64');
 
     const skHmacKey = await crypto.subtle.importKey(
@@ -252,11 +222,7 @@ class NeonClient extends Client {
       false,
       ['sign'],
     );
-    const serverKey = await crypto.subtle.sign(
-      'HMAC',
-      skHmacKey,
-      enc.encode('Server Key'),
-    );
+    const serverKey = await crypto.subtle.sign('HMAC', skHmacKey, enc.encode('Server Key'));
     const ssbHmacKey = await crypto.subtle.importKey(
       'raw',
       serverKey,
@@ -294,10 +260,7 @@ class NeonPool extends Pool {
   Client = NeonClient;
   hasFetchUnsupportedListeners = false;
 
-  on(
-    event: 'error' | 'connect' | 'acquire' | 'release' | 'remove',
-    listener: any,
-  ) {
+  on(event: 'error' | 'connect' | 'acquire' | 'release' | 'remove', listener: any) {
     if (event !== 'error') this.hasFetchUnsupportedListeners = true;
     return super.on(event as any, listener);
   }
@@ -350,19 +313,6 @@ class NeonPool extends Pool {
   }
 }
 
-export {
-  Socket as neonConfig,
-  NeonPool as Pool,
-  NeonClient as Client,
-  neon,
-  NeonDbError,
-};
+export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError };
 
-export {
-  Connection,
-  DatabaseError,
-  Query,
-  ClientBase,
-  defaults,
-  types,
-} from 'pg';
+export { Connection, DatabaseError, Query, ClientBase, defaults, types } from 'pg';

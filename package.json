@@ -22,7 +22,7 @@
     "stream": "file:shims/stream",
     "string_decoder": "file:shims/string_decoder",
     "tls": "file:shims/tls",
-    "undici": "^6.0.1",
+    "undici": "^7.1.0",
     "url": "file:shims/url",
     "util": "file:shims/util",
     "ws": "^8.12.1"
@@ -31,8 +31,8 @@
     "pg-connection-string": "2.5.0"
   },
   "scripts": {
-    "check": "tsc --noEmit",
-    "export": "npm run check && ./export.sh",
+    "check": "tsc --noEmit export/index.ts",
+    "export": "npm run check && ./export.sh && npm run makeTypes",
     "build": "./build.sh",
     "buildDebug": "./build.sh debug",
     "watch": "./build.sh watch",
@@ -48,17 +48,19 @@
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "test": "vitest run"
+    "makeTypes": "npx tsc && (npx @microsoft/api-extractor run --local || true) && cp dist/npm/index.d.ts dist/npm/index.d.mts",
+    "test": "npm run export && vitest run --no-file-parallelism"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230115.0",
+    "@microsoft/api-extractor": "^7.48.1",
     "@types/events": "^3.0.0",
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.4",
     "dotenv": "^16.0.3",
+    "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.24.0",
     "fast-equals": "^5.0.1",
-    "subtls": "^0.3.0",
+    "subtls": "^0.3.3",
     "typescript": "^5.0.4",
     "vitest": "^2.1.6",
     "wrangler": "^3.0.1"

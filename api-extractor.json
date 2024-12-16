@@ -1,0 +1,18 @@
+{
+  "mainEntryPointFilePath": "dist/dts/export/index.d.ts",
+  "newlineKind": "lf",
+  "enumMemberOrder": "preserve",
+  "dtsRollup": {
+    "enabled": true,
+    "untrimmedFilePath": "dist/npm/index.d.ts"
+  },
+  "apiReport": {
+    "enabled": false
+  },
+  "docModel": {
+    "enabled": false
+  },
+  "tsdocMetadata": {
+    "enabled": false
+  }
+}

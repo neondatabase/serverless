@@ -1,5 +1,9 @@
+declare global {
+  class TextDecoderClass extends TextDecoder {}
+}
+
 export class StringDecoder {
-  td: TextDecoder;
+  td: TextDecoderClass;
 
   constructor(encoding: ConstructorParameters<typeof TextDecoder>[0]) {
     this.td = new TextDecoder(encoding);

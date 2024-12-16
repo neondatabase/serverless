@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { neon } from '../export'
+import { neon } from '../dist/npm';
 
 const DB_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DB_URL);
@@ -34,11 +34,8 @@ test('empty batch query with array', async () => {
 
 test('option setting on `transaction()`', async () => {
   const [[[a]], [[b]]] = await sql.transaction(
-    (txn) => [
-      txn`SELECT ${1}::int AS "batchInt"`,
-      txn`SELECT ${'hello'} AS "batchStr"`,
-    ],
-    { arrayMode: true, isolationLevel: 'Serializable', readOnly: true },  // arrayMode changes result format destructured above
+    (txn) => [txn`SELECT ${1}::int AS "batchInt"`, txn`SELECT ${'hello'} AS "batchStr"`],
+    { arrayMode: true, isolationLevel: 'Serializable', readOnly: true }, // arrayMode changes result format destructured above
   );
   expect(a).toBe(1);
   expect(b).toBe('hello');
@@ -46,7 +43,7 @@ test('option setting on `transaction()`', async () => {
 
 test('option setting on `neon()`', async () => {
   const sqlArr = neon(DB_URL, {
-    arrayMode: true,  // arrayMode changes result format destructured below
+    arrayMode: true, // arrayMode changes result format destructured below
     isolationLevel: 'RepeatableRead',
   });
   const [[[a]], [[b]]] = await sqlArr.transaction((txn) => [
@@ -60,10 +57,7 @@ test('option setting on `neon()`', async () => {
 test('option setting on `transaction()` overrides option setting on `neon()`', async () => {
   const sqlArr = neon(DB_URL, { arrayMode: true });
   const [[a], [b]] = await sqlArr.transaction(
-    (txn) => [
-      txn`SELECT ${1}::int AS "batchInt"`,
-      txn`SELECT ${'hello'} AS "batchStr"`,
-    ],
+    (txn) => [txn`SELECT ${1}::int AS "batchInt"`, txn`SELECT ${'hello'} AS "batchStr"`],
     { arrayMode: false },
   );
   expect(a.batchInt).toBe(1);
@@ -84,10 +78,11 @@ test('invalid queries passed to `transaction()` in function', async () => {
     // @ts-expect-error
     sql.transaction((txn) => [
       txn`SELECT ${1}::int AS "batchInt"`,
-      `SELECT ${'hello'} AS "batchStr"`,  // <- oops, this is a bare string
-    ])
-  )
-  .rejects.toThrowError('transaction() expects an array of queries, or a function returning an array of queries');
+      `SELECT ${'hello'} AS "batchStr"`, // <- oops, this is a bare string
+    ]),
+  ).rejects.toThrowError(
+    'transaction() expects an array of queries, or a function returning an array of queries',
+  );
 });
 
 test('invalid queries passed to `transaction()` in array', async () => {
@@ -95,8 +90,9 @@ test('invalid queries passed to `transaction()` in array', async () => {
     sql.transaction([
       sql`SELECT ${1}::int AS "batchInt"`,
       // @ts-expect-error
-      `SELECT ${'hello'} AS "batchStr"`,  // <- oops, this is a bare string
-    ])
-  )
-  .rejects.toThrowError('transaction() expects an array of queries, or a function returning an array of queries');
+      `SELECT ${'hello'} AS "batchStr"`, // <- oops, this is a bare string
+    ]),
+  ).rejects.toThrowError(
+    'transaction() expects an array of queries, or a function returning an array of queries',
+  );
 });
