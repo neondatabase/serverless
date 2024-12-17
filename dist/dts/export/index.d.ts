@@ -45,5 +45,5 @@ declare class NeonPool extends Pool {
     on(event: 'error' | 'connect' | 'acquire' | 'release' | 'remove', listener: any): this;
     query(config?: any, values?: any, cb?: any): any;
 }
-export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError };
-export { Connection, DatabaseError, Query, ClientBase, defaults, types } from 'pg';
+export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError, };
+export { Connection, DatabaseError, Query, ClientBase, defaults, types, } from 'pg';

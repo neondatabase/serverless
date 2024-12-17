@@ -15,6 +15,24 @@ const sql = neon(DB_URL);
 const wsPool = new WsPool({ connectionString: DB_URL });
 const pgPool = new PgPool({ connectionString: DB_URL });
 
+function recursiveTransform(x: any, transform: (x: any) => any) {
+  if (Array.isArray(x)) {
+    return x.map((item) => recursiveTransform(item, transform));
+  } else if (x !== null && typeof x === 'object') {
+    return Object.fromEntries(
+      Object.entries(x).map(([k, v]) => [k, recursiveTransform(v, transform)]),
+    );
+  } else {
+    return transform(x);
+  }
+}
+
+function functionsToPlaceholders(x: any) {
+  return recursiveTransform(x, (x) =>
+    typeof x === 'function' ? `__fn_arity_${x.length}__` : x,
+  );
+}
+
 test(
   'WebSockets query results match pg/TCP query results, using pool.connect()',
   { timeout: 30000 },
@@ -28,7 +46,11 @@ test(
         wsClient.query(query, params),
         pgClient.query(query, params),
       ]);
-      expect(wsResult).toStrictEqual(pgResult);
+
+      // unprocessed results don't strictly match because functions are minified by ws driver
+      expect(functionsToPlaceholders(wsResult)).toStrictEqual(
+        functionsToPlaceholders(pgResult),
+      );
     }
 
     wsClient.release();
@@ -52,6 +74,8 @@ test('pool.query() with poolQueryViaFetch', async () => {
     neonConfig.poolQueryViaFetch = false;
   }
 });
+
+// TODO: poolQueryViaFetch with contra-indications
 
 test('client.query()', async () => {
   const client = new WsClient(DB_URL);
@@ -118,35 +142,16 @@ emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
 -----END CERTIFICATE-----`;
 
 test('client.query() with custom WebSocket proxy and subtls', async () => {
-  const {
-    wsProxy,
-    pipelineConnect,
-    forceDisablePgSSL,
-    rootCerts,
-    subtls: origSubtls,
-  } = neonConfig;
-  try {
-    neonConfig.wsProxy = process.env.WSPROXY!;
-    //neonConfig.subtls = subtls;
-    //neonConfig.rootCerts = ISRGX1Cert;
+  const client = new WsClient(DB_URL);
+  client.neonConfig.wsProxy = process.env.VITE_WSPROXY!;
+  client.neonConfig.forceDisablePgSSL = false;
+  client.neonConfig.pipelineConnect = false;
+  client.neonConfig.subtls = subtls;
+  client.neonConfig.rootCerts = ISRGX1Cert;
 
-    // Neon requires TLS for apparently-ordinary TCP connections
-    //neonConfig.forceDisablePgSSL = false;
-
-    // pipelining only works with password auth, which we aren't offered this way
-    //neonConfig.pipelineConnect = false;
-
-    const client = new WsClient(DB_URL);
-    await client.connect();
-    const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
-    await client.end();
-    expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
-    expect(wsResult.viaNeonFetch).toBeUndefined();
-  } finally {
-    neonConfig.wsProxy = wsProxy;
-    neonConfig.pipelineConnect = pipelineConnect;
-    neonConfig.forceDisablePgSSL = forceDisablePgSSL;
-    neonConfig.rootCerts = rootCerts;
-    neonConfig.subtls = origSubtls;
-  }
+  await client.connect();
+  const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
+  await client.end();
+  expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
+  expect(wsResult.viaNeonFetch).toBeUndefined();
 });

@@ -60,7 +60,7 @@
     "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.24.0",
     "fast-equals": "^5.0.1",
-    "subtls": "^0.3.3",
+    "subtls": "^0.4.0",
     "typescript": "^5.0.4",
     "vitest": "^2.1.6",
     "wrangler": "^3.0.1"

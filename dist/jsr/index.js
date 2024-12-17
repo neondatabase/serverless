@@ -1002,26 +1002,26 @@ then(d=>{if(this.ws=d.webSocket,this.ws==null)throw c;this.ws.accept(),o(this.ws
 throw new Error("For Postgres SSL connections, you must set `neonConfig.subtls` \
 to the subtls library. See https://github.com/neondatabase/serverless/blob/main/\
 CONFIG.md for more information.");this.tlsState=1;let n=this.subtls.TrustedCert.
-fromPEM(this.rootCerts),i=new this.subtls.WebSocketReadQueue(this.ws),s=i.read.bind(
-i),o=this.rawWrite.bind(this),[u,c]=await this.subtls.startTls(t,n,s,o,{useSNI:!this.
-disableSNI,expectPreData:this.pipelineTLS?new Uint8Array([83]):void 0});this.tlsRead=
-u,this.tlsWrite=c,this.tlsState=2,this.encrypted=!0,this.authorized=!0,this.emit(
-"secureConnection",this),this.tlsReadLoop()}async tlsReadLoop(){for(;;){let t=await this.
-tlsRead();if(t===void 0)break;{let n=y.from(t);this.emit("data",n)}}}rawWrite(t){
-if(!this.coalesceWrites){this.ws.send(t);return}if(this.writeBuffer===void 0)this.
-writeBuffer=t,setTimeout(()=>{this.ws.send(this.writeBuffer),this.writeBuffer=void 0},
-0);else{let n=new Uint8Array(this.writeBuffer.length+t.length);n.set(this.writeBuffer),
-n.set(t,this.writeBuffer.length),this.writeBuffer=n}}write(t,n="utf8",i=s=>{}){return t.
-length===0?(i(),!0):(typeof t=="string"&&(t=y.from(t,n)),this.tlsState===0?(this.
-rawWrite(t),i()):this.tlsState===1?this.once("secureConnection",()=>{this.write(
-t,n,i)}):(this.tlsWrite(t),i()),!0)}end(t=y.alloc(0),n="utf8",i=()=>{}){return this.
-write(t,n,()=>{this.ws.close(),i()}),this}destroy(){return this.destroyed=!0,this.
-end()}};a(E,"Socket"),_(E,"defaults",{poolQueryViaFetch:!1,fetchEndpoint:a((t,n,i)=>{
-let s;return i?.jwtAuth?s=t.replace(ds,"apiauth."):s=t.replace(ds,"api."),"https\
-://"+s+"/sql"},"fetchEndpoint"),fetchConnectionCache:!0,fetchFunction:void 0,webSocketConstructor:void 0,
-wsProxy:a(t=>t+"/v2","wsProxy"),useSecureWebSocket:!0,forceDisablePgSSL:!0,coalesceWrites:!0,
-pipelineConnect:"password",subtls:void 0,rootCerts:"",pipelineTLS:!1,disableSNI:!1}),
-_(E,"opts",{});_e=E});var Xr=I(T=>{"use strict";p();Object.defineProperty(T,"__esModule",{value:!0});T.
+databaseFromPEM(this.rootCerts),i=new this.subtls.WebSocketReadQueue(this.ws),s=i.
+read.bind(i),o=this.rawWrite.bind(this),[u,c]=await this.subtls.startTls(t,n,s,o,
+{useSNI:!this.disableSNI,expectPreData:this.pipelineTLS?new Uint8Array([83]):void 0});
+this.tlsRead=u,this.tlsWrite=c,this.tlsState=2,this.encrypted=!0,this.authorized=
+!0,this.emit("secureConnection",this),this.tlsReadLoop()}async tlsReadLoop(){for(;;){
+let t=await this.tlsRead();if(t===void 0)break;{let n=y.from(t);this.emit("data",
+n)}}}rawWrite(t){if(!this.coalesceWrites){this.ws.send(t);return}if(this.writeBuffer===
+void 0)this.writeBuffer=t,setTimeout(()=>{this.ws.send(this.writeBuffer),this.writeBuffer=
+void 0},0);else{let n=new Uint8Array(this.writeBuffer.length+t.length);n.set(this.
+writeBuffer),n.set(t,this.writeBuffer.length),this.writeBuffer=n}}write(t,n="utf\
+8",i=s=>{}){return t.length===0?(i(),!0):(typeof t=="string"&&(t=y.from(t,n)),this.
+tlsState===0?(this.rawWrite(t),i()):this.tlsState===1?this.once("secureConnectio\
+n",()=>{this.write(t,n,i)}):(this.tlsWrite(t),i()),!0)}end(t=y.alloc(0),n="utf8",i=()=>{}){
+return this.write(t,n,()=>{this.ws.close(),i()}),this}destroy(){return this.destroyed=
+!0,this.end()}};a(E,"Socket"),_(E,"defaults",{poolQueryViaFetch:!1,fetchEndpoint:a(
+(t,n,i)=>{let s;return i?.jwtAuth?s=t.replace(ds,"apiauth."):s=t.replace(ds,"api\
+."),"https://"+s+"/sql"},"fetchEndpoint"),fetchConnectionCache:!0,fetchFunction:void 0,
+webSocketConstructor:void 0,wsProxy:a(t=>t+"/v2","wsProxy"),useSecureWebSocket:!0,
+forceDisablePgSSL:!0,coalesceWrites:!0,pipelineConnect:"password",subtls:void 0,
+rootCerts:"",pipelineTLS:!1,disableSNI:!1}),_(E,"opts",{});_e=E});var Xr=I(T=>{"use strict";p();Object.defineProperty(T,"__esModule",{value:!0});T.
 NoticeMessage=T.DataRowMessage=T.CommandCompleteMessage=T.ReadyForQueryMessage=T.
 NotificationResponseMessage=T.BackendKeyDataMessage=T.AuthenticationMD5Password=
 T.ParameterStatusMessage=T.ParameterDescriptionMessage=T.RowDescriptionMessage=T.

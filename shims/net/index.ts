@@ -450,7 +450,7 @@ export class Socket extends EventEmitter {
 
     this.tlsState = TlsState.Handshake;
 
-    const rootCerts = this.subtls.TrustedCert.fromPEM(this.rootCerts);
+    const rootCerts = this.subtls.TrustedCert.databaseFromPEM(this.rootCerts);
     const readQueue = new this.subtls.WebSocketReadQueue(this.ws!);
     const networkRead = readQueue.read.bind(readQueue);
     const networkWrite = this.rawWrite.bind(this);
