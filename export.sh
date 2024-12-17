@@ -9,7 +9,7 @@ else
 fi
 
 
-# CJS code: index.js
+# == CJS code: index.js ==
 
 npx esbuild export/index.ts \
   --format=cjs \
@@ -21,7 +21,7 @@ npx esbuild export/index.ts \
   $DEBUG_ARG $MINIFY_ARG
 
 
-# ESM code: index.mjs
+# == ESM code: index.mjs ==
 
 npx esbuild export/index.ts \
   --format=esm \
@@ -32,25 +32,28 @@ npx esbuild export/index.ts \
   --outfile=dist/npm/index.mjs \
   $DEBUG_ARG $MINIFY_ARG
 
-# CJS TS types: index.d.ts
 
-# updated manually
+# == types ==
+
+npx tsc
+
+# remove global declarations from types
+sed -i.orig -r '/^declare global [{]$/,/^[}]$/d' dist/dts/shims/net/index.d.ts
+
+# bundle types into one file
+echo "Note: warnings are expected from api-extractor"
+npx @microsoft/api-extractor run --local
+
+# copy .d.dt (for CJS) to .m.ts (for ESM)
+cp dist/npm/index.d.ts dist/npm/index.d.mts
 
 
-# ESM TS types: index.d.mts
-
-echo "
-// DON'T EDIT THIS FILE
-// It's a simple automatic copy of index.d.ts
-" > dist/npm/index.d.mts
-cat dist/npm/index.d.ts >> dist/npm/index.d.mts
-
-
-# static assets
+# == static assets ==
 
 cp LICENSE README.md CHANGELOG.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
 
-# Prepare jsr package
+
+# == JSR package ==
 
 cp dist/npm/index.d.ts dist/jsr/
 echo "/// <reference types=\"./index.d.ts\" />
@@ -59,8 +62,8 @@ cat dist/npm/index.mjs >> dist/jsr/index.js
 cp LICENSE README.md dist/jsr/
 
 
-# Note: --keep-names adds about 10KB to the bundle size, but it gives us error
-# messages and stack traces with no short, cryptic variable names
+# Note: --keep-names for esbuild adds about 10KB to the bundle size, but it
+# gives us error messages + stack traces with no short, cryptic variable names
 
 # WITHOUT (see `xe`, `pe`):
 

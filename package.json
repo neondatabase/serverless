@@ -32,7 +32,6 @@
   },
   "scripts": {
     "check": "tsc --noEmit export/index.ts",
-    "export": "npm run check && ./export.sh && npm run makeTypes",
     "build": "./build.sh",
     "buildDebug": "./build.sh debug",
     "watch": "./build.sh watch",
@@ -43,13 +42,11 @@
     "launch": "DOTENV_CONFIG_PATH=.dev.vars node -r dotenv/config --no-warnings dist/node/index.mjs",
     "node": "npm run build && npm run launch",
     "nodeDebug": "npm run buildDebug && npm run launch",
-    "bun": "npm run build && DOTENV_CONFIG_PATH=.dev.vars bun -r dotenv/config dist/node/index.mjs",
     "cfDev": "npm run build && wrangler dev",
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "makeTypes": "npx tsc && sed -i.orig -r '/^declare global [{]$/,/^[}]$/d' dist/dts/shims/net/index.d.ts && npx @microsoft/api-extractor run --local && cp dist/npm/index.d.ts dist/npm/index.d.mts",
-    "test": "npm run export && vitest run --no-file-parallelism"
+    "test": "./export.sh && vitest run --no-file-parallelism"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.48.1",
@@ -57,7 +54,6 @@
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.4",
     "dotenv": "^16.0.3",
-    "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.24.0",
     "fast-equals": "^5.0.1",
     "subtls": "^0.4.0",
