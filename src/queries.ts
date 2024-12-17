@@ -10,6 +10,7 @@ export const queries: Query[] = [
   },
   {
     sql: 'SELECT now()',
-    test: (rows) => /^2\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+Z$/.test(rows[0].now.toISOString()),
+    test: (rows) =>
+      /^2\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+Z$/.test(rows[0].now.toISOString()),
   },
 ];

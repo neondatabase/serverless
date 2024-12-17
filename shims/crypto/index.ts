@@ -24,7 +24,9 @@ export function createHash(type: 'sha256') {
       update: function (data: string | Buffer | Uint8Array) {
         return {
           digest: function () {
-            return typeof data === 'string' ? Md5.hashStr(data) : Md5.hashByteArray(data);
+            return typeof data === 'string'
+              ? Md5.hashStr(data)
+              : Md5.hashByteArray(data);
           },
         };
       },
@@ -33,7 +35,8 @@ export function createHash(type: 'sha256') {
 }
 
 export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
-  if (type !== 'sha256') throw new Error(`Only sha256 is supported (requested: '${type}')`);
+  if (type !== 'sha256')
+    throw new Error(`Only sha256 is supported (requested: '${type}')`);
   return {
     update: function (data: string | Buffer | Uint8Array) {
       return {
@@ -54,8 +57,8 @@ export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
           const innerKey = new Uint8Array(64);
           const outerKey = new Uint8Array(64);
           for (let i = 0; i < 64; i++) {
-            innerKey[i] = 0x36 ^ key[i] as number;  // cast should be unnecessary but dts-bundle-generator appears to need it
-            outerKey[i] = 0x5c ^ key[i] as number;  // ditto
+            innerKey[i] = 0x36 ^ (key[i] as number); // cast should be unnecessary but dts-bundle-generator appears to need it
+            outerKey[i] = 0x5c ^ (key[i] as number); // ditto
           }
 
           const msg = new Uint8Array(data.length + 64);
@@ -167,8 +170,12 @@ export class Md5 {
     return this.onePassHasher.start().appendAsciiStr(str).end(raw);
   }
   // Private Static Variables
-  private static stateIdentity = new Int32Array([1732584193, -271733879, -1732584194, 271733878]);
-  private static buffer32Identity = new Int32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  private static stateIdentity = new Int32Array([
+    1732584193, -271733879, -1732584194, 271733878,
+  ]);
+  private static buffer32Identity = new Int32Array([
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  ]);
   private static hexChars = '0123456789abcdef';
   private static hexOut: string[] = [];
 
@@ -196,7 +203,10 @@ export class Md5 {
     return ho.join('');
   }
 
-  private static _md5cycle(x: Int32Array | Uint32Array, k: Int32Array | Uint32Array) {
+  private static _md5cycle(
+    x: Int32Array | Uint32Array,
+    k: Int32Array | Uint32Array,
+  ) {
     let a = x[0];
     let b = x[1];
     let c = x[2];
@@ -391,9 +401,12 @@ export class Md5 {
         buf8[bufLen++] = ((code >>> 6) & 0x3f) | 0x80;
         buf8[bufLen++] = (code & 0x3f) | 0x80;
       } else {
-        code = (code - 0xd800) * 0x400 + (str.charCodeAt(++i) - 0xdc00) + 0x10000;
+        code =
+          (code - 0xd800) * 0x400 + (str.charCodeAt(++i) - 0xdc00) + 0x10000;
         if (code > 0x10ffff) {
-          throw new Error('Unicode standard supports code points up to U+10FFFF');
+          throw new Error(
+            'Unicode standard supports code points up to U+10FFFF',
+          );
         }
         buf8[bufLen++] = (code >>> 18) + 0xf0;
         buf8[bufLen++] = ((code >>> 12) & 0x3f) | 0x80;
@@ -550,7 +563,6 @@ export class Md5 {
 //   throw new Error('Md5 self test failed.');
 // }
 
-
 /*
 Copyright 2022 Andrea Griffini
 
@@ -595,21 +607,25 @@ export function sha256<T extends string | Uint8Array>(
     tsz = 0,
     bp = 0;
   const k = [
-      0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-      0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-      0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-      0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-      0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-      0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-      0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-      0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+      0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
+      0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+      0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
+      0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+      0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
+      0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+      0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
+      0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+      0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
+      0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+      0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
     ],
     rrot = (x: number, n: number) => (x >>> n) | (x << (32 - n)),
     w = new Uint32Array(64),
     buf = new Uint8Array(64),
     process = () => {
       for (let j = 0, r = 0; j < 16; j++, r += 4) {
-        w[j] = (buf[r] << 24) | (buf[r + 1] << 16) | (buf[r + 2] << 8) | buf[r + 3];
+        w[j] =
+          (buf[r] << 24) | (buf[r + 1] << 16) | (buf[r + 2] << 8) | buf[r + 3];
       }
       for (let j = 16; j < 64; j++) {
         let s0 = rrot(w[j - 15], 7) ^ rrot(w[j - 15], 18) ^ (w[j - 15] >>> 3);

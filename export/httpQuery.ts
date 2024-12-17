@@ -41,7 +41,10 @@ export class NeonDbError extends Error {
   constructor(message: string) {
     super(message);
 
-    if ('captureStackTrace' in Error && typeof Error.captureStackTrace === 'function') {
+    if (
+      'captureStackTrace' in Error &&
+      typeof Error.captureStackTrace === 'function'
+    ) {
       Error.captureStackTrace(this, NeonDbError);
     }
   }
@@ -60,7 +63,12 @@ interface HTTPQueryOptions {
 
   // these callback options are not currently exported:
   queryCallback?: (query: ParameterizedQuery) => void;
-  resultCallback?: (query: ParameterizedQuery, result: any, rows: any, opts: any) => void;
+  resultCallback?: (
+    query: ParameterizedQuery,
+    result: any,
+    rows: any,
+    opts: any,
+  ) => void;
 
   // JWT auth token to be passed as the Bearer token in the Authorization
   // header
@@ -69,7 +77,11 @@ interface HTTPQueryOptions {
 
 interface HTTPTransactionOptions extends HTTPQueryOptions {
   // note that ReadUncommitted is really ReadCommitted in Postgres: https://www.postgresql.org/docs/current/transaction-iso.html
-  isolationLevel?: 'ReadUncommitted' | 'ReadCommitted' | 'RepeatableRead' | 'Serializable';
+  isolationLevel?:
+    | 'ReadUncommitted'
+    | 'ReadCommitted'
+    | 'RepeatableRead'
+    | 'Serializable';
   readOnly?: boolean;
   deferrable?: boolean;
 }
@@ -87,7 +99,8 @@ interface ProcessQueryResultOptions {
   types?: typeof defaultTypes;
 }
 
-const txnArgErrMsg = 'transaction() expects an array of queries, or a function returning an array of queries';
+const txnArgErrMsg =
+  'transaction() expects an array of queries, or a function returning an array of queries';
 const errorFields = [
   'severity',
   'code',
@@ -157,14 +170,22 @@ export function neon(
   }
 
   const { protocol, username, hostname, port, pathname } = db;
-  if ((protocol !== 'postgres:' && protocol !== 'postgresql:') || !username || !hostname || !pathname) {
+  if (
+    (protocol !== 'postgres:' && protocol !== 'postgresql:') ||
+    !username ||
+    !hostname ||
+    !pathname
+  ) {
     throw new Error(
       'Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value',
     );
   }
 
   // resolve query, params and opts
-  function resolve(strings: TemplateStringsArray | string, ...params: any[]): NeonQueryPromise {
+  function resolve(
+    strings: TemplateStringsArray | string,
+    ...params: any[]
+  ): NeonQueryPromise {
     let query;
     let queryOpts: HTTPQueryOptions | undefined;
 
@@ -194,17 +215,27 @@ export function neon(
   }
 
   resolve.transaction = async (
-    queries: NeonQueryPromise[] | ((sql: (strings: TemplateStringsArray | string, ...params: any[]) => NeonQueryPromise) => NeonQueryPromise[]),
+    queries:
+      | NeonQueryPromise[]
+      | ((
+          sql: (
+            strings: TemplateStringsArray | string,
+            ...params: any[]
+          ) => NeonQueryPromise,
+        ) => NeonQueryPromise[]),
     txnOpts?: HTTPTransactionOptions,
   ) => {
     if (typeof queries === 'function') queries = queries(resolve);
 
     if (!Array.isArray(queries)) throw new Error(txnArgErrMsg);
     queries.forEach((query) => {
-      if (query[Symbol.toStringTag] !== 'NeonQueryPromise') throw new Error(txnArgErrMsg);
+      if (query[Symbol.toStringTag] !== 'NeonQueryPromise')
+        throw new Error(txnArgErrMsg);
     });
 
-    const parameterizedQueries = queries.map((query) => (query as NeonQueryPromise).parameterizedQuery);
+    const parameterizedQueries = queries.map(
+      (query) => (query as NeonQueryPromise).parameterizedQuery,
+    );
     const opts = queries.map((query) => (query as NeonQueryPromise).opts ?? {});
     return execute(parameterizedQueries, opts, txnOpts);
   };
@@ -217,7 +248,9 @@ export function neon(
   ) {
     const { fetchEndpoint, fetchFunction } = Socket;
 
-    const bodyData = Array.isArray(parameterizedQuery) ? { queries: parameterizedQuery } : parameterizedQuery;
+    const bodyData = Array.isArray(parameterizedQuery)
+      ? { queries: parameterizedQuery }
+      : parameterizedQuery;
 
     // --- resolve options to transaction level ---
 
@@ -235,15 +268,23 @@ export function neon(
           ...resolvedFetchOptions,
           ...txnOpts.fetchOptions,
         };
-      if (txnOpts.arrayMode !== undefined) resolvedArrayMode = txnOpts.arrayMode;
-      if (txnOpts.fullResults !== undefined) resolvedFullResults = txnOpts.fullResults;
-      if (txnOpts.isolationLevel !== undefined) resolvedIsolationLevel = txnOpts.isolationLevel;
+      if (txnOpts.arrayMode !== undefined)
+        resolvedArrayMode = txnOpts.arrayMode;
+      if (txnOpts.fullResults !== undefined)
+        resolvedFullResults = txnOpts.fullResults;
+      if (txnOpts.isolationLevel !== undefined)
+        resolvedIsolationLevel = txnOpts.isolationLevel;
       if (txnOpts.readOnly !== undefined) resolvedReadOnly = txnOpts.readOnly;
-      if (txnOpts.deferrable !== undefined) resolvedDeferrable = txnOpts.deferrable;
+      if (txnOpts.deferrable !== undefined)
+        resolvedDeferrable = txnOpts.deferrable;
     }
 
     // single query -- cannot be true at same time as `txnOpts !== undefined` above
-    if (allSqlOpts !== undefined && !Array.isArray(allSqlOpts) && allSqlOpts.fetchOptions !== undefined) {
+    if (
+      allSqlOpts !== undefined &&
+      !Array.isArray(allSqlOpts) &&
+      allSqlOpts.fetchOptions !== undefined
+    ) {
       resolvedFetchOptions = {
         ...resolvedFetchOptions,
         ...allSqlOpts.fetchOptions,
@@ -281,8 +322,10 @@ export function neon(
       // only send these headers for batch queries, where they matter
       if (resolvedIsolationLevel !== undefined)
         headers['Neon-Batch-Isolation-Level'] = resolvedIsolationLevel;
-      if (resolvedReadOnly !== undefined) headers['Neon-Batch-Read-Only'] = String(resolvedReadOnly);
-      if (resolvedDeferrable !== undefined) headers['Neon-Batch-Deferrable'] = String(resolvedDeferrable);
+      if (resolvedReadOnly !== undefined)
+        headers['Neon-Batch-Read-Only'] = String(resolvedReadOnly);
+      if (resolvedDeferrable !== undefined)
+        headers['Neon-Batch-Deferrable'] = String(resolvedDeferrable);
     }
 
     // --- run query ---
@@ -296,7 +339,9 @@ export function neon(
         ...resolvedFetchOptions, // this is last, so it gets the final say
       });
     } catch (err: any) {
-      const connectErr = new NeonDbError(`Error connecting to database: ${err}`);
+      const connectErr = new NeonDbError(
+        `Error connecting to database: ${err}`,
+      );
       connectErr.sourceError = err;
       throw connectErr;
     }
@@ -308,7 +353,9 @@ export function neon(
         // batch query
         const resultArray = rawResults.results;
         if (!Array.isArray(resultArray))
-          throw new NeonDbError('Neon internal error: unexpected result format');
+          throw new NeonDbError(
+            'Neon internal error: unexpected result format',
+          );
         return resultArray.map((result, i) => {
           let sqlOpts = (allSqlOpts as HTTPQueryOptions[])[i] ?? {};
           let arrayMode = sqlOpts.arrayMode ?? resolvedArrayMode;
@@ -339,7 +386,8 @@ export function neon(
       if (status === 400) {
         const json = (await response.json()) as any;
         const dbError = new NeonDbError(json.message);
-        for (const field of errorFields) dbError[field] = json[field] ?? undefined;
+        for (const field of errorFields)
+          dbError[field] = json[field] ?? undefined;
         throw dbError;
       } else {
         const text = await response.text();
@@ -360,9 +408,11 @@ function createNeonQueryPromise(
     [Symbol.toStringTag]: 'NeonQueryPromise',
     parameterizedQuery,
     opts,
-    then: (resolve, reject) => execute(parameterizedQuery, opts).then(resolve, reject),
+    then: (resolve, reject) =>
+      execute(parameterizedQuery, opts).then(resolve, reject),
     catch: (reject) => execute(parameterizedQuery, opts).catch(reject),
-    finally: (finallyFn) => execute(parameterizedQuery, opts).finally(finallyFn),
+    finally: (finallyFn) =>
+      execute(parameterizedQuery, opts).finally(finallyFn),
   } as NeonQueryPromise;
 }
 
@@ -378,19 +428,26 @@ function processQueryResult(
 ) {
   const types = new TypeOverrides(customTypes);
   const colNames = rawResults.fields.map((field: any) => field.name);
-  const parsers = rawResults.fields.map((field: any) => types.getTypeParser(field.dataTypeID));
+  const parsers = rawResults.fields.map((field: any) =>
+    types.getTypeParser(field.dataTypeID),
+  );
 
   // now parse and possibly restructure the rows data like node-postgres does
   const rows =
     arrayMode === true
       ? // maintain array-of-arrays structure
         rawResults.rows.map((row: any) =>
-          row.map((col: any, i: number) => (col === null ? null : parsers[i](col))),
+          row.map((col: any, i: number) =>
+            col === null ? null : parsers[i](col),
+          ),
         )
       : // turn into an object
         rawResults.rows.map((row: any) => {
           return Object.fromEntries(
-            row.map((col: any, i: number) => [colNames[i], col === null ? null : parsers[i](col)]),
+            row.map((col: any, i: number) => [
+              colNames[i],
+              col === null ? null : parsers[i](col),
+            ]),
           );
         });
 

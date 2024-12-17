@@ -157,13 +157,8 @@ try {
   await client.query('BEGIN');
   const {
     rows: [{ id: postId }],
-  } = await client.query('INSERT INTO posts (title) VALUES ($1) RETURNING id', [
-    'Welcome',
-  ]);
-  await client.query('INSERT INTO photos (post_id, url) VALUES ($1, $2)', [
-    postId,
-    's3.bucket/photo/url',
-  ]);
+  } = await client.query('INSERT INTO posts (title) VALUES ($1) RETURNING id', ['Welcome']);
+  await client.query('INSERT INTO photos (post_id, url) VALUES ($1, $2)', [postId, 's3.bucket/photo/url']);
   await client.query('COMMIT');
 } catch (err) {
   await client.query('ROLLBACK');
@@ -196,22 +191,25 @@ export default async (req: Request, ctx: any) => {
   // create a `Pool` inside the request handler
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-  // get and validate the `postId` query parameter
-  const postId = parseInt(new URL(req.url).searchParams.get('postId'), 10);
-  if (isNaN(postId)) return new Response('Bad request', { status: 400 });
+  try {
+    // get and validate the `postId` query parameter
+    const postId = parseInt(new URL(req.url).searchParams.get('postId'), 10);
+    if (isNaN(postId)) return new Response('Bad request', { status: 400 });
 
-  // query and validate the post
-  const [post] = await pool.query('SELECT * FROM posts WHERE id = $1', [postId]);
-  if (!post) return new Response('Not found', { status: 404 });
+    // query and validate the post
+    const { rows: [post] } = await pool.query('SELECT * FROM posts WHERE id = $1', [postId]);
+    if (!post) return new Response('Not found', { status: 404 });
 
-  // end the `Pool` inside the same request handler
-  // (unlike `await`, `ctx.waitUntil` won't hold up the response)
-  ctx.waitUntil(pool.end());
+    // return the post as JSON
+    return new Response(JSON.stringify(post), {
+      headers: { 'content-type': 'application/json' }
+    });
 
-  // return the post as JSON
-  return new Response(JSON.stringify(post), {
-    headers: { 'content-type': 'application/json' }
-  });
+  } finally {
+    // end the `Pool` inside the same request handler
+    // (unlike `await`, `ctx.waitUntil` won't hold up the response)
+    ctx.waitUntil(pool.end());
+  }
 }
 
 export const config = {
@@ -236,22 +234,25 @@ export default async (req: Request, ctx: any) => {
   const client = new Client(process.env.DATABASE_URL);
   await client.connect();
 
-  // get and validate the `postId` query parameter
-  const postId = parseInt(new URL(req.url).searchParams.get('postId'), 10);
-  if (isNaN(postId)) return new Response('Bad request', { status: 400 });
+  try {
+    // get and validate the `postId` query parameter
+    const postId = parseInt(new URL(req.url).searchParams.get('postId'), 10);
+    if (isNaN(postId)) return new Response('Bad request', { status: 400 });
 
-  // query and validate the post
-  const [post] = await client.query('SELECT * FROM posts WHERE id = $1', [postId]);
-  if (!post) return new Response('Not found', { status: 404 });
+    // query and validate the post
+    const { rows: [post] } = await client.query('SELECT * FROM posts WHERE id = $1', [postId]);
+    if (!post) return new Response('Not found', { status: 404 });
 
-  // end the `Client` inside the same request handler
-  // (unlike `await`, `ctx.waitUntil` won't hold up the response)
-  ctx.waitUntil(client.end());
+    // return the post as JSON
+    return new Response(JSON.stringify(post), {
+      headers: { 'content-type': 'application/json' }
+    });
 
-  // return the post as JSON
-  return new Response(JSON.stringify(post), {
-    headers: { 'content-type': 'application/json' }
-  });
+  } finally {
+    // end the `Client` inside the same request handler
+    // (unlike `await`, `ctx.waitUntil` won't hold up the response)
+    ctx.waitUntil(client.end());
+  }
 }
 
 export const config = {

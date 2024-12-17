@@ -34,7 +34,10 @@ test('empty batch query with array', async () => {
 
 test('option setting on `transaction()`', async () => {
   const [[[a]], [[b]]] = await sql.transaction(
-    (txn) => [txn`SELECT ${1}::int AS "batchInt"`, txn`SELECT ${'hello'} AS "batchStr"`],
+    (txn) => [
+      txn`SELECT ${1}::int AS "batchInt"`,
+      txn`SELECT ${'hello'} AS "batchStr"`,
+    ],
     { arrayMode: true, isolationLevel: 'Serializable', readOnly: true }, // arrayMode changes result format destructured above
   );
   expect(a).toBe(1);
@@ -57,7 +60,10 @@ test('option setting on `neon()`', async () => {
 test('option setting on `transaction()` overrides option setting on `neon()`', async () => {
   const sqlArr = neon(DB_URL, { arrayMode: true });
   const [[a], [b]] = await sqlArr.transaction(
-    (txn) => [txn`SELECT ${1}::int AS "batchInt"`, txn`SELECT ${'hello'} AS "batchStr"`],
+    (txn) => [
+      txn`SELECT ${1}::int AS "batchInt"`,
+      txn`SELECT ${'hello'} AS "batchStr"`,
+    ],
     { arrayMode: false },
   );
   expect(a.batchInt).toBe(1);

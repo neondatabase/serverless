@@ -161,10 +161,7 @@ const sql = neon(process.env.DATABASE_URL);
 const showLatestN = 10;
 
 const [posts, tags] = await sql.transaction(
-  [
-    sql`SELECT * FROM posts ORDER BY posted_at DESC LIMIT ${showLatestN}`,
-    sql`SELECT * FROM tags`,
-  ],
+  [sql`SELECT * FROM posts ORDER BY posted_at DESC LIMIT ${showLatestN}`, sql`SELECT * FROM tags`],
   {
     isolationLevel: 'RepeatableRead',
     readOnly: true,
@@ -175,9 +172,10 @@ const [posts, tags] = await sql.transaction(
 Or as an example of the function case:
 
 ```javascript
-const [authors, tags] = await neon(process.env.DATABASE_URL).transaction(
-  (txn) => [txn`SELECT * FROM authors`, txn`SELECT * FROM tags`],
-);
+const [authors, tags] = await neon(process.env.DATABASE_URL).transaction((txn) => [
+  txn`SELECT * FROM authors`,
+  txn`SELECT * FROM tags`,
+]);
 ```
 
 The optional second argument to `transaction()`, `options`, has the same keys as the options to the ordinary query function -- `arrayMode`, `fullResults` and `fetchOptions` -- plus three additional keys that concern the transaction configuration. These transaction-related keys are: `isolationMode`, `readOnly` and `deferrable`. They are described below. Defaults for the transaction-related keys can also be set as options to the `neon` function.
@@ -269,8 +267,7 @@ If connecting to a non-Neon database, the `wsProxy` option should point to [your
 
 ```javascript
 // either:
-neonConfig.wsProxy = (host, port) =>
-  `my-wsproxy.example.com/v1?address=${host}:${port}`;
+neonConfig.wsProxy = (host, port) => `my-wsproxy.example.com/v1?address=${host}:${port}`;
 // or (with identical effect):
 neonConfig.wsProxy = 'my-wsproxy.example.com/v1';
 ```

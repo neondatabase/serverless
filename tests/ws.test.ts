@@ -1,7 +1,12 @@
 import { expect, test } from 'vitest';
 import { Pool as PgPool } from 'pg';
 import * as subtls from 'subtls';
-import { neon, neonConfig, Pool as WsPool, Client as WsClient } from '../dist/npm';
+import {
+  neon,
+  neonConfig,
+  Pool as WsPool,
+  Client as WsClient,
+} from '../dist/npm';
 import { sampleQueries } from './sampleQueries';
 
 const DB_URL = process.env.VITE_NEON_DB_URL!;
@@ -113,7 +118,13 @@ emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
 -----END CERTIFICATE-----`;
 
 test('client.query() with custom WebSocket proxy and subtls', async () => {
-  const { wsProxy, pipelineConnect, forceDisablePgSSL, rootCerts, subtls: origSubtls } = neonConfig;
+  const {
+    wsProxy,
+    pipelineConnect,
+    forceDisablePgSSL,
+    rootCerts,
+    subtls: origSubtls,
+  } = neonConfig;
   try {
     neonConfig.wsProxy = process.env.WSPROXY!;
     //neonConfig.subtls = subtls;
