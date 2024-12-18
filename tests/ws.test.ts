@@ -2,6 +2,7 @@ import { expect, test, beforeAll } from 'vitest';
 import { Pool as PgPool } from 'pg';
 import * as subtls from 'subtls';
 import { sampleQueries } from './sampleQueries';
+import { shimWebSocket } from './ws';
 import {
   neon,
   neonConfig,
@@ -33,12 +34,7 @@ function functionsToPlaceholders(x: any) {
   );
 }
 
-beforeAll(async () => {
-  if (typeof WebSocket !== 'function') {
-    const { WebSocket } = await import('ws');
-    neonConfig.webSocketConstructor = WebSocket;
-  }
-});
+beforeAll(shimWebSocket);
 
 test(
   'WebSockets query results match pg/TCP query results, using pool.connect()',
