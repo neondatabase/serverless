@@ -18,4 +18,7 @@ jobs:
 
       # goal
       - name: Run tests
+        env:
+          VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
+          VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
         run: bun run test
