@@ -1,13 +1,13 @@
-import { expect, test } from 'vitest';
+import { expect, test, beforeAll } from 'vitest';
 import { Pool as PgPool } from 'pg';
 import * as subtls from 'subtls';
+import { sampleQueries } from './sampleQueries';
 import {
   neon,
   neonConfig,
   Pool as WsPool,
   Client as WsClient,
 } from '../dist/npm';
-import { sampleQueries } from './sampleQueries';
 
 const DB_URL = process.env.VITE_NEON_DB_URL!;
 
@@ -32,6 +32,13 @@ function functionsToPlaceholders(x: any) {
     typeof x === 'function' ? `__fn_arity_${x.length}__` : x,
   );
 }
+
+beforeAll(async () => {
+  if (typeof WebSocket !== 'function') {
+    const { WebSocket } = await import('ws');
+    neonConfig.webSocketConstructor = WebSocket;
+  }
+});
 
 test(
   'WebSockets query results match pg/TCP query results, using pool.connect()',

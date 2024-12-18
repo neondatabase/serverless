@@ -477,7 +477,7 @@ declare interface SocketDefaults {
     fetchEndpoint: string | ((host: string, port: number | string, options?: FetchEndpointOptions) => string);
     fetchConnectionCache: boolean;
     fetchFunction: any;
-    webSocketConstructor: typeof WebSocket | undefined;
+    webSocketConstructor: WebSocketConstructor | undefined;
     wsProxy: string | ((host: string, port: number | string) => string);
     useSecureWebSocket: boolean;
     forceDisablePgSSL: boolean;
@@ -529,6 +529,18 @@ declare class TrustedCert extends Cert {
 export { types }
 
 declare function u8FromHex(hex: string): Uint8Array<ArrayBuffer>;
+
+declare interface WebSocketConstructor {
+    new (...args: any[]): WebSocketLike;
+}
+
+declare interface WebSocketLike {
+    readonly readyState: number;
+    binaryType: string;
+    close(code?: number, reason?: string): void;
+    send(data: any): void;
+    addEventListener(type: 'open' | 'message' | 'close' | 'error', listener: (this: WebSocketLike, ev: any) => any, options?: any): void;
+}
 
 declare class WebSocketReadQueue extends ReadQueue {
     private socket;

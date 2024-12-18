@@ -5,13 +5,13 @@ Te(r,t,{get:e[t],enumerable:!0})},Pn=(r,e,t,n)=>{if(e&&typeof e=="object"||typeo
 no(e,i))||n.enumerable});return r};var Ie=(r,e,t)=>(t=r!=null?ro(so(r)):{},Pn(e||!r||!r.__esModule?Te(t,"default",{
 value:r,enumerable:!0}):t,r)),O=r=>Pn(Te({},"__esModule",{value:!0}),r);var _=(r,e,t)=>ao(r,typeof e!="symbol"?e+"":e,t);var Rn=I(st=>{"use strict";p();st.byteLength=co;st.toByteArray=lo;st.fromByteArray=
 yo;var ue=[],ne=[],uo=typeof Uint8Array<"u"?Uint8Array:Array,Ft="ABCDEFGHIJKLMNO\
-PQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";for(_e=0,Bn=Ft.length;_e<Bn;++_e)
-ue[_e]=Ft[_e],ne[Ft.charCodeAt(_e)]=_e;var _e,Bn;ne[45]=62;ne[95]=63;function Ln(r){
+PQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";for(_e=0,Ln=Ft.length;_e<Ln;++_e)
+ue[_e]=Ft[_e],ne[Ft.charCodeAt(_e)]=_e;var _e,Ln;ne[45]=62;ne[95]=63;function Bn(r){
 var e=r.length;if(e%4>0)throw new Error("Invalid string. Length must be a multip\
-le of 4");var t=r.indexOf("=");t===-1&&(t=e);var n=t===e?0:4-t%4;return[t,n]}a(Ln,
-"getLens");function co(r){var e=Ln(r),t=e[0],n=e[1];return(t+n)*3/4-n}a(co,"byte\
+le of 4");var t=r.indexOf("=");t===-1&&(t=e);var n=t===e?0:4-t%4;return[t,n]}a(Bn,
+"getLens");function co(r){var e=Bn(r),t=e[0],n=e[1];return(t+n)*3/4-n}a(co,"byte\
 Length");function ho(r,e,t){return(e+t)*3/4-t}a(ho,"_byteLength");function lo(r){
-var e,t=Ln(r),n=t[0],i=t[1],s=new uo(ho(r,n,i)),o=0,u=i>0?n-4:n,c;for(c=0;c<u;c+=
+var e,t=Bn(r),n=t[0],i=t[1],s=new uo(ho(r,n,i)),o=0,u=i>0?n-4:n,c;for(c=0;c<u;c+=
 4)e=ne[r.charCodeAt(c)]<<18|ne[r.charCodeAt(c+1)]<<12|ne[r.charCodeAt(c+2)]<<6|ne[r.
 charCodeAt(c+3)],s[o++]=e>>16&255,s[o++]=e>>8&255,s[o++]=e&255;return i===2&&(e=
 ne[r.charCodeAt(c)]<<2|ne[r.charCodeAt(c+1)]>>4,s[o++]=e&255),i===1&&(e=ne[r.charCodeAt(
@@ -27,12 +27,12 @@ ue[e<<4&63]+"==")):n===2&&(e=(r[t-2]<<8)+r[t-1],i.push(ue[e>>10]+ue[e>>4&63]+ue[
 r[e+d],d+=b,l-=8);for(o=s&(1<<-l)-1,s>>=-l,l+=n;l>0;o=o*256+r[e+d],d+=b,l-=8);if(s===
 0)s=1-h;else{if(s===c)return o?NaN:(C?-1:1)*(1/0);o=o+Math.pow(2,n),s=s-h}return(C?
 -1:1)*o*Math.pow(2,s-n)};Mt.write=function(r,e,t,n,i,s){var o,u,c,h=s*8-i-1,l=(1<<
-h)-1,d=l>>1,b=i===23?Math.pow(2,-24)-Math.pow(2,-77):0,C=n?0:s-1,B=n?1:-1,Q=e<0||
+h)-1,d=l>>1,b=i===23?Math.pow(2,-24)-Math.pow(2,-77):0,C=n?0:s-1,L=n?1:-1,Q=e<0||
 e===0&&1/e<0?1:0;for(e=Math.abs(e),isNaN(e)||e===1/0?(u=isNaN(e)?1:0,o=l):(o=Math.
 floor(Math.log(e)/Math.LN2),e*(c=Math.pow(2,-o))<1&&(o--,c*=2),o+d>=1?e+=b/c:e+=
 b*Math.pow(2,1-d),e*c>=2&&(o++,c/=2),o+d>=l?(u=0,o=l):o+d>=1?(u=(e*c-1)*Math.pow(
-2,i),o=o+d):(u=e*Math.pow(2,d-1)*Math.pow(2,i),o=0));i>=8;r[t+C]=u&255,C+=B,u/=256,
-i-=8);for(o=o<<i|u,h+=i;h>0;r[t+C]=o&255,C+=B,o/=256,h-=8);r[t+C-B]|=Q*128}});var Yn=I(Re=>{"use strict";p();var kt=Rn(),Be=Fn(),Mn=typeof Symbol=="function"&&
+2,i),o=o+d):(u=e*Math.pow(2,d-1)*Math.pow(2,i),o=0));i>=8;r[t+C]=u&255,C+=L,u/=256,
+i-=8);for(o=o<<i|u,h+=i;h>0;r[t+C]=o&255,C+=L,o/=256,h-=8);r[t+C-L]|=Q*128}});var Yn=I(Re=>{"use strict";p();var kt=Rn(),Le=Fn(),Mn=typeof Symbol=="function"&&
 typeof Symbol.for=="function"?Symbol.for("nodejs.util.inspect.custom"):null;Re.Buffer=
 f;Re.SlowBuffer=xo;Re.INSPECT_MAX_BYTES=50;var ot=2147483647;Re.kMaxLength=ot;f.
 TYPED_ARRAY_SUPPORT=mo();!f.TYPED_ARRAY_SUPPORT&&typeof console<"u"&&typeof console.
@@ -106,14 +106,14 @@ Buffer, or ArrayBuffer. Received type '+typeof r);let t=r.length,n=arguments.len
 latin1":case"binary":return t;case"utf8":case"utf-8":return Ot(r).length;case"uc\
 s2":case"ucs-2":case"utf16le":case"utf-16le":return t*2;case"hex":return t>>>1;case"\
 base64":return zn(r).length;default:if(i)return n?-1:Ot(r).length;e=(""+e).toLowerCase(),
-i=!0}}a(qn,"byteLength");f.byteLength=qn;function Eo(r,e,t){let n=!1;if((e===void 0||
+i=!0}}a(qn,"byteLength");f.byteLength=qn;function vo(r,e,t){let n=!1;if((e===void 0||
 e<0)&&(e=0),e>this.length||((t===void 0||t>this.length)&&(t=this.length),t<=0)||
 (t>>>=0,e>>>=0,t<=e))return"";for(r||(r="utf8");;)switch(r){case"hex":return Ro(
-this,e,t);case"utf8":case"utf-8":return Wn(this,e,t);case"ascii":return Bo(this,
-e,t);case"latin1":case"binary":return Lo(this,e,t);case"base64":return Io(this,e,
+this,e,t);case"utf8":case"utf-8":return Wn(this,e,t);case"ascii":return Lo(this,
+e,t);case"latin1":case"binary":return Bo(this,e,t);case"base64":return Io(this,e,
 t);case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return Fo(this,e,t);default:
 if(n)throw new TypeError("Unknown encoding: "+r);r=(r+"").toLowerCase(),n=!0}}a(
-Eo,"slowToString");f.prototype._isBuffer=!0;function Ae(r,e,t){let n=r[e];r[e]=r[t],
+vo,"slowToString");f.prototype._isBuffer=!0;function Ae(r,e,t){let n=r[e];r[e]=r[t],
 r[t]=n}a(Ae,"swap");f.prototype.swap16=a(function(){let e=this.length;if(e%2!==0)
 throw new RangeError("Buffer size must be a multiple of 16-bits");for(let t=0;t<
 e;t+=2)Ae(this,t,t+1);return this},"swap16");f.prototype.swap32=a(function(){let e=this.
@@ -123,7 +123,7 @@ f.prototype.swap64=a(function(){let e=this.length;if(e%8!==0)throw new RangeErro
 "Buffer size must be a multiple of 64-bits");for(let t=0;t<e;t+=8)Ae(this,t,t+7),
 Ae(this,t+1,t+6),Ae(this,t+2,t+5),Ae(this,t+3,t+4);return this},"swap64");f.prototype.
 toString=a(function(){let e=this.length;return e===0?"":arguments.length===0?Wn(
-this,0,e):Eo.apply(this,arguments)},"toString");f.prototype.toLocaleString=f.prototype.
+this,0,e):vo.apply(this,arguments)},"toString");f.prototype.toLocaleString=f.prototype.
 toString;f.prototype.equals=a(function(e){if(!f.isBuffer(e))throw new TypeError(
 "Argument must be a Buffer");return this===e?!0:f.compare(this,e)===0},"equals");
 f.prototype.inspect=a(function(){let e="",t=Re.INSPECT_MAX_BYTES;return e=this.toString(
@@ -153,10 +153,10 @@ o;h++)if(c(r,h)===c(e,l===-1?0:h-l)){if(l===-1&&(l=h),h-l+1===u)return l*s}else 
 if(c(r,h+d)!==c(e,d)){l=!1;break}if(l)return h}return-1}a(kn,"arrayIndexOf");f.prototype.
 includes=a(function(e,t,n){return this.indexOf(e,t,n)!==-1},"includes");f.prototype.
 indexOf=a(function(e,t,n){return Qn(this,e,t,n,!0)},"indexOf");f.prototype.lastIndexOf=
-a(function(e,t,n){return Qn(this,e,t,n,!1)},"lastIndexOf");function vo(r,e,t,n){
+a(function(e,t,n){return Qn(this,e,t,n,!1)},"lastIndexOf");function Eo(r,e,t,n){
 t=Number(t)||0;let i=r.length-t;n?(n=Number(n),n>i&&(n=i)):n=i;let s=e.length;n>
 s/2&&(n=s/2);let o;for(o=0;o<n;++o){let u=parseInt(e.substr(o*2,2),16);if(Wt(u))
-return o;r[t+o]=u}return o}a(vo,"hexWrite");function _o(r,e,t,n){return at(Ot(e,
+return o;r[t+o]=u}return o}a(Eo,"hexWrite");function _o(r,e,t,n){return at(Ot(e,
 r.length-t),r,t,n)}a(_o,"utf8Write");function Ao(r,e,t,n){return at(Uo(e),r,t,n)}
 a(Ao,"asciiWrite");function Co(r,e,t,n){return at(zn(e),r,t,n)}a(Co,"base64Write");
 function To(r,e,t,n){return at(Oo(e,r.length-t),r,t,n)}a(To,"ucs2Write");f.prototype.
@@ -166,7 +166,7 @@ typeof t=="string")i=t,n=this.length,t=0;else if(isFinite(t))t=t>>>0,isFinite(n)
 te(string, encoding, offset[, length]) is no longer supported");let s=this.length-
 t;if((n===void 0||n>s)&&(n=s),e.length>0&&(n<0||t<0)||t>this.length)throw new RangeError(
 "Attempt to write outside buffer bounds");i||(i="utf8");let o=!1;for(;;)switch(i){case"\
-hex":return vo(this,e,t,n);case"utf8":case"utf-8":return _o(this,e,t,n);case"asc\
+hex":return Eo(this,e,t,n);case"utf8":case"utf-8":return _o(this,e,t,n);case"asc\
 ii":case"latin1":case"binary":return Ao(this,e,t,n);case"base64":return Co(this,
 e,t,n);case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return To(this,e,t,n);default:
 if(o)throw new TypeError("Unknown encoding: "+i);i=(""+i).toLowerCase(),o=!0}},"\
@@ -183,10 +183,10 @@ d>57343)&&(o=d));break;case 4:c=r[i+1],h=r[i+2],l=r[i+3],(c&192)===128&&(h&192)=
 o&1023),n.push(o),i+=u}return Po(n)}a(Wn,"utf8Slice");var Dn=4096;function Po(r){
 let e=r.length;if(e<=Dn)return String.fromCharCode.apply(String,r);let t="",n=0;
 for(;n<e;)t+=String.fromCharCode.apply(String,r.slice(n,n+=Dn));return t}a(Po,"d\
-ecodeCodePointsArray");function Bo(r,e,t){let n="";t=Math.min(r.length,t);for(let i=e;i<
-t;++i)n+=String.fromCharCode(r[i]&127);return n}a(Bo,"asciiSlice");function Lo(r,e,t){
+ecodeCodePointsArray");function Lo(r,e,t){let n="";t=Math.min(r.length,t);for(let i=e;i<
+t;++i)n+=String.fromCharCode(r[i]&127);return n}a(Lo,"asciiSlice");function Bo(r,e,t){
 let n="";t=Math.min(r.length,t);for(let i=e;i<t;++i)n+=String.fromCharCode(r[i]);
-return n}a(Lo,"latin1Slice");function Ro(r,e,t){let n=r.length;(!e||e<0)&&(e=0),
+return n}a(Bo,"latin1Slice");function Ro(r,e,t){let n=r.length;(!e||e<0)&&(e=0),
 (!t||t<0||t>n)&&(t=n);let i="";for(let s=e;s<t;++s)i+=No[r[s]];return i}a(Ro,"he\
 xSlice");function Fo(r,e,t){let n=r.slice(e,t),i="";for(let s=0;s<n.length-1;s+=
 2)i+=String.fromCharCode(n[s]+n[s+1]*256);return i}a(Fo,"utf16leSlice");f.prototype.
@@ -208,11 +208,11 @@ readUint32LE=f.prototype.readUInt32LE=a(function(e,t){return e=e>>>0,t||N(e,4,th
 length),(this[e]|this[e+1]<<8|this[e+2]<<16)+this[e+3]*16777216},"readUInt32LE");
 f.prototype.readUint32BE=f.prototype.readUInt32BE=a(function(e,t){return e=e>>>0,
 t||N(e,4,this.length),this[e]*16777216+(this[e+1]<<16|this[e+2]<<8|this[e+3])},"\
-readUInt32BE");f.prototype.readBigUInt64LE=ge(a(function(e){e=e>>>0,Le(e,"offset");
+readUInt32BE");f.prototype.readBigUInt64LE=ge(a(function(e){e=e>>>0,Be(e,"offset");
 let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&je(e,this.length-8);let i=t+
 this[++e]*2**8+this[++e]*2**16+this[++e]*2**24,s=this[++e]+this[++e]*2**8+this[++e]*
 2**16+n*2**24;return BigInt(i)+(BigInt(s)<<BigInt(32))},"readBigUInt64LE"));f.prototype.
-readBigUInt64BE=ge(a(function(e){e=e>>>0,Le(e,"offset");let t=this[e],n=this[e+7];
+readBigUInt64BE=ge(a(function(e){e=e>>>0,Be(e,"offset");let t=this[e],n=this[e+7];
 (t===void 0||n===void 0)&&je(e,this.length-8);let i=t*2**24+this[++e]*2**16+this[++e]*
 2**8+this[++e],s=this[++e]*2**24+this[++e]*2**16+this[++e]*2**8+n;return(BigInt(
 i)<<BigInt(32))+BigInt(s)},"readBigUInt64BE"));f.prototype.readIntLE=a(function(e,t,n){
@@ -229,19 +229,19 @@ a(function(e,t){e=e>>>0,t||N(e,2,this.length);let n=this[e]|this[e+1]<<8;return 
 length),this[e]|this[e+1]<<8|this[e+2]<<16|this[e+3]<<24},"readInt32LE");f.prototype.
 readInt32BE=a(function(e,t){return e=e>>>0,t||N(e,4,this.length),this[e]<<24|this[e+
 1]<<16|this[e+2]<<8|this[e+3]},"readInt32BE");f.prototype.readBigInt64LE=ge(a(function(e){
-e=e>>>0,Le(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&je(e,
+e=e>>>0,Be(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&je(e,
 this.length-8);let i=this[e+4]+this[e+5]*2**8+this[e+6]*2**16+(n<<24);return(BigInt(
 i)<<BigInt(32))+BigInt(t+this[++e]*2**8+this[++e]*2**16+this[++e]*2**24)},"readB\
-igInt64LE"));f.prototype.readBigInt64BE=ge(a(function(e){e=e>>>0,Le(e,"offset");
+igInt64LE"));f.prototype.readBigInt64BE=ge(a(function(e){e=e>>>0,Be(e,"offset");
 let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&je(e,this.length-8);let i=(t<<
 24)+this[++e]*2**16+this[++e]*2**8+this[++e];return(BigInt(i)<<BigInt(32))+BigInt(
 this[++e]*2**24+this[++e]*2**16+this[++e]*2**8+n)},"readBigInt64BE"));f.prototype.
-readFloatLE=a(function(e,t){return e=e>>>0,t||N(e,4,this.length),Be.read(this,e,
+readFloatLE=a(function(e,t){return e=e>>>0,t||N(e,4,this.length),Le.read(this,e,
 !0,23,4)},"readFloatLE");f.prototype.readFloatBE=a(function(e,t){return e=e>>>0,
-t||N(e,4,this.length),Be.read(this,e,!1,23,4)},"readFloatBE");f.prototype.readDoubleLE=
-a(function(e,t){return e=e>>>0,t||N(e,8,this.length),Be.read(this,e,!0,52,8)},"r\
+t||N(e,4,this.length),Le.read(this,e,!1,23,4)},"readFloatBE");f.prototype.readDoubleLE=
+a(function(e,t){return e=e>>>0,t||N(e,8,this.length),Le.read(this,e,!0,52,8)},"r\
 eadDoubleLE");f.prototype.readDoubleBE=a(function(e,t){return e=e>>>0,t||N(e,8,this.
-length),Be.read(this,e,!1,52,8)},"readDoubleBE");function z(r,e,t,n,i,s){if(!f.isBuffer(
+length),Le.read(this,e,!1,52,8)},"readDoubleBE");function z(r,e,t,n,i,s){if(!f.isBuffer(
 r))throw new TypeError('"buffer" argument must be a Buffer instance');if(e>i||e<
 s)throw new RangeError('"value" argument is out of bounds');if(t+n>r.length)throw new RangeError(
 "Index out of range")}a(z,"checkInt");f.prototype.writeUintLE=f.prototype.writeUIntLE=
@@ -292,11 +292,11 @@ writeBigInt64BE=ge(a(function(e,t=0){return Hn(this,e,t,-BigInt("0x8000000000000
 000"),BigInt("0x7fffffffffffffff"))},"writeBigInt64BE"));function Gn(r,e,t,n,i,s){
 if(t+n>r.length)throw new RangeError("Index out of range");if(t<0)throw new RangeError(
 "Index out of range")}a(Gn,"checkIEEE754");function $n(r,e,t,n,i){return e=+e,t=
-t>>>0,i||Gn(r,e,t,4,34028234663852886e22,-34028234663852886e22),Be.write(r,e,t,n,
+t>>>0,i||Gn(r,e,t,4,34028234663852886e22,-34028234663852886e22),Le.write(r,e,t,n,
 23,4),t+4}a($n,"writeFloat");f.prototype.writeFloatLE=a(function(e,t,n){return $n(
 this,e,t,!0,n)},"writeFloatLE");f.prototype.writeFloatBE=a(function(e,t,n){return $n(
 this,e,t,!1,n)},"writeFloatBE");function Vn(r,e,t,n,i){return e=+e,t=t>>>0,i||Gn(
-r,e,t,8,17976931348623157e292,-17976931348623157e292),Be.write(r,e,t,n,52,8),t+8}
+r,e,t,8,17976931348623157e292,-17976931348623157e292),Le.write(r,e,t,n,52,8),t+8}
 a(Vn,"writeDouble");f.prototype.writeDoubleLE=a(function(e,t,n){return Vn(this,e,
 t,!0,n)},"writeDoubleLE");f.prototype.writeDoubleBE=a(function(e,t,n){return Vn(
 this,e,t,!1,n)},"writeDoubleBE");f.prototype.copy=a(function(e,t,n,i){if(!f.isBuffer(
@@ -331,14 +331,14 @@ isInteger(t)&&Math.abs(t)>2**32?i=Un(String(t)):typeof t=="bigint"&&(i=String(t)
 (t>BigInt(2)**BigInt(32)||t<-(BigInt(2)**BigInt(32)))&&(i=Un(i)),i+="n"),n+=` It\
  must be ${e}. Received ${i}`,n},RangeError);function Un(r){let e="",t=r.length,
 n=r[0]==="-"?1:0;for(;t>=n+4;t-=3)e=`_${r.slice(t-3,t)}${e}`;return`${r.slice(0,
-t)}${e}`}a(Un,"addNumericalSeparator");function Mo(r,e,t){Le(e,"offset"),(r[e]===
+t)}${e}`}a(Un,"addNumericalSeparator");function Mo(r,e,t){Be(e,"offset"),(r[e]===
 void 0||r[e+t]===void 0)&&je(e,r.length-(t+1))}a(Mo,"checkBounds");function Kn(r,e,t,n,i,s){
 if(r>t||r<e){let o=typeof e=="bigint"?"n":"",u;throw s>3?e===0||e===BigInt(0)?u=
 `>= 0${o} and < 2${o} ** ${(s+1)*8}${o}`:u=`>= -(2${o} ** ${(s+1)*8-1}${o}) and \
 < 2 ** ${(s+1)*8-1}${o}`:u=`>= ${e}${o} and <= ${t}${o}`,new Pe.ERR_OUT_OF_RANGE(
-"value",u,r)}Mo(n,i,s)}a(Kn,"checkIntBI");function Le(r,e){if(typeof r!="number")
-throw new Pe.ERR_INVALID_ARG_TYPE(e,"number",r)}a(Le,"validateNumber");function je(r,e,t){
-throw Math.floor(r)!==r?(Le(r,t),new Pe.ERR_OUT_OF_RANGE(t||"offset","an integer",
+"value",u,r)}Mo(n,i,s)}a(Kn,"checkIntBI");function Be(r,e){if(typeof r!="number")
+throw new Pe.ERR_INVALID_ARG_TYPE(e,"number",r)}a(Be,"validateNumber");function je(r,e,t){
+throw Math.floor(r)!==r?(Be(r,t),new Pe.ERR_OUT_OF_RANGE(t||"offset","an integer",
 r)):e<0?new Pe.ERR_BUFFER_OUT_OF_BOUNDS:new Pe.ERR_OUT_OF_RANGE(t||"offset",`>= ${t?
 1:0} and <= ${e}`,r)}a(je,"boundsError");var ko=/[^+/0-9A-Za-z-_]/g;function Do(r){
 if(r=r.split("=")[0],r=r.trim().replace(ko,""),r.length<2)return"";for(;r.length%
@@ -362,8 +362,8 @@ a(ce,"isInstance");function Wt(r){return r!==r}a(Wt,"numberIsNaN");var No=functi
 let r="0123456789abcdef",e=new Array(256);for(let t=0;t<16;++t){let n=t*16;for(let i=0;i<
 16;++i)e[n+i]=r[t]+r[i]}return e}();function ge(r){return typeof BigInt>"u"?qo:r}
 a(ge,"defineBigIntMethod");function qo(){throw new Error("BigInt not supported")}
-a(qo,"BufferBigIntNotDefined")});var S,x,v,w,y,m,p=te(()=>{"use strict";S=globalThis,x=globalThis.setImmediate??(r=>setTimeout(
-r,0)),v=globalThis.clearImmediate??(r=>clearTimeout(r)),w=globalThis.crypto??{};
+a(qo,"BufferBigIntNotDefined")});var S,x,E,w,y,m,p=te(()=>{"use strict";S=globalThis,x=globalThis.setImmediate??(r=>setTimeout(
+r,0)),E=globalThis.clearImmediate??(r=>clearTimeout(r)),w=globalThis.crypto??{};
 w.subtle??(w.subtle={});y=typeof globalThis.Buffer=="function"&&typeof globalThis.
 Buffer.allocUnsafe=="function"?globalThis.Buffer:Yn().Buffer,m=globalThis.process??
 {};m.env??(m.env={});try{m.nextTick(()=>{})}catch{let e=Promise.resolve();m.nextTick=
@@ -374,22 +374,22 @@ Object.getOwnPropertySymbols?ut=a(function(e){return Object.getOwnPropertyNames(
 e).concat(Object.getOwnPropertySymbols(e))},"ReflectOwnKeys"):ut=a(function(e){return Object.
 getOwnPropertyNames(e)},"ReflectOwnKeys");function Qo(r){console&&console.warn&&
 console.warn(r)}a(Qo,"ProcessEmitWarning");var Xn=Number.isNaN||a(function(e){return e!==
-e},"NumberIsNaN");function L(){L.init.call(this)}a(L,"EventEmitter");jt.exports=
-L;jt.exports.once=Go;L.EventEmitter=L;L.prototype._events=void 0;L.prototype._eventsCount=
-0;L.prototype._maxListeners=void 0;var Jn=10;function ct(r){if(typeof r!="functi\
+e},"NumberIsNaN");function B(){B.init.call(this)}a(B,"EventEmitter");jt.exports=
+B;jt.exports.once=Go;B.EventEmitter=B;B.prototype._events=void 0;B.prototype._eventsCount=
+0;B.prototype._maxListeners=void 0;var Jn=10;function ct(r){if(typeof r!="functi\
 on")throw new TypeError('The "listener" argument must be of type Function. Recei\
-ved type '+typeof r)}a(ct,"checkListener");Object.defineProperty(L,"defaultMaxLi\
+ved type '+typeof r)}a(ct,"checkListener");Object.defineProperty(B,"defaultMaxLi\
 steners",{enumerable:!0,get:a(function(){return Jn},"get"),set:a(function(r){if(typeof r!=
 "number"||r<0||Xn(r))throw new RangeError('The value of "defaultMaxListeners" is\
  out of range. It must be a non-negative number. Received '+r+".");Jn=r},"set")});
-L.init=function(){(this._events===void 0||this._events===Object.getPrototypeOf(this).
+B.init=function(){(this._events===void 0||this._events===Object.getPrototypeOf(this).
 _events)&&(this._events=Object.create(null),this._eventsCount=0),this._maxListeners=
-this._maxListeners||void 0};L.prototype.setMaxListeners=a(function(e){if(typeof e!=
+this._maxListeners||void 0};B.prototype.setMaxListeners=a(function(e){if(typeof e!=
 "number"||e<0||Xn(e))throw new RangeError('The value of "n" is out of range. It \
 must be a non-negative number. Received '+e+".");return this._maxListeners=e,this},
-"setMaxListeners");function ei(r){return r._maxListeners===void 0?L.defaultMaxListeners:
-r._maxListeners}a(ei,"_getMaxListeners");L.prototype.getMaxListeners=a(function(){
-return ei(this)},"getMaxListeners");L.prototype.emit=a(function(e){for(var t=[],
+"setMaxListeners");function ei(r){return r._maxListeners===void 0?B.defaultMaxListeners:
+r._maxListeners}a(ei,"_getMaxListeners");B.prototype.getMaxListeners=a(function(){
+return ei(this)},"getMaxListeners");B.prototype.emit=a(function(e){for(var t=[],
 n=1;n<arguments.length;n++)t.push(arguments[n]);var i=e==="error",s=this._events;
 if(s!==void 0)i=i&&s.error===void 0;else if(!i)return!1;if(i){var o;if(t.length>
 0&&(o=t[0]),o instanceof Error)throw o;var u=new Error("Unhandled error."+(o?" ("+
@@ -403,23 +403,23 @@ t):o.push(t),i=ei(r),i>0&&o.length>i&&!o.warned){o.warned=!0;var u=new Error("Po
 ssible EventEmitter memory leak detected. "+o.length+" "+String(e)+" listeners a\
 dded. Use emitter.setMaxListeners() to increase limit");u.name="MaxListenersExce\
 ededWarning",u.emitter=r,u.type=e,u.count=o.length,Qo(u)}return r}a(ti,"_addList\
-ener");L.prototype.addListener=a(function(e,t){return ti(this,e,t,!1)},"addListe\
-ner");L.prototype.on=L.prototype.addListener;L.prototype.prependListener=a(function(e,t){
+ener");B.prototype.addListener=a(function(e,t){return ti(this,e,t,!1)},"addListe\
+ner");B.prototype.on=B.prototype.addListener;B.prototype.prependListener=a(function(e,t){
 return ti(this,e,t,!0)},"prependListener");function Wo(){if(!this.fired)return this.
 target.removeListener(this.type,this.wrapFn),this.fired=!0,arguments.length===0?
 this.listener.call(this.target):this.listener.apply(this.target,arguments)}a(Wo,
 "onceWrapper");function ri(r,e,t){var n={fired:!1,wrapFn:void 0,target:r,type:e,
-listener:t},i=Wo.bind(n);return i.listener=t,n.wrapFn=i,i}a(ri,"_onceWrap");L.prototype.
-once=a(function(e,t){return ct(t),this.on(e,ri(this,e,t)),this},"once");L.prototype.
+listener:t},i=Wo.bind(n);return i.listener=t,n.wrapFn=i,i}a(ri,"_onceWrap");B.prototype.
+once=a(function(e,t){return ct(t),this.on(e,ri(this,e,t)),this},"once");B.prototype.
 prependOnceListener=a(function(e,t){return ct(t),this.prependListener(e,ri(this,
-e,t)),this},"prependOnceListener");L.prototype.removeListener=a(function(e,t){var n,
+e,t)),this},"prependOnceListener");B.prototype.removeListener=a(function(e,t){var n,
 i,s,o,u;if(ct(t),i=this._events,i===void 0)return this;if(n=i[e],n===void 0)return this;
 if(n===t||n.listener===t)--this._eventsCount===0?this._events=Object.create(null):
 (delete i[e],i.removeListener&&this.emit("removeListener",e,n.listener||t));else if(typeof n!=
 "function"){for(s=-1,o=n.length-1;o>=0;o--)if(n[o]===t||n[o].listener===t){u=n[o].
 listener,s=o;break}if(s<0)return this;s===0?n.shift():jo(n,s),n.length===1&&(i[e]=
 n[0]),i.removeListener!==void 0&&this.emit("removeListener",e,u||t)}return this},
-"removeListener");L.prototype.off=L.prototype.removeListener;L.prototype.removeAllListeners=
+"removeListener");B.prototype.off=B.prototype.removeListener;B.prototype.removeAllListeners=
 a(function(e){var t,n,i;if(n=this._events,n===void 0)return this;if(n.removeListener===
 void 0)return arguments.length===0?(this._events=Object.create(null),this._eventsCount=
 0):n[e]!==void 0&&(--this._eventsCount===0?this._events=Object.create(null):delete n[e]),
@@ -429,13 +429,13 @@ o!=="removeListener"&&this.removeAllListeners(o);return this.removeAllListeners(
 n[e],typeof t=="function")this.removeListener(e,t);else if(t!==void 0)for(i=t.length-
 1;i>=0;i--)this.removeListener(e,t[i]);return this},"removeAllListeners");function ni(r,e,t){
 var n=r._events;if(n===void 0)return[];var i=n[e];return i===void 0?[]:typeof i==
-"function"?t?[i.listener||i]:[i]:t?Ho(i):si(i,i.length)}a(ni,"_listeners");L.prototype.
-listeners=a(function(e){return ni(this,e,!0)},"listeners");L.prototype.rawListeners=
-a(function(e){return ni(this,e,!1)},"rawListeners");L.listenerCount=function(r,e){
-return typeof r.listenerCount=="function"?r.listenerCount(e):ii.call(r,e)};L.prototype.
+"function"?t?[i.listener||i]:[i]:t?Ho(i):si(i,i.length)}a(ni,"_listeners");B.prototype.
+listeners=a(function(e){return ni(this,e,!0)},"listeners");B.prototype.rawListeners=
+a(function(e){return ni(this,e,!1)},"rawListeners");B.listenerCount=function(r,e){
+return typeof r.listenerCount=="function"?r.listenerCount(e):ii.call(r,e)};B.prototype.
 listenerCount=ii;function ii(r){var e=this._events;if(e!==void 0){var t=e[r];if(typeof t==
 "function")return 1;if(t!==void 0)return t.length}return 0}a(ii,"listenerCount");
-L.prototype.eventNames=a(function(){return this._eventsCount>0?ut(this._events):
+B.prototype.eventNames=a(function(){return this._eventsCount>0?ut(this._events):
 []},"eventNames");function si(r,e){for(var t=new Array(e),n=0;n<e;++n)t[n]=r[n];
 return t}a(si,"arrayClone");function jo(r,e){for(;e+1<r.length;e++)r[e]=r[e+1];r.
 pop()}a(jo,"spliceOne");function Ho(r){for(var e=new Array(r.length),t=0;t<e.length;++t)
@@ -470,18 +470,18 @@ h=0,l=0,d=[1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453
 2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,
 275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,
 1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,
-3329325298],b=a((A,g)=>A>>>g|A<<32-g,"rrot"),C=new Uint32Array(64),B=new Uint8Array(
-64),Q=a(()=>{for(let R=0,$=0;R<16;R++,$+=4)C[R]=B[$]<<24|B[$+1]<<16|B[$+2]<<8|B[$+
+3329325298],b=a((A,g)=>A>>>g|A<<32-g,"rrot"),C=new Uint32Array(64),L=new Uint8Array(
+64),Q=a(()=>{for(let R=0,$=0;R<16;R++,$+=4)C[R]=L[$]<<24|L[$+1]<<16|L[$+2]<<8|L[$+
 3];for(let R=16;R<64;R++){let $=b(C[R-15],7)^b(C[R-15],18)^C[R-15]>>>3,le=b(C[R-
 2],17)^b(C[R-2],19)^C[R-2]>>>10;C[R]=C[R-16]+$+C[R-7]+le|0}let A=e,g=t,P=n,K=i,D=s,
 W=o,X=u,ae=c;for(let R=0;R<64;R++){let $=b(D,6)^b(D,11)^b(D,25),le=D&W^~D&X,me=ae+
-$+le+d[R]+C[R]|0,Ee=b(A,2)^b(A,13)^b(A,22),We=A&g^A&P^g&P,fe=Ee+We|0;ae=X,X=W,W=
+$+le+d[R]+C[R]|0,ve=b(A,2)^b(A,13)^b(A,22),We=A&g^A&P^g&P,fe=ve+We|0;ae=X,X=W,W=
 D,D=K+me|0,K=P,P=g,g=A,A=me+fe|0}e=e+A|0,t=t+g|0,n=n+P|0,i=i+K|0,s=s+D|0,o=o+W|0,
 u=u+X|0,c=c+ae|0,l=0},"process"),J=a(A=>{typeof A=="string"&&(A=new TextEncoder().
-encode(A));for(let g=0;g<A.length;g++)B[l++]=A[g],l===64&&Q();h+=A.length},"add"),
-ye=a(()=>{if(B[l++]=128,l==64&&Q(),l+8>64){for(;l<64;)B[l++]=0;Q()}for(;l<58;)B[l++]=
-0;let A=h*8;B[l++]=A/1099511627776&255,B[l++]=A/4294967296&255,B[l++]=A>>>24,B[l++]=
-A>>>16&255,B[l++]=A>>>8&255,B[l++]=A&255,Q();let g=new Uint8Array(32);return g[0]=
+encode(A));for(let g=0;g<A.length;g++)L[l++]=A[g],l===64&&Q();h+=A.length},"add"),
+ye=a(()=>{if(L[l++]=128,l==64&&Q(),l+8>64){for(;l<64;)L[l++]=0;Q()}for(;l<58;)L[l++]=
+0;let A=h*8;L[l++]=A/1099511627776&255,L[l++]=A/4294967296&255,L[l++]=A>>>24,L[l++]=
+A>>>16&255,L[l++]=A>>>8&255,L[l++]=A&255,Q();let g=new Uint8Array(32);return g[0]=
 e>>>24,g[1]=e>>>16&255,g[2]=e>>>8&255,g[3]=e&255,g[4]=t>>>24,g[5]=t>>>16&255,g[6]=
 t>>>8&255,g[7]=t&255,g[8]=n>>>24,g[9]=n>>>16&255,g[10]=n>>>8&255,g[11]=n&255,g[12]=
 i>>>24,g[13]=i>>>16&255,g[14]=i>>>8&255,g[15]=i&255,g[16]=s>>>24,g[17]=s>>>16&255,
@@ -617,18 +617,18 @@ onds","milliseconds"];function wa(r){var e=r+"000000".slice(r.length);return par
 e,10)/1e3}a(wa,"parseMilliseconds");function ba(r){if(!r)return{};var e=ma.exec(
 r),t=e[8]==="-";return Object.keys(di).reduce(function(n,i){var s=di[i],o=e[s];return!o||
 (o=i==="milliseconds"?wa(o):parseInt(o,10),!o)||(t&&~ga.indexOf(i)&&(o*=-1),n[i]=
-o),n},{})}a(ba,"parse")});var wi=I((vh,gi)=>{"use strict";p();gi.exports=a(function(e){if(/^\\x/.test(e))return new y(
+o),n},{})}a(ba,"parse")});var wi=I((Eh,gi)=>{"use strict";p();gi.exports=a(function(e){if(/^\\x/.test(e))return new y(
 e.substr(2),"hex");for(var t="",n=0;n<e.length;)if(e[n]!=="\\")t+=e[n],++n;else if(/[0-7]{3}/.
 test(e.substr(n+1,3)))t+=String.fromCharCode(parseInt(e.substr(n+1,3),8)),n+=4;else{
 for(var i=1;n+i<e.length&&e[n+i]==="\\";)i++;for(var s=0;s<Math.floor(i/2);++s)t+=
 "\\";n+=Math.floor(i/2)*2}return new y(t,"binary")},"parseBytea")});var Ai=I((Ch,_i)=>{p();var Ke=Vt(),ze=Kt(),lt=li(),Si=mi(),xi=wi();function ft(r){
-return a(function(t){return t===null?t:r(t)},"nullAllowed")}a(ft,"allowNull");function Ei(r){
+return a(function(t){return t===null?t:r(t)},"nullAllowed")}a(ft,"allowNull");function vi(r){
 return r===null?r:r==="TRUE"||r==="t"||r==="true"||r==="y"||r==="yes"||r==="on"||
-r==="1"}a(Ei,"parseBool");function Sa(r){return r?Ke.parse(r,Ei):null}a(Sa,"pars\
+r==="1"}a(vi,"parseBool");function Sa(r){return r?Ke.parse(r,vi):null}a(Sa,"pars\
 eBoolArray");function xa(r){return parseInt(r,10)}a(xa,"parseBaseTenInt");function Zt(r){
-return r?Ke.parse(r,ft(xa)):null}a(Zt,"parseIntegerArray");function Ea(r){return r?
-Ke.parse(r,ft(function(e){return vi(e).trim()})):null}a(Ea,"parseBigIntegerArray");
-var va=a(function(r){if(!r)return null;var e=ze.create(r,function(t){return t!==
+return r?Ke.parse(r,ft(xa)):null}a(Zt,"parseIntegerArray");function va(r){return r?
+Ke.parse(r,ft(function(e){return Ei(e).trim()})):null}a(va,"parseBigIntegerArray");
+var Ea=a(function(r){if(!r)return null;var e=ze.create(r,function(t){return t!==
 null&&(t=tr(t)),t});return e.parse()},"parsePointArray"),Jt=a(function(r){if(!r)
 return null;var e=ze.create(r,function(t){return t!==null&&(t=parseFloat(t)),t});
 return e.parse()},"parseFloatArray"),ie=a(function(r){if(!r)return null;var e=ze.
@@ -637,16 +637,16 @@ var e=ze.create(r,function(t){return t!==null&&(t=lt(t)),t});return e.parse()},"
 parseDateArray"),_a=a(function(r){if(!r)return null;var e=ze.create(r,function(t){
 return t!==null&&(t=Si(t)),t});return e.parse()},"parseIntervalArray"),Aa=a(function(r){
 return r?Ke.parse(r,ft(xi)):null},"parseByteAArray"),er=a(function(r){return parseInt(
-r,10)},"parseInteger"),vi=a(function(r){var e=String(r);return/^\d+$/.test(e)?e:
+r,10)},"parseInteger"),Ei=a(function(r){var e=String(r);return/^\d+$/.test(e)?e:
 r},"parseBigInteger"),bi=a(function(r){return r?Ke.parse(r,ft(JSON.parse)):null},
 "parseJsonArray"),tr=a(function(r){return r[0]!=="("?null:(r=r.substring(1,r.length-
 1).split(","),{x:parseFloat(r[0]),y:parseFloat(r[1])})},"parsePoint"),Ca=a(function(r){
 if(r[0]!=="<"&&r[1]!=="(")return null;for(var e="(",t="",n=!1,i=2;i<r.length-1;i++){
 if(n||(e+=r[i]),r[i]===")"){n=!0;continue}else if(!n)continue;r[i]!==","&&(t+=r[i])}
 var s=tr(e);return s.radius=parseFloat(t),s},"parseCircle"),Ta=a(function(r){r(20,
-vi),r(21,er),r(23,er),r(26,er),r(700,parseFloat),r(701,parseFloat),r(16,Ei),r(1082,
+Ei),r(21,er),r(23,er),r(26,er),r(700,parseFloat),r(701,parseFloat),r(16,vi),r(1082,
 lt),r(1114,lt),r(1184,lt),r(600,tr),r(651,ie),r(718,Ca),r(1e3,Sa),r(1001,Aa),r(1005,
-Zt),r(1007,Zt),r(1028,Zt),r(1016,Ea),r(1017,va),r(1021,Jt),r(1022,Jt),r(1231,Jt),
+Zt),r(1007,Zt),r(1028,Zt),r(1016,va),r(1017,Ea),r(1021,Jt),r(1022,Jt),r(1231,Jt),
 r(1014,ie),r(1015,ie),r(1008,ie),r(1009,ie),r(1040,ie),r(1041,ie),r(1115,Xt),r(1182,
 Xt),r(1185,Xt),r(1186,Si),r(1187,_a),r(17,xi),r(114,JSON.parse.bind(JSON)),r(3802,
 JSON.parse.bind(JSON)),r(199,bi),r(3807,bi),r(3907,ie),r(2951,ie),r(791,ie),r(1183,
@@ -657,18 +657,18 @@ u+i;for(c="",h=6-u.length,l=0;l<h;l++)c+="0";i=c+u+i}{if(s=e%Y,e=e/Y>>>0,o=42949
 s+t,t=o/Y>>>0,u=""+(o-Y*t),t===0&&e===0)return n+u+i;for(c="",h=6-u.length,l=0;l<
 h;l++)c+="0";i=c+u+i}{if(s=e%Y,e=e/Y>>>0,o=4294967296*s+t,t=o/Y>>>0,u=""+(o-Y*t),
 t===0&&e===0)return n+u+i;for(c="",h=6-u.length,l=0;l<h;l++)c+="0";i=c+u+i}return s=
-e%Y,o=4294967296*s+t,u=""+o%Y,n+u+i}a(Ia,"readInt8");Ci.exports=Ia});var Ri=I((Rh,Li)=>{p();var Pa=Ti(),F=a(function(r,e,t,n,i){t=t||0,n=n||!1,i=i||function(C,B,Q){
-return C*Math.pow(2,Q)+B};var s=t>>3,o=a(function(C){return n?~C&255:C},"inv"),u=255,
+e%Y,o=4294967296*s+t,u=""+o%Y,n+u+i}a(Ia,"readInt8");Ci.exports=Ia});var Ri=I((Rh,Bi)=>{p();var Pa=Ti(),F=a(function(r,e,t,n,i){t=t||0,n=n||!1,i=i||function(C,L,Q){
+return C*Math.pow(2,Q)+L};var s=t>>3,o=a(function(C){return n?~C&255:C},"inv"),u=255,
 c=8-t%8;e<c&&(u=255<<8-e&255,c=e),t&&(u=u>>t%8);var h=0;t%8+e>=8&&(h=i(0,o(r[s])&
 u,c));for(var l=e+t>>3,d=s+1;d<l;d++)h=i(h,o(r[d]),8);var b=(e+t)%8;return b>0&&
-(h=i(h,o(r[l])>>8-b,b)),h},"parseBits"),Bi=a(function(r,e,t){var n=Math.pow(2,t-
+(h=i(h,o(r[l])>>8-b,b)),h},"parseBits"),Li=a(function(r,e,t){var n=Math.pow(2,t-
 1)-1,i=F(r,1),s=F(r,t,1);if(s===0)return 0;var o=1,u=a(function(h,l,d){h===0&&(h=
 1);for(var b=1;b<=d;b++)o/=2,(l&1<<d-b)>0&&(h+=o);return h},"parsePrecisionBits"),
 c=F(r,e,t+1,!1,u);return s==Math.pow(2,t+1)-1?c===0?i===0?1/0:-1/0:NaN:(i===0?1:
--1)*Math.pow(2,s-n)*c},"parseFloatFromBits"),Ba=a(function(r){return F(r,1)==1?-1*
+-1)*Math.pow(2,s-n)*c},"parseFloatFromBits"),La=a(function(r){return F(r,1)==1?-1*
 (F(r,15,1,!0)+1):F(r,15,1)},"parseInt16"),Ii=a(function(r){return F(r,1)==1?-1*(F(
-r,31,1,!0)+1):F(r,31,1)},"parseInt32"),La=a(function(r){return Bi(r,23,8)},"pars\
-eFloat32"),Ra=a(function(r){return Bi(r,52,11)},"parseFloat64"),Fa=a(function(r){
+r,31,1,!0)+1):F(r,31,1)},"parseInt32"),Ba=a(function(r){return Li(r,23,8)},"pars\
+eFloat32"),Ra=a(function(r){return Li(r,52,11)},"parseFloat64"),Fa=a(function(r){
 var e=F(r,16,32);if(e==49152)return NaN;for(var t=Math.pow(1e4,F(r,16,16)),n=0,i=[],
 s=F(r,16),o=0;o<s;o++)n+=F(r,16,64+16*o)*t,t/=1e4;var u=Math.pow(10,F(r,16,48));
 return(e===0?1:-1)*Math.round(n*u)/u},"parseNumeric"),Pi=a(function(r,e){var t=F(
@@ -683,10 +683,10 @@ d;console.log("ERROR: ElementType not implemented: "+h)},"parseElement"),c=a(fun
 var d=[],b;if(h.length>1){var C=h.shift();for(b=0;b<C;b++)d[b]=c(h,l);h.unshift(
 C)}else for(b=0;b<h[0];b++)d[b]=u(l);return d},"parse");return c(s,n)},"parseArr\
 ay"),Ma=a(function(r){return r.toString("utf8")},"parseText"),ka=a(function(r){return r===
-null?null:F(r,8)>0},"parseBool"),Da=a(function(r){r(20,Pa),r(21,Ba),r(23,Ii),r(26,
-Ii),r(1700,Fa),r(700,La),r(701,Ra),r(16,ka),r(1114,Pi.bind(null,!1)),r(1184,Pi.bind(
+null?null:F(r,8)>0},"parseBool"),Da=a(function(r){r(20,Pa),r(21,La),r(23,Ii),r(26,
+Ii),r(1700,Fa),r(700,Ba),r(701,Ra),r(16,ka),r(1114,Pi.bind(null,!1)),r(1184,Pi.bind(
 null,!0)),r(1e3,Ye),r(1007,Ye),r(1016,Ye),r(1008,Ye),r(1009,Ye),r(25,Ma)},"init");
-Li.exports={init:Da}});var Mi=I((kh,Fi)=>{p();Fi.exports={BOOL:16,BYTEA:17,CHAR:18,INT8:20,INT2:21,INT4:23,
+Bi.exports={init:Da}});var Mi=I((kh,Fi)=>{p();Fi.exports={BOOL:16,BYTEA:17,CHAR:18,INT8:20,INT2:21,INT4:23,
 REGPROC:24,TEXT:25,OID:26,TID:27,XID:28,CID:29,JSON:114,XML:142,PG_NODE_TREE:194,
 SMGR:210,PATH:602,POLYGON:604,CIDR:650,FLOAT4:700,FLOAT8:701,ABSTIME:702,RELTIME:703,
 TINTERVAL:704,CIRCLE:718,MACADDR8:774,MONEY:790,MACADDR:829,INET:869,ACLITEM:1033,
@@ -747,8 +747,8 @@ once is too short")}else throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: serv
 er nonce does not start with client nonce");var i=y.from(n.salt,"base64"),s=ou(e,
 i,n.iteration),o=De(s,"Client Key"),u=su(o),c="n=*,r="+r.clientNonce,h="r="+n.nonce+
 ",s="+n.salt+",i="+n.iteration,l="c=biws,r="+n.nonce,d=c+","+h+","+l,b=De(u,d),C=qi(
-o,b),B=C.toString("base64"),Q=De(s,"Server Key"),J=De(Q,d);r.message="SASLRespon\
-se",r.serverSignature=J.toString("base64"),r.response=l+",p="+B}a(eu,"continueSe\
+o,b),L=C.toString("base64"),Q=De(s,"Server Key"),J=De(Q,d);r.message="SASLRespon\
+se",r.serverSignature=J.toString("base64"),r.response=l+",p="+L}a(eu,"continueSe\
 ssion");function tu(r,e){if(r.message!=="SASLResponse")throw new Error("SASL: La\
 st message was not SASLResponse");if(typeof e!="string")throw new Error("SASL: S\
 CRAM-SERVER-FINAL-MESSAGE: serverData must be a string");let{serverSignature:t}=iu(
@@ -803,8 +803,8 @@ let n=new hu(t);return n[be]="",n[dt]=new lu("utf8"),n.matcher=r,n.mapper=e,n.ma
 t.maxLength,n.skipOverflow=t.skipOverflow||!1,n.overflow=!1,n._destroy=function(i,s){
 this._writableState.errorEmitted=!1,s(i)},n}a(du,"split");Vi.exports=du});var Zi=I((il,de)=>{"use strict";p();var zi=(or(),O(sr)),yu=(hr(),O(cr)).Stream,mu=Ki(),
 Yi=(Ge(),O(He)),gu=5432,yt=m.platform==="win32",rt=m.stderr,wu=56,bu=7,Su=61440,
-xu=32768;function Eu(r){return(r&Su)==xu}a(Eu,"isRegFile");var Ue=["host","port",
-"database","user","password"],pr=Ue.length,vu=Ue[pr-1];function dr(){var r=rt instanceof
+xu=32768;function vu(r){return(r&Su)==xu}a(vu,"isRegFile");var Ue=["host","port",
+"database","user","password"],pr=Ue.length,Eu=Ue[pr-1];function dr(){var r=rt instanceof
 yu&&rt.writable===!0;if(r){var e=Array.prototype.slice.call(arguments).concat(`
 `);rt.write(Yi.format.apply(Yi,e))}}a(dr,"warn");Object.defineProperty(de.exports,
 "isWin",{get:a(function(){return yt},"get"),set:a(function(r){yt=r},"set")});de.
@@ -812,12 +812,12 @@ exports.warnTo=function(r){var e=rt;return rt=r,e};de.exports.getFileName=functi
 var e=r||m.env,t=e.PGPASSFILE||(yt?zi.join(e.APPDATA||"./","postgresql","pgpass.\
 conf"):zi.join(e.HOME||"./",".pgpass"));return t};de.exports.usePgPass=function(r,e){
 return Object.prototype.hasOwnProperty.call(m.env,"PGPASSWORD")?!1:yt?!0:(e=e||"\
-<unkn>",Eu(r.mode)?r.mode&(wu|bu)?(dr('WARNING: password file "%s" has group or \
+<unkn>",vu(r.mode)?r.mode&(wu|bu)?(dr('WARNING: password file "%s" has group or \
 world access; permissions should be u=rw (0600) or less',e),!1):!0:(dr('WARNING:\
  password file "%s" is not a plain file',e),!1))};var _u=de.exports.match=function(r,e){
 return Ue.slice(0,-1).reduce(function(t,n,i){return i==1&&Number(r[n]||gu)===Number(
 e[n])?t&&!0:t&&(e[n]==="*"||e[n]===r[n])},!0)};de.exports.getPassword=function(r,e,t){
-var n,i=e.pipe(mu());function s(c){var h=Au(c);h&&Cu(h)&&_u(r,h)&&(n=h[vu],i.end())}
+var n,i=e.pipe(mu());function s(c){var h=Au(c);h&&Cu(h)&&_u(r,h)&&(n=h[Eu],i.end())}
 a(s,"onLine");var o=a(function(){e.destroy(),t(n)},"onEnd"),u=a(function(c){e.destroy(),
 dr("WARNING: error on reading file: %s",c),t(void 0)},"onErr");e.on("error",u),i.
 on("data",s).on("end",o).on("error",u)};var Au=de.exports.parseLine=function(r){
@@ -841,9 +841,9 @@ this.getOverrides(e)[r]=t};gt.prototype.getTypeParser=function(r,e){return e=e||
 "text",this.getOverrides(e)[r]||this._types.getTypeParser(r,e)};es.exports=gt});var ts={};re(ts,{default:()=>Iu});var Iu,rs=te(()=>{"use strict";p();Iu={}});var ns={};re(ns,{parse:()=>mr});function mr(r,e=!1){let{protocol:t}=new URL(r),n="\
 http:"+r.substring(t.length),{username:i,password:s,host:o,hostname:u,port:c,pathname:h,
 search:l,searchParams:d,hash:b}=new URL(n);s=decodeURIComponent(s),i=decodeURIComponent(
-i),h=decodeURIComponent(h);let C=i+":"+s,B=e?Object.fromEntries(d.entries()):l;return{
+i),h=decodeURIComponent(h);let C=i+":"+s,L=e?Object.fromEntries(d.entries()):l;return{
 href:r,protocol:t,auth:C,username:i,password:s,host:o,hostname:u,port:c,pathname:h,
-search:l,query:B,hash:b}}var gr=te(()=>{"use strict";p();a(mr,"parse")});var ss=I((ml,is)=>{"use strict";p();var Pu=(gr(),O(ns)),wr=(ur(),O(ar));function br(r){
+search:l,query:L,hash:b}}var gr=te(()=>{"use strict";p();a(mr,"parse")});var ss=I((ml,is)=>{"use strict";p();var Pu=(gr(),O(ns)),wr=(ur(),O(ar));function br(r){
 if(r.charAt(0)==="/"){var t=r.split(" ");return{host:t[0],database:t[1]}}var e=Pu.
 parse(/ |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.test(r)?encodeURI(r).replace(/\%25(\d\d)/g,
 "%$1"):r,!0),t=e.query;for(var n in t)Array.isArray(t[n])&&(t[n]=t[n][t[n].length-
@@ -858,9 +858,9 @@ t.database=s&&decodeURI(s),(t.ssl==="true"||t.ssl==="1")&&(t.ssl=!0),t.ssl==="0"
 t.sslkey).toString()),t.sslrootcert&&(t.ssl.ca=wr.readFileSync(t.sslrootcert).toString()),
 t.sslmode){case"disable":{t.ssl=!1;break}case"prefer":case"require":case"verify-\
 ca":case"verify-full":break;case"no-verify":{t.ssl.rejectUnauthorized=!1;break}}
-return t}a(br,"parse");is.exports=br;br.parse=br});var bt=I((bl,us)=>{"use strict";p();var Bu=(rs(),O(ts)),as=et(),os=ss().parse,V=a(
+return t}a(br,"parse");is.exports=br;br.parse=br});var bt=I((bl,us)=>{"use strict";p();var Lu=(rs(),O(ts)),as=et(),os=ss().parse,V=a(
 function(r,e,t){return t===void 0?t=m.env["PG"+r.toUpperCase()]:t===!1||(t=m.env[t]),
-e[r]||t||as[r]},"val"),Lu=a(function(){switch(m.env.PGSSLMODE){case"disable":return!1;case"\
+e[r]||t||as[r]},"val"),Bu=a(function(){switch(m.env.PGSSLMODE){case"disable":return!1;case"\
 prefer":case"require":case"verify-ca":case"verify-full":return!0;case"no-verify":
 return{rejectUnauthorized:!1}}return as.ssl},"readSSLConfigFromEnvironment"),Oe=a(
 function(r){return"'"+(""+r).replace(/\\/g,"\\\\").replace(/'/g,"\\'")+"'"},"quo\
@@ -870,7 +870,7 @@ d"),xr=class xr{constructor(e){e=typeof e=="string"?os(e):e||{},e.connectionStri
 V("database",e),this.database===void 0&&(this.database=this.user),this.port=parseInt(
 V("port",e),10),this.host=V("host",e),Object.defineProperty(this,"password",{configurable:!0,
 enumerable:!1,writable:!0,value:V("password",e)}),this.binary=V("binary",e),this.
-options=V("options",e),this.ssl=typeof e.ssl>"u"?Lu():e.ssl,typeof this.ssl=="st\
+options=V("options",e),this.ssl=typeof e.ssl>"u"?Bu():e.ssl,typeof this.ssl=="st\
 ring"&&this.ssl==="true"&&(this.ssl=!0),this.ssl==="no-verify"&&(this.ssl={rejectUnauthorized:!1}),
 this.ssl&&this.ssl.key&&Object.defineProperty(this.ssl,"key",{enumerable:!1}),this.
 client_encoding=V("client_encoding",e),this.replication=V("replication",e),this.
@@ -890,10 +890,10 @@ ssl}:{};if(se(t,n,"sslmode"),se(t,n,"sslca"),se(t,n,"sslkey"),se(t,n,"sslcert"),
 se(t,n,"sslrootcert"),this.database&&t.push("dbname="+Oe(this.database)),this.replication&&
 t.push("replication="+Oe(this.replication)),this.host&&t.push("host="+Oe(this.host)),
 this.isDomainSocket)return e(null,t.join(" "));this.client_encoding&&t.push("cli\
-ent_encoding="+Oe(this.client_encoding)),Bu.lookup(this.host,function(i,s){return i?
+ent_encoding="+Oe(this.client_encoding)),Lu.lookup(this.host,function(i,s){return i?
 e(i,null):(t.push("hostaddr="+Oe(s)),e(null,t.join(" ")))})}};a(xr,"ConnectionPa\
-rameters");var Sr=xr;us.exports=Sr});var ls=I((El,hs)=>{"use strict";p();var Ru=Xe(),cs=/^([A-Za-z]+)(?: (\d+))?(?: (\d+))?/,
-vr=class vr{constructor(e,t){this.command=null,this.rowCount=null,this.oid=null,
+rameters");var Sr=xr;us.exports=Sr});var ls=I((vl,hs)=>{"use strict";p();var Ru=Xe(),cs=/^([A-Za-z]+)(?: (\d+))?(?: (\d+))?/,
+Er=class Er{constructor(e,t){this.command=null,this.rowCount=null,this.oid=null,
 this.rows=[],this.fields=[],this._parsers=void 0,this._types=t,this.RowCtor=null,
 this.rowAsArray=e==="array",this.rowAsArray&&(this.parseRow=this._parseRowAsArray)}addCommandComplete(e){
 var t;e.text?t=cs.exec(e.text):t=cs.exec(e.command),t&&(this.command=t[1],t[3]?(this.
@@ -904,8 +904,8 @@ n=0,i=e.length;n<i;n++){var s=e[n],o=this.fields[n].name;s!==null?t[o]=this._par
 s):t[o]=null}return t}addRow(e){this.rows.push(e)}addFields(e){this.fields=e,this.
 fields.length&&(this._parsers=new Array(e.length));for(var t=0;t<e.length;t++){var n=e[t];
 this._types?this._parsers[t]=this._types.getTypeParser(n.dataTypeID,n.format||"t\
-ext"):this._parsers[t]=Ru.getTypeParser(n.dataTypeID,n.format||"text")}}};a(vr,"\
-Result");var Er=vr;hs.exports=Er});var ys=I((Al,ds)=>{"use strict";p();var{EventEmitter:Fu}=we(),fs=ls(),ps=tt(),Ar=class Ar extends Fu{constructor(e,t,n){
+ext"):this._parsers[t]=Ru.getTypeParser(n.dataTypeID,n.format||"text")}}};a(Er,"\
+Result");var vr=Er;hs.exports=vr});var ys=I((Al,ds)=>{"use strict";p();var{EventEmitter:Fu}=we(),fs=ls(),ps=tt(),Ar=class Ar extends Fu{constructor(e,t,n){
 super(),e=ps.normalizeQueryConfig(e,t,n),this.text=e.text,this.values=e.values,this.
 rows=e.rows,this.types=e.types,this.name=e.name,this.binary=e.binary,this.portal=
 e.portal||"",this.callback=e.callback,this._rowMode=e.rowMode,m.domain&&e.callback&&
@@ -938,44 +938,44 @@ try{e.bind({portal:this.portal,statement:this.name,values:this.values,binary:thi
 binary,valueMapper:ps.prepareValue})}catch(t){this.handleError(t,e);return}e.describe(
 {type:"P",name:this.portal||""}),this._getRows(e,this.rows)}handleCopyInResponse(e){
 e.sendCopyFail("No source stream defined")}handleCopyData(e,t){}};a(Ar,"Query");
-var _r=Ar;ds.exports=_r});var ws={};re(ws,{Socket:()=>Se,isIP:()=>Mu});function Mu(r){return 0}var gs,ms,E,
-Se,St=te(()=>{"use strict";p();gs=Ie(we(),1);a(Mu,"isIP");ms=/^[^.]+\./,E=class E extends gs.EventEmitter{constructor(){
+var _r=Ar;ds.exports=_r});var ws={};re(ws,{Socket:()=>Se,isIP:()=>Mu});function Mu(r){return 0}var gs,ms,v,
+Se,St=te(()=>{"use strict";p();gs=Ie(we(),1);a(Mu,"isIP");ms=/^[^.]+\./,v=class v extends gs.EventEmitter{constructor(){
 super(...arguments);_(this,"opts",{});_(this,"connecting",!1);_(this,"pending",!0);
 _(this,"writable",!0);_(this,"encrypted",!1);_(this,"authorized",!1);_(this,"des\
 troyed",!1);_(this,"ws",null);_(this,"writeBuffer");_(this,"tlsState",0);_(this,
-"tlsRead");_(this,"tlsWrite")}static get poolQueryViaFetch(){return E.opts.poolQueryViaFetch??
-E.defaults.poolQueryViaFetch}static set poolQueryViaFetch(t){E.opts.poolQueryViaFetch=
-t}static get fetchEndpoint(){return E.opts.fetchEndpoint??E.defaults.fetchEndpoint}static set fetchEndpoint(t){
-E.opts.fetchEndpoint=t}static get fetchConnectionCache(){return!0}static set fetchConnectionCache(t){
+"tlsRead");_(this,"tlsWrite")}static get poolQueryViaFetch(){return v.opts.poolQueryViaFetch??
+v.defaults.poolQueryViaFetch}static set poolQueryViaFetch(t){v.opts.poolQueryViaFetch=
+t}static get fetchEndpoint(){return v.opts.fetchEndpoint??v.defaults.fetchEndpoint}static set fetchEndpoint(t){
+v.opts.fetchEndpoint=t}static get fetchConnectionCache(){return!0}static set fetchConnectionCache(t){
 console.warn("The `fetchConnectionCache` option is deprecated (now always `true`\
-)")}static get fetchFunction(){return E.opts.fetchFunction??E.defaults.fetchFunction}static set fetchFunction(t){
-E.opts.fetchFunction=t}static get webSocketConstructor(){return E.opts.webSocketConstructor??
-E.defaults.webSocketConstructor}static set webSocketConstructor(t){E.opts.webSocketConstructor=
-t}get webSocketConstructor(){return this.opts.webSocketConstructor??E.webSocketConstructor}set webSocketConstructor(t){
-this.opts.webSocketConstructor=t}static get wsProxy(){return E.opts.wsProxy??E.defaults.
-wsProxy}static set wsProxy(t){E.opts.wsProxy=t}get wsProxy(){return this.opts.wsProxy??
-E.wsProxy}set wsProxy(t){this.opts.wsProxy=t}static get coalesceWrites(){return E.
-opts.coalesceWrites??E.defaults.coalesceWrites}static set coalesceWrites(t){E.opts.
-coalesceWrites=t}get coalesceWrites(){return this.opts.coalesceWrites??E.coalesceWrites}set coalesceWrites(t){
-this.opts.coalesceWrites=t}static get useSecureWebSocket(){return E.opts.useSecureWebSocket??
-E.defaults.useSecureWebSocket}static set useSecureWebSocket(t){E.opts.useSecureWebSocket=
-t}get useSecureWebSocket(){return this.opts.useSecureWebSocket??E.useSecureWebSocket}set useSecureWebSocket(t){
-this.opts.useSecureWebSocket=t}static get forceDisablePgSSL(){return E.opts.forceDisablePgSSL??
-E.defaults.forceDisablePgSSL}static set forceDisablePgSSL(t){E.opts.forceDisablePgSSL=
-t}get forceDisablePgSSL(){return this.opts.forceDisablePgSSL??E.forceDisablePgSSL}set forceDisablePgSSL(t){
-this.opts.forceDisablePgSSL=t}static get disableSNI(){return E.opts.disableSNI??
-E.defaults.disableSNI}static set disableSNI(t){E.opts.disableSNI=t}get disableSNI(){
-return this.opts.disableSNI??E.disableSNI}set disableSNI(t){this.opts.disableSNI=
-t}static get pipelineConnect(){return E.opts.pipelineConnect??E.defaults.pipelineConnect}static set pipelineConnect(t){
-E.opts.pipelineConnect=t}get pipelineConnect(){return this.opts.pipelineConnect??
-E.pipelineConnect}set pipelineConnect(t){this.opts.pipelineConnect=t}static get subtls(){
-return E.opts.subtls??E.defaults.subtls}static set subtls(t){E.opts.subtls=t}get subtls(){
-return this.opts.subtls??E.subtls}set subtls(t){this.opts.subtls=t}static get pipelineTLS(){
-return E.opts.pipelineTLS??E.defaults.pipelineTLS}static set pipelineTLS(t){E.opts.
-pipelineTLS=t}get pipelineTLS(){return this.opts.pipelineTLS??E.pipelineTLS}set pipelineTLS(t){
-this.opts.pipelineTLS=t}static get rootCerts(){return E.opts.rootCerts??E.defaults.
-rootCerts}static set rootCerts(t){E.opts.rootCerts=t}get rootCerts(){return this.
-opts.rootCerts??E.rootCerts}set rootCerts(t){this.opts.rootCerts=t}wsProxyAddrForHost(t,n){
+)")}static get fetchFunction(){return v.opts.fetchFunction??v.defaults.fetchFunction}static set fetchFunction(t){
+v.opts.fetchFunction=t}static get webSocketConstructor(){return v.opts.webSocketConstructor??
+v.defaults.webSocketConstructor}static set webSocketConstructor(t){v.opts.webSocketConstructor=
+t}get webSocketConstructor(){return this.opts.webSocketConstructor??v.webSocketConstructor}set webSocketConstructor(t){
+this.opts.webSocketConstructor=t}static get wsProxy(){return v.opts.wsProxy??v.defaults.
+wsProxy}static set wsProxy(t){v.opts.wsProxy=t}get wsProxy(){return this.opts.wsProxy??
+v.wsProxy}set wsProxy(t){this.opts.wsProxy=t}static get coalesceWrites(){return v.
+opts.coalesceWrites??v.defaults.coalesceWrites}static set coalesceWrites(t){v.opts.
+coalesceWrites=t}get coalesceWrites(){return this.opts.coalesceWrites??v.coalesceWrites}set coalesceWrites(t){
+this.opts.coalesceWrites=t}static get useSecureWebSocket(){return v.opts.useSecureWebSocket??
+v.defaults.useSecureWebSocket}static set useSecureWebSocket(t){v.opts.useSecureWebSocket=
+t}get useSecureWebSocket(){return this.opts.useSecureWebSocket??v.useSecureWebSocket}set useSecureWebSocket(t){
+this.opts.useSecureWebSocket=t}static get forceDisablePgSSL(){return v.opts.forceDisablePgSSL??
+v.defaults.forceDisablePgSSL}static set forceDisablePgSSL(t){v.opts.forceDisablePgSSL=
+t}get forceDisablePgSSL(){return this.opts.forceDisablePgSSL??v.forceDisablePgSSL}set forceDisablePgSSL(t){
+this.opts.forceDisablePgSSL=t}static get disableSNI(){return v.opts.disableSNI??
+v.defaults.disableSNI}static set disableSNI(t){v.opts.disableSNI=t}get disableSNI(){
+return this.opts.disableSNI??v.disableSNI}set disableSNI(t){this.opts.disableSNI=
+t}static get pipelineConnect(){return v.opts.pipelineConnect??v.defaults.pipelineConnect}static set pipelineConnect(t){
+v.opts.pipelineConnect=t}get pipelineConnect(){return this.opts.pipelineConnect??
+v.pipelineConnect}set pipelineConnect(t){this.opts.pipelineConnect=t}static get subtls(){
+return v.opts.subtls??v.defaults.subtls}static set subtls(t){v.opts.subtls=t}get subtls(){
+return this.opts.subtls??v.subtls}set subtls(t){this.opts.subtls=t}static get pipelineTLS(){
+return v.opts.pipelineTLS??v.defaults.pipelineTLS}static set pipelineTLS(t){v.opts.
+pipelineTLS=t}get pipelineTLS(){return this.opts.pipelineTLS??v.pipelineTLS}set pipelineTLS(t){
+this.opts.pipelineTLS=t}static get rootCerts(){return v.opts.rootCerts??v.defaults.
+rootCerts}static set rootCerts(t){v.opts.rootCerts=t}get rootCerts(){return this.
+opts.rootCerts??v.rootCerts}set rootCerts(t){this.opts.rootCerts=t}wsProxyAddrForHost(t,n){
 let i=this.wsProxy;if(i===void 0)throw new Error("No WebSocket proxy is configur\
 ed. Please see https://github.com/neondatabase/serverless/blob/main/CONFIG.md#ws\
 proxy-string--host-string-port-number--string--string");return typeof i=="functi\
@@ -1014,12 +1014,12 @@ writeBuffer),n.set(t,this.writeBuffer.length),this.writeBuffer=n}}write(t,n="utf
 tlsState===0?(this.rawWrite(t),i()):this.tlsState===1?this.once("secureConnectio\
 n",()=>{this.write(t,n,i)}):(this.tlsWrite(t),i()),!0)}end(t=y.alloc(0),n="utf8",i=()=>{}){
 return this.write(t,n,()=>{this.ws.close(),i()}),this}destroy(){return this.destroyed=
-!0,this.end()}};a(E,"Socket"),_(E,"defaults",{poolQueryViaFetch:!1,fetchEndpoint:a(
+!0,this.end()}};a(v,"Socket"),_(v,"defaults",{poolQueryViaFetch:!1,fetchEndpoint:a(
 (t,n,i)=>{let s;return i?.jwtAuth?s=t.replace(ms,"apiauth."):s=t.replace(ms,"api\
 ."),"https://"+s+"/sql"},"fetchEndpoint"),fetchConnectionCache:!0,fetchFunction:void 0,
 webSocketConstructor:void 0,wsProxy:a(t=>t+"/v2","wsProxy"),useSecureWebSocket:!0,
 forceDisablePgSSL:!0,coalesceWrites:!0,pipelineConnect:"password",subtls:void 0,
-rootCerts:"",pipelineTLS:!1,disableSNI:!1}),_(E,"opts",{});Se=E});var en=I(T=>{"use strict";p();Object.defineProperty(T,"__esModule",{value:!0});T.
+rootCerts:"",pipelineTLS:!1,disableSNI:!1}),_(v,"opts",{});Se=v});var en=I(T=>{"use strict";p();Object.defineProperty(T,"__esModule",{value:!0});T.
 NoticeMessage=T.DataRowMessage=T.CommandCompleteMessage=T.ReadyForQueryMessage=T.
 NotificationResponseMessage=T.BackendKeyDataMessage=T.AuthenticationMD5Password=
 T.ParameterStatusMessage=T.ParameterDescriptionMessage=T.RowDescriptionMessage=T.
@@ -1038,10 +1038,10 @@ pyResponse");var Ir=Wr;T.CopyResponse=Ir;var jr=class jr{constructor(e,t,n,i,s,o
 this.name=e,this.tableID=t,this.columnID=n,this.dataTypeID=i,this.dataTypeSize=s,
 this.dataTypeModifier=o,this.format=u}};a(jr,"Field");var Pr=jr;T.Field=Pr;var Hr=class Hr{constructor(e,t){
 this.length=e,this.fieldCount=t,this.name="rowDescription",this.fields=new Array(
-this.fieldCount)}};a(Hr,"RowDescriptionMessage");var Br=Hr;T.RowDescriptionMessage=
-Br;var Gr=class Gr{constructor(e,t){this.length=e,this.parameterCount=t,this.name=
+this.fieldCount)}};a(Hr,"RowDescriptionMessage");var Lr=Hr;T.RowDescriptionMessage=
+Lr;var Gr=class Gr{constructor(e,t){this.length=e,this.parameterCount=t,this.name=
 "parameterDescription",this.dataTypeIDs=new Array(this.parameterCount)}};a(Gr,"P\
-arameterDescriptionMessage");var Lr=Gr;T.ParameterDescriptionMessage=Lr;var $r=class $r{constructor(e,t,n){
+arameterDescriptionMessage");var Br=Gr;T.ParameterDescriptionMessage=Br;var $r=class $r{constructor(e,t,n){
 this.length=e,this.parameterName=t,this.parameterValue=n,this.name="parameterSta\
 tus"}};a($r,"ParameterStatusMessage");var Rr=$r;T.ParameterStatusMessage=Rr;var Vr=class Vr{constructor(e,t){
 this.length=e,this.salt=t,this.name="authenticationMD5Password"}};a(Vr,"Authenti\
@@ -1073,8 +1073,8 @@ this.offset+=e.length,this}join(e){if(e){this.buffer[this.headerPosition]=e;let 
 offset-(this.headerPosition+1);this.buffer.writeInt32BE(t,this.headerPosition+1)}
 return this.buffer.slice(e?0:5,this.offset)}flush(e){var t=this.join(e);return this.
 offset=5,this.headerPosition=0,this.buffer=y.allocUnsafe(this.size),t}};a(rn,"Wr\
-iter");var tn=rn;xt.Writer=tn});var xs=I(vt=>{"use strict";p();Object.defineProperty(vt,"__esModule",{value:!0});
-vt.serialize=void 0;var nn=bs(),M=new nn.Writer,ku=a(r=>{M.addInt16(3).addInt16(
+iter");var tn=rn;xt.Writer=tn});var xs=I(Et=>{"use strict";p();Object.defineProperty(Et,"__esModule",{value:!0});
+Et.serialize=void 0;var nn=bs(),M=new nn.Writer,ku=a(r=>{M.addInt16(3).addInt16(
 0);for(let n of Object.keys(r))M.addCString(n).addCString(r[n]);M.addCString("cl\
 ient_encoding").addCString("UTF8");var e=M.addCString("").flush(),t=e.length+4;return new nn.
 Writer().addInt32(t).add(e).flush()},"startup"),Du=a(()=>{let r=y.allocUnsafe(8);
@@ -1103,12 +1103,12 @@ allocUnsafe(1+n);return i[0]=r,i.writeInt32BE(n,1),i.write(e,5,"utf-8"),i[n]=0,i
 "cstringMessage"),Vu=M.addCString("P").flush(68),Ku=M.addCString("S").flush(68),
 zu=a(r=>r.name?sn(68,`${r.type}${r.name||""}`):r.type==="P"?Vu:Ku,"describe"),Yu=a(
 r=>{let e=`${r.type}${r.name||""}`;return sn(67,e)},"close"),Zu=a(r=>M.add(r).flush(
-100),"copyData"),Ju=a(r=>sn(102,r),"copyFail"),Et=a(r=>y.from([r,0,0,0,4]),"code\
-OnlyBuffer"),Xu=Et(72),ec=Et(83),tc=Et(88),rc=Et(99),nc={startup:ku,password:Uu,
+100),"copyData"),Ju=a(r=>sn(102,r),"copyFail"),vt=a(r=>y.from([r,0,0,0,4]),"code\
+OnlyBuffer"),Xu=vt(72),ec=vt(83),tc=vt(88),rc=vt(99),nc={startup:ku,password:Uu,
 requestSsl:Du,sendSASLInitialResponseMessage:Ou,sendSCRAMClientFinalMessage:Nu,query:qu,
 parse:Qu,bind:ju,execute:Gu,describe:zu,close:Yu,flush:a(()=>Xu,"flush"),sync:a(
 ()=>ec,"sync"),end:a(()=>tc,"end"),copyData:Zu,copyDone:a(()=>rc,"copyDone"),copyFail:Ju,
-cancel:$u};vt.serialize=nc});var Es=I(_t=>{"use strict";p();Object.defineProperty(_t,"__esModule",{value:!0});
+cancel:$u};Et.serialize=nc});var vs=I(_t=>{"use strict";p();Object.defineProperty(_t,"__esModule",{value:!0});
 _t.BufferReader=void 0;var ic=y.allocUnsafe(0),an=class an{constructor(e=0){this.
 offset=e,this.buffer=ic,this.encoding="utf-8"}setBuffer(e,t){this.offset=e,this.
 buffer=t}int16(){let e=this.buffer.readInt16BE(this.offset);return this.offset+=
@@ -1119,12 +1119,12 @@ let e=this.offset,t=e;for(;this.buffer[t++]!==0;);return this.offset=t,this.buff
 toString(this.encoding,e,t-1)}bytes(e){let t=this.buffer.slice(this.offset,this.
 offset+e);return this.offset+=e,t}};a(an,"BufferReader");var on=an;_t.BufferReader=
 on});var As=I(At=>{"use strict";p();Object.defineProperty(At,"__esModule",{value:!0});
-At.Parser=void 0;var k=en(),sc=Es(),un=1,oc=4,vs=un+oc,_s=y.allocUnsafe(0),hn=class hn{constructor(e){
+At.Parser=void 0;var k=en(),sc=vs(),un=1,oc=4,Es=un+oc,_s=y.allocUnsafe(0),hn=class hn{constructor(e){
 if(this.buffer=_s,this.bufferLength=0,this.bufferOffset=0,this.reader=new sc.BufferReader,
 e?.mode==="binary")throw new Error("Binary mode not supported yet");this.mode=e?.
 mode||"text"}parse(e,t){this.mergeBuffer(e);let n=this.bufferOffset+this.bufferLength,
-i=this.bufferOffset;for(;i+vs<=n;){let s=this.buffer[i],o=this.buffer.readUInt32BE(
-i+un),u=un+o;if(u+i<=n){let c=this.handlePacket(i+vs,s,o,this.buffer);t(c),i+=u}else
+i=this.bufferOffset;for(;i+Es<=n;){let s=this.buffer[i],o=this.buffer.readUInt32BE(
+i+un),u=un+o;if(u+i<=n){let c=this.handlePacket(i+Es,s,o,this.buffer);t(c),i+=u}else
 break}i===n?(this.buffer=_s,this.bufferLength=0,this.bufferOffset=0):(this.bufferLength=
 n-i,this.bufferOffset=i)}mergeBuffer(e){if(this.bufferLength>0){let t=this.bufferLength+
 e.byteLength;if(t+this.bufferOffset>this.buffer.byteLength){let i;if(t<=this.buffer.
@@ -1189,7 +1189,7 @@ var uc=xs();Object.defineProperty(xe,"serialize",{enumerable:!0,get:a(function()
 return uc.serialize},"get")});var cc=As();function hc(r,e){let t=new cc.Parser;return r.
 on("data",n=>t.parse(n,e)),new Promise(n=>r.on("end",()=>n()))}a(hc,"parse");xe.
 parse=hc});var Cs={};re(Cs,{connect:()=>lc});function lc({socket:r,servername:e}){return r.
-startTls(e),r}var Ts=te(()=>{"use strict";p();a(lc,"connect")});var dn=I((Yl,Bs)=>{"use strict";p();var Is=(St(),O(ws)),fc=we().EventEmitter,{parse:pc,
+startTls(e),r}var Ts=te(()=>{"use strict";p();a(lc,"connect")});var dn=I((Yl,Ls)=>{"use strict";p();var Is=(St(),O(ws)),fc=we().EventEmitter,{parse:pc,
 serialize:q}=ln(),Ps=q.flush(),dc=q.sync(),yc=q.end(),pn=class pn extends fc{constructor(e){
 super(),e=e||{},this.stream=e.stream||new Is.Socket,this._keepAlive=e.keepAlive,
 this._keepAliveInitialDelayMillis=e.keepAliveInitialDelayMillis,this.lastBuffer=
@@ -1221,8 +1221,8 @@ unref()}end(){if(this._ending=!0,!this._connecting||!this.stream.writable){this.
 stream.end();return}return this.stream.write(yc,()=>{this.stream.end()})}close(e){
 this._send(q.close(e))}describe(e){this._send(q.describe(e))}sendCopyFromChunk(e){
 this._send(q.copyData(e))}endCopyFrom(){this._send(q.copyDone())}sendCopyFail(e){
-this._send(q.copyFail(e))}};a(pn,"Connection");var fn=pn;Bs.exports=fn});var Fs=I((ef,Rs)=>{"use strict";p();var mc=we().EventEmitter,Xl=(Ge(),O(He)),gc=tt(),
-yn=Wi(),wc=Xi(),bc=wt(),Sc=bt(),Ls=ys(),xc=et(),Ec=dn(),mn=class mn extends mc{constructor(e){
+this._send(q.copyFail(e))}};a(pn,"Connection");var fn=pn;Ls.exports=fn});var Fs=I((ef,Rs)=>{"use strict";p();var mc=we().EventEmitter,Xl=(Ge(),O(He)),gc=tt(),
+yn=Wi(),wc=Xi(),bc=wt(),Sc=bt(),Bs=ys(),xc=et(),vc=dn(),mn=class mn extends mc{constructor(e){
 super(),this.connectionParameters=new Sc(e),this.user=this.connectionParameters.
 user,this.database=this.connectionParameters.database,this.port=this.connectionParameters.
 port,this.host=this.connectionParameters.host,Object.defineProperty(this,"passwo\
@@ -1230,7 +1230,7 @@ rd",{configurable:!0,enumerable:!1,writable:!0,value:this.connectionParameters.p
 this.replication=this.connectionParameters.replication;var t=e||{};this._Promise=
 t.Promise||S.Promise,this._types=new bc(t.types),this._ending=!1,this._connecting=
 !1,this._connected=!1,this._connectionError=!1,this._queryable=!0,this.connection=
-t.connection||new Ec({stream:t.stream,ssl:this.connectionParameters.ssl,keepAlive:t.
+t.connection||new vc({stream:t.stream,ssl:this.connectionParameters.ssl,keepAlive:t.
 keepAlive||!1,keepAliveInitialDelayMillis:t.keepAliveInitialDelayMillis||0,encoding:this.
 connectionParameters.client_encoding||"utf8"}),this.queryQueue=[],this.binary=t.
 binary||xc.binary,this.processID=null,this.secretKey=null,this.ssl=this.connectionParameters.
@@ -1320,7 +1320,7 @@ e&&m.nextTick(()=>{this.activeQuery.handleError(e,this.connection),this.readyFor
 emit("drain"))}query(e,t,n){var i,s,o,u,c;if(e==null)throw new TypeError("Client\
  was passed a null or undefined query");return typeof e.submit=="function"?(o=e.
 query_timeout||this.connectionParameters.query_timeout,s=i=e,typeof t=="function"&&
-(i.callback=i.callback||t)):(o=this.connectionParameters.query_timeout,i=new Ls(
+(i.callback=i.callback||t)):(o=this.connectionParameters.query_timeout,i=new Bs(
 e,t,n),i.callback||(s=new this._Promise((h,l)=>{i.callback=(d,b)=>d?l(d):h(b)}))),
 o&&(c=i.callback,u=setTimeout(()=>{var h=new Error("Query read timeout");m.nextTick(
 ()=>{i.handleError(h,this.connection)}),c(h),i.callback=()=>{};var l=this.queryQueue.
@@ -1335,7 +1335,7 @@ unref()}end(e){if(this._ending=!0,!this.connection._connecting)if(e)e();else ret
 _Promise.resolve();if(this.activeQuery||!this._queryable?this.connection.stream.
 destroy():this.connection.end(),e)this.connection.once("end",e);else return new this.
 _Promise(t=>{this.connection.once("end",t)})}};a(mn,"Client");var Ct=mn;Ct.Query=
-Ls;Rs.exports=Ct});var Us=I((nf,Ds)=>{"use strict";p();var vc=we().EventEmitter,Ms=a(function(){},"\
+Bs;Rs.exports=Ct});var Us=I((nf,Ds)=>{"use strict";p();var Ec=we().EventEmitter,Ms=a(function(){},"\
 NOOP"),ks=a((r,e)=>{let t=r.findIndex(e);return t===-1?void 0:r.splice(t,1)[0]},
 "removeWhere"),bn=class bn{constructor(e,t,n){this.client=e,this.idleListener=t,
 this.timeoutId=n}};a(bn,"IdleItem");var gn=bn,Sn=class Sn{constructor(e){this.callback=
@@ -1346,7 +1346,7 @@ o?t(o):n(u)},"cb"),s=new r(function(o,u){n=o,t=u}).catch(o=>{throw Error.capture
 o),o});return{callback:i,result:s}}a(Tt,"promisify");function Ac(r,e){return a(function t(n){
 n.client=e,e.removeListener("error",t),e.on("error",()=>{r.log("additional clien\
 t error after disconnection due to error",n)}),r._remove(e),r.emit("error",n,e)},
-"idleListener")}a(Ac,"makeIdleListener");var xn=class xn extends vc{constructor(e,t){
+"idleListener")}a(Ac,"makeIdleListener");var xn=class xn extends Ec{constructor(e,t){
 super(),this.options=Object.assign({},e),e!=null&&"password"in e&&Object.defineProperty(
 this.options,"password",{configurable:!0,enumerable:!1,writable:!0,value:e.password}),
 e!=null&&e.ssl&&e.ssl.key&&Object.defineProperty(this.options.ssl,"key",{enumerable:!1}),
@@ -1425,8 +1425,8 @@ pes":"^2.1.0",pgpass:"1.x"},devDependencies:{async:"2.6.4",bluebird:"3.5.2",co:"
 4.6.0","pg-copy-streams":"0.3.0"},peerDependencies:{"pg-native":">=3.0.1"},peerDependenciesMeta:{
 "pg-native":{optional:!0}},scripts:{test:"make test-all"},files:["lib","SPONSORS\
 .md"],license:"MIT",engines:{node:">= 8.0.0"},gitHead:"c99fb2c127ddf8d712500db2c\
-7b9a5491a178655"}});var js=I((cf,Ws)=>{"use strict";p();var Qs=we().EventEmitter,Ic=(Ge(),O(He)),En=tt(),
-Qe=Ws.exports=function(r,e,t){Qs.call(this),r=En.normalizeQueryConfig(r,e,t),this.
+7b9a5491a178655"}});var js=I((cf,Ws)=>{"use strict";p();var Qs=we().EventEmitter,Ic=(Ge(),O(He)),vn=tt(),
+Qe=Ws.exports=function(r,e,t){Qs.call(this),r=vn.normalizeQueryConfig(r,e,t),this.
 text=r.text,this.values=r.values,this.name=r.name,this.callback=r.callback,this.
 state="new",this._arrayMode=r.rowMode==="array",this._emitRowEvents=!1,this.on("\
 newListener",function(n){n==="row"&&(this._emitRowEvents=!0)}.bind(this))};Ic.inherits(
@@ -1448,18 +1448,18 @@ handleError(s);e._emitRowEvents&&(u.length>1?o.forEach((c,h)=>{c.forEach(l=>{e.e
 t)),this.name){this.name.length>63&&(console.error("Warning! Postgres only suppo\
 rts 63 characters for query names."),console.error("You supplied %s (%s)",this.name,
 this.name.length),console.error("This can cause conflicts and silent errors exec\
-uting queries"));var n=(this.values||[]).map(En.prepareValue);if(r.namedQueries[this.
+uting queries"));var n=(this.values||[]).map(vn.prepareValue);if(r.namedQueries[this.
 name]){if(this.text&&r.namedQueries[this.name]!==this.text){let s=new Error(`Pre\
 pared statements must be unique - '${this.name}' was used for a different statem\
 ent`);return t(s)}return r.native.execute(this.name,n,t)}return r.native.prepare(
 this.name,this.text,n.length,function(s){return s?t(s):(r.namedQueries[e.name]=e.
 text,e.native.execute(e.name,n,t))})}else if(this.values){if(!Array.isArray(this.
 values)){let s=new Error("Query values must be an array");return t(s)}var i=this.
-values.map(En.prepareValue);r.native.query(this.text,i,t)}else r.native.query(this.
-text,t)}});var Vs=I((pf,$s)=>{"use strict";p();var Bc=(Ns(),O(Os)),Lc=wt(),ff=qs(),Hs=we().
+values.map(vn.prepareValue);r.native.query(this.text,i,t)}else r.native.query(this.
+text,t)}});var Vs=I((pf,$s)=>{"use strict";p();var Lc=(Ns(),O(Os)),Bc=wt(),ff=qs(),Hs=we().
 EventEmitter,Rc=(Ge(),O(He)),Fc=bt(),Gs=js(),Z=$s.exports=function(r){Hs.call(this),
-r=r||{},this._Promise=r.Promise||S.Promise,this._types=new Lc(r.types),this.native=
-new Bc({types:this._types}),this._queryQueue=[],this._ending=!1,this._connecting=
+r=r||{},this._Promise=r.Promise||S.Promise,this._types=new Bc(r.types),this.native=
+new Lc({types:this._types}),this._queryQueue=[],this._ending=!1,this._connecting=
 !1,this._connected=!1,this._queryable=!0;var e=this.connectionParameters=new Fc(
 r);this.user=e.user,Object.defineProperty(this,"password",{configurable:!0,enumerable:!1,
 writable:!0,value:e.password}),this.database=e.database,this.host=e.host,this.port=
@@ -1501,18 +1501,18 @@ _activeQuery===r?this.native.cancel(function(){}):this._queryQueue.indexOf(r)!==
 -1&&this._queryQueue.splice(this._queryQueue.indexOf(r),1)};Z.prototype.ref=function(){};
 Z.prototype.unref=function(){};Z.prototype.setTypeParser=function(r,e,t){return this.
 _types.setTypeParser(r,e,t)};Z.prototype.getTypeParser=function(r,e){return this.
-_types.getTypeParser(r,e)}});var vn=I((mf,Ks)=>{"use strict";p();Ks.exports=Vs()});var It=I((wf,nt)=>{"use strict";p();var Mc=Fs(),kc=et(),Dc=dn(),Uc=Us(),{DatabaseError:Oc}=ln(),
+_types.getTypeParser(r,e)}});var En=I((mf,Ks)=>{"use strict";p();Ks.exports=Vs()});var It=I((wf,nt)=>{"use strict";p();var Mc=Fs(),kc=et(),Dc=dn(),Uc=Us(),{DatabaseError:Oc}=ln(),
 Nc=a(r=>{var e;return e=class extends Uc{constructor(n){super(n,r)}},a(e,"BoundP\
 ool"),e},"poolFactory"),_n=a(function(r){this.defaults=kc,this.Client=r,this.Query=
 this.Client.Query,this.Pool=Nc(this.Client),this._pools=[],this.Connection=Dc,this.
 types=Xe(),this.DatabaseError=Oc},"PG");typeof m.env.NODE_PG_FORCE_NATIVE<"u"?nt.
-exports=new _n(vn()):(nt.exports=new _n(Mc),Object.defineProperty(nt.exports,"na\
-tive",{configurable:!0,enumerable:!1,get(){var r=null;try{r=new _n(vn())}catch(e){
+exports=new _n(En()):(nt.exports=new _n(Mc),Object.defineProperty(nt.exports,"na\
+tive",{configurable:!0,enumerable:!1,get(){var r=null;try{r=new _n(En())}catch(e){
 if(e.code!=="MODULE_NOT_FOUND")throw e}return Object.defineProperty(nt.exports,"\
-native",{value:r}),r}}))});var Gc={};re(Gc,{Client:()=>Bt,ClientBase:()=>oe.ClientBase,Connection:()=>oe.Connection,
+native",{value:r}),r}}))});var Gc={};re(Gc,{Client:()=>Lt,ClientBase:()=>oe.ClientBase,Connection:()=>oe.Connection,
 DatabaseError:()=>oe.DatabaseError,NeonDbError:()=>he,Pool:()=>Cn,Query:()=>oe.Query,
 defaults:()=>oe.defaults,neon:()=>An,neonConfig:()=>Se,types:()=>oe.types});module.
-exports=O(Gc);p();var Lt=Ie(It());St();p();St();gr();var Zs=Ie(tt()),Js=Ie(wt());function qc(r){return r instanceof y?"\\x"+r.toString("hex"):r}a(qc,"encodeBuffe\
+exports=O(Gc);p();var Bt=Ie(It());St();p();St();gr();var Zs=Ie(tt()),Js=Ie(wt());function qc(r){return r instanceof y?"\\x"+r.toString("hex"):r}a(qc,"encodeBuffe\
 rsAsBytea");var Pt=class Pt extends Error{constructor(t){super(t);_(this,"name",
 "NeonDbError");_(this,"severity");_(this,"code");_(this,"detail");_(this,"hint");
 _(this,"position");_(this,"internalPosition");_(this,"internalQuery");_(this,"wh\
@@ -1528,7 +1528,7 @@ queryCallback:u,resultCallback:c,authToken:h}={}){if(!r)throw new Error("No data
 base connection string was provided to `neon()`. Perhaps an environment variable\
  has not been set?");let l;try{l=mr(r)}catch{throw new Error("Database connectio\
 n string provided to `neon()` is not a valid URL. Connection string: "+String(r))}
-let{protocol:d,username:b,hostname:C,port:B,pathname:Q}=l;if(d!=="postgres:"&&d!==
+let{protocol:d,username:b,hostname:C,port:L,pathname:Q}=l;if(d!=="postgres:"&&d!==
 "postgresql:"||!b||!C||!Q)throw new Error("Database connection string format for\
  `neon()` should be: postgresql://user:password@host.tld/dbname?option=value");function J(A,...g){
 let P,K;if(typeof A=="string")P=A,K=g[1],g=g[0]??[];else{P="";for(let W=0;W<A.length;W++)
@@ -1542,21 +1542,21 @@ ae=e??!1,R=t??!1,$=i,le=s,me=o;P!==void 0&&(P.fetchOptions!==void 0&&(X={...X,..
 fetchOptions}),P.arrayMode!==void 0&&(ae=P.arrayMode),P.fullResults!==void 0&&(R=
 P.fullResults),P.isolationLevel!==void 0&&($=P.isolationLevel),P.readOnly!==void 0&&
 (le=P.readOnly),P.deferrable!==void 0&&(me=P.deferrable)),g!==void 0&&!Array.isArray(
-g)&&g.fetchOptions!==void 0&&(X={...X,...g.fetchOptions});let Ee=h;!Array.isArray(
-g)&&g?.authToken!==void 0&&(Ee=g.authToken);let We=typeof K=="function"?K(C,B,{jwtAuth:Ee!==
+g)&&g.fetchOptions!==void 0&&(X={...X,...g.fetchOptions});let ve=h;!Array.isArray(
+g)&&g?.authToken!==void 0&&(ve=g.authToken);let We=typeof K=="function"?K(C,L,{jwtAuth:ve!==
 void 0}):K,fe={"Neon-Connection-String":r,"Neon-Raw-Text-Output":"true","Neon-Ar\
-ray-Mode":"true"},it=await jc(Ee);it&&(fe.Authorization=`Bearer ${it}`),Array.isArray(
+ray-Mode":"true"},it=await jc(ve);it&&(fe.Authorization=`Bearer ${it}`),Array.isArray(
 A)&&($!==void 0&&(fe["Neon-Batch-Isolation-Level"]=$),le!==void 0&&(fe["Neon-Bat\
 ch-Read-Only"]=String(le)),me!==void 0&&(fe["Neon-Batch-Deferrable"]=String(me)));
 let ee;try{ee=await(D??fetch)(We,{method:"POST",body:JSON.stringify(W),headers:fe,
 ...X})}catch(j){let H=new he(`Error connecting to database: ${j}`);throw H.sourceError=
 j,H}if(ee.ok){let j=await ee.json();if(Array.isArray(A)){let H=j.results;if(!Array.
 isArray(H))throw new he("Neon internal error: unexpected result format");return H.
-map((Ce,ve)=>{let Rt=g[ve]??{},eo=Rt.arrayMode??ae,to=Rt.fullResults??R;return Ys(
-Ce,{arrayMode:eo,fullResults:to,parameterizedQuery:A[ve],resultCallback:c,types:Rt.
-types})})}else{let H=g??{},Ce=H.arrayMode??ae,ve=H.fullResults??R;return Ys(j,{arrayMode:Ce,
-fullResults:ve,parameterizedQuery:A,resultCallback:c,types:H.types})}}else{let{status:j}=ee;
-if(j===400){let H=await ee.json(),Ce=new he(H.message);for(let ve of Qc)Ce[ve]=H[ve]??
+map((Ce,Ee)=>{let Rt=g[Ee]??{},eo=Rt.arrayMode??ae,to=Rt.fullResults??R;return Ys(
+Ce,{arrayMode:eo,fullResults:to,parameterizedQuery:A[Ee],resultCallback:c,types:Rt.
+types})})}else{let H=g??{},Ce=H.arrayMode??ae,Ee=H.fullResults??R;return Ys(j,{arrayMode:Ce,
+fullResults:Ee,parameterizedQuery:A,resultCallback:c,types:H.types})}}else{let{status:j}=ee;
+if(j===400){let H=await ee.json(),Ce=new he(H.message);for(let Ee of Qc)Ce[Ee]=H[Ee]??
 void 0;throw Ce}else{let H=await ee.text();throw new he(`Server error (HTTP stat\
 us ${j}): ${H}`)}}}return a(ye,"execute"),J}a(An,"neon");function Wc(r,e,t){return{
 [Symbol.toStringTag]:"NeonQueryPromise",parameterizedQuery:e,opts:t,then:a((n,i)=>r(
@@ -1570,7 +1570,7 @@ t?(r.viaNeonFetch=!0,r.rowAsArray=e,r.rows=h,r._parsers=c,r._types=o,r):h}a(Ys,"
 processQueryResult");async function jc(r){if(typeof r=="string")return r;if(typeof r==
 "function")try{return await Promise.resolve(r())}catch(e){let t=new he("Error ge\
 tting auth token.");throw e instanceof Error&&(t=new he(`Error getting auth toke\
-n: ${e.message}`)),t}}a(jc,"getAuthToken");var Xs=Ie(bt()),oe=Ie(It());var Tn=class Tn extends Lt.Client{constructor(t){super(t);this.config=t}get neonConfig(){
+n: ${e.message}`)),t}}a(jc,"getAuthToken");var Xs=Ie(bt()),oe=Ie(It());var Tn=class Tn extends Bt.Client{constructor(t){super(t);this.config=t}get neonConfig(){
 return this.connection.stream}connect(t){let{neonConfig:n}=this;n.forceDisablePgSSL&&
 (this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&console.warn("\
 SSL is enabled for both Postgres (e.g. ?sslmode=require in the connection string\
@@ -1602,25 +1602,25 @@ ESSAGE: missing/invalid iteration count");if(!u.startsWith(n.clientNonce))throw 
 "SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce does not start with client nonce");
 if(u.length===n.clientNonce.length)throw new Error("SASL: SCRAM-SERVER-FIRST-MES\
 SAGE: server nonce is too short");let l=parseInt(h,10),d=y.from(c,"base64"),b=new TextEncoder,
-C=b.encode(i),B=await w.subtle.importKey("raw",C,{name:"HMAC",hash:{name:"SHA-25\
-6"}},!1,["sign"]),Q=new Uint8Array(await w.subtle.sign("HMAC",B,y.concat([d,y.from(
+C=b.encode(i),L=await w.subtle.importKey("raw",C,{name:"HMAC",hash:{name:"SHA-25\
+6"}},!1,["sign"]),Q=new Uint8Array(await w.subtle.sign("HMAC",L,y.concat([d,y.from(
 [0,0,0,1])]))),J=Q;for(var ye=0;ye<l-1;ye++)Q=new Uint8Array(await w.subtle.sign(
-"HMAC",B,Q)),J=y.from(J.map((ee,j)=>J[j]^Q[j]));let A=J,g=await w.subtle.importKey(
+"HMAC",L,Q)),J=y.from(J.map((ee,j)=>J[j]^Q[j]));let A=J,g=await w.subtle.importKey(
 "raw",A,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),P=new Uint8Array(await w.
 subtle.sign("HMAC",g,b.encode("Client Key"))),K=await w.subtle.digest("SHA-256",
 P),D="n=*,r="+n.clientNonce,W="r="+u+",s="+c+",i="+l,X="c=biws,r="+u,ae=D+","+W+
 ","+X,R=await w.subtle.importKey("raw",K,{name:"HMAC",hash:{name:"SHA-256"}},!1,
 ["sign"]);var $=new Uint8Array(await w.subtle.sign("HMAC",R,b.encode(ae))),le=y.
-from(P.map((ee,j)=>P[j]^$[j])),me=le.toString("base64");let Ee=await w.subtle.importKey(
+from(P.map((ee,j)=>P[j]^$[j])),me=le.toString("base64");let ve=await w.subtle.importKey(
 "raw",A,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),We=await w.subtle.sign(
-"HMAC",Ee,b.encode("Server Key")),fe=await w.subtle.importKey("raw",We,{name:"HM\
+"HMAC",ve,b.encode("Server Key")),fe=await w.subtle.importKey("raw",We,{name:"HM\
 AC",hash:{name:"SHA-256"}},!1,["sign"]);var it=y.from(await w.subtle.sign("HMAC",
 fe,b.encode(ae)));n.message="SASLResponse",n.serverSignature=it.toString("base64"),
 n.response=X+",p="+me,this.connection.sendSCRAMClientFinalMessage(this.saslSession.
-response)}};a(Tn,"NeonClient");var Bt=Tn;function Hc(r,e){if(e)return{callback:e,
+response)}};a(Tn,"NeonClient");var Lt=Tn;function Hc(r,e){if(e)return{callback:e,
 result:void 0};let t,n,i=a(function(o,u){o?t(o):n(u)},"cb"),s=new r(function(o,u){
-n=o,t=u});return{callback:i,result:s}}a(Hc,"promisify");var In=class In extends Lt.Pool{constructor(){
-super(...arguments);_(this,"Client",Bt);_(this,"hasFetchUnsupportedListeners",!1)}on(t,n){
+n=o,t=u});return{callback:i,result:s}}a(Hc,"promisify");var In=class In extends Bt.Pool{constructor(){
+super(...arguments);_(this,"Client",Lt);_(this,"hasFetchUnsupportedListeners",!1)}on(t,n){
 return t!=="error"&&(this.hasFetchUnsupportedListeners=!0),super.on(t,n)}query(t,n,i){
 if(!Se.poolQueryViaFetch||this.hasFetchUnsupportedListeners||typeof t=="function")
 return super.query(t,n,i);typeof n=="function"&&(i=n,n=void 0);let s=Hc(this.Promise,

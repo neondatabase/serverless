@@ -11,14 +11,24 @@ import type * as subtls from 'subtls';
 
 declare global {
   const debug: boolean; // e.g. --define:debug=false in esbuild command
-  interface WebSocket {
-    binaryType: 'arraybuffer' | 'blob'; // oddly not included in Cloudflare types
-    accept?: () => void; // available in Cloudflare
-  }
-  interface Response {
-    webSocket: WebSocket;
-  }
-  class __unstable_WebSocket extends WebSocket {}
+}
+
+interface WebSocketLike {
+  // we define our own WebSocket type because different implementations have
+  // different signatures and we want to be compatible with any of them
+  readonly readyState: number;
+  binaryType: string;
+  close(code?: number, reason?: string): void;
+  send(data: any): void;
+  addEventListener(
+    type: 'open' | 'message' | 'close' | 'error',
+    listener: (this: WebSocketLike, ev: any) => any,
+    options?: any,
+  ): void;
+}
+
+interface WebSocketConstructor {
+  new (...args: any[]): WebSocketLike;
 }
 
 enum TlsState {
@@ -73,7 +83,7 @@ export interface SocketDefaults {
   fetchConnectionCache: boolean;
   fetchFunction: any;
   // these options relate to the WebSocket transport
-  webSocketConstructor: typeof WebSocket | undefined;
+  webSocketConstructor: WebSocketConstructor | undefined;
   wsProxy: string | ((host: string, port: number | string) => string);
   useSecureWebSocket: boolean;
   forceDisablePgSSL: boolean;
@@ -316,7 +326,7 @@ export class Socket extends EventEmitter {
   authorized = false;
   destroyed = false;
 
-  private ws: WebSocket | null = null;
+  private ws: WebSocketLike | null = null;
   private writeBuffer: Uint8Array | undefined; // used only if coalesceWrites === true
   private tlsState = TlsState.None;
   private tlsRead: undefined | (() => Promise<Uint8Array | undefined>);
@@ -351,7 +361,7 @@ export class Socket extends EventEmitter {
       this.emit('ready');
     };
 
-    const configureWebSocket = (ws: WebSocket, immediateOpen = false) => {
+    const configureWebSocket = (ws: WebSocketLike, immediateOpen = false) => {
       ws.binaryType = 'arraybuffer';
 
       ws.addEventListener('error', (err) => {
@@ -402,11 +412,12 @@ export class Socket extends EventEmitter {
       } else {
         try {
           // second, try a common-or-garden WebSocket, e.g. in a web browser
-          this.ws = new WebSocket(wsAddrFull);
-          configureWebSocket(this.ws);
+          this.ws = new WebSocket(wsAddrFull) as any;
+          configureWebSocket(this.ws!);
         } catch (err) {
           debug && log('new WebSocket() failed');
 
+          // @ts-expect-error -- unknown Vercel-specific object
           this.ws = new __unstable_WebSocket(wsAddrFull);
           configureWebSocket(this.ws!);
         }
@@ -420,10 +431,11 @@ export class Socket extends EventEmitter {
 
       fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } })
         .then((resp) => {
-          // @ts-ignore webSocket is defined in the Cloudflare types, but there are conflicts
+          // @ts-ignore unknown Cloudflare-specific property
           this.ws = resp.webSocket;
           if (this.ws == null) throw err; // deliberate loose equality
 
+          // @ts-expect-error node types don't include this method on Cloudflare
           this.ws.accept!(); // if we're here, then there's an accept method
           configureWebSocket(this.ws, true);
           debug && log('Cloudflare WebSocket opened');
@@ -451,7 +463,7 @@ export class Socket extends EventEmitter {
     this.tlsState = TlsState.Handshake;
 
     const rootCerts = this.subtls.TrustedCert.databaseFromPEM(this.rootCerts);
-    const readQueue = new this.subtls.WebSocketReadQueue(this.ws!);
+    const readQueue = new this.subtls.WebSocketReadQueue(this.ws! as any);
     const networkRead = readQueue.read.bind(readQueue);
     const networkWrite = this.rawWrite.bind(this);
 

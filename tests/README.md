@@ -17,3 +17,7 @@ AWS Lambda
 Chrome
 Safari?
 Firefox?
+
+Prisma
+Drizzle
+...

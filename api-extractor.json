@@ -2,9 +2,7 @@
   "mainEntryPointFilePath": "dist/dts/export/index.d.ts",
   "newlineKind": "lf",
   "enumMemberOrder": "preserve",
-  "bundledPackages": [
-    "subtls"
-  ],
+  "bundledPackages": ["subtls"],
   "dtsRollup": {
     "enabled": true,
     "untrimmedFilePath": "dist/dts/_extracted.d.ts"

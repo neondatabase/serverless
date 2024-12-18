@@ -7,6 +7,16 @@
  */
 import { EventEmitter } from 'events';
 import type * as subtls from 'subtls';
+interface WebSocketLike {
+    readonly readyState: number;
+    binaryType: string;
+    close(code?: number, reason?: string): void;
+    send(data: any): void;
+    addEventListener(type: 'open' | 'message' | 'close' | 'error', listener: (this: WebSocketLike, ev: any) => any, options?: any): void;
+}
+interface WebSocketConstructor {
+    new (...args: any[]): WebSocketLike;
+}
 export declare function isIP(input: string): number;
 interface FetchEndpointOptions {
     jwtAuth?: boolean;
@@ -16,7 +26,7 @@ export interface SocketDefaults {
     fetchEndpoint: string | ((host: string, port: number | string, options?: FetchEndpointOptions) => string);
     fetchConnectionCache: boolean;
     fetchFunction: any;
-    webSocketConstructor: typeof WebSocket | undefined;
+    webSocketConstructor: WebSocketConstructor | undefined;
     wsProxy: string | ((host: string, port: number | string) => string);
     useSecureWebSocket: boolean;
     forceDisablePgSSL: boolean;
