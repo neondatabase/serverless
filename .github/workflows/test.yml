@@ -6,19 +6,46 @@ on:
       - main
 
 jobs:
-  test:
+  test-node-20:
     runs-on: ubuntu-latest
     steps:
       # setup
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Install package dependencies
-        run: bun install
+        run: npm install
 
       # goal
-      - name: Run tests
+      - name: Run tests in Node 20 (no native WebSocket), node environment
         env:
           VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
           VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
-        run: bun run test
+        run: npm run testNode
+
+  test-node-lts:
+    runs-on: ubuntu-latest
+    steps:
+      # setup
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts
+
+      - name: Install package dependencies
+        run: npm install
+
+      # goal
+      - name: Run tests in Node LTS, node environment
+        env:
+          VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
+          VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
+        run: npm run testNode
+
+      - name: Run tests in Node LTS, edge-runtime environment
+        env:
+          VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
+          VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
+        run: npm run testEdge

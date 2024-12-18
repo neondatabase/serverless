@@ -46,9 +46,11 @@
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "test": "./export.sh && vitest run --no-file-parallelism"
+    "testNode": "./export.sh && vitest run --environment=node --no-file-parallelism",
+    "testEdge": "./export.sh && vitest run --environment=edge-runtime --no-file-parallelism"
   },
   "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
     "@microsoft/api-extractor": "^7.48.1",
     "@types/events": "^3.0.0",
     "@types/pg": "^8.6.5",
