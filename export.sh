@@ -35,16 +35,34 @@ npx esbuild export/index.ts \
 
 # == types ==
 
+# note: we run sed with -i.orig and then rm because this is Mac/BSD and GNU compatible
+
 npx tsc
 
-# remove global declarations from types
-sed -i.orig -r '/^declare global [{]$/,/^[}]$/d' dist/dts/shims/net/index.d.ts
+# remove global declarations from types and replace subtls types with local ones
+cp node_modules/subtls/index.d.ts dist/dts/subtls.d.ts
+
+sed -i.orig -r \
+  -e "/^declare global [{]$/,/^[}]$/d" \
+  -e "s| from 'subtls';| from '../../subtls.d.ts';|g" \
+  dist/dts/shims/net/index.d.ts
+
+rm dist/dts/shims/net/index.d.ts.orig
 
 # bundle types into one file
-echo "Note: warnings are expected from api-extractor"
+echo
+echo "Note: warnings are expected from api-extractor:"
 npx @microsoft/api-extractor run --local
 
-# copy .d.dt (for CJS) to .m.ts (for ESM)
+# remove appendage
+sed -i.orig -r \
+  -e '/^export [{] *[}]$/d' \
+  dist/npm/index.d.ts
+
+rm dist/npm/index.d.ts.orig
+
+# copy to .d.ts (for CJS) and .d.mts (for ESM)
+(echo '/// <reference types="node" />'; echo; cat dist/dts/_extracted.d.ts) > dist/npm/index.d.ts
 cp dist/npm/index.d.ts dist/npm/index.d.mts
 
 

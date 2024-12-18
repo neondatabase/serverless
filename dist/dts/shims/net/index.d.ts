@@ -6,7 +6,7 @@
  * (node-postgres).
  */
 import { EventEmitter } from 'events';
-import type * as subtls from 'subtls';
+import type * as subtls from '../../subtls.d.ts';
 export declare function isIP(input: string): number;
 interface FetchEndpointOptions {
     jwtAuth?: boolean;

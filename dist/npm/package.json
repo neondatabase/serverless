@@ -29,9 +29,8 @@
     "WebSocket",
     "https"
   ],
-  "devDependencies": {
-    "@types/pg": "^22.10.2",
-    "subtls": "^0.3.3",
-    "events": "^3.3.0"
+  "dependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.8.0"
   }
 }

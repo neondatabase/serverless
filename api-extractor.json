@@ -4,7 +4,7 @@
   "enumMemberOrder": "preserve",
   "dtsRollup": {
     "enabled": true,
-    "untrimmedFilePath": "dist/npm/index.d.ts"
+    "untrimmedFilePath": "dist/dts/_extracted.d.ts"
   },
   "apiReport": {
     "enabled": false
