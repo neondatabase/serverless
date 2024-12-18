@@ -417,7 +417,7 @@ export class Socket extends EventEmitter {
         } catch (err) {
           debug && log('new WebSocket() failed');
 
-          // @ts-expect-error -- unknown Vercel-specific object
+          // @ts-ignore -- unknown Vercel-specific object
           this.ws = new __unstable_WebSocket(wsAddrFull);
           configureWebSocket(this.ws!);
         }
@@ -431,12 +431,12 @@ export class Socket extends EventEmitter {
 
       fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } })
         .then((resp) => {
-          // @ts-ignore unknown Cloudflare-specific property
+          // @ts-ignore -- unknown Cloudflare-specific property
           this.ws = resp.webSocket;
           if (this.ws == null) throw err; // deliberate loose equality
 
-          // @ts-expect-error node types don't include this method on Cloudflare
-          this.ws.accept!(); // if we're here, then there's an accept method
+          // @ts-ignore -- unknown Cloudflare-specific method
+          this.ws.accept!();
           configureWebSocket(this.ws, true);
           debug && log('Cloudflare WebSocket opened');
         })

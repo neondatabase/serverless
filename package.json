@@ -31,7 +31,7 @@
     "pg-connection-string": "2.5.0"
   },
   "scripts": {
-    "check": "tsc --noEmit export/index.ts",
+    "check": "tsc --noEmit",
     "build": "./build.sh",
     "buildDebug": "./build.sh debug",
     "watch": "./build.sh watch",
