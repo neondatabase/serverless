@@ -58,7 +58,7 @@
     "dotenv": "^16.0.3",
     "esbuild": "^0.24.0",
     "fast-equals": "^5.0.1",
-    "subtls": "^0.4.0",
+    "subtls": "^0.4.4",
     "typescript": "^5.0.4",
     "vitest": "^2.1.6",
     "wrangler": "^3.0.1"

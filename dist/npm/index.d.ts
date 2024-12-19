@@ -1,5 +1,7 @@
 /// <reference types="node" />
 
+/// <reference types="node" />
+
 import { Client as Client_2 } from 'pg';
 import { ClientBase } from 'pg';
 import { Connection } from 'pg';
@@ -514,7 +516,20 @@ declare namespace subtls {
         hexFromU8,
         stableStringify,
         startTls,
+        stdCharCodes,
         u8FromHex,
+        allKeyUsages,
+        ASN1Bytes,
+        Bytes,
+        Cert,
+        CertJSON,
+        DataRequest,
+        DistinguishedName,
+        OID,
+        ReadQueue,
+        RootCertsData,
+        RootCertsDatabase,
+        RootCertsIndex,
         SocketReadQueue,
         TrustedCert,
         WebSocketReadQueue

@@ -6,6 +6,9 @@ import type { NeonConfigGlobalAndClient } from './neonConfig';
 // @ts-ignore -- this isn't officially exported by pg
 import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
 
+// try to avoid the attentions of over-zealous bundlers
+const cryptoLib = `node${String.fromCharCode(58)}crypto`;
+
 interface ConnectionParameters {
   user: string;
   password: string;
@@ -132,6 +135,12 @@ class NeonClient extends Client {
   }
 
   async _handleAuthSASLContinue(msg: any) {
+    const cs =
+      // note: we shim these with empty objects so we need further checks
+      typeof crypto !== 'undefined' && crypto.subtle !== undefined && crypto.subtle.importKey !== undefined
+        ? crypto.subtle
+        : (await import(cryptoLib)).webcrypto.subtle;
+
     const session = this.saslSession;
     const password = this.password;
     const serverData = msg.data;
@@ -187,7 +196,7 @@ class NeonClient extends Client {
     const saltBytes = Buffer.from(salt, 'base64');
     const enc = new TextEncoder();
     const passwordBytes = enc.encode(password);
-    const iterHmacKey = await crypto.subtle.importKey(
+    const iterHmacKey = await cs.importKey(
       'raw',
       passwordBytes,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
@@ -195,7 +204,7 @@ class NeonClient extends Client {
       ['sign'],
     );
     let ui1 = new Uint8Array(
-      await crypto.subtle.sign(
+      await cs.sign(
         'HMAC',
         iterHmacKey,
         Buffer.concat([saltBytes, Buffer.from([0, 0, 0, 1])]),
@@ -203,12 +212,12 @@ class NeonClient extends Client {
     );
     let ui = ui1;
     for (var i = 0; i < iterations - 1; i++) {
-      ui1 = new Uint8Array(await crypto.subtle.sign('HMAC', iterHmacKey, ui1));
+      ui1 = new Uint8Array(await cs.sign('HMAC', iterHmacKey, ui1));
       ui = Buffer.from(ui.map((_, i) => ui[i] ^ ui1[i]));
     }
     const saltedPassword = ui;
 
-    const ckHmacKey = await crypto.subtle.importKey(
+    const ckHmacKey = await cs.importKey(
       'raw',
       saltedPassword,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
@@ -216,9 +225,9 @@ class NeonClient extends Client {
       ['sign'],
     );
     const clientKey = new Uint8Array(
-      await crypto.subtle.sign('HMAC', ckHmacKey, enc.encode('Client Key')),
+      await cs.sign('HMAC', ckHmacKey, enc.encode('Client Key')),
     );
-    const storedKey = await crypto.subtle.digest('SHA-256', clientKey);
+    const storedKey = await cs.digest('SHA-256', clientKey);
 
     const clientFirstMessageBare = 'n=*,r=' + session.clientNonce;
     const serverFirstMessage = 'r=' + nonce + ',s=' + salt + ',i=' + iterations;
@@ -230,7 +239,7 @@ class NeonClient extends Client {
       ',' +
       clientFinalMessageWithoutProof;
 
-    const csHmacKey = await crypto.subtle.importKey(
+    const csHmacKey = await cs.importKey(
       'raw',
       storedKey,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
@@ -238,26 +247,26 @@ class NeonClient extends Client {
       ['sign'],
     );
     var clientSignature = new Uint8Array(
-      await crypto.subtle.sign('HMAC', csHmacKey, enc.encode(authMessage)),
+      await cs.sign('HMAC', csHmacKey, enc.encode(authMessage)),
     );
     var clientProofBytes = Buffer.from(
       clientKey.map((_, i) => clientKey[i] ^ clientSignature[i]),
     );
     var clientProof = clientProofBytes.toString('base64');
 
-    const skHmacKey = await crypto.subtle.importKey(
+    const skHmacKey = await cs.importKey(
       'raw',
       saltedPassword,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
       false,
       ['sign'],
     );
-    const serverKey = await crypto.subtle.sign(
+    const serverKey = await cs.sign(
       'HMAC',
       skHmacKey,
       enc.encode('Server Key'),
     );
-    const ssbHmacKey = await crypto.subtle.importKey(
+    const ssbHmacKey = await cs.importKey(
       'raw',
       serverKey,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
@@ -265,7 +274,7 @@ class NeonClient extends Client {
       ['sign'],
     );
     var serverSignatureBytes = Buffer.from(
-      await crypto.subtle.sign('HMAC', ssbHmacKey, enc.encode(authMessage)),
+      await cs.sign('HMAC', ssbHmacKey, enc.encode(authMessage)),
     );
 
     session.message = 'SASLResponse';

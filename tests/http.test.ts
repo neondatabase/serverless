@@ -89,28 +89,31 @@ test('http queries with too few or too many parameters', async () => {
 });
 
 test('timeout aborting an http query', { timeout: 5000 }, async () => {
-  const abortController = new AbortController();
-  const { signal } = abortController;
-  setTimeout(() => abortController.abort('fetch timed out'), 250);
+  // note: in Node pre-17.3, you'd do this instead:
+
+  // const abortController = new AbortController();
+  // setTimeout(() => abortController.abort(new Error('fetch timed out')), 250);
+  // const { signal } = abortController;
+
+  const signal = AbortSignal.timeout(250);
 
   await expect(
     sql('SELECT pg_sleep(2)', [], { fetchOptions: { signal } }),
-  ).rejects.toThrow('fetch timed out');
+  ).rejects.toThrow('TimeoutError');
 });
 
 test('timeout not aborting an http query', { timeout: 5000 }, async () => {
-  const abortController = new AbortController();
-  const { signal } = abortController;
-  const timeout = setTimeout(
-    () => abortController.abort('fetch timed out'),
-    2000,
-  );
+  // note: in Node pre-17.3, you'd do this instead:
+
+  // const abortController = new AbortController();
+  // const timeout = setTimeout(() => abortController.abort(new Error('fetch timed out')), 2500);
+  // const { signal } = abortController;
+  
+  const signal = AbortSignal.timeout(2500);
 
   await expect(
-    sql('SELECT pg_sleep(.5)', [], { fetchOptions: { signal } }),
+    sql('SELECT pg_sleep(.25)', [], { fetchOptions: { signal } }),
   ).resolves.toStrictEqual([{ pg_sleep: '' }]);
-
-  clearTimeout(timeout);
 });
 
 test('database URL with wrong user to `neon()`', async () => {
