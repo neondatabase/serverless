@@ -9,7 +9,10 @@ export function randomBytes(length: number) {
   // (1) old Node, no crypto object
   // (2) newer Node, crypto object
   // (3) browsers, crypto object of type WebCrypto
-  if (typeof crypto !== 'undefined' && (crypto as any).randomBytes !== undefined) {
+  if (
+    typeof crypto !== 'undefined' &&
+    (crypto as any).randomBytes !== undefined
+  ) {
     const webcrypto = (crypto as any).webcrypto ?? crypto;
     return webcrypto.getRandomValues(Buffer.alloc(length));
   } else {

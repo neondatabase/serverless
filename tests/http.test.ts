@@ -108,7 +108,7 @@ test('timeout not aborting an http query', { timeout: 5000 }, async () => {
   // const abortController = new AbortController();
   // const timeout = setTimeout(() => abortController.abort(new Error('fetch timed out')), 2500);
   // const { signal } = abortController;
-  
+
   const signal = AbortSignal.timeout(2500);
 
   await expect(

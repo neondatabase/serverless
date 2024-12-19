@@ -137,7 +137,9 @@ class NeonClient extends Client {
   async _handleAuthSASLContinue(msg: any) {
     const cs =
       // note: we shim these with empty objects so we need further checks
-      typeof crypto !== 'undefined' && crypto.subtle !== undefined && crypto.subtle.importKey !== undefined
+      typeof crypto !== 'undefined' &&
+      crypto.subtle !== undefined &&
+      crypto.subtle.importKey !== undefined
         ? crypto.subtle
         : (await import(cryptoLib)).webcrypto.subtle;
 
