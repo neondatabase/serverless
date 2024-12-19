@@ -11,10 +11,24 @@ import type * as subtls from 'subtls';
 
 declare global {
   const debug: boolean; // e.g. --define:debug=false in esbuild command
-  interface WebSocket {
-    binaryType: 'arraybuffer' | 'blob'; // oddly not included in Cloudflare types
-    accept: () => void;
-  }
+}
+
+interface WebSocketLike {
+  // we define our own WebSocket type because different implementations have
+  // different signatures and we want to be compatible with any of them
+  readonly readyState: number;
+  binaryType: string;
+  close(code?: number, reason?: string): void;
+  send(data: any): void;
+  addEventListener(
+    type: 'open' | 'message' | 'close' | 'error',
+    listener: (this: WebSocketLike, ev: any) => any,
+    options?: any,
+  ): void;
+}
+
+interface WebSocketConstructor {
+  new (...args: any[]): WebSocketLike;
 }
 
 enum TlsState {
@@ -69,7 +83,7 @@ export interface SocketDefaults {
   fetchConnectionCache: boolean;
   fetchFunction: any;
   // these options relate to the WebSocket transport
-  webSocketConstructor: typeof WebSocket | undefined;
+  webSocketConstructor: WebSocketConstructor | undefined;
   wsProxy: string | ((host: string, port: number | string) => string);
   useSecureWebSocket: boolean;
   forceDisablePgSSL: boolean;
@@ -312,7 +326,7 @@ export class Socket extends EventEmitter {
   authorized = false;
   destroyed = false;
 
-  private ws: WebSocket | null = null;
+  private ws: WebSocketLike | null = null;
   private writeBuffer: Uint8Array | undefined; // used only if coalesceWrites === true
   private tlsState = TlsState.None;
   private tlsRead: undefined | (() => Promise<Uint8Array | undefined>);
@@ -347,7 +361,7 @@ export class Socket extends EventEmitter {
       this.emit('ready');
     };
 
-    const configureWebSocket = (ws: WebSocket, immediateOpen = false) => {
+    const configureWebSocket = (ws: WebSocketLike, immediateOpen = false) => {
       ws.binaryType = 'arraybuffer';
 
       ws.addEventListener('error', (err) => {
@@ -398,12 +412,12 @@ export class Socket extends EventEmitter {
       } else {
         try {
           // second, try a common-or-garden WebSocket, e.g. in a web browser
-          this.ws = new WebSocket(wsAddrFull);
-          configureWebSocket(this.ws);
+          this.ws = new WebSocket(wsAddrFull) as any;
+          configureWebSocket(this.ws!);
         } catch (err) {
           debug && log('new WebSocket() failed');
 
-          // @ts-ignore -- third, how about a Vercel Edge Functions __unstable_WebSocket (as at early 2023)?Í
+          // @ts-ignore -- unknown Vercel-specific object
           this.ws = new __unstable_WebSocket(wsAddrFull);
           configureWebSocket(this.ws!);
         }
@@ -417,11 +431,12 @@ export class Socket extends EventEmitter {
 
       fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } })
         .then((resp) => {
-          // @ts-ignore webSocket is defined in the Cloudflare types, but there are conflicts
+          // @ts-ignore -- unknown Cloudflare-specific property
           this.ws = resp.webSocket;
           if (this.ws == null) throw err; // deliberate loose equality
 
-          this.ws.accept();
+          // @ts-ignore -- unknown Cloudflare-specific method
+          this.ws.accept!();
           configureWebSocket(this.ws, true);
           debug && log('Cloudflare WebSocket opened');
         })
@@ -430,7 +445,7 @@ export class Socket extends EventEmitter {
           this.emit(
             'error',
             new Error(
-              `All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err.message}`,
+              `All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err}`,
             ),
           );
           this.emit('close');
@@ -447,8 +462,8 @@ export class Socket extends EventEmitter {
 
     this.tlsState = TlsState.Handshake;
 
-    const rootCerts = this.subtls.TrustedCert.fromPEM(this.rootCerts);
-    const readQueue = new this.subtls.WebSocketReadQueue(this.ws!);
+    const rootCerts = this.subtls.TrustedCert.databaseFromPEM(this.rootCerts);
+    const readQueue = new this.subtls.WebSocketReadQueue(this.ws! as any);
     const networkRead = readQueue.read.bind(readQueue);
     const networkWrite = this.rawWrite.bind(this);
 

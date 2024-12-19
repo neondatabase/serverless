@@ -24,8 +24,6 @@ import {
 } from './util';
 import { queries } from './queries';
 
-import type { ExecutionContext } from '@cloudflare/workers-types';
-
 export { neonConfig } from '../export';
 
 export interface Env {
@@ -38,7 +36,7 @@ export interface Env {
 export async function cf(
   request: Request,
   env: Env,
-  ctx: ExecutionContext,
+  ctx: any,
 ): Promise<Response> {
   let results: any[] = [];
 

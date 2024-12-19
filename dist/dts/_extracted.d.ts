@@ -1,5 +1,3 @@
-/// <reference types="node" />
-
 import { Client as Client_2 } from 'pg';
 import { ClientBase } from 'pg';
 import { Connection } from 'pg';

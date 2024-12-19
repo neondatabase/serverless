@@ -215,7 +215,14 @@ export function neon(
   }
 
   resolve.transaction = async (
-    queries: NeonQueryPromise[] | ((sql: typeof resolve) => NeonQueryPromise[]),
+    queries:
+      | NeonQueryPromise[]
+      | ((
+          sql: (
+            strings: TemplateStringsArray | string,
+            ...params: any[]
+          ) => NeonQueryPromise,
+        ) => NeonQueryPromise[]),
     txnOpts?: HTTPTransactionOptions,
   ) => {
     if (typeof queries === 'function') queries = queries(resolve);
@@ -333,7 +340,7 @@ export function neon(
       });
     } catch (err: any) {
       const connectErr = new NeonDbError(
-        `Error connecting to database: ${err.message}`,
+        `Error connecting to database: ${err}`,
       );
       connectErr.sourceError = err;
       throw connectErr;
