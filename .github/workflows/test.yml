@@ -6,20 +6,20 @@ on:
       - main
 
 jobs:
-  test-node-20:
+  test-node-18:
     runs-on: ubuntu-latest
     steps:
       # setup
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
       - name: Install package dependencies
         run: npm install
 
       # goal
-      - name: Run tests in Node 20 (no native WebSocket), node environment
+      - name: Run tests in Node 18 (no native WebSocket), node environment
         env:
           VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
           VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
