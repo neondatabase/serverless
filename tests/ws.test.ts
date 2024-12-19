@@ -1,4 +1,4 @@
-import { expect, test, beforeAll } from 'vitest';
+import { expect, test, beforeAll, vi } from 'vitest';
 import { Pool as PgPool } from 'pg';
 import * as subtls from 'subtls';
 import { sampleQueries } from './sampleQueries';
@@ -78,7 +78,29 @@ test('pool.query() with poolQueryViaFetch', async () => {
   }
 });
 
-// TODO: poolQueryViaFetch with contra-indications
+test('pool.query() with poolQueryViaFetch but also a listener that prevents fetch', async () => {
+  neonConfig.poolQueryViaFetch = true;
+
+  // use a new Pool because we know it will have to connect a new client
+  const customPool = new WsPool({ connectionString: DB_URL });
+
+  try {
+    const fn = vi.fn();
+    const connectListener = () => {
+      customPool.removeListener('connect', connectListener);
+      fn();
+    };
+    customPool.addListener('connect', connectListener);
+
+    const wsResult = await customPool.query('SELECT $1::int AS one', [1]);
+    expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
+    expect(wsResult).not.toHaveProperty('viaNeonFetch');
+    expect(fn).toHaveBeenCalledOnce();
+  } finally {
+    neonConfig.poolQueryViaFetch = false;
+    customPool.end();
+  }
+});
 
 test('client.query()', async () => {
   const client = new WsClient(DB_URL);

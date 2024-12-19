@@ -313,6 +313,8 @@ class NeonPool extends Pool {
     return super.on(event as any, listener);
   }
 
+  addListener = this.on;
+
   // @ts-ignore -- is it even possible to make TS happy with these overloaded function types?
   query(config?: any, values?: any, cb?: any) {
     if (

@@ -444,6 +444,7 @@ export declare class Pool extends Pool_2 {
     Client: typeof Client;
     hasFetchUnsupportedListeners: boolean;
     on(event: 'error' | 'connect' | 'acquire' | 'release' | 'remove', listener: any): this;
+    addListener: (event: "error" | "connect" | "acquire" | "release" | "remove", listener: any) => this;
     query(config?: any, values?: any, cb?: any): any;
 }
 

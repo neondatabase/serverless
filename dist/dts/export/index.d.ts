@@ -43,6 +43,7 @@ declare class NeonPool extends Pool {
     Client: typeof NeonClient;
     hasFetchUnsupportedListeners: boolean;
     on(event: 'error' | 'connect' | 'acquire' | 'release' | 'remove', listener: any): this;
+    addListener: (event: "error" | "connect" | "acquire" | "release" | "remove", listener: any) => this;
     query(config?: any, values?: any, cb?: any): any;
 }
 export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError, };
