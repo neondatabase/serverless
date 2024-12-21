@@ -1,0 +1,26 @@
+{
+  "mainEntryPointFilePath": "dist/dts/export/index.d.ts",
+  "newlineKind": "lf",
+  "enumMemberOrder": "preserve",
+  "bundledPackages": ["subtls"],
+  "dtsRollup": {
+    "enabled": true,
+    "untrimmedFilePath": "dist/dts/_extracted.d.ts"
+  },
+  "apiReport": {
+    "enabled": false
+  },
+  "docModel": {
+    "enabled": false
+  },
+  "tsdocMetadata": {
+    "enabled": false
+  },
+  "messages": {
+    "extractorMessageReporting": {
+      "ae-wrong-input-file-type": {
+        "logLevel": "none"
+      }
+    }
+  }
+}
