@@ -1,14 +1,14 @@
 import { expect, test, vi, beforeAll } from 'vitest';
 import { neon, neonConfig, Pool } from '../dist/npm';
 import { sampleQueries } from './sampleQueries';
-import { shimWebSocket } from './ws';
+import { shimWebSocketIfRequired } from './ws';
 
 const DB_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DB_URL);
 const sqlFull = neon(DB_URL, { fullResults: true });
 const pool = new Pool({ connectionString: DB_URL });
 
-beforeAll(shimWebSocket);
+beforeAll(shimWebSocketIfRequired);
 
 test(
   'http query results match WebSocket query results',

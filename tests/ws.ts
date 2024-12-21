@@ -1,6 +1,6 @@
 import { neonConfig } from '../dist/npm';
 
-export async function shimWebSocket() {
+export async function shimWebSocketIfRequired() {
   if (typeof WebSocket !== 'function') {
     console.info(
       'Native WebSocket not found: importing ws for neonConfig.webSocketConstructor',
