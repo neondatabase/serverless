@@ -58,4 +58,4 @@ jobs:
           VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
           VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
           VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
-        run: npm run testChrome
+        run: npm run testChromium

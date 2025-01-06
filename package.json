@@ -48,7 +48,7 @@
     "format:fix": "prettier -w .",
     "testNode": "./export.sh && vitest run --dir=tests/cli --environment=node --no-file-parallelism",
     "testEdge": "./export.sh && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
-    "testChrome": "./export.sh && playwright install --with-deps && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
+    "testChromium": "./export.sh && playwright install --with-deps chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
   },
   "devDependencies": {
     "@edge-runtime/vm": "^5.0.0",
