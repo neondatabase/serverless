@@ -1,4 +1,4 @@
-import { neonConfig } from '../dist/npm';
+import { neonConfig } from '../../dist/npm';
 
 export async function shimWebSocketIfRequired() {
   if (typeof WebSocket !== 'function') {

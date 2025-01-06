@@ -1,4 +1,4 @@
-import type { neon } from '../dist/npm';
+import type { neon } from '../../dist/npm';
 
 const now = new Date();
 export const sampleQueries = (sql: ReturnType<typeof neon>) => [
@@ -8,7 +8,7 @@ export const sampleQueries = (sql: ReturnType<typeof neon>) => [
   sql`SELECT ${1}::int8 AS int8num`,
   sql`SELECT ${-1}::decimal AS decimalnum`,
   sql`SELECT ${2n} AS bigint`,
-  sql`SELECT ${9007199254740993n} AS bigint`,
+  sql`SELECT ${9007199254740993n} AS bigint`, // > MAX_SAFE_INTEGER
   sql`SELECT ${Math.PI} AS pi`,
   sql`SELECT ${Math.PI}::real AS pi`,
   sql`SELECT ${Math.PI}::double precision AS pi`,

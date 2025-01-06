@@ -6,9 +6,6 @@ import type { NeonConfigGlobalAndClient } from './neonConfig';
 // @ts-ignore -- this isn't officially exported by pg
 import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
 
-// try to avoid the attentions of over-zealous bundlers
-const cryptoLib = `node${String.fromCharCode(58)}crypto`;
-
 interface ConnectionParameters {
   user: string;
   password: string;
@@ -135,14 +132,17 @@ class NeonClient extends Client {
   }
 
   async _handleAuthSASLContinue(msg: any) {
-    const cs =
-      // note: we shim these with empty objects so we need further checks
-      typeof crypto !== 'undefined' &&
-      crypto.subtle !== undefined &&
-      crypto.subtle.importKey !== undefined
-        ? crypto.subtle
-        : (await import(cryptoLib)).webcrypto.subtle;
+    if (
+      typeof crypto === 'undefined' ||
+      crypto.subtle === undefined ||
+      crypto.subtle.importKey === undefined
+    ) {
+      throw new Error(
+        'Cannot use SASL auth when `crypto.subtle` is not defined',
+      );
+    }
 
+    const cs = crypto.subtle;
     const session = this.saslSession;
     const password = this.password;
     const serverData = msg.data;

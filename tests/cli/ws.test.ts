@@ -9,7 +9,7 @@ import {
   neonConfig,
   Pool as WsPool,
   Client as WsClient,
-} from '../dist/npm';
+} from '../../dist/npm';
 
 function recursiveTransform(x: any, transform: (x: any) => any) {
   if (Array.isArray(x)) {
@@ -145,18 +145,25 @@ describe.each([
     }
   });
 
-  test('client.query() with custom WebSocket proxy and subtls', async () => {
-    const client = new WsClient(DB_URL);
-    client.neonConfig.wsProxy = process.env.VITE_WSPROXY!;
-    client.neonConfig.forceDisablePgSSL = false;
-    client.neonConfig.pipelineConnect = false;
-    client.neonConfig.subtls = subtls;
-    client.neonConfig.rootCerts = ISRGX1Cert;
+  if (
+    typeof process !== 'undefined' &&
+    process.versions !== undefined &&
+    parseInt(process.versions.node) >= 19
+  ) {
+    // subtls test requires SCRAM auth, which requires `crytpo.subtle`, which is only available from Node 19 onwards
+    test('client.query() with custom WebSocket proxy and subtls', async () => {
+      const client = new WsClient(DB_URL);
+      client.neonConfig.wsProxy = process.env.VITE_WSPROXY!;
+      client.neonConfig.forceDisablePgSSL = false;
+      client.neonConfig.pipelineConnect = false;
+      client.neonConfig.subtls = subtls;
+      client.neonConfig.rootCerts = ISRGX1Cert;
 
-    await client.connect();
-    const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
-    await client.end();
-    expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
-    expect(wsResult.viaNeonFetch).toBeUndefined();
-  });
+      await client.connect();
+      const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
+      await client.end();
+      expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
+      expect(wsResult.viaNeonFetch).toBeUndefined();
+    });
+  }
 });

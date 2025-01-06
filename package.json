@@ -46,8 +46,9 @@
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "testNode": "./export.sh && vitest run --environment=node --no-file-parallelism",
-    "testEdge": "./export.sh && vitest run --environment=edge-runtime --no-file-parallelism"
+    "testNode": "./export.sh && vitest run --dir=tests/cli --environment=node --no-file-parallelism",
+    "testEdge": "./export.sh && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
+    "testChrome": "./export.sh && playwright install && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
   },
   "devDependencies": {
     "@edge-runtime/vm": "^5.0.0",
@@ -55,12 +56,14 @@
     "@types/events": "^3.0.0",
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.4",
+    "@vitest/browser": "^2.1.8",
     "dotenv": "^16.0.3",
     "esbuild": "^0.24.0",
     "fast-equals": "^5.0.1",
+    "playwright": "^1.49.1",
     "subtls": "^0.4.4",
     "typescript": "^5.0.4",
-    "vitest": "^2.1.6",
+    "vitest": "^2.1.8",
     "wrangler": "^3.0.1"
   }
 }

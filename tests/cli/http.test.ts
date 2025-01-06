@@ -1,5 +1,5 @@
 import { expect, test, vi, beforeAll } from 'vitest';
-import { neon, neonConfig, Pool } from '../dist/npm';
+import { neon, neonConfig, Pool } from '../../dist/npm';
 import { sampleQueries } from './sampleQueries';
 import { shimWebSocketIfRequired } from './ws';
 

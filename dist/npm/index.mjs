@@ -370,7 +370,7 @@ r,0)),v=globalThis.clearImmediate??(r=>clearTimeout(r)),w=globalThis.crypto??{};
 w.subtle??(w.subtle={});y=typeof globalThis.Buffer=="function"&&typeof globalThis.
 Buffer.allocUnsafe=="function"?globalThis.Buffer:zn().Buffer,m=globalThis.process??
 {};m.env??(m.env={});try{m.nextTick(()=>{})}catch{let e=Promise.resolve();m.nextTick=
-e.then.bind(e)}});var we=I((oh,Wt)=>{"use strict";p();var Re=typeof Reflect=="object"?Reflect:null,
+e.then.bind(e)}});var we=I((sh,Wt)=>{"use strict";p();var Re=typeof Reflect=="object"?Reflect:null,
 Yn=Re&&typeof Re.apply=="function"?Re.apply:a(function(e,t,n){return Function.prototype.
 apply.call(e,t,n)},"ReflectApply"),ut;Re&&typeof Re.ownKeys=="function"?ut=Re.ownKeys:
 Object.getOwnPropertySymbols?ut=a(function(e){return Object.getOwnPropertyNames(
@@ -585,8 +585,8 @@ n.parse(!0)),this.position+=n.position-2);else if(t.value==="}"&&!i){if(this.dim
 !this.dimension&&(this.newEntry(),e))return this.entries}else t.value==='"'&&!t.
 escaped?(i&&this.newEntry(!0),i=!i):t.value===","&&!i?this.newEntry():this.record(
 t.value);if(this.dimension!==0)throw new Error("array dimension not balanced");return this.
-entries}};a(ht,"ArrayParser");var Gt=ht;function ta(r){return r}a(ta,"identity")});var Kt=I((Eh,ci)=>{p();var ra=$t();ci.exports={create:a(function(r,e){return{parse:a(
-function(){return ra.parse(r,e)},"parse")}},"create")}});var fi=I((Ch,li)=>{"use strict";p();var na=/(\d{1,})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d{1,})?.*?( BC)?$/,
+entries}};a(ht,"ArrayParser");var Gt=ht;function ta(r){return r}a(ta,"identity")});var Kt=I((vh,ci)=>{p();var ra=$t();ci.exports={create:a(function(r,e){return{parse:a(
+function(){return ra.parse(r,e)},"parse")}},"create")}});var fi=I((Ah,li)=>{"use strict";p();var na=/(\d{1,})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d{1,})?.*?( BC)?$/,
 ia=/^(\d{1,})-(\d{2})-(\d{2})( BC)?$/,sa=/([Z+-])(\d{2})?:?(\d{2})?:?(\d{2})?/,oa=/^-?infinity$/;
 li.exports=a(function(e){if(oa.test(e))return Number(e.replace("i","I"));var t=na.
 exec(e);if(!t)return aa(e)||null;var n=!!t[8],i=parseInt(t[1],10);n&&(i=hi(i));var s=parseInt(
@@ -600,9 +600,9 @@ function ua(r){if(r.endsWith("+00"))return 0;var e=sa.exec(r.split(" ")[1]);if(e
 var t=e[1];if(t==="Z")return 0;var n=t==="-"?-1:1,i=parseInt(e[2],10)*3600+parseInt(
 e[3]||0,10)*60+parseInt(e[4]||0,10);return i*n*1e3}}a(ua,"timeZoneOffset");function hi(r){
 return-(r-1)}a(hi,"bcYearToNegativeYear");function Vt(r){return r>=0&&r<100}a(Vt,
-"is0To99")});var di=I((Ph,pi)=>{p();pi.exports=ha;var ca=Object.prototype.hasOwnProperty;function ha(r){
+"is0To99")});var di=I((Ih,pi)=>{p();pi.exports=ha;var ca=Object.prototype.hasOwnProperty;function ha(r){
 for(var e=1;e<arguments.length;e++){var t=arguments[e];for(var n in t)ca.call(t,
-n)&&(r[n]=t[n])}return r}a(ha,"extend")});var gi=I((Rh,mi)=>{"use strict";p();var la=di();mi.exports=Fe;function Fe(r){if(!(this instanceof
+n)&&(r[n]=t[n])}return r}a(ha,"extend")});var gi=I((Bh,mi)=>{"use strict";p();var la=di();mi.exports=Fe;function Fe(r){if(!(this instanceof
 Fe))return new Fe(r);la(this,Ea(r))}a(Fe,"PostgresInterval");var fa=["seconds","\
 minutes","hours","days","months","years"];Fe.prototype.toPostgres=function(){var r=fa.
 filter(this.hasOwnProperty,this);return this.milliseconds&&r.indexOf("seconds")<
@@ -621,11 +621,11 @@ onds","milliseconds"];function va(r){var e=r+"000000".slice(r.length);return par
 e,10)/1e3}a(va,"parseMilliseconds");function Ea(r){if(!r)return{};var e=Sa.exec(
 r),t=e[8]==="-";return Object.keys(yi).reduce(function(n,i){var s=yi[i],o=e[s];return!o||
 (o=i==="milliseconds"?va(o):parseInt(o,10),!o)||(t&&~xa.indexOf(i)&&(o*=-1),n[i]=
-o),n},{})}a(Ea,"parse")});var bi=I((kh,wi)=>{"use strict";p();wi.exports=a(function(e){if(/^\\x/.test(e))return new y(
+o),n},{})}a(Ea,"parse")});var bi=I((Mh,wi)=>{"use strict";p();wi.exports=a(function(e){if(/^\\x/.test(e))return new y(
 e.substr(2),"hex");for(var t="",n=0;n<e.length;)if(e[n]!=="\\")t+=e[n],++n;else if(/[0-7]{3}/.
 test(e.substr(n+1,3)))t+=String.fromCharCode(parseInt(e.substr(n+1,3),8)),n+=4;else{
 for(var i=1;n+i<e.length&&e[n+i]==="\\";)i++;for(var s=0;s<Math.floor(i/2);++s)t+=
-"\\";n+=Math.floor(i/2)*2}return new y(t,"binary")},"parseBytea")});var Ci=I((Oh,Ai)=>{p();var Ve=$t(),ze=Kt(),lt=fi(),xi=gi(),vi=bi();function ft(r){
+"\\";n+=Math.floor(i/2)*2}return new y(t,"binary")},"parseBytea")});var Ci=I((Uh,Ai)=>{p();var Ve=$t(),ze=Kt(),lt=fi(),xi=gi(),vi=bi();function ft(r){
 return a(function(t){return t===null?t:r(t)},"nullAllowed")}a(ft,"allowNull");function Ei(r){
 return r===null?r:r==="TRUE"||r==="t"||r==="true"||r==="y"||r==="yes"||r==="on"||
 r==="1"}a(Ei,"parseBool");function _a(r){return r?Ve.parse(r,Ei):null}a(_a,"pars\
@@ -654,14 +654,14 @@ Yt),r(1007,Yt),r(1028,Yt),r(1016,Ca),r(1017,Ta),r(1021,Zt),r(1022,Zt),r(1231,Zt)
 r(1014,re),r(1015,re),r(1008,re),r(1009,re),r(1040,re),r(1041,re),r(1115,Jt),r(1182,
 Jt),r(1185,Jt),r(1186,xi),r(1187,Ia),r(17,vi),r(114,JSON.parse.bind(JSON)),r(3802,
 JSON.parse.bind(JSON)),r(199,Si),r(3807,Si),r(3907,re),r(2951,re),r(791,re),r(1183,
-re),r(1270,re)},"init");Ai.exports={init:Ba}});var Ii=I((Qh,Ti)=>{"use strict";p();var Z=1e6;function Ra(r){var e=r.readInt32BE(
+re),r(1270,re)},"init");Ai.exports={init:Ba}});var Ii=I((qh,Ti)=>{"use strict";p();var Z=1e6;function Ra(r){var e=r.readInt32BE(
 0),t=r.readUInt32BE(4),n="";e<0&&(e=~e+(t===0),t=~t+1>>>0,n="-");var i="",s,o,u,
 c,h,l;{if(s=e%Z,e=e/Z>>>0,o=4294967296*s+t,t=o/Z>>>0,u=""+(o-Z*t),t===0&&e===0)return n+
 u+i;for(c="",h=6-u.length,l=0;l<h;l++)c+="0";i=c+u+i}{if(s=e%Z,e=e/Z>>>0,o=4294967296*
 s+t,t=o/Z>>>0,u=""+(o-Z*t),t===0&&e===0)return n+u+i;for(c="",h=6-u.length,l=0;l<
 h;l++)c+="0";i=c+u+i}{if(s=e%Z,e=e/Z>>>0,o=4294967296*s+t,t=o/Z>>>0,u=""+(o-Z*t),
 t===0&&e===0)return n+u+i;for(c="",h=6-u.length,l=0;l<h;l++)c+="0";i=c+u+i}return s=
-e%Z,o=4294967296*s+t,u=""+o%Z,n+u+i}a(Ra,"readInt8");Ti.exports=Ra});var Fi=I((Hh,Ri)=>{p();var Fa=Ii(),F=a(function(r,e,t,n,i){t=t||0,n=n||!1,i=i||function(A,L,G){
+e%Z,o=4294967296*s+t,u=""+o%Z,n+u+i}a(Ra,"readInt8");Ti.exports=Ra});var Fi=I((jh,Ri)=>{p();var Fa=Ii(),F=a(function(r,e,t,n,i){t=t||0,n=n||!1,i=i||function(A,L,G){
 return A*Math.pow(2,G)+L};var s=t>>3,o=a(function(A){return n?~A&255:A},"inv"),u=255,
 c=8-t%8;e<c&&(u=255<<8-e&255,c=e),t&&(u=u>>t%8);var h=0;t%8+e>=8&&(h=i(0,o(r[s])&
 u,c));for(var l=e+t>>3,d=s+1;d<l;d++)h=i(h,o(r[d]),8);var S=(e+t)%8;return S>0&&
@@ -690,7 +690,7 @@ ay"),Oa=a(function(r){return r.toString("utf8")},"parseText"),Na=a(function(r){r
 null?null:F(r,8)>0},"parseBool"),qa=a(function(r){r(20,Fa),r(21,Ma),r(23,Pi),r(26,
 Pi),r(1700,Ua),r(700,ka),r(701,Da),r(16,Na),r(1114,Li.bind(null,!1)),r(1184,Li.bind(
 null,!0)),r(1e3,Ye),r(1007,Ye),r(1016,Ye),r(1008,Ye),r(1009,Ye),r(25,Oa)},"init");
-Ri.exports={init:qa}});var ki=I((Kh,Mi)=>{p();Mi.exports={BOOL:16,BYTEA:17,CHAR:18,INT8:20,INT2:21,INT4:23,
+Ri.exports={init:qa}});var ki=I(($h,Mi)=>{p();Mi.exports={BOOL:16,BYTEA:17,CHAR:18,INT8:20,INT2:21,INT4:23,
 REGPROC:24,TEXT:25,OID:26,TID:27,XID:28,CID:29,JSON:114,XML:142,PG_NODE_TREE:194,
 SMGR:210,PATH:602,POLYGON:604,CIDR:650,FLOAT4:700,FLOAT8:701,ABSTIME:702,RELTIME:703,
 TINTERVAL:704,CIRCLE:718,MACADDR8:774,MONEY:790,MACADDR:829,INET:869,ACLITEM:1033,
@@ -703,7 +703,7 @@ $a;Je.arrayParser=ja;Je.builtins=Ha;var Ze={text:{},binary:{}};function Di(r){re
 r)}a(Di,"noParse");function Ga(r,e){return e=e||"text",Ze[e]&&Ze[e][r]||Di}a(Ga,
 "getTypeParser");function $a(r,e,t){typeof e=="function"&&(t=e,e="text"),Ze[e][r]=
 t}a($a,"setTypeParser");Qa.init(function(r,e){Ze.text[r]=e});Wa.init(function(r,e){
-Ze.binary[r]=e})});var et=I((Jh,tr)=>{"use strict";p();tr.exports={host:"localhost",user:m.platform===
+Ze.binary[r]=e})});var et=I((Zh,tr)=>{"use strict";p();tr.exports={host:"localhost",user:m.platform===
 "win32"?m.env.USERNAME:m.env.USER,database:void 0,password:null,connectionString:void 0,
 port:5432,rows:0,binary:!1,max:10,idleTimeoutMillis:3e4,client_encoding:"",ssl:!1,
 application_name:void 0,fallback_application_name:void 0,options:void 0,parseInputDatesAsUTC:!1,
@@ -711,7 +711,7 @@ statement_timeout:!1,lock_timeout:!1,idle_in_transaction_session_timeout:!1,quer
 connect_timeout:0,keepalives:1,keepalives_idle:0};var Me=Xe(),Ka=Me.getTypeParser(
 20,"text"),Va=Me.getTypeParser(1016,"text");tr.exports.__defineSetter__("parseIn\
 t8",function(r){Me.setTypeParser(20,"text",r?Me.getTypeParser(23,"text"):Ka),Me.
-setTypeParser(1016,"text",r?Me.getTypeParser(1007,"text"):Va)})});var tt=I((el,Oi)=>{"use strict";p();var za=(Ht(),N(jt)),Ya=et();function Za(r){var e=r.
+setTypeParser(1016,"text",r?Me.getTypeParser(1007,"text"):Va)})});var tt=I((Xh,Oi)=>{"use strict";p();var za=(Ht(),N(jt)),Ya=et();function Za(r){var e=r.
 replace(/\\/g,"\\\\").replace(/"/g,'\\"');return'"'+e+'"'}a(Za,"escapeElement");
 function Ui(r){for(var e="{",t=0;t<r.length;t++)t>0&&(e=e+","),r[t]===null||typeof r[t]>
 "u"?e=e+"NULL":Array.isArray(r[t])?e=e+Ui(r[t]):r[t]instanceof y?e+="\\\\x"+r[t].
@@ -737,7 +737,7 @@ function"?r.callback=e:r.values=e),t&&(r.callback=t),r}a(tu,"normalizeQueryConfi
 g");var rr=a(function(r){return za.createHash("md5").update(r,"utf-8").digest("h\
 ex")},"md5"),ru=a(function(r,e,t){var n=rr(e+r),i=rr(y.concat([y.from(n),t]));return"\
 md5"+i},"postgresMd5PasswordHash");Oi.exports={prepareValue:a(function(e){return pt(
-e)},"prepareValueWrapper"),normalizeQueryConfig:tu,postgresMd5PasswordHash:ru,md5:rr}});var ji=I((nl,Wi)=>{"use strict";p();var nr=(Ht(),N(jt));function nu(r){if(r.indexOf(
+e)},"prepareValueWrapper"),normalizeQueryConfig:tu,postgresMd5PasswordHash:ru,md5:rr}});var ji=I((rl,Wi)=>{"use strict";p();var nr=(Ht(),N(jt));function nu(r){if(r.indexOf(
 "SCRAM-SHA-256")===-1)throw new Error("SASL: Only mechanism SCRAM-SHA-256 is cur\
 rently supported");let e=nr.randomBytes(18).toString("base64");return{mechanism:"\
 SCRAM-SHA-256",clientNonce:e,response:"n,,n=*,r="+e,message:"SASLInitialResponse"}}
@@ -789,7 +789,7 @@ a(hu,"Hi");Wi.exports={startSession:nu,continueSession:iu,finalizeSession:su}});
 ()=>{"use strict";p();a(fu,"stat")});var ur={};ie(ur,{default:()=>pu});var pu,cr=z(()=>{"use strict";p();pu={}});var Hi={};ie(Hi,{StringDecoder:()=>hr});var lr,hr,Gi=z(()=>{"use strict";p();lr=
 class lr{constructor(e){_(this,"td");this.td=new TextDecoder(e)}write(e){return this.
 td.decode(e,{stream:!0})}end(e){return this.td.decode(e)}};a(lr,"StringDecoder");
-hr=lr});var zi=I((pl,Vi)=>{"use strict";p();var{Transform:du}=(cr(),N(ur)),{StringDecoder:yu}=(Gi(),N(Hi)),
+hr=lr});var zi=I((fl,Vi)=>{"use strict";p();var{Transform:du}=(cr(),N(ur)),{StringDecoder:yu}=(Gi(),N(Hi)),
 be=Symbol("last"),dt=Symbol("decoder");function mu(r,e,t){let n;if(this.overflow){
 if(n=this[dt].write(r).split(this.matcher),n.length===1)return t();n.shift(),this.
 overflow=!1}else this[be]+=this[dt].write(r),n=this[be].split(this.matcher);this[be]=
@@ -805,7 +805,7 @@ typeof r=="function"?(t=e,e=r,r=/\r?\n/):typeof e=="object"&&(t=e,e=$i)}t=Object
 assign({},t),t.autoDestroy=!0,t.transform=mu,t.flush=gu,t.readableObjectMode=!0;
 let n=new du(t);return n[be]="",n[dt]=new yu("utf8"),n.matcher=r,n.mapper=e,n.maxLength=
 t.maxLength,n.skipOverflow=t.skipOverflow||!1,n.overflow=!1,n._destroy=function(i,s){
-this._writableState.errorEmitted=!1,s(i)},n}a(wu,"split");Vi.exports=wu});var Ji=I((ml,fe)=>{"use strict";p();var Yi=(sr(),N(ir)),bu=(cr(),N(ur)).Stream,Su=zi(),
+this._writableState.errorEmitted=!1,s(i)},n}a(wu,"split");Vi.exports=wu});var Ji=I((yl,fe)=>{"use strict";p();var Yi=(sr(),N(ir)),bu=(cr(),N(ur)).Stream,Su=zi(),
 Zi=(Ge(),N(He)),xu=5432,yt=m.platform==="win32",rt=m.stderr,vu=56,Eu=7,_u=61440,
 Au=32768;function Cu(r){return(r&_u)==Au}a(Cu,"isRegFile");var De=["host","port",
 "database","user","password"],fr=De.length,Tu=De[fr-1];function pr(){var r=rt instanceof
@@ -834,10 +834,10 @@ fr?o:null,o},Lu=fe.exports.isValidEntry=function(r){for(var e={0:function(o){ret
 length>0},1:function(o){return o==="*"?!0:(o=Number(o),isFinite(o)&&o>0&&o<9007199254740992&&
 Math.floor(o)===o)},2:function(o){return o.length>0},3:function(o){return o.length>
 0},4:function(o){return o.length>0}},t=0;t<De.length;t+=1){var n=e[t],i=r[De[t]]||
-"",s=n(i);if(!s)return!1}return!0}});var es=I((Sl,dr)=>{"use strict";p();var bl=(sr(),N(ir)),Xi=(ar(),N(or)),mt=Ji();
+"",s=n(i);if(!s)return!1}return!0}});var es=I((bl,dr)=>{"use strict";p();var wl=(sr(),N(ir)),Xi=(ar(),N(or)),mt=Ji();
 dr.exports=function(r,e){var t=mt.getFileName();Xi.stat(t,function(n,i){if(n||!mt.
 usePgPass(i,t))return e(void 0);var s=Xi.createReadStream(t);mt.getPassword(r,s,
-e)})};dr.exports.warnTo=mt.warnTo});var wt=I((vl,ts)=>{"use strict";p();var Bu=Xe();function gt(r){this._types=r||Bu,
+e)})};dr.exports.warnTo=mt.warnTo});var wt=I((xl,ts)=>{"use strict";p();var Bu=Xe();function gt(r){this._types=r||Bu,
 this.text={},this.binary={}}a(gt,"TypeOverrides");gt.prototype.getOverrides=function(r){
 switch(r){case"text":return this.text;case"binary":return this.binary;default:return{}}};
 gt.prototype.setTypeParser=function(r,e,t){typeof e=="function"&&(t=e,e="text"),
@@ -847,7 +847,7 @@ http:"+r.substring(t.length),{username:i,password:s,host:o,hostname:u,port:c,pat
 search:l,searchParams:d,hash:S}=new URL(n);s=decodeURIComponent(s),i=decodeURIComponent(
 i),h=decodeURIComponent(h);let A=i+":"+s,L=e?Object.fromEntries(d.entries()):l;return{
 href:r,protocol:t,auth:A,username:i,password:s,host:o,hostname:u,port:c,pathname:h,
-search:l,query:L,hash:S}}var mr=z(()=>{"use strict";p();a(yr,"parse")});var os=I((Il,ss)=>{"use strict";p();var Fu=(mr(),N(is)),gr=(ar(),N(or));function wr(r){
+search:l,query:L,hash:S}}var mr=z(()=>{"use strict";p();a(yr,"parse")});var os=I((Tl,ss)=>{"use strict";p();var Fu=(mr(),N(is)),gr=(ar(),N(or));function wr(r){
 if(r.charAt(0)==="/"){var t=r.split(" ");return{host:t[0],database:t[1]}}var e=Fu.
 parse(/ |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.test(r)?encodeURI(r).replace(/\%25(\d\d)/g,
 "%$1"):r,!0),t=e.query;for(var n in t)Array.isArray(t[n])&&(t[n]=t[n][t[n].length-
@@ -862,7 +862,7 @@ t.database=s&&decodeURI(s),(t.ssl==="true"||t.ssl==="1")&&(t.ssl=!0),t.ssl==="0"
 t.sslkey).toString()),t.sslrootcert&&(t.ssl.ca=gr.readFileSync(t.sslrootcert).toString()),
 t.sslmode){case"disable":{t.ssl=!1;break}case"prefer":case"require":case"verify-\
 ca":case"verify-full":break;case"no-verify":{t.ssl.rejectUnauthorized=!1;break}}
-return t}a(wr,"parse");ss.exports=wr;wr.parse=wr});var bt=I((Bl,cs)=>{"use strict";p();var Mu=(ns(),N(rs)),us=et(),as=os().parse,K=a(
+return t}a(wr,"parse");ss.exports=wr;wr.parse=wr});var bt=I((Ll,cs)=>{"use strict";p();var Mu=(ns(),N(rs)),us=et(),as=os().parse,K=a(
 function(r,e,t){return t===void 0?t=m.env["PG"+r.toUpperCase()]:t===!1||(t=m.env[t]),
 e[r]||t||us[r]},"val"),ku=a(function(){switch(m.env.PGSSLMODE){case"disable":return!1;case"\
 prefer":case"require":case"verify-ca":case"verify-full":return!0;case"no-verify":
@@ -896,7 +896,7 @@ t.push("replication="+Ue(this.replication)),this.host&&t.push("host="+Ue(this.ho
 this.isDomainSocket)return e(null,t.join(" "));this.client_encoding&&t.push("cli\
 ent_encoding="+Ue(this.client_encoding)),Mu.lookup(this.host,function(i,s){return i?
 e(i,null):(t.push("hostaddr="+Ue(s)),e(null,t.join(" ")))})}};a(Sr,"ConnectionPa\
-rameters");var br=Sr;cs.exports=br});var fs=I((Ml,ls)=>{"use strict";p();var Du=Xe(),hs=/^([A-Za-z]+)(?: (\d+))?(?: (\d+))?/,
+rameters");var br=Sr;cs.exports=br});var fs=I((Fl,ls)=>{"use strict";p();var Du=Xe(),hs=/^([A-Za-z]+)(?: (\d+))?(?: (\d+))?/,
 vr=class vr{constructor(e,t){this.command=null,this.rowCount=null,this.oid=null,
 this.rows=[],this.fields=[],this._parsers=void 0,this._types=t,this.RowCtor=null,
 this.rowAsArray=e==="array",this.rowAsArray&&(this.parseRow=this._parseRowAsArray)}addCommandComplete(e){
@@ -909,7 +909,7 @@ s):t[o]=null}return t}addRow(e){this.rows.push(e)}addFields(e){this.fields=e,thi
 fields.length&&(this._parsers=new Array(e.length));for(var t=0;t<e.length;t++){var n=e[t];
 this._types?this._parsers[t]=this._types.getTypeParser(n.dataTypeID,n.format||"t\
 ext"):this._parsers[t]=Du.getTypeParser(n.dataTypeID,n.format||"text")}}};a(vr,"\
-Result");var xr=vr;ls.exports=xr});var ms=I((Ul,ys)=>{"use strict";p();var{EventEmitter:Uu}=we(),ps=fs(),ds=tt(),_r=class _r extends Uu{constructor(e,t,n){
+Result");var xr=vr;ls.exports=xr});var ms=I((Dl,ys)=>{"use strict";p();var{EventEmitter:Uu}=we(),ps=fs(),ds=tt(),_r=class _r extends Uu{constructor(e,t,n){
 super(),e=ds.normalizeQueryConfig(e,t,n),this.text=e.text,this.values=e.values,this.
 rows=e.rows,this.types=e.types,this.name=e.name,this.binary=e.binary,this.portal=
 e.portal||"",this.callback=e.callback,this._rowMode=e.rowMode,m.domain&&e.callback&&
@@ -1193,7 +1193,7 @@ var fc=vs();Object.defineProperty(Se,"serialize",{enumerable:!0,get:a(function()
 return fc.serialize},"get")});var pc=Cs();function dc(r,e){let t=new pc.Parser;return r.
 on("data",n=>t.parse(n,e)),new Promise(n=>r.on("end",()=>n()))}a(dc,"parse");Se.
 parse=dc});var Ts={};ie(Ts,{connect:()=>yc});function yc({socket:r,servername:e}){return r.
-startTls(e),r}var Is=z(()=>{"use strict";p();a(yc,"connect")});var pn=I((cf,Bs)=>{"use strict";p();var Ps=(St(),N(bs)),mc=we().EventEmitter,{parse:gc,
+startTls(e),r}var Is=z(()=>{"use strict";p();a(yc,"connect")});var pn=I((uf,Bs)=>{"use strict";p();var Ps=(St(),N(bs)),mc=we().EventEmitter,{parse:gc,
 serialize:Q}=hn(),Ls=Q.flush(),wc=Q.sync(),bc=Q.end(),fn=class fn extends mc{constructor(e){
 super(),e=e||{},this.stream=e.stream||new Ps.Socket,this._keepAlive=e.keepAlive,
 this._keepAliveInitialDelayMillis=e.keepAliveInitialDelayMillis,this.lastBuffer=
@@ -1225,7 +1225,7 @@ unref()}end(){if(this._ending=!0,!this._connecting||!this.stream.writable){this.
 stream.end();return}return this.stream.write(bc,()=>{this.stream.end()})}close(e){
 this._send(Q.close(e))}describe(e){this._send(Q.describe(e))}sendCopyFromChunk(e){
 this._send(Q.copyData(e))}endCopyFrom(){this._send(Q.copyDone())}sendCopyFail(e){
-this._send(Q.copyFail(e))}};a(fn,"Connection");var ln=fn;Bs.exports=ln});var Ms=I((pf,Fs)=>{"use strict";p();var Sc=we().EventEmitter,ff=(Ge(),N(He)),xc=tt(),
+this._send(Q.copyFail(e))}};a(fn,"Connection");var ln=fn;Bs.exports=ln});var Ms=I((ff,Fs)=>{"use strict";p();var Sc=we().EventEmitter,lf=(Ge(),N(He)),xc=tt(),
 dn=ji(),vc=es(),Ec=wt(),_c=bt(),Rs=ms(),Ac=et(),Cc=pn(),yn=class yn extends Sc{constructor(e){
 super(),this.connectionParameters=new _c(e),this.user=this.connectionParameters.
 user,this.database=this.connectionParameters.database,this.port=this.connectionParameters.
@@ -1339,7 +1339,7 @@ unref()}end(e){if(this._ending=!0,!this.connection._connecting)if(e)e();else ret
 _Promise.resolve();if(this.activeQuery||!this._queryable?this.connection.stream.
 destroy():this.connection.end(),e)this.connection.once("end",e);else return new this.
 _Promise(t=>{this.connection.once("end",t)})}};a(yn,"Client");var Ct=yn;Ct.Query=
-Rs;Fs.exports=Ct});var Os=I((mf,Us)=>{"use strict";p();var Tc=we().EventEmitter,ks=a(function(){},"\
+Rs;Fs.exports=Ct});var Os=I((yf,Us)=>{"use strict";p();var Tc=we().EventEmitter,ks=a(function(){},"\
 NOOP"),Ds=a((r,e)=>{let t=r.findIndex(e);return t===-1?void 0:r.splice(t,1)[0]},
 "removeWhere"),wn=class wn{constructor(e,t,n){this.client=e,this.idleListener=t,
 this.timeoutId=n}};a(wn,"IdleItem");var mn=wn,bn=class bn{constructor(e){this.callback=
@@ -1418,7 +1418,7 @@ this.Promise.reject(n)}this.ending=!0;let t=Tt(this.Promise,e);return this._endC
 t.callback,this._pulseQueue(),t.result}get waitingCount(){return this._pendingQueue.
 length}get idleCount(){return this._idle.length}get expiredCount(){return this._clients.
 reduce((e,t)=>e+(this._expired.has(t)?1:0),0)}get totalCount(){return this._clients.
-length}};a(Sn,"Pool");var gn=Sn;Us.exports=gn});var Ns={};ie(Ns,{default:()=>Lc});var Lc,qs=z(()=>{"use strict";p();Lc={}});var Qs=I((Sf,Bc)=>{Bc.exports={name:"pg",version:"8.8.0",description:"PostgreSQL\
+length}};a(Sn,"Pool");var gn=Sn;Us.exports=gn});var Ns={};ie(Ns,{default:()=>Lc});var Lc,qs=z(()=>{"use strict";p();Lc={}});var Qs=I((bf,Bc)=>{Bc.exports={name:"pg",version:"8.8.0",description:"PostgreSQL\
  client - pure javascript & libpq with the same API",keywords:["database","libpq",
 "pg","postgre","postgres","postgresql","rdbms"],homepage:"https://github.com/bri\
 anc/node-postgres",repository:{type:"git",url:"git://github.com/brianc/node-post\
@@ -1429,7 +1429,7 @@ pes":"^2.1.0",pgpass:"1.x"},devDependencies:{async:"2.6.4",bluebird:"3.5.2",co:"
 4.6.0","pg-copy-streams":"0.3.0"},peerDependencies:{"pg-native":">=3.0.1"},peerDependenciesMeta:{
 "pg-native":{optional:!0}},scripts:{test:"make test-all"},files:["lib","SPONSORS\
 .md"],license:"MIT",engines:{node:">= 8.0.0"},gitHead:"c99fb2c127ddf8d712500db2c\
-7b9a5491a178655"}});var Hs=I((xf,js)=>{"use strict";p();var Ws=we().EventEmitter,Rc=(Ge(),N(He)),xn=tt(),
+7b9a5491a178655"}});var Hs=I((Sf,js)=>{"use strict";p();var Ws=we().EventEmitter,Rc=(Ge(),N(He)),xn=tt(),
 qe=js.exports=function(r,e,t){Ws.call(this),r=xn.normalizeQueryConfig(r,e,t),this.
 text=r.text,this.values=r.values,this.name=r.name,this.callback=r.callback,this.
 state="new",this._arrayMode=r.rowMode==="array",this._emitRowEvents=!1,this.on("\
@@ -1460,7 +1460,7 @@ this.name,this.text,n.length,function(s){return s?t(s):(r.namedQueries[e.name]=e
 text,e.native.execute(e.name,n,t))})}else if(this.values){if(!Array.isArray(this.
 values)){let s=new Error("Query values must be an array");return t(s)}var i=this.
 values.map(xn.prepareValue);r.native.query(this.text,i,t)}else r.native.query(this.
-text,t)}});var Vs=I((Af,Ks)=>{"use strict";p();var Mc=(qs(),N(Ns)),kc=wt(),_f=Qs(),Gs=we().
+text,t)}});var Vs=I((_f,Ks)=>{"use strict";p();var Mc=(qs(),N(Ns)),kc=wt(),Ef=Qs(),Gs=we().
 EventEmitter,Dc=(Ge(),N(He)),Uc=bt(),$s=Hs(),J=Ks.exports=function(r){Gs.call(this),
 r=r||{},this._Promise=r.Promise||b.Promise,this._types=new kc(r.types),this.native=
 new Mc({types:this._types}),this._queryQueue=[],this._ending=!1,this._connecting=
@@ -1505,7 +1505,7 @@ _activeQuery===r?this.native.cancel(function(){}):this._queryQueue.indexOf(r)!==
 -1&&this._queryQueue.splice(this._queryQueue.indexOf(r),1)};J.prototype.ref=function(){};
 J.prototype.unref=function(){};J.prototype.setTypeParser=function(r,e,t){return this.
 _types.setTypeParser(r,e,t)};J.prototype.getTypeParser=function(r,e){return this.
-_types.getTypeParser(r,e)}});var vn=I((If,zs)=>{"use strict";p();zs.exports=Vs()});var It=I((Lf,nt)=>{"use strict";p();var Oc=Ms(),Nc=et(),qc=pn(),Qc=Os(),{DatabaseError:Wc}=hn(),
+_types.getTypeParser(r,e)}});var vn=I((Tf,zs)=>{"use strict";p();zs.exports=Vs()});var It=I((Pf,nt)=>{"use strict";p();var Oc=Ms(),Nc=et(),qc=pn(),Qc=Os(),{DatabaseError:Wc}=hn(),
 jc=a(r=>{var e;return e=class extends Qc{constructor(n){super(n,r)}},a(e,"BoundP\
 ool"),e},"poolFactory"),En=a(function(r){this.defaults=Nc,this.Client=r,this.Query=
 this.Client.Query,this.Pool=jc(this.Client),this._pools=[],this.Connection=qc,this.
@@ -1571,33 +1571,34 @@ t?(r.viaNeonFetch=!0,r.rowAsArray=e,r.rows=h,r._parsers=c,r._types=o,r):h}a(Zs,"
 processQueryResult");async function Kc(r){if(typeof r=="string")return r;if(typeof r==
 "function")try{return await Promise.resolve(r())}catch(e){let t=new pe("Error ge\
 tting auth token.");throw e instanceof Error&&(t=new pe(`Error getting auth toke\
-n: ${e.message}`)),t}}a(Kc,"getAuthToken");var ro=Te(bt()),Qe=Te(It());var Vc="node:crypto",An=class An extends Lt.Client{constructor(t){super(t);this.
-config=t}get neonConfig(){return this.connection.stream}connect(t){let{neonConfig:n}=this;
-n.forceDisablePgSSL&&(this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&
-console.warn("SSL is enabled for both Postgres (e.g. ?sslmode=require in the con\
-nection string + forceDisablePgSSL = false) and the WebSocket tunnel (useSecureW\
-ebSocket = true). Double encryption will increase latency and CPU usage. It may \
-be appropriate to disable SSL in the Postgres connection parameters or set force\
-DisablePgSSL = true.");let i=this.config?.host!==void 0||this.config?.connectionString!==
-void 0||m.env.PGHOST!==void 0,s=m.env.USER??m.env.USERNAME;if(!i&&this.host==="l\
-ocalhost"&&this.user===s&&this.database===s&&this.password===null)throw new Error(
-`No database host or connection string was set, and key parameters have default \
-values (host: localhost, user: ${s}, db: ${s}, password: null). Is an environmen\
-t variable missing? Alternatively, if you intended to connect with these paramet\
-ers, please set the host to 'localhost' explicitly.`);let o=super.connect(t),u=n.
-pipelineTLS&&this.ssl,c=n.pipelineConnect==="password";if(!u&&!n.pipelineConnect)
-return o;let h=this.connection;if(u&&h.on("connect",()=>h.stream.emit("data","S")),
-c){h.removeAllListeners("authenticationCleartextPassword"),h.removeAllListeners(
-"readyForQuery"),h.once("readyForQuery",()=>h.on("readyForQuery",this._handleReadyForQuery.
-bind(this)));let l=this.ssl?"sslconnect":"connect";h.on(l,()=>{this._handleAuthCleartextPassword(),
-this._handleReadyForQuery()})}return o}async _handleAuthSASLContinue(t){let n=typeof w<
-"u"&&w.subtle!==void 0&&w.subtle.importKey!==void 0?w.subtle:(await import(Vc)).
-webcrypto.subtle,i=this.saslSession,s=this.password,o=t.data;if(i.message!=="SAS\
-LInitialResponse"||typeof s!="string"||typeof o!="string")throw new Error("SASL:\
- protocol error");let u=Object.fromEntries(o.split(",").map(V=>{if(!/^.=/.test(V))
-throw new Error("SASL: Invalid attribute pair entry");let D=V[0],me=V.substring(
-2);return[D,me]})),c=u.r,h=u.s,l=u.i;if(!c||!/^[!-+--~]+$/.test(c))throw new Error(
-"SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce missing/unprintable");if(!h||!/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.
+n: ${e.message}`)),t}}a(Kc,"getAuthToken");var ro=Te(bt()),Qe=Te(It());var An=class An extends Lt.Client{constructor(t){super(t);this.config=t}get neonConfig(){
+return this.connection.stream}connect(t){let{neonConfig:n}=this;n.forceDisablePgSSL&&
+(this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&console.warn("\
+SSL is enabled for both Postgres (e.g. ?sslmode=require in the connection string\
+ + forceDisablePgSSL = false) and the WebSocket tunnel (useSecureWebSocket = tru\
+e). Double encryption will increase latency and CPU usage. It may be appropriate\
+ to disable SSL in the Postgres connection parameters or set forceDisablePgSSL =\
+ true.");let i=this.config?.host!==void 0||this.config?.connectionString!==void 0||
+m.env.PGHOST!==void 0,s=m.env.USER??m.env.USERNAME;if(!i&&this.host==="localhost"&&
+this.user===s&&this.database===s&&this.password===null)throw new Error(`No datab\
+ase host or connection string was set, and key parameters have default values (h\
+ost: localhost, user: ${s}, db: ${s}, password: null). Is an environment variabl\
+e missing? Alternatively, if you intended to connect with these parameters, plea\
+se set the host to 'localhost' explicitly.`);let o=super.connect(t),u=n.pipelineTLS&&
+this.ssl,c=n.pipelineConnect==="password";if(!u&&!n.pipelineConnect)return o;let h=this.
+connection;if(u&&h.on("connect",()=>h.stream.emit("data","S")),c){h.removeAllListeners(
+"authenticationCleartextPassword"),h.removeAllListeners("readyForQuery"),h.once(
+"readyForQuery",()=>h.on("readyForQuery",this._handleReadyForQuery.bind(this)));
+let l=this.ssl?"sslconnect":"connect";h.on(l,()=>{this._handleAuthCleartextPassword(),
+this._handleReadyForQuery()})}return o}async _handleAuthSASLContinue(t){if(typeof w>
+"u"||w.subtle===void 0||w.subtle.importKey===void 0)throw new Error("Cannot use \
+SASL auth when `crypto.subtle` is not defined");let n=w.subtle,i=this.saslSession,
+s=this.password,o=t.data;if(i.message!=="SASLInitialResponse"||typeof s!="string"||
+typeof o!="string")throw new Error("SASL: protocol error");let u=Object.fromEntries(
+o.split(",").map(V=>{if(!/^.=/.test(V))throw new Error("SASL: Invalid attribute \
+pair entry");let D=V[0],me=V.substring(2);return[D,me]})),c=u.r,h=u.s,l=u.i;if(!c||
+!/^[!-+--~]+$/.test(c))throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce \
+missing/unprintable");if(!h||!/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.
 test(h))throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: salt missing/not base\
 64");if(!l||!/^[1-9][0-9]*$/.test(l))throw new Error("SASL: SCRAM-SERVER-FIRST-M\
 ESSAGE: missing/invalid iteration count");if(!c.startsWith(i.clientNonce))throw new Error(
@@ -1618,14 +1619,14 @@ he=await n.sign("HMAC",We,A.encode("Server Key")),it=await n.importKey("raw",he,
 {name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]);var ye=y.from(await n.sign("HMA\
 C",it,A.encode(R)));i.message="SASLResponse",i.serverSignature=ye.toString("base\
 64"),i.response=oe+",p="+xe,this.connection.sendSCRAMClientFinalMessage(this.saslSession.
-response)}};a(An,"NeonClient");var _n=An;function zc(r,e){if(e)return{callback:e,
+response)}};a(An,"NeonClient");var _n=An;function Vc(r,e){if(e)return{callback:e,
 result:void 0};let t,n,i=a(function(o,u){o?t(o):n(u)},"cb"),s=new r(function(o,u){
-n=o,t=u});return{callback:i,result:s}}a(zc,"promisify");var Cn=class Cn extends Lt.Pool{constructor(){
+n=o,t=u});return{callback:i,result:s}}a(Vc,"promisify");var Cn=class Cn extends Lt.Pool{constructor(){
 super(...arguments);_(this,"Client",_n);_(this,"hasFetchUnsupportedListeners",!1);
 _(this,"addListener",this.on)}on(t,n){return t!=="error"&&(this.hasFetchUnsupportedListeners=
 !0),super.on(t,n)}query(t,n,i){if(!Ae.poolQueryViaFetch||this.hasFetchUnsupportedListeners||
 typeof t=="function")return super.query(t,n,i);typeof n=="function"&&(i=n,n=void 0);
-let s=zc(this.Promise,i);i=s.callback;try{let o=new ro.default(this.options),u=encodeURIComponent,
+let s=Vc(this.Promise,i);i=s.callback;try{let o=new ro.default(this.options),u=encodeURIComponent,
 c=encodeURI,h=`postgresql://${u(o.user)}:${u(o.password)}@${u(o.host)}/${c(o.database)}`,
 l=typeof t=="string"?t:t.text,d=n??t.values??[];eo(h,{fullResults:!0,arrayMode:t.
 rowMode==="array"})(l,d,{types:t.types??this.options?.types}).then(A=>i(void 0,A)).

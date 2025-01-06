@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { neon } from '../dist/npm';
+import { neon } from '../../dist/npm';
 
 const DB_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DB_URL);
