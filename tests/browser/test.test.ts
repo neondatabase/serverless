@@ -1,15 +1,12 @@
-import { beforeAll, expect, test } from 'vitest';
+import { expect, test } from 'vitest';
 import { neon } from '../../dist/npm';
-import { makeEnv } from './makeEnv';
+import { server } from '@vitest/browser/context';
 
-let DB_URL;
-let sql;
+const { env } = server.config;
+globalThis.process = { env } as any;
 
-beforeAll(async () => {
-  await makeEnv();
-  DB_URL = process.env.VITE_NEON_DB_URL!;
-  sql = neon(DB_URL);
-});
+const DB_URL = process.env.VITE_NEON_DB_URL!;
+const sql = neon(DB_URL);
 
 test('fetch', async () => {
   await expect(sql`SELECT ${'fetch'} AS str`).resolves.toStrictEqual([
