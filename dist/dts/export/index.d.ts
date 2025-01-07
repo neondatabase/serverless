@@ -1,7 +1,6 @@
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { neon, NeonDbError } from './httpQuery';
-import type { NeonConfigGlobalAndClient } from './neonConfig';
 import type { QueryResultRow, Submittable, QueryArrayConfig, QueryConfigValues, QueryConfig, QueryArrayResult, QueryResult } from 'pg';
 declare interface NeonClient {
     connection: Connection & {
@@ -21,7 +20,7 @@ declare interface NeonClient {
  */
 declare class NeonClient extends Client {
     config: any;
-    get neonConfig(): NeonConfigGlobalAndClient;
+    get neonConfig(): Socket;
     constructor(config: any);
     connect(): Promise<void>;
     connect(callback: (err?: Error) => void): void;
@@ -46,6 +45,4 @@ declare class NeonPool extends Pool {
 }
 export * from 'pg';
 export * from './httpQuery';
-export interface NeonConfig extends NeonConfigGlobalAndClient {
-}
-export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError, NeonConfigGlobalAndClient, };
+export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError, };

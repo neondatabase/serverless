@@ -38,7 +38,6 @@ npx esbuild export/index.ts \
 npx tsc
 
 # remove global declarations from types
-
 sed -i.orig -r \
   -e "/^declare global [{]$/,/^[}]$/d" \
   dist/dts/shims/net/index.d.ts
@@ -48,13 +47,14 @@ echo
 echo "Note: some warnings are expected from api-extractor:"
 npx @microsoft/api-extractor run --local
 
-# remove appendage
+# remove appendage and private fields
 sed -i.orig -r \
+  -e '/^ *private [^ ]+;$/d' \
   -e '/^export [{] *[}]$/d' \
   dist/dts/_extracted.d.ts
 
 # copy to .d.ts (for CJS) and .d.mts (for ESM)
-(echo '/// <reference types="node" />'; echo; cat dist/dts/_extracted.d.ts) > dist/npm/index.d.ts
+cp dist/dts/_extracted.d.ts dist/npm/index.d.ts
 cp dist/npm/index.d.ts dist/npm/index.d.mts
 
 

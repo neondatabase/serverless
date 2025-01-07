@@ -61,7 +61,7 @@
     "esbuild": "^0.24.0",
     "fast-equals": "^5.0.1",
     "playwright": "^1.49.1",
-    "subtls": "^0.4.4",
+    "subtls": "^0.4.6",
     "typescript": "^5.0.4",
     "vitest": "^2.1.8",
     "wrangler": "^3.0.1"

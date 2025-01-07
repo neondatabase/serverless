@@ -48,7 +48,7 @@ function(){if(f.isBuffer(this))return this.byteOffset},"get")});function pe(r){i
 ut)throw new RangeError('The value "'+r+'" is invalid for option "size"');let e=new Uint8Array(
 r);return Object.setPrototypeOf(e,f.prototype),e}a(pe,"createBuffer");function f(r,e,t){
 if(typeof r=="number"){if(typeof e=="string")throw new TypeError('The "string" a\
-rgument must be of type string. Received type number');return qt(r)}return Un(r,
+rgument must be of type string. Received type number');return Nt(r)}return Un(r,
 e,t)}a(f,"Buffer");f.poolSize=8192;function Un(r,e,t){if(typeof r=="string")return xo(
 r,e);if(ArrayBuffer.isView(r))return vo(r);if(r==null)throw new TypeError("The f\
 irst argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-l\
@@ -62,14 +62,14 @@ from(r[Symbol.toPrimitive]("string"),e,t);throw new TypeError("The first argumen
 t must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. \
 Received type "+typeof r)}a(Un,"from");f.from=function(r,e,t){return Un(r,e,t)};
 Object.setPrototypeOf(f.prototype,Uint8Array.prototype);Object.setPrototypeOf(f,
-Uint8Array);function Nn(r){if(typeof r!="number")throw new TypeError('"size" arg\
+Uint8Array);function qn(r){if(typeof r!="number")throw new TypeError('"size" arg\
 ument must be of type number');if(r<0)throw new RangeError('The value "'+r+'" is\
- invalid for option "size"')}a(Nn,"assertSize");function So(r,e,t){return Nn(r),
+ invalid for option "size"')}a(qn,"assertSize");function So(r,e,t){return qn(r),
 r<=0?pe(r):e!==void 0?typeof t=="string"?pe(r).fill(e,t):pe(r).fill(e):pe(r)}a(So,
-"alloc");f.alloc=function(r,e,t){return So(r,e,t)};function qt(r){return Nn(r),pe(
-r<0?0:Wt(r)|0)}a(qt,"allocUnsafe");f.allocUnsafe=function(r){return qt(r)};f.allocUnsafeSlow=
-function(r){return qt(r)};function xo(r,e){if((typeof e!="string"||e==="")&&(e="\
-utf8"),!f.isEncoding(e))throw new TypeError("Unknown encoding: "+e);let t=qn(r,e)|
+"alloc");f.alloc=function(r,e,t){return So(r,e,t)};function Nt(r){return qn(r),pe(
+r<0?0:Wt(r)|0)}a(Nt,"allocUnsafe");f.allocUnsafe=function(r){return Nt(r)};f.allocUnsafeSlow=
+function(r){return Nt(r)};function xo(r,e){if((typeof e!="string"||e==="")&&(e="\
+utf8"),!f.isEncoding(e))throw new TypeError("Unknown encoding: "+e);let t=Nn(r,e)|
 0,n=pe(t),i=n.write(r,e);return i!==t&&(n=n.slice(0,i)),n}a(xo,"fromString");function Qt(r){
 let e=r.length<0?0:Wt(r.length)|0,t=pe(e);for(let n=0;n<e;n+=1)t[n]=r[n]&255;return t}
 a(Qt,"fromArrayLike");function vo(r){if(le(r,Uint8Array)){let e=new Uint8Array(r);
@@ -99,15 +99,15 @@ if(t===void 0)for(t=0,n=0;n<e.length;++n)t+=e[n].length;let i=f.allocUnsafe(t),s
 for(n=0;n<e.length;++n){let o=e[n];if(le(o,Uint8Array))s+o.length>i.length?(f.isBuffer(
 o)||(o=f.from(o)),o.copy(i,s)):Uint8Array.prototype.set.call(i,o,s);else if(f.isBuffer(
 o))o.copy(i,s);else throw new TypeError('"list" argument must be an Array of Buf\
-fers');s+=o.length}return i},"concat");function qn(r,e){if(f.isBuffer(r))return r.
+fers');s+=o.length}return i},"concat");function Nn(r,e){if(f.isBuffer(r))return r.
 length;if(ArrayBuffer.isView(r)||le(r,ArrayBuffer))return r.byteLength;if(typeof r!=
 "string")throw new TypeError('The "string" argument must be one of type string, \
 Buffer, or ArrayBuffer. Received type '+typeof r);let t=r.length,n=arguments.length>
 2&&arguments[2]===!0;if(!n&&t===0)return 0;let i=!1;for(;;)switch(e){case"ascii":case"\
-latin1":case"binary":return t;case"utf8":case"utf-8":return Nt(r).length;case"uc\
+latin1":case"binary":return t;case"utf8":case"utf-8":return qt(r).length;case"uc\
 s2":case"ucs-2":case"utf16le":case"utf-16le":return t*2;case"hex":return t>>>1;case"\
-base64":return Yn(r).length;default:if(i)return n?-1:Nt(r).length;e=(""+e).toLowerCase(),
-i=!0}}a(qn,"byteLength");f.byteLength=qn;function _o(r,e,t){let n=!1;if((e===void 0||
+base64":return Yn(r).length;default:if(i)return n?-1:qt(r).length;e=(""+e).toLowerCase(),
+i=!0}}a(Nn,"byteLength");f.byteLength=Nn;function _o(r,e,t){let n=!1;if((e===void 0||
 e<0)&&(e=0),e>this.length||((t===void 0||t>this.length)&&(t=this.length),t<=0)||
 (t>>>=0,e>>>=0,t<=e))return"";for(r||(r="utf8");;)switch(r){case"hex":return ko(
 this,e,t);case"utf8":case"utf-8":return jn(this,e,t);case"ascii":return Bo(this,
@@ -157,10 +157,10 @@ indexOf=a(function(e,t,n){return Wn(this,e,t,n,!0)},"indexOf");f.prototype.lastI
 a(function(e,t,n){return Wn(this,e,t,n,!1)},"lastIndexOf");function Co(r,e,t,n){
 t=Number(t)||0;let i=r.length-t;n?(n=Number(n),n>i&&(n=i)):n=i;let s=e.length;n>
 s/2&&(n=s/2);let o;for(o=0;o<n;++o){let u=parseInt(e.substr(o*2,2),16);if(Ht(u))
-return o;r[t+o]=u}return o}a(Co,"hexWrite");function To(r,e,t,n){return ct(Nt(e,
-r.length-t),r,t,n)}a(To,"utf8Write");function Io(r,e,t,n){return ct(No(e),r,t,n)}
+return o;r[t+o]=u}return o}a(Co,"hexWrite");function To(r,e,t,n){return ct(qt(e,
+r.length-t),r,t,n)}a(To,"utf8Write");function Io(r,e,t,n){return ct(qo(e),r,t,n)}
 a(Io,"asciiWrite");function Ro(r,e,t,n){return ct(Yn(e),r,t,n)}a(Ro,"base64Write");
-function Po(r,e,t,n){return ct(qo(e,r.length-t),r,t,n)}a(Po,"ucs2Write");f.prototype.
+function Po(r,e,t,n){return ct(No(e,r.length-t),r,t,n)}a(Po,"ucs2Write");f.prototype.
 write=a(function(e,t,n,i){if(t===void 0)i="utf8",n=this.length,t=0;else if(n===void 0&&
 typeof t=="string")i=t,n=this.length,t=0;else if(isFinite(t))t=t>>>0,isFinite(n)?
 (n=n>>>0,i===void 0&&(i="utf8")):(i=n,n=void 0);else throw new Error("Buffer.wri\
@@ -193,22 +193,22 @@ xSlice");function Oo(r,e,t){let n=r.slice(e,t),i="";for(let s=0;s<n.length-1;s+=
 2)i+=String.fromCharCode(n[s]+n[s+1]*256);return i}a(Oo,"utf16leSlice");f.prototype.
 slice=a(function(e,t){let n=this.length;e=~~e,t=t===void 0?n:~~t,e<0?(e+=n,e<0&&
 (e=0)):e>n&&(e=n),t<0?(t+=n,t<0&&(t=0)):t>n&&(t=n),t<e&&(t=e);let i=this.subarray(
-e,t);return Object.setPrototypeOf(i,f.prototype),i},"slice");function N(r,e,t){if(r%
+e,t);return Object.setPrototypeOf(i,f.prototype),i},"slice");function q(r,e,t){if(r%
 1!==0||r<0)throw new RangeError("offset is not uint");if(r+e>t)throw new RangeError(
-"Trying to access beyond buffer length")}a(N,"checkOffset");f.prototype.readUintLE=
-f.prototype.readUIntLE=a(function(e,t,n){e=e>>>0,t=t>>>0,n||N(e,t,this.length);let i=this[e],
+"Trying to access beyond buffer length")}a(q,"checkOffset");f.prototype.readUintLE=
+f.prototype.readUIntLE=a(function(e,t,n){e=e>>>0,t=t>>>0,n||q(e,t,this.length);let i=this[e],
 s=1,o=0;for(;++o<t&&(s*=256);)i+=this[e+o]*s;return i},"readUIntLE");f.prototype.
-readUintBE=f.prototype.readUIntBE=a(function(e,t,n){e=e>>>0,t=t>>>0,n||N(e,t,this.
+readUintBE=f.prototype.readUIntBE=a(function(e,t,n){e=e>>>0,t=t>>>0,n||q(e,t,this.
 length);let i=this[e+--t],s=1;for(;t>0&&(s*=256);)i+=this[e+--t]*s;return i},"re\
 adUIntBE");f.prototype.readUint8=f.prototype.readUInt8=a(function(e,t){return e=
-e>>>0,t||N(e,1,this.length),this[e]},"readUInt8");f.prototype.readUint16LE=f.prototype.
-readUInt16LE=a(function(e,t){return e=e>>>0,t||N(e,2,this.length),this[e]|this[e+
+e>>>0,t||q(e,1,this.length),this[e]},"readUInt8");f.prototype.readUint16LE=f.prototype.
+readUInt16LE=a(function(e,t){return e=e>>>0,t||q(e,2,this.length),this[e]|this[e+
 1]<<8},"readUInt16LE");f.prototype.readUint16BE=f.prototype.readUInt16BE=a(function(e,t){
-return e=e>>>0,t||N(e,2,this.length),this[e]<<8|this[e+1]},"readUInt16BE");f.prototype.
-readUint32LE=f.prototype.readUInt32LE=a(function(e,t){return e=e>>>0,t||N(e,4,this.
+return e=e>>>0,t||q(e,2,this.length),this[e]<<8|this[e+1]},"readUInt16BE");f.prototype.
+readUint32LE=f.prototype.readUInt32LE=a(function(e,t){return e=e>>>0,t||q(e,4,this.
 length),(this[e]|this[e+1]<<8|this[e+2]<<16)+this[e+3]*16777216},"readUInt32LE");
 f.prototype.readUint32BE=f.prototype.readUInt32BE=a(function(e,t){return e=e>>>0,
-t||N(e,4,this.length),this[e]*16777216+(this[e+1]<<16|this[e+2]<<8|this[e+3])},"\
+t||q(e,4,this.length),this[e]*16777216+(this[e+1]<<16|this[e+2]<<8|this[e+3])},"\
 readUInt32BE");f.prototype.readBigUInt64LE=be(a(function(e){e=e>>>0,Le(e,"offset");
 let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&He(e,this.length-8);let i=t+
 this[++e]*2**8+this[++e]*2**16+this[++e]*2**24,s=this[++e]+this[++e]*2**8+this[++e]*
@@ -217,18 +217,18 @@ readBigUInt64BE=be(a(function(e){e=e>>>0,Le(e,"offset");let t=this[e],n=this[e+7
 (t===void 0||n===void 0)&&He(e,this.length-8);let i=t*2**24+this[++e]*2**16+this[++e]*
 2**8+this[++e],s=this[++e]*2**24+this[++e]*2**16+this[++e]*2**8+n;return(BigInt(
 i)<<BigInt(32))+BigInt(s)},"readBigUInt64BE"));f.prototype.readIntLE=a(function(e,t,n){
-e=e>>>0,t=t>>>0,n||N(e,t,this.length);let i=this[e],s=1,o=0;for(;++o<t&&(s*=256);)
+e=e>>>0,t=t>>>0,n||q(e,t,this.length);let i=this[e],s=1,o=0;for(;++o<t&&(s*=256);)
 i+=this[e+o]*s;return s*=128,i>=s&&(i-=Math.pow(2,8*t)),i},"readIntLE");f.prototype.
-readIntBE=a(function(e,t,n){e=e>>>0,t=t>>>0,n||N(e,t,this.length);let i=t,s=1,o=this[e+
+readIntBE=a(function(e,t,n){e=e>>>0,t=t>>>0,n||q(e,t,this.length);let i=t,s=1,o=this[e+
 --i];for(;i>0&&(s*=256);)o+=this[e+--i]*s;return s*=128,o>=s&&(o-=Math.pow(2,8*t)),
-o},"readIntBE");f.prototype.readInt8=a(function(e,t){return e=e>>>0,t||N(e,1,this.
+o},"readIntBE");f.prototype.readInt8=a(function(e,t){return e=e>>>0,t||q(e,1,this.
 length),this[e]&128?(255-this[e]+1)*-1:this[e]},"readInt8");f.prototype.readInt16LE=
-a(function(e,t){e=e>>>0,t||N(e,2,this.length);let n=this[e]|this[e+1]<<8;return n&
+a(function(e,t){e=e>>>0,t||q(e,2,this.length);let n=this[e]|this[e+1]<<8;return n&
 32768?n|4294901760:n},"readInt16LE");f.prototype.readInt16BE=a(function(e,t){e=e>>>
-0,t||N(e,2,this.length);let n=this[e+1]|this[e]<<8;return n&32768?n|4294901760:n},
-"readInt16BE");f.prototype.readInt32LE=a(function(e,t){return e=e>>>0,t||N(e,4,this.
+0,t||q(e,2,this.length);let n=this[e+1]|this[e]<<8;return n&32768?n|4294901760:n},
+"readInt16BE");f.prototype.readInt32LE=a(function(e,t){return e=e>>>0,t||q(e,4,this.
 length),this[e]|this[e+1]<<8|this[e+2]<<16|this[e+3]<<24},"readInt32LE");f.prototype.
-readInt32BE=a(function(e,t){return e=e>>>0,t||N(e,4,this.length),this[e]<<24|this[e+
+readInt32BE=a(function(e,t){return e=e>>>0,t||q(e,4,this.length),this[e]<<24|this[e+
 1]<<16|this[e+2]<<8|this[e+3]},"readInt32BE");f.prototype.readBigInt64LE=be(a(function(e){
 e=e>>>0,Le(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&He(e,
 this.length-8);let i=this[e+4]+this[e+5]*2**8+this[e+6]*2**16+(n<<24);return(BigInt(
@@ -237,11 +237,11 @@ igInt64LE"));f.prototype.readBigInt64BE=be(a(function(e){e=e>>>0,Le(e,"offset");
 let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&He(e,this.length-8);let i=(t<<
 24)+this[++e]*2**16+this[++e]*2**8+this[++e];return(BigInt(i)<<BigInt(32))+BigInt(
 this[++e]*2**24+this[++e]*2**16+this[++e]*2**8+n)},"readBigInt64BE"));f.prototype.
-readFloatLE=a(function(e,t){return e=e>>>0,t||N(e,4,this.length),Fe.read(this,e,
+readFloatLE=a(function(e,t){return e=e>>>0,t||q(e,4,this.length),Fe.read(this,e,
 !0,23,4)},"readFloatLE");f.prototype.readFloatBE=a(function(e,t){return e=e>>>0,
-t||N(e,4,this.length),Fe.read(this,e,!1,23,4)},"readFloatBE");f.prototype.readDoubleLE=
-a(function(e,t){return e=e>>>0,t||N(e,8,this.length),Fe.read(this,e,!0,52,8)},"r\
-eadDoubleLE");f.prototype.readDoubleBE=a(function(e,t){return e=e>>>0,t||N(e,8,this.
+t||q(e,4,this.length),Fe.read(this,e,!1,23,4)},"readFloatBE");f.prototype.readDoubleLE=
+a(function(e,t){return e=e>>>0,t||q(e,8,this.length),Fe.read(this,e,!0,52,8)},"r\
+eadDoubleLE");f.prototype.readDoubleBE=a(function(e,t){return e=e>>>0,t||q(e,8,this.
 length),Fe.read(this,e,!1,52,8)},"readDoubleBE");function Y(r,e,t,n,i,s){if(!f.isBuffer(
 r))throw new TypeError('"buffer" argument must be a Buffer instance');if(e>i||e<
 s)throw new RangeError('"value" argument is out of bounds');if(t+n>r.length)throw new RangeError(
@@ -343,7 +343,7 @@ throw Math.floor(r)!==r?(Le(r,t),new Pe.ERR_OUT_OF_RANGE(t||"offset","an integer
 r)):e<0?new Pe.ERR_BUFFER_OUT_OF_BOUNDS:new Pe.ERR_OUT_OF_RANGE(t||"offset",`>= ${t?
 1:0} and <= ${e}`,r)}a(He,"boundsError");var Qo=/[^+/0-9A-Za-z-_]/g;function Uo(r){
 if(r=r.split("=")[0],r=r.trim().replace(Qo,""),r.length<2)return"";for(;r.length%
-4!==0;)r=r+"=";return r}a(Uo,"base64clean");function Nt(r,e){e=e||1/0;let t,n=r.
+4!==0;)r=r+"=";return r}a(Uo,"base64clean");function qt(r,e){e=e||1/0;let t,n=r.
 length,i=null,s=[];for(let o=0;o<n;++o){if(t=r.charCodeAt(o),t>55295&&t<57344){if(!i){
 if(t>56319){(e-=3)>-1&&s.push(239,191,189);continue}else if(o+1===n){(e-=3)>-1&&
 s.push(239,191,189);continue}i=t;continue}if(t<56320){(e-=3)>-1&&s.push(239,191,
@@ -352,10 +352,10 @@ s.push(239,191,189);continue}i=t;continue}if(t<56320){(e-=3)>-1&&s.push(239,191,
 s.push(t>>6|192,t&63|128)}else if(t<65536){if((e-=3)<0)break;s.push(t>>12|224,t>>
 6&63|128,t&63|128)}else if(t<1114112){if((e-=4)<0)break;s.push(t>>18|240,t>>12&63|
 128,t>>6&63|128,t&63|128)}else throw new Error("Invalid code point")}return s}a(
-Nt,"utf8ToBytes");function No(r){let e=[];for(let t=0;t<r.length;++t)e.push(r.charCodeAt(
-t)&255);return e}a(No,"asciiToBytes");function qo(r,e){let t,n,i,s=[];for(let o=0;o<
+qt,"utf8ToBytes");function qo(r){let e=[];for(let t=0;t<r.length;++t)e.push(r.charCodeAt(
+t)&255);return e}a(qo,"asciiToBytes");function No(r,e){let t,n,i,s=[];for(let o=0;o<
 r.length&&!((e-=2)<0);++o)t=r.charCodeAt(o),n=t>>8,i=t%256,s.push(i),s.push(n);return s}
-a(qo,"utf16leToBytes");function Yn(r){return Dt.toByteArray(Uo(r))}a(Yn,"base64T\
+a(No,"utf16leToBytes");function Yn(r){return Dt.toByteArray(Uo(r))}a(Yn,"base64T\
 oBytes");function ct(r,e,t,n){let i;for(i=0;i<n&&!(i+t>=e.length||i>=r.length);++i)
 e[i+t]=r[i];return i}a(ct,"blitBuffer");function le(r,e){return r instanceof e||
 r!=null&&r.constructor!=null&&r.constructor.name!=null&&r.constructor.name===e.name}
@@ -652,7 +652,7 @@ Xt),r(1007,Xt),r(1028,Xt),r(1016,Ca),r(1017,Ta),r(1021,er),r(1022,er),r(1231,er)
 r(1014,se),r(1015,se),r(1008,se),r(1009,se),r(1040,se),r(1041,se),r(1115,tr),r(1182,
 tr),r(1185,tr),r(1186,Ei),r(1187,Ia),r(17,Ai),r(114,JSON.parse.bind(JSON)),r(3802,
 JSON.parse.bind(JSON)),r(199,vi),r(3807,vi),r(3907,se),r(2951,se),r(791,se),r(1183,
-se),r(1270,se)},"init");Ti.exports={init:Fa}});var Pi=I((Nl,Ri)=>{"use strict";d();var Z=1e6;function La(r){var e=r.readInt32BE(
+se),r(1270,se)},"init");Ti.exports={init:Fa}});var Pi=I((ql,Ri)=>{"use strict";d();var Z=1e6;function La(r){var e=r.readInt32BE(
 0),t=r.readUInt32BE(4),n="";e<0&&(e=~e+(t===0),t=~t+1>>>0,n="-");var i="",s,o,u,
 c,l,h;{if(s=e%Z,e=e/Z>>>0,o=4294967296*s+t,t=o/Z>>>0,u=""+(o-Z*t),t===0&&e===0)return n+
 u+i;for(c="",l=6-u.length,h=0;h<l;h++)c+="0";i=c+u+i}{if(s=e%Z,e=e/Z>>>0,o=4294967296*
@@ -685,10 +685,10 @@ p;console.log("ERROR: ElementType not implemented: "+l)},"parseElement"),c=a(fun
 var p=[],S;if(l.length>1){var _=l.shift();for(S=0;S<_;S++)p[S]=c(l,h);l.unshift(
 _)}else for(S=0;S<l[0];S++)p[S]=u(h);return p},"parse");return c(s,n)},"parseArr\
 ay"),Qa=a(function(r){return r.toString("utf8")},"parseText"),Ua=a(function(r){return r===
-null?null:B(r,8)>0},"parseBool"),Na=a(function(r){r(20,Ba),r(21,Ma),r(23,Fi),r(26,
+null?null:B(r,8)>0},"parseBool"),qa=a(function(r){r(20,Ba),r(21,Ma),r(23,Fi),r(26,
 Fi),r(1700,Da),r(700,ka),r(701,Oa),r(16,Ua),r(1114,Li.bind(null,!1)),r(1184,Li.bind(
 null,!0)),r(1e3,Ze),r(1007,Ze),r(1016,Ze),r(1008,Ze),r(1009,Ze),r(25,Qa)},"init");
-Mi.exports={init:Na}});var Di=I(($l,Oi)=>{d();Oi.exports={BOOL:16,BYTEA:17,CHAR:18,INT8:20,INT2:21,INT4:23,
+Mi.exports={init:qa}});var Di=I(($l,Oi)=>{d();Oi.exports={BOOL:16,BYTEA:17,CHAR:18,INT8:20,INT2:21,INT4:23,
 REGPROC:24,TEXT:25,OID:26,TID:27,XID:28,CID:29,JSON:114,XML:142,PG_NODE_TREE:194,
 SMGR:210,PATH:602,POLYGON:604,CIDR:650,FLOAT4:700,FLOAT8:701,ABSTIME:702,RELTIME:703,
 TINTERVAL:704,CIRCLE:718,MACADDR8:774,MONEY:790,MACADDR:829,INET:869,ACLITEM:1033,
@@ -696,11 +696,11 @@ BPCHAR:1042,VARCHAR:1043,DATE:1082,TIME:1083,TIMESTAMP:1114,TIMESTAMPTZ:1184,INT
 TIMETZ:1266,BIT:1560,VARBIT:1562,NUMERIC:1700,REFCURSOR:1790,REGPROCEDURE:2202,REGOPER:2203,
 REGOPERATOR:2204,REGCLASS:2205,REGTYPE:2206,UUID:2950,TXID_SNAPSHOT:2970,PG_LSN:3220,
 PG_NDISTINCT:3361,PG_DEPENDENCIES:3402,TSVECTOR:3614,TSQUERY:3615,GTSVECTOR:3642,
-REGCONFIG:3734,REGDICTIONARY:3769,JSONB:3802,REGNAMESPACE:4089,REGROLE:4096}});var et=I(Xe=>{d();var qa=Ii(),Wa=ki(),ja=Yt(),Ha=Di();Xe.getTypeParser=Ga;Xe.setTypeParser=
+REGCONFIG:3734,REGDICTIONARY:3769,JSONB:3802,REGNAMESPACE:4089,REGROLE:4096}});var et=I(Xe=>{d();var Na=Ii(),Wa=ki(),ja=Yt(),Ha=Di();Xe.getTypeParser=Ga;Xe.setTypeParser=
 $a;Xe.arrayParser=ja;Xe.builtins=Ha;var Je={text:{},binary:{}};function Qi(r){return String(
 r)}a(Qi,"noParse");function Ga(r,e){return e=e||"text",Je[e]&&Je[e][r]||Qi}a(Ga,
 "getTypeParser");function $a(r,e,t){typeof e=="function"&&(t=e,e="text"),Je[e][r]=
-t}a($a,"setTypeParser");qa.init(function(r,e){Je.text[r]=e});Wa.init(function(r,e){
+t}a($a,"setTypeParser");Na.init(function(r,e){Je.text[r]=e});Wa.init(function(r,e){
 Je.binary[r]=e})});var tt=I((Zl,ir)=>{"use strict";d();ir.exports={host:"localhost",user:m.platform===
 "win32"?m.env.USERNAME:m.env.USER,database:void 0,password:null,connectionString:void 0,
 port:5432,rows:0,binary:!1,max:10,idleTimeoutMillis:3e4,client_encoding:"",ssl:!1,
@@ -709,7 +709,7 @@ statement_timeout:!1,lock_timeout:!1,idle_in_transaction_session_timeout:!1,quer
 connect_timeout:0,keepalives:1,keepalives_idle:0};var Oe=et(),Va=Oe.getTypeParser(
 20,"text"),Ka=Oe.getTypeParser(1016,"text");ir.exports.__defineSetter__("parseIn\
 t8",function(r){Oe.setTypeParser(20,"text",r?Oe.getTypeParser(23,"text"):Va),Oe.
-setTypeParser(1016,"text",r?Oe.getTypeParser(1007,"text"):Ka)})});var rt=I((Xl,Ni)=>{"use strict";d();var za=(Vt(),U($t)),Ya=tt();function Za(r){var e=r.
+setTypeParser(1016,"text",r?Oe.getTypeParser(1007,"text"):Ka)})});var rt=I((Xl,qi)=>{"use strict";d();var za=(Vt(),U($t)),Ya=tt();function Za(r){var e=r.
 replace(/\\/g,"\\\\").replace(/"/g,'\\"');return'"'+e+'"'}a(Za,"escapeElement");
 function Ui(r){for(var e="{",t=0;t<r.length;t++)t>0&&(e=e+","),r[t]===null||typeof r[t]>
 "u"?e=e+"NULL":Array.isArray(r[t])?e=e+Ui(r[t]):r[t]instanceof y?e+="\\\\x"+r[t].
@@ -734,7 +734,7 @@ gUTC");function tu(r,e,t){return r=typeof r=="string"?{text:r}:r,e&&(typeof e=="
 function"?r.callback=e:r.values=e),t&&(r.callback=t),r}a(tu,"normalizeQueryConfi\
 g");var sr=a(function(r){return za.createHash("md5").update(r,"utf-8").digest("h\
 ex")},"md5"),ru=a(function(r,e,t){var n=sr(e+r),i=sr(y.concat([y.from(n),t]));return"\
-md5"+i},"postgresMd5PasswordHash");Ni.exports={prepareValue:a(function(e){return yt(
+md5"+i},"postgresMd5PasswordHash");qi.exports={prepareValue:a(function(e){return yt(
 e)},"prepareValueWrapper"),normalizeQueryConfig:tu,postgresMd5PasswordHash:ru,md5:sr}});var Gi=I((rh,Hi)=>{"use strict";d();var or=(Vt(),U($t));function nu(r){if(r.indexOf(
 "SCRAM-SHA-256")===-1)throw new Error("SASL: Only mechanism SCRAM-SHA-256 is cur\
 rently supported");let e=or.randomBytes(18).toString("base64");return{mechanism:"\
@@ -758,20 +758,20 @@ e);if(t!==r.serverSignature)throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: s
 erver signature does not match")}a(su,"finalizeSession");function ou(r){if(typeof r!=
 "string")throw new TypeError("SASL: text must be a string");return r.split("").map(
 (e,t)=>r.charCodeAt(t)).every(e=>e>=33&&e<=43||e>=45&&e<=126)}a(ou,"isPrintableC\
-hars");function qi(r){return/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.
-test(r)}a(qi,"isBase64");function Wi(r){if(typeof r!="string")throw new TypeError(
+hars");function Ni(r){return/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.
+test(r)}a(Ni,"isBase64");function Wi(r){if(typeof r!="string")throw new TypeError(
 "SASL: attribute pairs text must be a string");return new Map(r.split(",").map(e=>{
 if(!/^.=/.test(e))throw new Error("SASL: Invalid attribute pair entry");let t=e[0],
 n=e.substring(2);return[t,n]}))}a(Wi,"parseAttributePairs");function au(r){let e=Wi(
 r),t=e.get("r");if(t){if(!ou(t))throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAG\
 E: nonce must only contain printable characters")}else throw new Error("SASL: SC\
-RAM-SERVER-FIRST-MESSAGE: nonce missing");let n=e.get("s");if(n){if(!qi(n))throw new Error(
+RAM-SERVER-FIRST-MESSAGE: nonce missing");let n=e.get("s");if(n){if(!Ni(n))throw new Error(
 "SASL: SCRAM-SERVER-FIRST-MESSAGE: salt must be base64")}else throw new Error("S\
 ASL: SCRAM-SERVER-FIRST-MESSAGE: salt missing");let i=e.get("i");if(i){if(!/^[1-9][0-9]*$/.
 test(i))throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: invalid iteration cou\
 nt")}else throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: iteration missing");
 let s=parseInt(i,10);return{nonce:t,salt:n,iteration:s}}a(au,"parseServerFirstMe\
-ssage");function uu(r){let t=Wi(r).get("v");if(t){if(!qi(t))throw new Error("SAS\
+ssage");function uu(r){let t=Wi(r).get("v");if(t){if(!Ni(t))throw new Error("SAS\
 L: SCRAM-SERVER-FINAL-MESSAGE: server signature must be base64")}else throw new Error(
 "SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature is missing");return{serverSignature:t}}
 a(uu,"parseServerFinalMessage");function ji(r,e){if(!y.isBuffer(r))throw new TypeError(
@@ -1057,9 +1057,9 @@ ForQuery"}};a(Jr,"ReadyForQueryMessage");var Qr=Jr;T.ReadyForQueryMessage=Qr;var
 this.length=e,this.text=t,this.name="commandComplete"}};a(Xr,"CommandCompleteMes\
 sage");var Ur=Xr;T.CommandCompleteMessage=Ur;var en=class en{constructor(e,t){this.
 length=e,this.fields=t,this.name="dataRow",this.fieldCount=t.length}};a(en,"Data\
-RowMessage");var Nr=en;T.DataRowMessage=Nr;var tn=class tn{constructor(e,t){this.
-length=e,this.message=t,this.name="notice"}};a(tn,"NoticeMessage");var qr=tn;T.NoticeMessage=
-qr});var vs=I(Et=>{"use strict";d();Object.defineProperty(Et,"__esModule",{value:!0});
+RowMessage");var qr=en;T.DataRowMessage=qr;var tn=class tn{constructor(e,t){this.
+length=e,this.message=t,this.name="notice"}};a(tn,"NoticeMessage");var Nr=tn;T.NoticeMessage=
+Nr});var vs=I(Et=>{"use strict";d();Object.defineProperty(Et,"__esModule",{value:!0});
 Et.Writer=void 0;var sn=class sn{constructor(e=256){this.size=e,this.offset=5,this.
 headerPosition=0,this.buffer=y.allocUnsafe(e)}ensure(e){var t=this.buffer.length-
 this.offset;if(t<e){var n=this.buffer,i=n.length+(n.length>>1)+e;this.buffer=y.allocUnsafe(
@@ -1079,8 +1079,8 @@ iter");var nn=sn;Et.Writer=nn});var As=I(_t=>{"use strict";d();Object.defineProp
 _t.serialize=void 0;var on=vs(),M=new on.Writer,Uu=a(r=>{M.addInt16(3).addInt16(
 0);for(let n of Object.keys(r))M.addCString(n).addCString(r[n]);M.addCString("cl\
 ient_encoding").addCString("UTF8");var e=M.addCString("").flush(),t=e.length+4;return new on.
-Writer().addInt32(t).add(e).flush()},"startup"),Nu=a(()=>{let r=y.allocUnsafe(8);
-return r.writeInt32BE(8,0),r.writeInt32BE(80877103,4),r},"requestSsl"),qu=a(r=>M.
+Writer().addInt32(t).add(e).flush()},"startup"),qu=a(()=>{let r=y.allocUnsafe(8);
+return r.writeInt32BE(8,0),r.writeInt32BE(80877103,4),r},"requestSsl"),Nu=a(r=>M.
 addCString(r).flush(112),"password"),Wu=a(function(r,e){return M.addCString(r).addInt32(
 y.byteLength(e)).addString(e),M.flush(112)},"sendSASLInitialResponseMessage"),ju=a(
 function(r){return M.addString(r).flush(112)},"sendSCRAMClientFinalMessage"),Hu=a(
@@ -1089,12 +1089,12 @@ r=>M.addCString(r).flush(81),"query"),Es=[],Gu=a(r=>{let e=r.name||"";e.length>6
 console.error("You supplied %s (%s)",e,e.length),console.error("This can cause c\
 onflicts and silent errors executing queries"));let t=r.types||Es;for(var n=t.length,
 i=M.addCString(e).addCString(r.text).addInt16(n),s=0;s<n;s++)i.addInt32(t[s]);return M.
-flush(80)},"parse"),Ne=new on.Writer,$u=a(function(r,e){for(let t=0;t<r.length;t++){
-let n=e?e(r[t],t):r[t];n==null?(M.addInt16(0),Ne.addInt32(-1)):n instanceof y?(M.
-addInt16(1),Ne.addInt32(n.length),Ne.add(n)):(M.addInt16(0),Ne.addInt32(y.byteLength(
-n)),Ne.addString(n))}},"writeValues"),Vu=a((r={})=>{let e=r.portal||"",t=r.statement||
+flush(80)},"parse"),qe=new on.Writer,$u=a(function(r,e){for(let t=0;t<r.length;t++){
+let n=e?e(r[t],t):r[t];n==null?(M.addInt16(0),qe.addInt32(-1)):n instanceof y?(M.
+addInt16(1),qe.addInt32(n.length),qe.add(n)):(M.addInt16(0),qe.addInt32(y.byteLength(
+n)),qe.addString(n))}},"writeValues"),Vu=a((r={})=>{let e=r.portal||"",t=r.statement||
 "",n=r.binary||!1,i=r.values||Es,s=i.length;return M.addCString(e).addCString(t),
-M.addInt16(s),$u(i,r.valueMapper),M.addInt16(s),M.add(Ne.flush()),M.addInt16(n?1:
+M.addInt16(s),$u(i,r.valueMapper),M.addInt16(s),M.add(qe.flush()),M.addInt16(n?1:
 0),M.flush(66)},"bind"),Ku=y.from([69,0,0,0,9,0,0,0,0,0]),zu=a(r=>{if(!r||!r.portal&&
 !r.rows)return Ku;let e=r.portal||"",t=r.rows||0,n=y.byteLength(e),i=4+n+1+4,s=y.
 allocUnsafe(1+i);return s[0]=69,s.writeInt32BE(i,1),s.write(e,5,"utf-8"),s[n+5]=
@@ -1106,8 +1106,8 @@ allocUnsafe(1+n);return i[0]=r,i.writeInt32BE(n,1),i.write(e,5,"utf-8"),i[n]=0,i
 Xu=a(r=>r.name?an(68,`${r.type}${r.name||""}`):r.type==="P"?Zu:Ju,"describe"),ec=a(
 r=>{let e=`${r.type}${r.name||""}`;return an(67,e)},"close"),tc=a(r=>M.add(r).flush(
 100),"copyData"),rc=a(r=>an(102,r),"copyFail"),At=a(r=>y.from([r,0,0,0,4]),"code\
-OnlyBuffer"),nc=At(72),ic=At(83),sc=At(88),oc=At(99),ac={startup:Uu,password:qu,
-requestSsl:Nu,sendSASLInitialResponseMessage:Wu,sendSCRAMClientFinalMessage:ju,query:Hu,
+OnlyBuffer"),nc=At(72),ic=At(83),sc=At(88),oc=At(99),ac={startup:Uu,password:Nu,
+requestSsl:qu,sendSASLInitialResponseMessage:Wu,sendSCRAMClientFinalMessage:ju,query:Hu,
 parse:Gu,bind:Vu,execute:zu,describe:Xu,close:ec,flush:a(()=>nc,"flush"),sync:a(
 ()=>ic,"sync"),end:a(()=>sc,"end"),copyData:tc,copyDone:a(()=>oc,"copyDone"),copyFail:rc,
 cancel:Yu};_t.serialize=ac});var _s=I(Ct=>{"use strict";d();Object.defineProperty(Ct,"__esModule",{value:!0});
@@ -1192,7 +1192,7 @@ return fc.serialize},"get")});var dc=Is();function pc(r,e){let t=new dc.Parser;r
 on("data",n=>t.parse(n,e)),new Promise(n=>r.on("end",()=>n()))}a(pc,"parse");Ee.
 parse=pc});var Rs={};ne(Rs,{connect:()=>yc});function yc({socket:r,servername:e}){return r.
 startTls(e),r}var Ps=z(()=>{"use strict";d();a(yc,"connect")});var mn=I((uf,Bs)=>{"use strict";d();var Fs=(vt(),U(xs)),mc=Se().EventEmitter,{parse:gc,
-serialize:q}=dn(),Ls=q.flush(),wc=q.sync(),bc=q.end(),yn=class yn extends mc{constructor(e){
+serialize:N}=dn(),Ls=N.flush(),wc=N.sync(),bc=N.end(),yn=class yn extends mc{constructor(e){
 super(),e=e||{},this.stream=e.stream||new Fs.Socket,this._keepAlive=e.keepAlive,
 this._keepAliveInitialDelayMillis=e.keepAliveInitialDelayMillis,this.lastBuffer=
 !1,this.parsedStatements={},this.ssl=e.ssl||!1,this._ending=!1,this._emitMessage=
@@ -1211,19 +1211,19 @@ c,n.ssl),"key"in n.ssl&&(c.key=n.ssl.key)),Fs.isIP(t)===0&&(c.servername=t);try{
 n.stream=u.connect(c)}catch(l){return n.emit("error",l)}n.attachListeners(n.stream),
 n.stream.on("error",i),n.emit("sslconnect")})}attachListeners(e){e.on("end",()=>{
 this.emit("end")}),gc(e,t=>{var n=t.name==="error"?"errorMessage":t.name;this._emitMessage&&
-this.emit("message",t),this.emit(n,t)})}requestSsl(){this.stream.write(q.requestSsl())}startup(e){
-this.stream.write(q.startup(e))}cancel(e,t){this._send(q.cancel(e,t))}password(e){
-this._send(q.password(e))}sendSASLInitialResponseMessage(e,t){this._send(q.sendSASLInitialResponseMessage(
-e,t))}sendSCRAMClientFinalMessage(e){this._send(q.sendSCRAMClientFinalMessage(e))}_send(e){
-return this.stream.writable?this.stream.write(e):!1}query(e){this._send(q.query(
-e))}parse(e){this._send(q.parse(e))}bind(e){this._send(q.bind(e))}execute(e){this.
-_send(q.execute(e))}flush(){this.stream.writable&&this.stream.write(Ls)}sync(){this.
+this.emit("message",t),this.emit(n,t)})}requestSsl(){this.stream.write(N.requestSsl())}startup(e){
+this.stream.write(N.startup(e))}cancel(e,t){this._send(N.cancel(e,t))}password(e){
+this._send(N.password(e))}sendSASLInitialResponseMessage(e,t){this._send(N.sendSASLInitialResponseMessage(
+e,t))}sendSCRAMClientFinalMessage(e){this._send(N.sendSCRAMClientFinalMessage(e))}_send(e){
+return this.stream.writable?this.stream.write(e):!1}query(e){this._send(N.query(
+e))}parse(e){this._send(N.parse(e))}bind(e){this._send(N.bind(e))}execute(e){this.
+_send(N.execute(e))}flush(){this.stream.writable&&this.stream.write(Ls)}sync(){this.
 _ending=!0,this._send(Ls),this._send(wc)}ref(){this.stream.ref()}unref(){this.stream.
 unref()}end(){if(this._ending=!0,!this._connecting||!this.stream.writable){this.
 stream.end();return}return this.stream.write(bc,()=>{this.stream.end()})}close(e){
-this._send(q.close(e))}describe(e){this._send(q.describe(e))}sendCopyFromChunk(e){
-this._send(q.copyData(e))}endCopyFrom(){this._send(q.copyDone())}sendCopyFail(e){
-this._send(q.copyFail(e))}};a(yn,"Connection");var pn=yn;Bs.exports=pn});var Os=I((ff,ks)=>{"use strict";d();var Sc=Se().EventEmitter,hf=($e(),U(Ge)),xc=rt(),
+this._send(N.close(e))}describe(e){this._send(N.describe(e))}sendCopyFromChunk(e){
+this._send(N.copyData(e))}endCopyFrom(){this._send(N.copyDone())}sendCopyFail(e){
+this._send(N.copyFail(e))}};a(yn,"Connection");var pn=yn;Bs.exports=pn});var Os=I((ff,ks)=>{"use strict";d();var Sc=Se().EventEmitter,hf=($e(),U(Ge)),xc=rt(),
 gn=Gi(),vc=rs(),Ec=St(),Ac=xt(),Ms=ws(),_c=tt(),Cc=mn(),wn=class wn extends Sc{constructor(e){
 super(),this.connectionParameters=new Ac(e),this.user=this.connectionParameters.
 user,this.database=this.connectionParameters.database,this.port=this.connectionParameters.
@@ -1337,11 +1337,11 @@ unref()}end(e){if(this._ending=!0,!this.connection._connecting)if(e)e();else ret
 _Promise.resolve();if(this.activeQuery||!this._queryable?this.connection.stream.
 destroy():this.connection.end(),e)this.connection.once("end",e);else return new this.
 _Promise(t=>{this.connection.once("end",t)})}};a(wn,"Client");var It=wn;It.Query=
-Ms;ks.exports=It});var Ns=I((yf,Us)=>{"use strict";d();var Tc=Se().EventEmitter,Ds=a(function(){},"\
+Ms;ks.exports=It});var qs=I((yf,Us)=>{"use strict";d();var Tc=Se().EventEmitter,Ds=a(function(){},"\
 NOOP"),Qs=a((r,e)=>{let t=r.findIndex(e);return t===-1?void 0:r.splice(t,1)[0]},
 "removeWhere"),xn=class xn{constructor(e,t,n){this.client=e,this.idleListener=t,
 this.timeoutId=n}};a(xn,"IdleItem");var bn=xn,vn=class vn{constructor(e){this.callback=
-e}};a(vn,"PendingItem");var qe=vn;function Ic(){throw new Error("Release called \
+e}};a(vn,"PendingItem");var Ne=vn;function Ic(){throw new Error("Release called \
 on client which has already been released to the pool.")}a(Ic,"throwOnDoubleRele\
 ase");function Rt(r,e){if(e)return{callback:e,result:void 0};let t,n,i=a(function(o,u){
 o?t(o):n(u)},"cb"),s=new r(function(o,u){n=o,t=u}).catch(o=>{throw Error.captureStackTrace(
@@ -1373,11 +1373,11 @@ e),e.end(),this.emit("remove",e)}connect(e){if(this.ending){let i=new Error("Can
 not use a pool after calling end on the pool");return e?e(i):this.Promise.reject(
 i)}let t=Rt(this.Promise,e),n=t.result;if(this._isFull()||this._idle.length){if(this.
 _idle.length&&m.nextTick(()=>this._pulseQueue()),!this.options.connectionTimeoutMillis)
-return this._pendingQueue.push(new qe(t.callback)),n;let i=a((u,c,l)=>{clearTimeout(
-o),t.callback(u,c,l)},"queueCallback"),s=new qe(i),o=setTimeout(()=>{Qs(this._pendingQueue,
+return this._pendingQueue.push(new Ne(t.callback)),n;let i=a((u,c,l)=>{clearTimeout(
+o),t.callback(u,c,l)},"queueCallback"),s=new Ne(i),o=setTimeout(()=>{Qs(this._pendingQueue,
 u=>u.callback===i),s.timedOut=!0,t.callback(new Error("timeout exceeded when try\
 ing to connect"))},this.options.connectionTimeoutMillis);return this._pendingQueue.
-push(s),n}return this.newClient(new qe(t.callback)),n}newClient(e){let t=new this.
+push(s),n}return this.newClient(new Ne(t.callback)),n}newClient(e){let t=new this.
 Client(this.options);this._clients.push(t);let n=Rc(this,t);this.log("checking c\
 lient timeout");let i,s=!1;this.options.connectionTimeoutMillis&&(i=setTimeout(()=>{
 this.log("ending client due to timeout"),s=!0,t.connection?t.connection.stream.destroy():
@@ -1388,7 +1388,7 @@ ion terminated due to connection timeout"),this._pulseQueue(),e.timedOut||e.call
 o,void 0,Ds);else{if(this.log("new client connected"),this.options.maxLifetimeSeconds!==
 0){let u=setTimeout(()=>{this.log("ending client due to expired lifetime"),this.
 _expired.add(t),this._idle.findIndex(l=>l.client===t)!==-1&&this._acquireClient(
-t,new qe((l,h,p)=>p()),n,!1)},this.options.maxLifetimeSeconds*1e3);u.unref(),t.once(
+t,new Ne((l,h,p)=>p()),n,!1)},this.options.maxLifetimeSeconds*1e3);u.unref(),t.once(
 "end",()=>clearTimeout(u))}return this._acquireClient(t,e,n,!0)}})}_acquireClient(e,t,n,i){
 i&&this.emit("connect",e),this.emit("acquire",e),e.release=this._releaseOnce(e,n),
 e.removeListener("error",n),t.timedOut?i&&this.options.verify?this.options.verify(
@@ -1416,7 +1416,7 @@ this.Promise.reject(n)}this.ending=!0;let t=Rt(this.Promise,e);return this._endC
 t.callback,this._pulseQueue(),t.result}get waitingCount(){return this._pendingQueue.
 length}get idleCount(){return this._idle.length}get expiredCount(){return this._clients.
 reduce((e,t)=>e+(this._expired.has(t)?1:0),0)}get totalCount(){return this._clients.
-length}};a(En,"Pool");var Sn=En;Us.exports=Sn});var qs={};ne(qs,{default:()=>Pc});var Pc,Ws=z(()=>{"use strict";d();Pc={}});var js=I((bf,Fc)=>{Fc.exports={name:"pg",version:"8.8.0",description:"PostgreSQL\
+length}};a(En,"Pool");var Sn=En;Us.exports=Sn});var Ns={};ne(Ns,{default:()=>Pc});var Pc,Ws=z(()=>{"use strict";d();Pc={}});var js=I((bf,Fc)=>{Fc.exports={name:"pg",version:"8.8.0",description:"PostgreSQL\
  client - pure javascript & libpq with the same API",keywords:["database","libpq",
 "pg","postgre","postgres","postgresql","rdbms"],homepage:"https://github.com/bri\
 anc/node-postgres",repository:{type:"git",url:"git://github.com/brianc/node-post\
@@ -1458,7 +1458,7 @@ this.name,this.text,n.length,function(s){return s?t(s):(r.namedQueries[e.name]=e
 text,e.native.execute(e.name,n,t))})}else if(this.values){if(!Array.isArray(this.
 values)){let s=new Error("Query values must be an array");return t(s)}var i=this.
 values.map(An.prepareValue);r.native.query(this.text,i,t)}else r.native.query(this.
-text,t)}});var Ys=I((Af,zs)=>{"use strict";d();var Mc=(Ws(),U(qs)),kc=St(),Ef=js(),Vs=Se().
+text,t)}});var Ys=I((Af,zs)=>{"use strict";d();var Mc=(Ws(),U(Ns)),kc=St(),Ef=js(),Vs=Se().
 EventEmitter,Oc=($e(),U(Ge)),Dc=xt(),Ks=$s(),J=zs.exports=function(r){Vs.call(this),
 r=r||{},this._Promise=r.Promise||b.Promise,this._types=new kc(r.types),this.native=
 new Mc({types:this._types}),this._queryQueue=[],this._ending=!1,this._connecting=
@@ -1503,10 +1503,10 @@ _activeQuery===r?this.native.cancel(function(){}):this._queryQueue.indexOf(r)!==
 -1&&this._queryQueue.splice(this._queryQueue.indexOf(r),1)};J.prototype.ref=function(){};
 J.prototype.unref=function(){};J.prototype.setTypeParser=function(r,e,t){return this.
 _types.setTypeParser(r,e,t)};J.prototype.getTypeParser=function(r,e){return this.
-_types.getTypeParser(r,e)}});var _n=I((Tf,Zs)=>{"use strict";d();Zs.exports=Ys()});var Pt=I((Rf,it)=>{"use strict";d();var Qc=Os(),Uc=tt(),Nc=mn(),qc=Ns(),{DatabaseError:Wc}=dn(),
-jc=a(r=>{var e;return e=class extends qc{constructor(n){super(n,r)}},a(e,"BoundP\
+_types.getTypeParser(r,e)}});var _n=I((Tf,Zs)=>{"use strict";d();Zs.exports=Ys()});var Pt=I((Rf,it)=>{"use strict";d();var Qc=Os(),Uc=tt(),qc=mn(),Nc=qs(),{DatabaseError:Wc}=dn(),
+jc=a(r=>{var e;return e=class extends Nc{constructor(n){super(n,r)}},a(e,"BoundP\
 ool"),e},"poolFactory"),Cn=a(function(r){this.defaults=Uc,this.Client=r,this.Query=
-this.Client.Query,this.Pool=jc(this.Client),this._pools=[],this.Connection=Nc,this.
+this.Client.Query,this.Pool=jc(this.Client),this._pools=[],this.Connection=qc,this.
 types=et(),this.DatabaseError=Wc},"PG");typeof m.env.NODE_PG_FORCE_NATIVE<"u"?it.
 exports=new Cn(_n()):(it.exports=new Cn(Qc),Object.defineProperty(it.exports,"na\
 tive",{configurable:!0,enumerable:!1,get(){var r=null;try{r=new Cn(_n())}catch(e){

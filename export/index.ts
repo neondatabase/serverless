@@ -19,7 +19,6 @@ circumstances are right.
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { neon, NeonDbError } from './httpQuery';
-import type { NeonConfigGlobalAndClient } from './neonConfig';
 import type {
   QueryResultRow,
   Submittable,
@@ -61,8 +60,8 @@ declare interface NeonClient {
  * https://node-postgres.com/apis/client
  */
 class NeonClient extends Client {
-  get neonConfig(): NeonConfigGlobalAndClient {
-    return this.connection.stream;
+  get neonConfig() {
+    return this.connection.stream as Socket;
   }
 
   constructor(public config: any) {
@@ -408,13 +407,10 @@ class NeonPool extends Pool {
 export * from 'pg';
 export * from './httpQuery';
 
-export interface NeonConfig extends NeonConfigGlobalAndClient {}
-
 export {
   Socket as neonConfig,
   NeonPool as Pool,
   NeonClient as Client,
   neon,
   NeonDbError,
-  NeonConfigGlobalAndClient,
 };
