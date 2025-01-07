@@ -2,6 +2,15 @@ import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { neon, NeonDbError } from './httpQuery';
 import type { NeonConfigGlobalAndClient } from './neonConfig';
+import type {
+  QueryResultRow,
+  Submittable,
+  QueryArrayConfig,
+  QueryConfigValues,
+  QueryConfig,
+  QueryArrayResult,
+  QueryResult,
+} from 'pg';
 
 // @ts-ignore -- this isn't officially exported by pg
 import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
@@ -56,9 +65,9 @@ class NeonClient extends Client {
     super(config);
   }
 
-  connect(): Promise<void>;
-  connect(callback: (err?: Error) => void): void;
-  connect(callback?: (err?: Error) => void) {
+  override connect(): Promise<void>;
+  override connect(callback: (err?: Error) => void): void;
+  override connect(callback?: (err?: Error) => void) {
     const { neonConfig } = this;
 
     // disable TLS if requested
@@ -305,7 +314,7 @@ class NeonPool extends Pool {
   Client = NeonClient;
   hasFetchUnsupportedListeners = false;
 
-  on(
+  override on(
     event: 'error' | 'connect' | 'acquire' | 'release' | 'remove',
     listener: any,
   ) {
@@ -313,10 +322,35 @@ class NeonPool extends Pool {
     return super.on(event as any, listener);
   }
 
-  addListener = this.on;
+  override addListener = this.on;
 
-  // @ts-ignore -- is it even possible to make TS happy with these overloaded function types?
-  query(config?: any, values?: any, cb?: any) {
+  override query<T extends Submittable>(queryStream: T): T;
+  // tslint:disable:no-unnecessary-generics
+  override query<R extends any[] = any[], I = any[]>(
+    queryConfig: QueryArrayConfig<I>,
+    values?: QueryConfigValues<I>,
+  ): Promise<QueryArrayResult<R>>;
+  override query<R extends QueryResultRow = any, I = any[]>(
+    queryConfig: QueryConfig<I>,
+  ): Promise<QueryResult<R>>;
+  override query<R extends QueryResultRow = any, I = any[]>(
+    queryTextOrConfig: string | QueryConfig<I>,
+    values?: QueryConfigValues<I>,
+  ): Promise<QueryResult<R>>;
+  override query<R extends any[] = any[], I = any[]>(
+    queryConfig: QueryArrayConfig<I>,
+    callback: (err: Error, result: QueryArrayResult<R>) => void,
+  ): void;
+  override query<R extends QueryResultRow = any, I = any[]>(
+    queryTextOrConfig: string | QueryConfig<I>,
+    callback: (err: Error, result: QueryResult<R>) => void,
+  ): void;
+  override query<R extends QueryResultRow = any, I = any[]>(
+    queryText: string,
+    values: QueryConfigValues<I>,
+    callback: (err: Error, result: QueryResult<R>) => void,
+  ): void;
+  override query(config?: any, values?: any, cb?: any) {
     if (
       !Socket.poolQueryViaFetch ||
       this.hasFetchUnsupportedListeners ||
@@ -338,8 +372,8 @@ class NeonPool extends Pool {
 
     try {
       const cp = new ConnectionParameters(this.options) as ConnectionParameters;
-      const euc = encodeURIComponent,
-        eu = encodeURI;
+      const euc = encodeURIComponent;
+      const eu = encodeURI;
       const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
 
       const queryText = typeof config === 'string' ? config : config.text;
@@ -363,19 +397,16 @@ class NeonPool extends Pool {
   }
 }
 
+export * from 'pg';
+export * from './httpQuery';
+
+export interface NeonConfig extends NeonConfigGlobalAndClient {}
+
 export {
   Socket as neonConfig,
   NeonPool as Pool,
   NeonClient as Client,
   neon,
   NeonDbError,
+  NeonConfigGlobalAndClient,
 };
-
-export {
-  Connection,
-  DatabaseError,
-  Query,
-  ClientBase,
-  defaults,
-  types,
-} from 'pg';

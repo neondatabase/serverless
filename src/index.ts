@@ -14,7 +14,7 @@ import * as subtls from 'subtls';
 import isrgRootX1 from './isrgrootx1.pem';
 
 import { deepEqual } from 'fast-equals';
-import { Client, Pool, neon, neonConfig } from '../export';
+import { Client, NeonQueryFunction, Pool, neon, neonConfig } from '../export';
 import {
   timedRepeats,
   runQuery,
@@ -141,6 +141,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => {}) {
   // option setting on individual queries within a batch: should be honoured (despite types not supporting it)
   const [[r9], [r10]] = await sql.transaction((txn) => [
     txn`SELECT ${1}::int AS "batchInt"`,
+    // @ts-expect-error
     txn('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: true }),
   ]);
   log(
@@ -293,7 +294,7 @@ export async function latencies(
 
   // timeout
   function sqlWithRetries(
-    sql: ReturnType<typeof neon>,
+    sql: NeonQueryFunction<any, any>,
     timeoutMs: number,
     attempts = 3,
   ) {

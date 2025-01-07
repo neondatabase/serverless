@@ -1,14 +1,18 @@
 /// <reference types="node" />
 
 import { Client as Client_2 } from 'pg';
-import { ClientBase } from 'pg';
 import { Connection } from 'pg';
-import { DatabaseError } from 'pg';
-import { defaults } from 'pg';
 import { EventEmitter } from 'events';
+import type { FieldDef } from 'pg';
 import { Pool as Pool_2 } from 'pg';
-import { Query } from 'pg';
+import type { QueryArrayConfig } from 'pg';
+import type { QueryArrayResult } from 'pg';
+import type { QueryConfig } from 'pg';
+import type { QueryConfigValues } from 'pg';
+import type { QueryResult } from 'pg';
+import type { QueryResultRow } from 'pg';
 import type { Socket } from 'net';
+import type { Submittable } from 'pg';
 import { types } from 'pg';
 
 declare const allKeyUsages: readonly ["digitalSignature", "nonRepudiation", "keyEncipherment", "dataEncipherment", "keyAgreement", "keyCertSign", "cRLSign", "encipherOnly", "decipherOnly"];
@@ -196,18 +200,10 @@ export declare class Client extends Client_2 {
     _handleAuthSASLContinue(msg: any): Promise<void>;
 }
 
-export { ClientBase }
-
-export { Connection }
-
-export { DatabaseError }
-
 declare interface DataRequest {
     bytes: number;
     resolve: (data: Uint8Array | undefined) => void;
 }
-
-export { defaults }
 
 declare type DistinguishedName = Record<string, string | string[]>;
 
@@ -215,28 +211,67 @@ declare interface FetchEndpointOptions {
     jwtAuth?: boolean;
 }
 
+export declare interface FullQueryResults<ArrayMode extends boolean> {
+    fields: FieldDef[];
+    command: string;
+    rowCount: number;
+    rows: QueryRows<ArrayMode>;
+    rowAsArray: ArrayMode;
+}
+
 declare function hexFromU8(u8: Uint8Array | number[], spacer?: string): string;
 
-declare interface HTTPQueryOptions {
-    arrayMode?: boolean;
-    fullResults?: boolean;
+export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends boolean> {
+    /**
+     * When `arrayMode` is `false`, which is the default, result rows are
+     * returned as objects whose keys represent column names, such as
+     * `{ id: 1 }`).
+     *
+     * When `arrayMode` is `true`, rows are returned as arrays (and keys are not
+     * provided), e.g. `[1]`.
+     */
+    arrayMode?: ArrayMode;
+    /**
+     * When `fullResults` is `false`, which is the default, only result rows are
+     * returned, e.g. `[{ id: 1 }]`).
+     *
+     * When `fullResults` is `true`, a result object is returned that matches
+     * what's returned by node-postgres. This has a `rows` property, which is an
+     * array of result rows, plus `fields`, which provides column names and
+     * types, `command` and `rowCount`.
+     */
+    fullResults?: FullResults;
+    /**
+     * Any options in `fetchOptions` are merged in to the options passed to
+     * `fetch`. In case of conflict with what would otherwise be passed, these
+     * options take precedence.
+     */
     fetchOptions?: Record<string, any>;
+    /**
+     * JWT auth token to be passed as the Bearer token in the Authorization header
+     *
+     * Default: `undefined`
+     */
+    authToken?: string | (() => Promise<string> | string);
+    /**
+     * Custom type parsers
+     * See https://github.com/brianc/node-pg-types
+     */
     types?: typeof types;
     queryCallback?: (query: ParameterizedQuery) => void;
     resultCallback?: (query: ParameterizedQuery, result: any, rows: any, opts: any) => void;
-    authToken?: string | (() => Promise<string> | string);
 }
 
-declare interface HTTPTransactionOptions extends HTTPQueryOptions {
+export declare interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
     isolationLevel?: 'ReadUncommitted' | 'ReadCommitted' | 'RepeatableRead' | 'Serializable';
     readOnly?: boolean;
     deferrable?: boolean;
 }
 
-export declare function neon(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, queryCallback, resultCallback, authToken, }?: HTTPTransactionOptions): {
-    (strings: TemplateStringsArray | string, ...params: any[]): NeonQueryPromise;
-    transaction(queries: NeonQueryPromise[] | ((sql: (strings: TemplateStringsArray | string, ...params: any[]) => NeonQueryPromise) => NeonQueryPromise[]), txnOpts?: HTTPTransactionOptions): Promise<any>;
-};
+export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, queryCallback, resultCallback, authToken, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
+
+export declare interface NeonConfig extends NeonConfigGlobalAndClient {
+}
 
 export declare class neonConfig extends EventEmitter {
     static defaults: SocketDefaults;
@@ -315,7 +350,7 @@ export declare class neonConfig extends EventEmitter {
     destroy(): this;
 }
 
-declare interface NeonConfigGlobalAndClient {
+export declare interface NeonConfigGlobalAndClient {
     /**
      * If no global `WebSocket` object is available, set `webSocketConstructor`
      * to the constructor for a custom WebSocket implementation, such as those
@@ -428,14 +463,61 @@ export declare class NeonDbError extends Error {
     constructor(message: string);
 }
 
-declare interface NeonQueryPromise<T = any> extends Promise<T> {
+export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
+    (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+    <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(string: string, params?: any[], opts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>): NeonQueryPromise<ArrayModeOverride, FullResultsOverride, FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>>;
+    /**
+     * The `transaction()` function allows multiple queries to be submitted (over
+     * HTTP) as a single, non-interactive Postgres transaction.
+     *
+     * For example:
+     * ```
+     * import { neon } from "@neondatabase/serverless";
+     * const sql = neon("postgres://user:pass@host/db");
+     *
+     * const results = await sql.transaction([
+     *   sql`SELECT 1 AS num`,
+     *   sql`SELECT 'a' AS str`,
+     * ]);
+     * // -> [[{ num: 1 }], [{ str: "a" }]]
+     *
+     * // or equivalently:
+     * const results = await sql.transaction(txn => [
+     *   txn`SELECT 1 AS num`,
+     *   txn`SELECT 'a' AS str`,
+     * ]);
+     * // -> [[{ num: 1 }], [{ str: "a" }]]
+     * ```
+     * @param queriesOrFn Either an array of queries, or a (non-`async`) function
+     * that receives a query function and returns an array of queries.
+     * @param opts The same options that may be set on individual queries in a
+     * non-transaction setting -- that is, `arrayMode` `fullResults` and
+     * `fetchOptions` -- plus the transaction options `isolationLevel`,
+     * `readOnly` and `deferrable`. Note that none of these options can be set on
+     * individual queries within a transaction.
+     * @returns An array of results. The structure of each result object depends
+     * on the `arrayMode` and `fullResults` options.
+     */
+    transaction: <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(queriesOrFn: NeonQueryPromise<ArrayMode, FullResults>[] | ((sql: NeonQueryFunctionInTransaction<ArrayModeOverride, FullResultsOverride>) => NeonQueryInTransaction[]), opts?: HTTPTransactionOptions<ArrayModeOverride, FullResultsOverride>) => Promise<FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride>[] : QueryRows<ArrayModeOverride>[]>;
+}
+
+export declare interface NeonQueryFunctionInTransaction<ArrayMode extends boolean, FullResults extends boolean> {
+    (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+    (string: string, params?: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+}
+
+export declare interface NeonQueryInTransaction {
     parameterizedQuery: ParameterizedQuery;
-    opts?: HTTPQueryOptions;
+}
+
+export declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
+    parameterizedQuery: ParameterizedQuery;
+    opts?: HTTPQueryOptions<ArrayMode, FullResults>;
 }
 
 declare type OID = string;
 
-declare interface ParameterizedQuery {
+export declare interface ParameterizedQuery {
     query: string;
     params: any[];
 }
@@ -445,10 +527,24 @@ export declare class Pool extends Pool_2 {
     hasFetchUnsupportedListeners: boolean;
     on(event: 'error' | 'connect' | 'acquire' | 'release' | 'remove', listener: any): this;
     addListener: (event: "error" | "connect" | "acquire" | "release" | "remove", listener: any) => this;
-    query(config?: any, values?: any, cb?: any): any;
+    query<T extends Submittable>(queryStream: T): T;
+    query<R extends any[] = any[], I = any[]>(queryConfig: QueryArrayConfig<I>, values?: QueryConfigValues<I>): Promise<QueryArrayResult<R>>;
+    query<R extends QueryResultRow = any, I = any[]>(queryConfig: QueryConfig<I>): Promise<QueryResult<R>>;
+    query<R extends QueryResultRow = any, I = any[]>(queryTextOrConfig: string | QueryConfig<I>, values?: QueryConfigValues<I>): Promise<QueryResult<R>>;
+    query<R extends any[] = any[], I = any[]>(queryConfig: QueryArrayConfig<I>, callback: (err: Error, result: QueryArrayResult<R>) => void): void;
+    query<R extends QueryResultRow = any, I = any[]>(queryTextOrConfig: string | QueryConfig<I>, callback: (err: Error, result: QueryResult<R>) => void): void;
+    query<R extends QueryResultRow = any, I = any[]>(queryText: string, values: QueryConfigValues<I>, callback: (err: Error, result: QueryResult<R>) => void): void;
 }
 
-export { Query }
+export declare interface ProcessQueryResultOptions {
+    arrayMode: boolean;
+    fullResults: boolean;
+    parameterizedQuery: ParameterizedQuery;
+    resultCallback: HTTPQueryOptions<false, false>['resultCallback'];
+    types?: typeof types;
+}
+
+export declare type QueryRows<ArrayMode extends boolean> = ArrayMode extends true ? any[][] : Record<string, any>[];
 
 declare abstract class ReadQueue {
     queue: Uint8Array[];
@@ -540,8 +636,6 @@ declare class TrustedCert extends Cert {
     static findInDatabase(subjectOrSubjectKeyId: DistinguishedName | string, db: RootCertsDatabase): TrustedCert | undefined;
 }
 
-export { types }
-
 declare function u8FromHex(hex: string): Uint8Array<ArrayBuffer>;
 
 declare interface WebSocketConstructor {
@@ -561,5 +655,8 @@ declare class WebSocketReadQueue extends ReadQueue {
     constructor(socket: WebSocket);
     socketIsNotClosed(): boolean;
 }
+
+
+export * from "pg";
 
 export { }

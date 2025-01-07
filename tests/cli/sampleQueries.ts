@@ -1,7 +1,7 @@
-import type { neon } from '../../dist/npm';
+import type { NeonQueryFunction } from '../../dist/npm';
 
 const now = new Date();
-export const sampleQueries = (sql: ReturnType<typeof neon>) => [
+export const sampleQueries = (sql: NeonQueryFunction<any, any>) => [
   // tagged-template
   sql`SELECT ${1} AS int_uncast`,
   sql`SELECT ${-1}::int AS int`,

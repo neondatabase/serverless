@@ -1,5 +1,11 @@
-import { expect, test, vi, beforeAll } from 'vitest';
-import { neon, neonConfig, Pool } from '../../dist/npm';
+import { expect, test, vi, beforeAll, assertType } from 'vitest';
+import {
+  FullQueryResults,
+  neon,
+  neonConfig,
+  Pool,
+  type QueryResult,
+} from '../../dist/npm';
 import { sampleQueries } from './sampleQueries';
 import { shimWebSocketIfRequired } from './ws';
 
@@ -42,6 +48,93 @@ test(
     client.release();
   },
 );
+
+interface FieldDef {
+  name: string;
+  tableID: number;
+  columnID: number;
+  dataTypeID: number;
+  dataTypeSize: number;
+  dataTypeModifier: number;
+  format: string;
+}
+
+test('options to `neon()` and options on queries', async () => {
+  const sql__ = neon(DB_URL);
+  const sqlff = neon(DB_URL, { arrayMode: false, fullResults: false });
+  const sqlft = neon(DB_URL, { arrayMode: false, fullResults: true });
+  const sqltf = neon(DB_URL, { arrayMode: true, fullResults: false });
+  const sqltt = neon(DB_URL, { arrayMode: true, fullResults: true });
+  const sqlt_ = neon(DB_URL, { arrayMode: true });
+  const sql_t = neon(DB_URL, { fullResults: true });
+
+  // check defaults
+  assertType<typeof sqlff>(sql__);
+  assertType<typeof sqlft>(sql_t);
+  assertType<typeof sqltf>(sqlt_);
+
+  // check results
+  const ff = await sqlff`SELECT 'xyz' AS str`; // arrayMode false, fullResults false
+  assertType<Record<string, unknown>[]>(ff); // on `Record<string, unknown>`, see https://stackoverflow.com/a/77626605
+  expect(ff[0].str).toBe('xyz');
+
+  const ft = await sqlft`SELECT 'xyz' AS str`; // arrayMode false, fullResults true
+  assertType<FullQueryResults<false>>(ft);
+  assertType<Record<string, unknown>[]>(ft.rows);
+  assertType<FieldDef[]>(ft.fields);
+  assertType<string>(ft.command);
+  assertType<number>(ft.rowCount);
+  assertType<false>(ft.rowAsArray);
+  expect(ft.rows[0].str).toBe('xyz');
+  expect(ft.fields[0].name).toBe('str');
+  expect(ft.fields[0].dataTypeID).toBe(25 /* text OID */);
+  expect(ft.command).toBe('SELECT');
+  expect(ft.rowCount).toBe(1);
+  expect(ft.rowAsArray).toBe(false);
+
+  const tf = await sqltf`SELECT 'xyz' AS str`; // arrayMode true, fullResults false
+  assertType<any[][]>(tf);
+  expect(tf[0][0]).toBe('xyz');
+
+  const tt = await sqltt`SELECT 'xyz' AS str`; // arrayMode true, fullResults true
+  assertType<FullQueryResults<true>>(tt);
+  assertType<any[][]>(tt.rows);
+  assertType<FieldDef[]>(tt.fields);
+  assertType<string>(tt.command);
+  assertType<number>(tt.rowCount);
+  assertType<true>(tt.rowAsArray);
+  expect(tt.rows[0][0]).toBe('xyz');
+  expect(tt.fields[0].name).toBe('str');
+  expect(tt.fields[0].dataTypeID).toBe(25 /* text OID */);
+  expect(tt.command).toBe('SELECT');
+  expect(tt.rowCount).toBe(1);
+  expect(tt.rowAsArray).toBe(true);
+
+  // check per-query option overrides
+  const fftt = await sqlff("SELECT 'xyz' AS str", [], {
+    arrayMode: true,
+    fullResults: true,
+  });
+  assertType<FullQueryResults<true>>(fftt);
+  assertType<any[][]>(fftt.rows);
+  assertType<FieldDef[]>(fftt.fields);
+  assertType<string>(fftt.command);
+  assertType<number>(fftt.rowCount);
+  assertType<true>(fftt.rowAsArray);
+  expect(fftt.rows[0][0]).toBe('xyz');
+  expect(fftt.fields[0].name).toBe('str');
+  expect(fftt.fields[0].dataTypeID).toBe(25 /* text OID */);
+  expect(fftt.command).toBe('SELECT');
+  expect(fftt.rowCount).toBe(1);
+  expect(fftt.rowAsArray).toBe(true);
+
+  const ttff = await sqltt("SELECT 'xyz' AS str", [], {
+    arrayMode: false,
+    fullResults: false,
+  });
+  assertType<Record<string, unknown>[]>(ttff);
+  expect(ttff[0].str).toBe('xyz');
+});
 
 test('custom fetch', async () => {
   const fn = vi.fn();

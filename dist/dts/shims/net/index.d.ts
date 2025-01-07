@@ -7,18 +7,18 @@
  */
 import { EventEmitter } from 'events';
 import type * as subtls from 'subtls';
-interface WebSocketLike {
+export interface WebSocketLike {
     readonly readyState: number;
     binaryType: string;
     close(code?: number, reason?: string): void;
     send(data: any): void;
     addEventListener(type: 'open' | 'message' | 'close' | 'error', listener: (this: WebSocketLike, ev: any) => any, options?: any): void;
 }
-interface WebSocketConstructor {
+export interface WebSocketConstructor {
     new (...args: any[]): WebSocketLike;
 }
 export declare function isIP(input: string): number;
-interface FetchEndpointOptions {
+export interface FetchEndpointOptions {
     jwtAuth?: boolean;
 }
 export interface SocketDefaults {
@@ -113,4 +113,3 @@ export declare class Socket extends EventEmitter {
     end(data?: Buffer | string, encoding?: string, callback?: () => void): this;
     destroy(): this;
 }
-export {};

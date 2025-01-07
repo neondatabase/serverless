@@ -1,5 +1,5 @@
-import { expect, test, describe, beforeAll, vi } from 'vitest';
-import { Pool as PgPool } from 'pg';
+import { expect, test, describe, beforeAll, vi, assertType } from 'vitest';
+import { Pool as PgPool, type QueryResult } from 'pg';
 import * as subtls from 'subtls';
 import { sampleQueries } from './sampleQueries';
 import { shimWebSocketIfRequired } from './ws';
@@ -74,16 +74,18 @@ describe.each([
 
   test('pool.query() over WebSockets', async () => {
     const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
+    assertType<QueryResult<any>>(wsResult);
     expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
-    expect(wsResult.viaNeonFetch).toBeUndefined();
+    expect((wsResult as any).viaNeonFetch).toBeUndefined();
   });
 
   test('pool.query() with poolQueryViaFetch', async () => {
     try {
       neonConfig.poolQueryViaFetch = true;
       const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
+      assertType<QueryResult<any>>(wsResult);
       expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
-      expect(wsResult.viaNeonFetch).toBe(true);
+      expect((wsResult as any).viaNeonFetch).toBe(true);
     } finally {
       neonConfig.poolQueryViaFetch = false;
     }
@@ -104,6 +106,7 @@ describe.each([
       customPool.addListener('connect', connectListener);
 
       const wsResult = await customPool.query('SELECT $1::int AS one', [1]);
+      assertType<QueryResult<any>>(wsResult);
       expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
       expect(wsResult).not.toHaveProperty('viaNeonFetch');
       expect(fn).toHaveBeenCalledOnce();
@@ -116,10 +119,11 @@ describe.each([
   test('client.query()', async () => {
     const client = new WsClient(DB_URL);
     await client.connect();
-    const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
+    const wsResult = await client.query('SELECT $1::int AS one', [1]);
+    assertType<QueryResult<any>>(wsResult);
     await client.end();
     expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
-    expect(wsResult.viaNeonFetch).toBeUndefined();
+    expect((wsResult as any).viaNeonFetch).toBeUndefined();
   });
 
   test('client.query() with pipelined connect (yes, no) x coalesced writes (yes, no)', async () => {
@@ -133,10 +137,11 @@ describe.each([
           const client = new WsClient(DB_URL);
           await client.connect();
           const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
+          assertType<QueryResult<any>>(wsResult);
           await client.end();
 
           expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
-          expect(wsResult.viaNeonFetch).toBeUndefined();
+          expect((wsResult as any).viaNeonFetch).toBeUndefined();
         }
       }
     } finally {
@@ -161,9 +166,10 @@ describe.each([
 
       await client.connect();
       const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
+      assertType<QueryResult<any>>(wsResult);
       await client.end();
       expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
-      expect(wsResult.viaNeonFetch).toBeUndefined();
+      expect((wsResult as any).viaNeonFetch).toBeUndefined();
     });
   }
 });

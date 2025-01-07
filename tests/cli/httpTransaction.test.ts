@@ -1,4 +1,4 @@
-import { expect, test } from 'vitest';
+import { assertType, expect, test } from 'vitest';
 import { neon } from '../../dist/npm';
 
 const DB_URL = process.env.VITE_NEON_DB_URL!;
@@ -33,46 +33,67 @@ test('empty batch query with array', async () => {
 });
 
 test('option setting on `transaction()`', async () => {
-  const [[[a]], [[b]]] = await sql.transaction(
+  const [a, b] = await sql.transaction(
     (txn) => [
       txn`SELECT ${1}::int AS "batchInt"`,
       txn`SELECT ${'hello'} AS "batchStr"`,
     ],
-    { arrayMode: true, isolationLevel: 'Serializable', readOnly: true }, // arrayMode changes result format destructured above
+    { arrayMode: true, isolationLevel: 'Serializable', readOnly: true }, // arrayMode changes result format below
   );
-  expect(a).toBe(1);
-  expect(b).toBe('hello');
+  assertType<any[][]>(a);
+  assertType<any[][]>(b);
+  expect(a[0][0]).toBe(1);
+  expect(b[0][0]).toBe('hello');
 });
 
 test('option setting on `neon()`', async () => {
   const sqlArr = neon(DB_URL, {
-    arrayMode: true, // arrayMode changes result format destructured below
+    arrayMode: true, // arrayMode changes result format below
     isolationLevel: 'RepeatableRead',
   });
-  const [[[a]], [[b]]] = await sqlArr.transaction((txn) => [
+  const [a, b] = await sqlArr.transaction((txn) => [
     txn`SELECT ${1}::int AS "batchInt"`,
     txn`SELECT ${'hello'} AS "batchStr"`,
   ]);
-  expect(a).toBe(1);
-  expect(b).toBe('hello');
+  assertType<any[][]>(a);
+  assertType<any[][]>(b);
+  expect(a[0][0]).toBe(1);
+  expect(b[0][0]).toBe('hello');
 });
 
-test('option setting on `transaction()` overrides option setting on `neon()`', async () => {
+test('option setting on `transaction()` overrides option setting on `neon()` (a)', async () => {
   const sqlArr = neon(DB_URL, { arrayMode: true });
-  const [[a], [b]] = await sqlArr.transaction(
+  const [a, b] = await sqlArr.transaction(
     (txn) => [
       txn`SELECT ${1}::int AS "batchInt"`,
       txn`SELECT ${'hello'} AS "batchStr"`,
     ],
     { arrayMode: false },
   );
-  expect(a.batchInt).toBe(1);
-  expect(b.batchStr).toBe('hello');
+  assertType<Record<string, unknown>[]>(a);
+  assertType<Record<string, unknown>[]>(b);
+  expect(a[0].batchInt).toBe(1);
+  expect(b[0].batchStr).toBe('hello');
 });
 
-test('option setting on individual queries within a batch', async () => {
+test('option setting on `transaction()` overrides option setting on `neon()` (b)', async () => {
+  const [a, b] = await sql.transaction(
+    (txn) => [
+      txn`SELECT ${1}::int AS "batchInt"`,
+      txn`SELECT ${'hello'} AS "batchStr"`,
+    ],
+    { fullResults: true },
+  );
+  assertType<Record<string, unknown>[]>(a.rows);
+  assertType<Record<string, unknown>[]>(b.rows);
+  expect(a.rows[0].batchInt).toBe(1);
+  expect(b.rows[0].batchStr).toBe('hello');
+});
+
+test('option setting on individual queries within a batch (unsupported by types)', async () => {
   const [[a], [b]] = await sql.transaction((txn) => [
     txn`SELECT ${1}::int AS "batchInt"`,
+    // @ts-expect-error this works but is unsupported by the TS types
     txn('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: true }),
   ]);
   expect(a.batchInt).toBe(1);

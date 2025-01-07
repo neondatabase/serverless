@@ -46,7 +46,7 @@
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "testNode": "./export.sh && vitest run --dir=tests/cli --environment=node --no-file-parallelism",
+    "testNode": "./export.sh && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
     "testEdge": "./export.sh && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
     "testChromium": "./export.sh && playwright install --with-deps chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
   },

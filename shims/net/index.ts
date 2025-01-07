@@ -13,7 +13,7 @@ declare global {
   const debug: boolean; // e.g. --define:debug=false in esbuild command
 }
 
-interface WebSocketLike {
+export interface WebSocketLike {
   // we define our own WebSocket type because different implementations have
   // different signatures and we want to be compatible with any of them
   readonly readyState: number;
@@ -27,7 +27,7 @@ interface WebSocketLike {
   ): void;
 }
 
-interface WebSocketConstructor {
+export interface WebSocketConstructor {
   new (...args: any[]): WebSocketLike;
 }
 
@@ -66,7 +66,7 @@ export function isIP(input: string) {
   return 0;
 }
 
-interface FetchEndpointOptions {
+export interface FetchEndpointOptions {
   jwtAuth?: boolean;
 }
 

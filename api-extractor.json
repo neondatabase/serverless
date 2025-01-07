@@ -20,6 +20,9 @@
     "extractorMessageReporting": {
       "ae-wrong-input-file-type": {
         "logLevel": "none"
+      },
+      "ae-missing-release-tag": {
+        "logLevel": "none"
       }
     }
   }
