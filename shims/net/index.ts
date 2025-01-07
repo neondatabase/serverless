@@ -139,6 +139,14 @@ export class Socket extends EventEmitter {
   static opts: Partial<SocketDefaults> = {};
   private opts: Partial<Omit<SocketDefaults, GlobalOnlyDefaults>> = {};
 
+  /**
+   * **Experimentally**, when `poolQueryViaFetch` is `true`, and no listeners
+   * for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set
+   * on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP
+   * fetch request.
+   *
+   * Default: `false`.
+   */
   static get poolQueryViaFetch() {
     return Socket.opts.poolQueryViaFetch ?? Socket.defaults.poolQueryViaFetch;
   }
@@ -146,6 +154,17 @@ export class Socket extends EventEmitter {
     Socket.opts.poolQueryViaFetch = newValue;
   }
 
+  /**
+   * Set `fetchEndpoint` to set the server endpoint to be sent queries via http
+   * fetch. May be useful in local development (e.g. to set a port that's not
+   * the default 443).
+   *
+   * Provide either the full endpoint URL, or a function that takes the
+   * database host address, port and options, and returns the full endpoint URL
+   * (including protocol).
+   *
+   * Default: custom logic to connect to Neon endpoints.
+   */
   static get fetchEndpoint() {
     return Socket.opts.fetchEndpoint ?? Socket.defaults.fetchEndpoint;
   }
@@ -153,6 +172,14 @@ export class Socket extends EventEmitter {
     Socket.opts.fetchEndpoint = newValue;
   }
 
+  /**
+   * **DEPRECATED**. Previously, only when `fetchConnectionCache` was `true`
+   * did queries carried via HTTP fetch make use of a connection pool/cache
+   * on the server. All queries now use the connection pool/cache: this setting
+   * is ignored.
+   *
+   * Default: `true`.
+   */
   static get fetchConnectionCache() {
     return true;
   }
@@ -164,6 +191,13 @@ export class Socket extends EventEmitter {
     );
   }
 
+  /**
+   * The `fetchFunction` option allows you to supply an alternative function
+   * for making http requests. The function must accept the same arguments as
+   * native `fetch`.
+   *
+   * Default: `undefined`.
+   */
   static get fetchFunction() {
     return Socket.opts.fetchFunction ?? Socket.defaults.fetchFunction;
   }
@@ -171,6 +205,14 @@ export class Socket extends EventEmitter {
     Socket.opts.fetchFunction = newValue;
   }
 
+  /**
+   * Only if no global `WebSocket` object is available, such as in older
+   * versions of Node, set `webSocketConstructor` to the constructor for a
+   * custom WebSocket implementation, such as those provided by `ws` or
+   * `undici`.
+   *
+   * Default: `undefined`.
+   */
   static get webSocketConstructor() {
     return (
       Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor
@@ -188,6 +230,17 @@ export class Socket extends EventEmitter {
     this.opts.webSocketConstructor = newValue;
   }
 
+  /**
+   * Set `wsProxy` to use your own WebSocket proxy server.
+   *
+   * Provide either the proxy server’s domain name, or a function that takes
+   * the database host and port and returns the proxy server address (without
+   * protocol).
+   *
+   * Example: `(host, port) => "myproxy.example.net?address=" + host + ":" + port`
+   *
+   * Default: `host => host + '/v2'`
+   */
   static get wsProxy() {
     return Socket.opts.wsProxy ?? Socket.defaults.wsProxy;
   }
@@ -201,6 +254,12 @@ export class Socket extends EventEmitter {
     this.opts.wsProxy = newValue;
   }
 
+  /**
+   * Batch multiple network writes per run-loop into a single outgoing
+   * WebSocket message.
+   *
+   * Default: `true`.
+   */
   static get coalesceWrites() {
     return Socket.opts.coalesceWrites ?? Socket.defaults.coalesceWrites;
   }
@@ -214,6 +273,11 @@ export class Socket extends EventEmitter {
     this.opts.coalesceWrites = newValue;
   }
 
+  /**
+   * Use a secure (`wss:`) connection to the WebSocket proxy.
+   *
+   * Default: `true`.
+   */
   static get useSecureWebSocket() {
     return Socket.opts.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket;
   }
@@ -229,6 +293,13 @@ export class Socket extends EventEmitter {
     this.opts.useSecureWebSocket = newValue;
   }
 
+  /**
+   * Disable TLS encryption in the Postgres protocol (as set via e.g.
+   * `?sslmode=require` in the connection string). Connection remains secure
+   * as long as `useSecureWebSocket` is `true`, which is the default.
+   *
+   * Default: `true`
+   */
   static get forceDisablePgSSL() {
     return Socket.opts.forceDisablePgSSL ?? Socket.defaults.forceDisablePgSSL;
   }
@@ -242,6 +313,17 @@ export class Socket extends EventEmitter {
     this.opts.forceDisablePgSSL = newValue;
   }
 
+  /**
+   * When using subtls with `forceDisablePgSSL = false` and Postgres connection
+   * parameters that specify TLS, setting `disableSNI = true` means that no SNI
+   * data in included in the Postgres TLS handshake.
+   *
+   * On Neon, disabling SNI and including the Neon project name in the password
+   * avoids CPU-intensive SCRAM authentication, but this is only relevant for
+   * earlier iterations of Neon's WebSocket support.
+   *
+   * Default: `false`.
+   */
   static get disableSNI() {
     return Socket.opts.disableSNI ?? Socket.defaults.disableSNI;
   }
@@ -255,6 +337,12 @@ export class Socket extends EventEmitter {
     this.opts.disableSNI = newValue;
   }
 
+  /**
+   * Pipelines the startup message, cleartext password message and first query
+   * when set to `"password"`. This works only for cleartext password auth.
+   *
+   * Default: `"password"`.
+   */
   static get pipelineConnect() {
     return Socket.opts.pipelineConnect ?? Socket.defaults.pipelineConnect;
   }
@@ -268,6 +356,18 @@ export class Socket extends EventEmitter {
     this.opts.pipelineConnect = newValue;
   }
 
+  /**
+   * If `forceDisablePgSSL` is `false` and the Postgres connection parameters
+   * specify TLS, you must supply the subtls TLS library to this option:
+   *
+   * ```
+   * import { neonConfig } from '@neondatabase/serverless';
+   * import * as subtls from 'subtls';
+   * neonConfig.subtls = subtls;
+   * ```
+   *
+   * Default: `undefined`.
+   */
   static get subtls() {
     return Socket.opts.subtls ?? Socket.defaults.subtls;
   }
@@ -281,6 +381,13 @@ export class Socket extends EventEmitter {
     this.opts.subtls = newValue;
   }
 
+  /**
+   * Pipeline the pg SSL request and TLS handshake when `forceDisablePgSSL` is
+   * `false` and the Postgres connection parameters specify TLS. Currently
+   * compatible only with Neon hosts.
+   *
+   * Default: `false`.
+   */
   static get pipelineTLS() {
     return Socket.opts.pipelineTLS ?? Socket.defaults.pipelineTLS;
   }
@@ -294,6 +401,14 @@ export class Socket extends EventEmitter {
     this.opts.pipelineTLS = newValue;
   }
 
+  /**
+   * Set `rootCerts` to a string comprising one or more PEM files. These are
+   * the trusted root certificates for a TLS connection to Postgres when
+   * `forceDisablePgSSL` is `false` and the Postgres connection parameters
+   * specify TLS.
+   *
+   * Default: `""`.
+   */
   static get rootCerts() {
     return Socket.opts.rootCerts ?? Socket.defaults.rootCerts;
   }
@@ -487,7 +602,7 @@ export class Socket extends EventEmitter {
     this.authorized = true;
     this.emit('secureConnection', this);
 
-    this.tlsReadLoop();
+    this.tlsReadLoop(); // deliberately NOT awaited
   }
 
   async tlsReadLoop() {

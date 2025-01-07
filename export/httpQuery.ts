@@ -81,6 +81,7 @@ export interface HTTPQueryOptions<
    * provided), e.g. `[1]`.
    */
   arrayMode?: ArrayMode;
+
   /**
    * When `fullResults` is `false`, which is the default, only result rows are
    * returned, e.g. `[{ id: 1 }]`).
@@ -91,6 +92,7 @@ export interface HTTPQueryOptions<
    * types, `command` and `rowCount`.
    */
   fullResults?: FullResults; // default false
+
   /**
    * Any options in `fetchOptions` are merged in to the options passed to
    * `fetch`. In case of conflict with what would otherwise be passed, these
@@ -99,19 +101,20 @@ export interface HTTPQueryOptions<
   fetchOptions?: Record<string, any>;
 
   /**
-   * JWT auth token to be passed as the Bearer token in the Authorization header
+   * JWT auth token to be passed as the Bearer token in the Authorization header.
+   * Can be string, or a function (sync or async) returning a string.
    *
    * Default: `undefined`
    */
   authToken?: string | (() => Promise<string> | string);
 
   /**
-   * Custom type parsers
-   * See https://github.com/brianc/node-pg-types
+   * Custom type parsers. See https://github.com/brianc/node-pg-types.
    */
   types?: typeof PgTypes;
 
   queryCallback?: (query: ParameterizedQuery) => void;
+
   resultCallback?: (
     query: ParameterizedQuery,
     result: any,
@@ -174,7 +177,7 @@ const errorFields = [
 ] as const;
 
 /* 
-Most config options can be set in 3 places:
+Note: most config options can be set in 3 places:
 
 * in a call to `neon`, 
 * in a call to `transaction`, 
@@ -283,9 +286,9 @@ export interface NeonQueryFunction<
    * ]);
    * // -> [[{ num: 1 }], [{ str: "a" }]]
    * ```
-   * @param queriesOrFn Either an array of queries, or a (non-`async`) function
+   * @param queriesOrFn - Either an array of queries, or a (non-`async`) function
    * that receives a query function and returns an array of queries.
-   * @param opts The same options that may be set on individual queries in a
+   * @param opts - The same options that may be set on individual queries in a
    * non-transaction setting -- that is, `arrayMode` `fullResults` and
    * `fetchOptions` -- plus the transaction options `isolationLevel`,
    * `readOnly` and `deferrable`. Note that none of these options can be set on
@@ -313,6 +316,59 @@ export interface NeonQueryFunction<
   >;
 }
 
+/**
+ * This function returns an async tagged-template function that runs a single
+ * SQL query (no session or transactions) with low latency over https. Support
+ * for multiple queries (as a non-interactive transaction) is provided by
+ * the `transaction` property of the query function.
+ *
+ * By default, the query function returns database rows directly. Types should
+ * match those returned by this driver (i.e. Pool or Client) over WebSockets.
+ *
+ * The returned function can also be called directly (i.e. not as a template
+ * function). In that case, pass it a query string with embedded `$1`, `$2`
+ * (etc.), followed by an array of query parameters, followed (optionally) by
+ * any of the same options you can pass to this function.
+ *
+ * Some examples:
+ * ```
+ * import { neon } from "@neondatabase/serverless";
+ * const h = "hello", w = "world";
+ *
+ * // example 1: default options, tagged-template usage
+ * const sql = neon("postgres://user:pass@host/db");
+ * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
+ * // -> [ { greeting: "hello world" } ]
+ *
+ * // example 2: `arrayMode` and `fullResults` options, ordinary function usage
+ * const options = { arrayMode: true, fullResults: true };
+ * const sql = neon("postgres://user:pass@host/db", options);
+ * const rows = await sql("SELECT $1 || ' ' || $2 AS greeting", [h, w]);
+ * // -> {
+ * //      command: "SELECT",
+ * //      fields: [ { name: "greeting", dataTypeID: 25 } ],
+ * //      rowAsArray: true,
+ * //      rowCount: 1,
+ * //      rows: [ [ "hello world" ] ]
+ * //    }
+ *
+ * // example 3: `fetchOptions` option, ordinary function usage
+ * const sql = neon("postgres://user:pass@host/db");
+ * const rows = await sql(
+ *   "SELECT $1 || ' ' || $2 AS greeting", [h, w],
+ *   { fetchOptions: { priority: "high" } }
+ * );
+ * // -> [ { greeting: "hello world" } ]
+ * ```
+ *
+ * @param connectionString - this has the format `postgres://user:pass@host/db`
+ * @param options - pass `arrayMode: true` to receive results as an array of
+ * arrays, instead of the default array of objects; pass `fullResults: true`
+ * to receive a complete result object similar to one returned by node-postgres
+ * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`);
+ * pass as `fetchOptions` an object which will be merged into the options
+ * passed to `fetch`.
+ */
 export function neon<
   ArrayMode extends boolean = false,
   FullResults extends boolean = false,

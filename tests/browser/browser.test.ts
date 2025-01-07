@@ -12,7 +12,7 @@ test('http query', async () => {
   const str = 'fetch';
 
   const fetchResult = await sql`SELECT ${str} AS str`;
-  assertType<Record<string, any>>(fetchResult);
+  assertType<Record<string, unknown>[]>(fetchResult);
   expect(fetchResult).toStrictEqual([{ str: 'fetch' }]);
 });
 

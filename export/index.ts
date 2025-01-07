@@ -1,3 +1,21 @@
+/*
+We export the pg library mostly unchanged, but we do make a few tweaks.
+
+(1) Connecting and querying can require a lot of network round-trips. We
+add a pipelining option for the connection (startup + auth + first query),
+but this works with cleartext password auth only. We can also pipeline TLS
+startup, but currently this works only with Neon hosts (not vanilla pg or
+pgbouncer).
+
+(2) SCRAM auth is deliberately CPU-intensive, and this is not appropriate
+for a serverless environment. In case it is still used, however, we replace
+the standard (synchronous) pg implementation with one that uses SubtleCrypto
+for repeated SHA-256 digests. This saves some time and CPU.
+
+(3) We now (experimentally) redirect Pool.query over a fetch request if the
+circumstances are right.
+*/
+
 import { Client, Connection, Pool } from 'pg';
 import { Socket } from '../shims/net';
 import { neon, NeonDbError } from './httpQuery';
@@ -22,24 +40,6 @@ interface ConnectionParameters {
   database: string;
 }
 
-/**
- * We export the pg library mostly unchanged, but we do make a few tweaks.
- *
- * (1) Connecting and querying can require a lot of network round-trips. We
- * add a pipelining option for the connection (startup + auth + first query),
- * but this works with cleartext password auth only. We can also pipeline TLS
- * startup, but currently this works only with Neon hosts (not vanilla pg or
- * pgbouncer).
- *
- * (2) SCRAM auth is deliberately CPU-intensive, and this is not appropriate
- * for a serverless environment. In case it is still used, however, we replace
- * the standard (synchronous) pg implementation with one that uses SubtleCrypto
- * for repeated SHA-256 digests. This saves some time and CPU.
- *
- * (3) We now (experimentally) redirect Pool.query over a fetch request if the
- * circumstances are right.
- */
-
 declare interface NeonClient {
   // these types suppress type errors in this file, but do not carry over to
   // the npm package
@@ -56,6 +56,10 @@ declare interface NeonClient {
   saslSession: any;
 }
 
+/**
+ * The node-postgres `Client` object re-exported with minor modifications.
+ * https://node-postgres.com/apis/client
+ */
 class NeonClient extends Client {
   get neonConfig(): NeonConfigGlobalAndClient {
     return this.connection.stream;
@@ -310,6 +314,10 @@ function promisify(Promise: any, callback: any) {
   return { callback: cb, result: result };
 }
 
+/**
+ * The node-postgres `Pool` object re-exported with minor modifications.
+ * https://node-postgres.com/apis/pool
+ */
 class NeonPool extends Pool {
   Client = NeonClient;
   hasFetchUnsupportedListeners = false;
