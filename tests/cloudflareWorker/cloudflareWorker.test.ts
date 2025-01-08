@@ -14,6 +14,8 @@ afterAll(async () => {
 });
 
 test('Cloudflare Worker should respond with queried values', async () => {
+  // only wrangler.toml can be used to provide env vars (https://github.com/cloudflare/workers-sdk/issues/2898)
+  // -- so we pass them in via the request URL instead
   const env = Object.fromEntries(
     Object.entries(process.env).filter(([k, v]) => k.startsWith('VITE_')),
   );

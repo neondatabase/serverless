@@ -9,7 +9,7 @@ env:
   VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
   VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
   VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
-  
+
 jobs:
   test-node-18:
     runs-on: ubuntu-latest
