@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+env:
+  VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
+  VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
+  VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
+  
 jobs:
   test-node-18:
     runs-on: ubuntu-latest
@@ -20,10 +25,6 @@ jobs:
 
       # goal
       - name: Run tests in Node 18 (no native WebSocket), node environment
-        env:
-          VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
-          VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
-          VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
         run: npm run testNode
 
   test-node-lts:
@@ -40,29 +41,13 @@ jobs:
 
       # goal
       - name: Run tests in Node LTS, node environment
-        env:
-          VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
-          VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
-          VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
         run: npm run testNode
 
       - name: Run tests in Node LTS, edge-runtime environment
-        env:
-          VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
-          VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
-          VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
         run: npm run testEdge
 
       - name: Run Chromium tests
-        env:
-          VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
-          VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
-          VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
         run: npm run testChromium
 
       - name: Run Cloudflare Workers tests
-        env:
-          VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
-          VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
-          VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
         run: npm run testCfWorker
