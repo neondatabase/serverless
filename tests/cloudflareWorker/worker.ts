@@ -9,36 +9,35 @@ export default {
     const env = JSON.parse(envJSON);
 
     const DATABASE_URL = env.VITE_NEON_DB_URL;
+    let q: string;
 
     // test WebSockets (Client.prototype.query)
+    q = "SELECT 'client' AS clientstr";
     const client = new Client(DATABASE_URL);
     await client.connect();
-    const { rows: clientRows } = await client.query(
-      "SELECT 'client' AS clientstr",
-    );
+    const { rows: clientRows } = await client.query(q);
     ctx.waitUntil(client.end());
 
     // test WebSockets (Pool.prototype.query)
+    q = "SELECT 'pool' AS poolstr";
     const pool = new Pool({ connectionString: DATABASE_URL });
-    const { rows: poolRows } = await pool.query("SELECT 'pool' AS poolstr");
+    const { rows: poolRows } = await pool.query(q);
 
     // test WebSockets (Pool.prototype.connect)
+    q = "SELECT 'poolclient' AS poolclientstr";
     const poolClient = await pool.connect();
-    const { rows: poolClientRows } = await poolClient.query(
-      "SELECT 'poolclient' AS poolclientstr",
-    );
+    const { rows: poolClientRows } = await poolClient.query(q);
     poolClient.release();
     ctx.waitUntil(pool.end());
 
     // test http fetch
+    q = "SELECT 'fetch' AS fetchStr";
     const sql = neon(DATABASE_URL, { fullResults: true });
-    const { rows: fetchRows } = await sql`SELECT 'fetch' AS fetchStr`;
+    const { rows: fetchRows } = await sql(q);
 
-    const responseJson = JSON.stringify(
-      { clientRows, poolRows, poolClientRows, fetchRows },
-      null,
-      2,
-    );
+    // respond
+    const responseData = { clientRows, poolRows, poolClientRows, fetchRows };
+    const responseJson = JSON.stringify(responseData, null, 2);
     return new Response(responseJson, {
       headers: {
         'Content-Type': 'application/json',
