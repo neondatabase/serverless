@@ -48,9 +48,11 @@
     "format:fix": "prettier -w .",
     "testNode": "./export.sh && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
     "testEdge": "./export.sh && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
-    "testChromium": "./export.sh && playwright install --with-deps chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
+    "testChromium": "./export.sh && playwright install --with-deps chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism",
+    "testCfWorker": "./export.sh && vitest run --dir=tests/cloudflareWorker --no-file-parallelism"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
     "@edge-runtime/vm": "^5.0.0",
     "@microsoft/api-extractor": "^7.48.1",
     "@types/events": "^3.0.0",

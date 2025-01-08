@@ -8,6 +8,7 @@
 
 import { EventEmitter } from 'events';
 import type * as subtls from 'subtls';
+export type { subtls };
 
 declare global {
   const debug: boolean; // e.g. --define:debug=false in esbuild command

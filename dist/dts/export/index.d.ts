@@ -46,3 +46,4 @@ declare class NeonPool extends Pool {
 export * from 'pg';
 export * from './httpQuery';
 export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError, };
+export type { SocketDefaults, FetchEndpointOptions, WebSocketConstructor, WebSocketLike, subtls, } from '../shims/net';

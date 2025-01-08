@@ -414,3 +414,11 @@ export {
   neon,
   NeonDbError,
 };
+
+export type {
+  SocketDefaults,
+  FetchEndpointOptions,
+  WebSocketConstructor,
+  WebSocketLike,
+  subtls,
+} from '../shims/net';

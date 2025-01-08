@@ -10,7 +10,6 @@ const DB_URL = process.env.VITE_NEON_DB_URL!;
 test('http query', async () => {
   const sql = neon(DB_URL);
   const str = 'fetch';
-
   const fetchResult = await sql`SELECT ${str} AS str`;
   assertType<Record<string, unknown>[]>(fetchResult);
   expect(fetchResult).toStrictEqual([{ str: 'fetch' }]);

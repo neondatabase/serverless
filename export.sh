@@ -43,8 +43,6 @@ sed -i.orig -r \
   dist/dts/shims/net/index.d.ts
 
 # bundle types into one file
-echo
-echo "Note: some warnings are expected from api-extractor:"
 npx @microsoft/api-extractor run --local
 
 # remove appendage and private fields

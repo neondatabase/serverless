@@ -194,7 +194,7 @@ declare interface DataRequest {
 
 declare type DistinguishedName = Record<string, string | string[]>;
 
-declare interface FetchEndpointOptions {
+export declare interface FetchEndpointOptions {
     jwtAuth?: boolean;
 }
 
@@ -634,7 +634,7 @@ declare interface RootCertsIndex {
     subjects: Record<string, number>;
 }
 
-declare interface SocketDefaults {
+export declare interface SocketDefaults {
     poolQueryViaFetch: boolean;
     fetchEndpoint: string | ((host: string, port: number | string, options?: FetchEndpointOptions) => string);
     fetchConnectionCache: boolean;
@@ -695,6 +695,7 @@ declare namespace subtls {
         WebSocketReadQueue
     }
 }
+export { subtls }
 
 declare class TrustedCert extends Cert {
     static databaseFromPEM(pem: string): RootCertsDatabase;
@@ -703,11 +704,11 @@ declare class TrustedCert extends Cert {
 
 declare function u8FromHex(hex: string): Uint8Array<ArrayBuffer>;
 
-declare interface WebSocketConstructor {
+export declare interface WebSocketConstructor {
     new (...args: any[]): WebSocketLike;
 }
 
-declare interface WebSocketLike {
+export declare interface WebSocketLike {
     readonly readyState: number;
     binaryType: string;
     close(code?: number, reason?: string): void;
