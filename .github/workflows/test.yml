@@ -53,9 +53,16 @@ jobs:
           VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
         run: npm run testEdge
 
-      - name: Run tests in Chromium
+      - name: Run Chromium tests
         env:
           VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
           VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
           VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
         run: npm run testChromium
+
+      - name: Run Cloudflare Workers tests
+        env:
+          VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
+          VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
+          VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
+        run: npm run testCfWorker
