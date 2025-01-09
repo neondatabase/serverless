@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   test: {
     browser: {
-      name: 'chromium',
+      name: 'firefox',
       provider: 'playwright',
       headless: true,
       screenshotFailures: false,

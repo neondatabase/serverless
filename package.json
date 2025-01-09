@@ -46,10 +46,11 @@
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "testNode": "./export.sh && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
-    "testEdge": "./export.sh && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
-    "testChromium": "./export.sh && playwright install --with-deps chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism",
-    "testCfWorker": "./export.sh && vitest run --dir=tests/cloudflareWorker --no-file-parallelism"
+    "test:node": "./export.sh && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
+    "test:edge": "./export.sh && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
+    "test:cloudflare": "./export.sh && vitest run --dir=tests/cloudflare --no-file-parallelism",
+    "test:vercel": "./export.sh && vitest run --dir=tests/vercel --no-file-parallelism",
+    "test:browser": "./export.sh && playwright install --with-deps firefox && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241230.0",
@@ -58,6 +59,8 @@
     "@types/events": "^3.0.0",
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.4",
+    "@vercel/edge": "^1.2.1",
+    "@vercel/sdk": "^1.2.2",
     "@vitest/browser": "^2.1.8",
     "dotenv": "^16.0.3",
     "esbuild": "^0.24.0",

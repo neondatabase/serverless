@@ -31,7 +31,7 @@ export default {
     ctx.waitUntil(pool.end());
 
     // test http fetch
-    q = "SELECT 'fetch' AS fetchStr";
+    q = "SELECT 'fetch' AS fetchstr";
     const sql = neon(DATABASE_URL, { fullResults: true });
     const { rows: fetchRows } = await sql(q);
 

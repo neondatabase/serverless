@@ -25,7 +25,7 @@ jobs:
 
       # goal
       - name: Run tests in Node 16 (no native WebSocket or fetch), node environment
-        run: npm run testNode
+        run: npm run test:node
 
   test-node-lts:
     runs-on: ubuntu-latest
@@ -41,13 +41,16 @@ jobs:
 
       # goal
       - name: Run tests in Node LTS, node environment
-        run: npm run testNode
+        run: npm run test:node
 
       - name: Run tests in Node LTS, edge-runtime environment
-        run: npm run testEdge
+        run: npm run test:edge
 
-      - name: Run Chromium tests
-        run: npm run testChromium
+      - name: Run browser tests
+        run: npm run test:browser
 
       - name: Run Cloudflare Workers tests
-        run: npm run testCfWorker
+        run: npm run test:cloudflare
+
+      - name: Run Vercel Functions tests
+        run: npm run test:vercel
