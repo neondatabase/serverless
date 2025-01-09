@@ -4,7 +4,6 @@ import {
   neon,
   neonConfig,
   Pool,
-  type QueryResult,
 } from '../../dist/npm';
 import { sampleQueries } from './sampleQueries';
 import { shimWebSocketIfRequired } from './ws';

@@ -155,7 +155,7 @@ describe.each([
     process.versions !== undefined &&
     parseInt(process.versions.node) >= 19
   ) {
-    // subtls test requires SCRAM auth, which requires `crytpo.subtle`, which is only available from Node 19 onwards
+    // subtls test requires SCRAM auth, which requires `crytpo.subtle`, available from Node 19 onwards
     test('client.query() with custom WebSocket proxy and subtls', async () => {
       const client = new WsClient(DB_URL);
       client.neonConfig.wsProxy = process.env.VITE_WSPROXY!;
