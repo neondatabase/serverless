@@ -11,20 +11,20 @@ env:
   VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
 
 jobs:
-  test-node-18:
+  test-node-16:
     runs-on: ubuntu-latest
     steps:
       # setup
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 16
 
       - name: Install package dependencies
         run: npm install
 
       # goal
-      - name: Run tests in Node 18 (no native WebSocket), node environment
+      - name: Run tests in Node 16 (no native WebSocket or fetch), node environment
         run: npm run testNode
 
   test-node-lts:
