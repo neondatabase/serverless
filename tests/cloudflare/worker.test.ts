@@ -4,7 +4,7 @@ import { unstable_dev, type Unstable_DevWorker } from 'wrangler';
 let worker: Unstable_DevWorker;
 
 beforeAll(async () => {
-  worker = await unstable_dev('tests/cloudflareWorker/worker.ts', {
+  worker = await unstable_dev('tests/cloudflare/worker.ts', {
     experimental: { disableExperimentalWarning: true },
   });
 });
