@@ -4,6 +4,12 @@ import { neon, Pool, Client, type QueryResult } from '../../dist/npm';
 
 const DATABASE_URL = server.config.env.VITE_NEON_DB_URL!;
 
+test('log version', () => {
+  if (typeof navigator !== 'undefined') {
+    console.log(`UA: ${navigator.userAgent}`);
+  }
+});
+
 test('http query', async () => {
   const sql = neon(DATABASE_URL);
   const str = 'fetch';

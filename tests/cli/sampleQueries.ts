@@ -50,7 +50,7 @@ export const sampleQueries = (sql: NeonQueryFunction<any, any>) => [
   sql`SELECT ${new Uint8Array([65, 66, 67])} AS bytea`,
   sql`SELECT ${new Uint8Array(65536).fill(128)} AS bytea`,
   sql`SELECT ${Buffer.from([65, 66, 67])} AS bytea`,
-  sql`SELECT ${1} AS one, ${sql("'raw'")} AS raw, ${'x'} AS x, ${now} AS date`,  // multiple types plus raw SQL
+  sql`SELECT ${1} AS one, ${sql("'raw'")} AS raw, ${'x'} AS x, ${now} AS date`, // multiple types plus raw SQL
 
   // non-tagged-template
   sql('SELECT $1::timestamp AS timestampnow', [now]),

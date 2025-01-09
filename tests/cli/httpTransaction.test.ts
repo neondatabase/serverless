@@ -1,8 +1,11 @@
-import { assertType, expect, test } from 'vitest';
+import { assertType, beforeAll, expect, test } from 'vitest';
+import { polyfill } from './polyfill';
 import { neon } from '../../dist/npm';
 
 const DB_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DB_URL);
+
+beforeAll(polyfill);
 
 test('basic batch query with array of sql', async () => {
   const [[a], [b]] = await sql.transaction([

@@ -1,19 +1,15 @@
 import { expect, test, vi, beforeAll, assertType } from 'vitest';
-import {
-  FullQueryResults,
-  neon,
-  neonConfig,
-  Pool,
-} from '../../dist/npm';
+import nodeFetch from 'node-fetch';
+import { neon, neonConfig, Pool, type FullQueryResults } from '../../dist/npm';
 import { sampleQueries } from './sampleQueries';
-import { shimWebSocketIfRequired } from './ws';
+import { polyfill } from './polyfill';
 
 const DB_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DB_URL);
 const sqlFull = neon(DB_URL, { fullResults: true });
 const pool = new Pool({ connectionString: DB_URL });
 
-beforeAll(shimWebSocketIfRequired);
+beforeAll(polyfill);
 
 test(
   'http query results match WebSocket query results',
@@ -136,15 +132,17 @@ test('options to `neon()` and options on queries', async () => {
 });
 
 test('custom fetch', async () => {
-  const fn = vi.fn();
-  neonConfig.fetchFunction = (url: string, options: any) => {
-    fn(url);
-    return fetch(url, options);
-  };
-  await expect(sql`SELECT ${'customFetch'} AS str`).resolves.toStrictEqual([
-    { str: 'customFetch' },
-  ]);
-  expect(fn).toHaveBeenCalledOnce();
+  const prevFetchFunction = neonConfig.fetchFunction; // might be polyfilled
+  try {
+    const fn = vi.fn((url, options) => nodeFetch(url, options));
+    neonConfig.fetchFunction = fn;
+    await expect(sql`SELECT ${'customFetch'} AS str`).resolves.toStrictEqual([
+      { str: 'customFetch' },
+    ]);
+    expect(fn).toHaveBeenCalledOnce();
+  } finally {
+    neonConfig.fetchFunction = prevFetchFunction;
+  }
 });
 
 test('errors match WebSocket query errors', async () => {
@@ -191,7 +189,7 @@ test('timeout aborting an http query', { timeout: 5000 }, async () => {
 
   await expect(
     sql('SELECT pg_sleep(2)', [], { fetchOptions: { signal } }),
-  ).rejects.toThrow('TimeoutError');
+  ).rejects.toThrow('aborted');
 });
 
 test('timeout not aborting an http query', { timeout: 5000 }, async () => {
@@ -239,7 +237,7 @@ test(
     const urlWithBadHost = DB_URL.replace('.neon.tech', '.neon.techh');
     const sqlBad = neon(urlWithBadHost);
     await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
-      'fetch failed',
+      /fetch failed|ENOTFOUND/, // accounts for both native fetch and node-fetch error messages
     );
   },
 );
