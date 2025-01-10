@@ -48,3 +48,5 @@ export type { BindConfig, ClientConfig, Connection, ConnectionConfig, CustomType
 export * from './httpQuery';
 export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError, };
 export type { SocketDefaults, FetchEndpointOptions, WebSocketConstructor, WebSocketLike, subtls, } from '../shims/net';
+declare const _bundleExt: 'js' | 'mjs';
+export { _bundleExt };

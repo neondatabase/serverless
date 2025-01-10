@@ -447,3 +447,8 @@ export type {
   WebSocketLike,
   subtls,
 } from '../shims/net';
+
+// @ts-ignore -- this is defined by esbuild so we can track whether we imported .js or .mjs
+const _bundleExt: 'js' | 'mjs' = BUNDLE_EXT;
+
+export { _bundleExt };

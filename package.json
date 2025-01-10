@@ -6,6 +6,7 @@
   "author": "George MacKerron",
   "license": "MIT",
   "dependencies": {
+    "@prisma/adapter-neon": "^6.2.1",
     "assert": "file:shims/assert",
     "buffer": "^6.0.3",
     "crypto": "file:shims/crypto",
@@ -47,6 +48,7 @@
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
     "test:node": "./export.sh && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
+    "test:packages": "./export.sh && vitest run --dir=tests/packages --environment=node --no-file-parallelism",
     "test:edge": "./export.sh && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
     "test:cloudflare": "./export.sh && vitest run --dir=tests/cloudflare --no-file-parallelism",
     "test:vercel": "./export.sh && vitest run --dir=tests/vercel --no-file-parallelism",
@@ -75,5 +77,8 @@
     "typescript": "^5.0.4",
     "vitest": "^2.1.8",
     "wrangler": "^3.0.1"
+  },
+  "prisma": {
+    "schema": "tests/packages/prisma/schema.prisma"
   }
 }

@@ -16,6 +16,7 @@ npx esbuild export/index.ts \
   --bundle \
   --keep-names \
   --inject:shims/shims.js \
+  --define:BUNDLE_EXT=\"js\" \
   --target=es2020 \
   --outfile=dist/npm/index.js \
   $DEBUG_ARG $MINIFY_ARG
@@ -28,6 +29,7 @@ npx esbuild export/index.ts \
   --bundle \
   --keep-names \
   --inject:shims/shims.js \
+  --define:BUNDLE_EXT=\"mjs\" \
   --target=es2020 \
   --outfile=dist/npm/index.mjs \
   $DEBUG_ARG $MINIFY_ARG

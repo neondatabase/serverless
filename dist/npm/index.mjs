@@ -1630,8 +1630,9 @@ let s=Kc(this.Promise,i);i=s.callback;try{let o=new to.default(this.options),u=e
 c=encodeURI,l=`postgresql://${u(o.user)}:${u(o.password)}@${u(o.host)}/${c(o.database)}`,
 h=typeof t=="string"?t:t.text,p=n??t.values??[];Xs(l,{fullResults:!0,arrayMode:t.
 rowMode==="array"})(h,p,{types:t.types??this.options?.types}).then(_=>i(void 0,_)).
-catch(_=>i(_))}catch(o){i(o)}return s.result}};a(_n,"NeonPool");var eo=_n;var export_defaults=ro.defaults;var export_types=ro.types;export{En as Client,de as NeonDbError,
-eo as Pool,export_defaults as defaults,Xs as neon,_e as neonConfig,export_types as types};
+catch(_=>i(_))}catch(o){i(o)}return s.result}};a(_n,"NeonPool");var eo=_n;var qf="mjs";var export_defaults=ro.defaults;var export_types=ro.types;export{En as Client,de as NeonDbError,
+eo as Pool,qf as _bundleExt,export_defaults as defaults,Xs as neon,_e as neonConfig,
+export_types as types};
 /*! Bundled license information:
 
 ieee754/index.js:

@@ -46,6 +46,8 @@ declare function base64Decode(input: string, charCodes?: typeof stdCharCodes, au
 
 export { BindConfig }
 
+export declare const _bundleExt: 'js' | 'mjs';
+
 declare class Bytes {
     offset: number;
     dataView: DataView;

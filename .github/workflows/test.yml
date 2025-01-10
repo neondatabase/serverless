@@ -47,6 +47,9 @@ jobs:
       - name: Run tests in Node LTS, edge-runtime environment
         run: npm run test:edge
 
+      - name: Run tests with third-party packages in Node LTS, node environment
+        run: npm run test:packages
+
       - name: Run browser tests
         run: npm run test:browser
 
