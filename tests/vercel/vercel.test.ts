@@ -94,7 +94,11 @@ test(
       });
       status = statusResponse.status;
       host = statusResponse.url;
-    } while (status === 'QUEUED' || status === 'BUILDING' || status === 'INITIALIZING');
+    } while (
+      status === 'QUEUED' ||
+      status === 'BUILDING' ||
+      status === 'INITIALIZING'
+    );
 
     if (status !== 'READY') {
       throw new Error(`Unexpected deployment status: ${status}`);

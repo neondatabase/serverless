@@ -24,7 +24,7 @@ jobs:
       - name: Install package dependencies
         run: |
           # strip Prisma, whose preinstall script throws on Node versions less than 18.x
-          sudo apt install jq
+          sudo apt-get install jq
           jq 'del(.devDependencies.prisma, .devDependencies."@prisma/client")' package.json > tmp.json
           mv tmp.json package.json
           npm install
