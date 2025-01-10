@@ -20,6 +20,12 @@ Currently we do not test on Bun, as it is [not supported by vitest](https://gith
 
 We include simple tests using drizzle-orm.
 
+### `packages`
+
+These brief tests make use of the driver from within drizzle-orm and Prisma. In CI, we run them on Node LTS only.
+
+They rely on a `file:` alias in `package.json`, from `@neondatabase/serverless` to the bundled driver.
+
 ### `cloudflare`
 
 We run basic local tests on Cloudflare Workers using the `wrangler` tool's `unstable_dev` feature.
@@ -30,7 +36,7 @@ Note that it will usually be better to use ordinary [node-postgres](https://node
 
 ### `vercel`
 
-We run the same range of tests in Vercel Functions, and these are actually deployed to and run on Vercel.
+We run the same basic tests in Vercel Functions, and these are actually deployed to and run on Vercel.
 
 Both the `nodejs` and `edge` runtimes are tested.
 
@@ -51,5 +57,3 @@ Possible future extensions to testing:
 - Run tests on AWS Lambda
 
 - Run Vercel/Cloudflare tests with libraries such as Next.js
-
-- Test with Prisma and/or other ORMs and libraries
