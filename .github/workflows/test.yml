@@ -22,7 +22,7 @@ jobs:
           node-version: 16
 
       - name: Install package dependencies
-        run: npm install
+        run: npm install --ignore-scripts
 
       # goal
       - name: Run tests in Node 16 (no native WebSocket or fetch), node environment
