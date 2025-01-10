@@ -4,10 +4,10 @@ import { neon, neonConfig, Pool, type FullQueryResults } from '../../dist/npm';
 import { sampleQueries } from './sampleQueries';
 import { polyfill } from './polyfill';
 
-const DB_URL = process.env.VITE_NEON_DB_URL!;
-const sql = neon(DB_URL);
-const sqlFull = neon(DB_URL, { fullResults: true });
-const pool = new Pool({ connectionString: DB_URL });
+const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
+const sql = neon(DATABASE_URL);
+const sqlFull = neon(DATABASE_URL, { fullResults: true });
+const pool = new Pool({ connectionString: DATABASE_URL });
 
 beforeAll(polyfill);
 
@@ -55,13 +55,13 @@ interface FieldDef {
 }
 
 test('options to `neon()` and options on queries', async () => {
-  const sql__ = neon(DB_URL);
-  const sqlff = neon(DB_URL, { arrayMode: false, fullResults: false });
-  const sqlft = neon(DB_URL, { arrayMode: false, fullResults: true });
-  const sqltf = neon(DB_URL, { arrayMode: true, fullResults: false });
-  const sqltt = neon(DB_URL, { arrayMode: true, fullResults: true });
-  const sqlt_ = neon(DB_URL, { arrayMode: true });
-  const sql_t = neon(DB_URL, { fullResults: true });
+  const sql__ = neon(DATABASE_URL);
+  const sqlff = neon(DATABASE_URL, { arrayMode: false, fullResults: false });
+  const sqlft = neon(DATABASE_URL, { arrayMode: false, fullResults: true });
+  const sqltf = neon(DATABASE_URL, { arrayMode: true, fullResults: false });
+  const sqltt = neon(DATABASE_URL, { arrayMode: true, fullResults: true });
+  const sqlt_ = neon(DATABASE_URL, { arrayMode: true });
+  const sql_t = neon(DATABASE_URL, { fullResults: true });
 
   // check defaults
   assertType<typeof sqlff>(sql__);
@@ -207,7 +207,7 @@ test('timeout not aborting an http query', { timeout: 5000 }, async () => {
 });
 
 test('database URL with wrong user to `neon()`', async () => {
-  const urlWithBadHost = DB_URL.replace('//', '//x');
+  const urlWithBadHost = DATABASE_URL.replace('//', '//x');
   const sqlBad = neon(urlWithBadHost);
   await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
     'password authentication failed',
@@ -215,7 +215,7 @@ test('database URL with wrong user to `neon()`', async () => {
 });
 
 test('database URL with wrong password to `neon()`', async () => {
-  const urlWithBadPassword = DB_URL.replace('@', 'x@');
+  const urlWithBadPassword = DATABASE_URL.replace('@', 'x@');
   const sqlBad = neon(urlWithBadPassword);
   await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
     'password authentication failed',
@@ -223,7 +223,7 @@ test('database URL with wrong password to `neon()`', async () => {
 });
 
 test('database URL with wrong project to `neon()`', async () => {
-  const urlWithBadHost = DB_URL.replace('@', '@x');
+  const urlWithBadHost = DATABASE_URL.replace('@', '@x');
   const sqlBad = neon(urlWithBadHost);
   await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
     'password authentication failed',
@@ -234,7 +234,7 @@ test(
   'database URL with wrong host to `neon()`',
   { timeout: 10000 },
   async () => {
-    const urlWithBadHost = DB_URL.replace('.neon.tech', '.neon.techh');
+    const urlWithBadHost = DATABASE_URL.replace('.neon.tech', '.neon.techh');
     const sqlBad = neon(urlWithBadHost);
     await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
       /fetch failed|ENOTFOUND/, // accounts for both native fetch and node-fetch error messages
@@ -255,7 +255,7 @@ test('empty database URL to `neon()`', async () => {
 });
 
 test('wrong-scheme database URL to `neon()`', async () => {
-  expect(() => neon(DB_URL.replace(/^/, 'x'))).toThrowError(
+  expect(() => neon(DATABASE_URL.replace(/^/, 'x'))).toThrowError(
     'Database connection string format for `neon()` should be',
   );
 });

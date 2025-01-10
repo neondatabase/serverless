@@ -1,18 +1,33 @@
 /// <reference types="node" />
 
+import { BindConfig } from 'pg';
 import { Client as Client_2 } from 'pg';
+import { ClientConfig } from 'pg';
 import { Connection } from 'pg';
+import { ConnectionConfig } from 'pg';
+import { CustomTypesConfig } from 'pg';
+import { Defaults } from 'pg';
+import { defaults } from 'pg';
 import { EventEmitter } from 'events';
-import type { FieldDef } from 'pg';
+import { Events } from 'pg';
+import { ExecuteConfig } from 'pg';
+import { FieldDef } from 'pg';
+import { MessageConfig } from 'pg';
+import { Notification } from 'pg';
 import { Pool as Pool_2 } from 'pg';
-import type { QueryArrayConfig } from 'pg';
-import type { QueryArrayResult } from 'pg';
-import type { QueryConfig } from 'pg';
+import { PoolConfig } from 'pg';
+import { Query } from 'pg';
+import { QueryArrayConfig } from 'pg';
+import { QueryArrayResult } from 'pg';
+import { QueryConfig } from 'pg';
 import type { QueryConfigValues } from 'pg';
-import type { QueryResult } from 'pg';
-import type { QueryResultRow } from 'pg';
+import { QueryParse } from 'pg';
+import { QueryResult } from 'pg';
+import { QueryResultBase } from 'pg';
+import { QueryResultRow } from 'pg';
+import { ResultBuilder } from 'pg';
 import type { Socket } from 'net';
-import type { Submittable } from 'pg';
+import { Submittable } from 'pg';
 import { types } from 'pg';
 
 declare const allKeyUsages: readonly ["digitalSignature", "nonRepudiation", "keyEncipherment", "dataEncipherment", "keyAgreement", "keyCertSign", "cRLSign", "encipherOnly", "decipherOnly"];
@@ -28,6 +43,8 @@ declare class ASN1Bytes extends Bytes {
 }
 
 declare function base64Decode(input: string, charCodes?: typeof stdCharCodes, autoPad?: boolean): Uint8Array<ArrayBuffer>;
+
+export { BindConfig }
 
 declare class Bytes {
     offset: number;
@@ -187,16 +204,34 @@ export declare class Client extends Client_2 {
     _handleAuthSASLContinue(msg: any): Promise<void>;
 }
 
+export { ClientConfig }
+
+export { Connection }
+
+export { ConnectionConfig }
+
+export { CustomTypesConfig }
+
 declare interface DataRequest {
     bytes: number;
     resolve: (data: Uint8Array | undefined) => void;
 }
 
+export { Defaults }
+
+export { defaults }
+
 declare type DistinguishedName = Record<string, string | string[]>;
+
+export { Events }
+
+export { ExecuteConfig }
 
 export declare interface FetchEndpointOptions {
     jwtAuth?: boolean;
 }
+
+export { FieldDef }
 
 export declare interface FullQueryResults<ArrayMode extends boolean> {
     fields: FieldDef[];
@@ -254,6 +289,8 @@ export declare interface HTTPTransactionOptions<ArrayMode extends boolean, FullR
     readOnly?: boolean;
     deferrable?: boolean;
 }
+
+export { MessageConfig }
 
 /**
  * This function returns an async tagged-template function that runs a single
@@ -576,6 +613,8 @@ export declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults
     opts?: HTTPQueryOptions<ArrayMode, FullResults>;
 }
 
+export { Notification }
+
 declare type OID = string;
 
 export declare interface ParameterizedQuery {
@@ -601,6 +640,8 @@ export declare class Pool extends Pool_2 {
     query<R extends QueryResultRow = any, I = any[]>(queryText: string, values: QueryConfigValues<I>, callback: (err: Error, result: QueryResult<R>) => void): void;
 }
 
+export { PoolConfig }
+
 export declare interface ProcessQueryResultOptions {
     arrayMode: boolean;
     fullResults: boolean;
@@ -608,6 +649,22 @@ export declare interface ProcessQueryResultOptions {
     resultCallback: HTTPQueryOptions<false, false>['resultCallback'];
     types?: typeof types;
 }
+
+export { Query }
+
+export { QueryArrayConfig }
+
+export { QueryArrayResult }
+
+export { QueryConfig }
+
+export { QueryParse }
+
+export { QueryResult }
+
+export { QueryResultBase }
+
+export { QueryResultRow }
 
 export declare type QueryRows<ArrayMode extends boolean> = ArrayMode extends true ? any[][] : Record<string, any>[];
 
@@ -621,6 +678,8 @@ declare abstract class ReadQueue {
     bytesInQueue(): number;
     read(bytes: number): Promise<Uint8Array<ArrayBufferLike> | undefined>;
 }
+
+export { ResultBuilder }
 
 declare type RootCertsData = Uint8Array;
 
@@ -670,6 +729,8 @@ declare function startTls(host: string, rootCertsDatabase: RootCertsDatabase | s
 
 declare function stdCharCodes(charCode: number): number | void;
 
+export { Submittable }
+
 declare namespace subtls {
     export {
         base64Decode,
@@ -702,6 +763,8 @@ declare class TrustedCert extends Cert {
     static findInDatabase(subjectOrSubjectKeyId: DistinguishedName | string, db: RootCertsDatabase): TrustedCert | undefined;
 }
 
+export { types }
+
 declare function u8FromHex(hex: string): Uint8Array<ArrayBuffer>;
 
 export declare interface WebSocketConstructor {
@@ -721,8 +784,5 @@ declare class WebSocketReadQueue extends ReadQueue {
     constructor(socket: WebSocket);
     socketIsNotClosed(): boolean;
 }
-
-
-export * from "pg";
 
 export { }

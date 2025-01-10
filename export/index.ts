@@ -404,7 +404,32 @@ class NeonPool extends Pool {
   }
 }
 
-export * from 'pg';
+export { defaults, types } from 'pg';
+export type {
+  BindConfig,
+  ClientConfig,
+  Connection,
+  ConnectionConfig,
+  CustomTypesConfig,
+  Defaults,
+  Events,
+  ExecuteConfig,
+  FieldDef,
+  MessageConfig,
+  Notification,
+  PoolConfig,
+  Query,
+  QueryArrayConfig,
+  QueryArrayResult,
+  QueryConfig,
+  QueryParse,
+  QueryResult,
+  QueryResultBase,
+  QueryResultRow,
+  ResultBuilder,
+  Submittable,
+} from 'pg';
+
 export * from './httpQuery';
 
 export {

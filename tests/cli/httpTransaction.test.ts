@@ -2,8 +2,8 @@ import { assertType, beforeAll, expect, test } from 'vitest';
 import { polyfill } from './polyfill';
 import { neon } from '../../dist/npm';
 
-const DB_URL = process.env.VITE_NEON_DB_URL!;
-const sql = neon(DB_URL);
+const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
+const sql = neon(DATABASE_URL);
 
 beforeAll(polyfill);
 
@@ -50,7 +50,7 @@ test('option setting on `transaction()`', async () => {
 });
 
 test('option setting on `neon()`', async () => {
-  const sqlArr = neon(DB_URL, {
+  const sqlArr = neon(DATABASE_URL, {
     arrayMode: true, // arrayMode changes result format below
     isolationLevel: 'RepeatableRead',
   });
@@ -65,7 +65,7 @@ test('option setting on `neon()`', async () => {
 });
 
 test('option setting on `transaction()` overrides option setting on `neon()` (a)', async () => {
-  const sqlArr = neon(DB_URL, { arrayMode: true });
+  const sqlArr = neon(DATABASE_URL, { arrayMode: true });
   const [a, b] = await sqlArr.transaction(
     (txn) => [
       txn`SELECT ${1}::int AS "batchInt"`,
