@@ -22,7 +22,12 @@ jobs:
           node-version: 16
 
       - name: Install package dependencies
-        run: npm install --ignore-scripts
+        run: |
+          # strip Prisma, whose preinstall script throws on Node versions less than 18.x
+          apt install jq
+          jq 'del(.devDependencies.prisma, .devDependencies."@prisma/client")' package.json > tmp.json
+          mv tmp.json package.json
+          npm install
 
       # goal
       - name: Run tests in Node 16 (no native WebSocket or fetch), node environment
