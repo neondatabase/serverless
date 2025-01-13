@@ -18,8 +18,6 @@ In CI we run these tests:
 
 Currently we do not test on Bun, as it is [not supported by vitest](https://github.com/oven-sh/bun/issues/4145), nor on Deno, [for the same reason](https://github.com/denoland/deno/issues/23882).
 
-We include simple tests using drizzle-orm.
-
 ### `packages`
 
 These brief tests make use of the driver from within drizzle-orm and Prisma. In CI, we run them on Node LTS only.
@@ -50,10 +48,12 @@ We use Firefox as the browser, on the basis that this is a wholly independent JS
 
 Possible future extensions to testing:
 
-- Run the CLI tests on Bun and Deno
+- Test more scenarios!
 
-- Run the browser tests on Chrome/Chromium and/or Safari/WebKit
+- Run the CLI tests on Bun and/or Deno
+
+- Run the browser tests on Chrome/Chromium
 
 - Run tests on AWS Lambda
 
-- Run Vercel/Cloudflare tests with libraries such as Next.js
+- Run tests with libraries such as Next.js, including on Cloudflare/Vercel
