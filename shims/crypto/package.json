@@ -1,5 +1,5 @@
 {
-  "name": "crypto",
+  "name": "@pgshims/crypto",
   "version": "0.1.0",
   "description": "",
   "type": "module",

@@ -1,5 +1,5 @@
 {
-  "name": "string_decoder",
+  "name": "@pgshims/string_decoder",
   "version": "0.1.0",
   "description": "",
   "type": "module",

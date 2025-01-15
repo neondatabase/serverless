@@ -1,5 +1,5 @@
 {
-  "name": "fs",
+  "name": "@pgshims/fs",
   "version": "0.1.0",
   "description": "",
   "type": "module",

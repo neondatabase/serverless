@@ -16,6 +16,18 @@ npx esbuild src/index.ts \
   --bundle \
   --keep-names \
   --inject:shims.js \
+  --alias:assert=@pgshims/assert \
+  --alias:crypto=@pgshims/crypto \
+  --alias:dns=@pgshims/dns \
+  --alias:fs=@pgshims/fs \
+  --alias:net=@pgshims/net \
+  --alias:path=@pgshims/path \
+  --alias:pg-native=@pgshims/pg-native \
+  --alias:stream=@pgshims/stream \
+  --alias:string_decoder=@pgshims/string_decoder \
+  --alias:tls=@pgshims/tls \
+  --alias:url=@pgshims/url \
+  --alias:util=@pgshims/util \
   --target=es2020 \
   --outfile=dist/index.js \
   $DEBUG_ARG $MINIFY_ARG
@@ -28,6 +40,18 @@ npx esbuild src/index.ts \
   --bundle \
   --keep-names \
   --inject:shims.js \
+  --alias:assert=@pgshims/assert \
+  --alias:crypto=@pgshims/crypto \
+  --alias:dns=@pgshims/dns \
+  --alias:fs=@pgshims/fs \
+  --alias:net=@pgshims/net \
+  --alias:path=@pgshims/path \
+  --alias:pg-native=@pgshims/pg-native \
+  --alias:stream=@pgshims/stream \
+  --alias:string_decoder=@pgshims/string_decoder \
+  --alias:tls=@pgshims/tls \
+  --alias:url=@pgshims/url \
+  --alias:util=@pgshims/util \
   --target=es2020 \
   --outfile=dist/index.mjs \
   $DEBUG_ARG $MINIFY_ARG

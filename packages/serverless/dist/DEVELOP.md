@@ -5,8 +5,8 @@ The code is at https://github.com/neondatabase/serverless. Most of the interesti
 - To update the npm & jsr package:
 
 ```bash
-npm run build
-cd dist/npm
+cd packages/serverless
+bun run build
 npm version patch  # or minor or major
 npm publish
 
