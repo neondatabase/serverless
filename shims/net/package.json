@@ -3,7 +3,14 @@
   "version": "0.1.0",
   "description": "",
   "type": "module",
-  "main": "index.js",
+  "main": "./index.ts",
   "author": "George MacKerron",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "events": "^3.3.0"
+  },
+  "devDependencies": {
+    "subtls": "^0.3.0",
+    "@types/events": "^3.0.0"
+  }
 }

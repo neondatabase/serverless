@@ -1,6 +1,6 @@
 import { types as defaultTypes } from '.';
-import { Socket } from '../shims/net';
-import { parse } from '../shims/url';
+import { Socket } from '@pgshims/net';
+import { parse } from '@pgshims/url';
 
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from 'pg/lib/utils';

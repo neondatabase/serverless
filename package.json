@@ -1,38 +1,16 @@
 {
-  "name": "pgshims",
-  "version": "0.4.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@neondatabase/serverless-monorepo",
   "author": "George MacKerron",
   "license": "MIT",
-  "dependencies": {
-    "assert": "file:shims/assert",
-    "buffer": "^6.0.3",
-    "crypto": "file:shims/crypto",
-    "dns": "file:shims/dns",
-    "events": "^3.3.0",
-    "fs": "file:shims/fs",
-    "net": "file:shims/net",
-    "npm-run-all": "^4.1.5",
-    "path": "file:shims/path",
-    "pg": "8.8.0",
-    "pg-native": "file:shims/pg-native",
-    "prettier": "^3.4.1",
-    "serve": "^14.1.2",
-    "stream": "file:shims/stream",
-    "string_decoder": "file:shims/string_decoder",
-    "tls": "file:shims/tls",
-    "undici": "^6.0.1",
-    "url": "file:shims/url",
-    "util": "file:shims/util",
-    "ws": "^8.12.1"
-  },
+  "workspaces": [
+    "shims/*",
+    "packages/serverless"
+  ],
   "overrides": {
     "pg-connection-string": "2.5.0"
   },
   "scripts": {
     "check": "tsc --noEmit",
-    "export": "npm run check && ./export.sh",
     "build": "./build.sh",
     "buildDebug": "./build.sh debug",
     "watch": "./build.sh watch",
@@ -52,15 +30,20 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230115.0",
-    "@types/events": "^3.0.0",
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.4",
     "dotenv": "^16.0.3",
     "esbuild": "^0.24.0",
     "fast-equals": "^5.0.1",
+    "npm-run-all": "^4.1.5",
+    "pg": "8.8.0",
+    "prettier": "^3.4.1",
+    "serve": "^14.1.2",
     "subtls": "^0.3.0",
     "typescript": "^5.0.4",
+    "undici": "^6.0.1",
     "vitest": "^2.1.6",
-    "wrangler": "^3.0.1"
+    "wrangler": "^3.0.1",
+    "ws": "^8.12.1"
   }
 }

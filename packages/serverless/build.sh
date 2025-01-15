@@ -11,25 +11,25 @@ fi
 
 # CJS code: index.js
 
-npx esbuild export/index.ts \
+npx esbuild src/index.ts \
   --format=cjs \
   --bundle \
   --keep-names \
-  --inject:shims/shims.js \
+  --inject:shims.js \
   --target=es2020 \
-  --outfile=dist/npm/index.js \
+  --outfile=dist/index.js \
   $DEBUG_ARG $MINIFY_ARG
 
 
 # ESM code: index.mjs
 
-npx esbuild export/index.ts \
+npx esbuild src/index.ts \
   --format=esm \
   --bundle \
   --keep-names \
-  --inject:shims/shims.js \
+  --inject:shims.js \
   --target=es2020 \
-  --outfile=dist/npm/index.mjs \
+  --outfile=dist/index.mjs \
   $DEBUG_ARG $MINIFY_ARG
 
 # CJS TS types: index.d.ts
@@ -42,21 +42,22 @@ npx esbuild export/index.ts \
 echo "
 // DON'T EDIT THIS FILE
 // It's a simple automatic copy of index.d.ts
-" > dist/npm/index.d.mts
-cat dist/npm/index.d.ts >> dist/npm/index.d.mts
+" > dist/index.d.mts
+cat dist/index.d.ts >> dist/index.d.mts
 
 
 # static assets
 
-cp LICENSE README.md CHANGELOG.md CONFIG.md DEPLOY.md DEVELOP.md dist/npm/
+cp ../../LICENSE ../../README.md ../../CHANGELOG.md ../../CONFIG.md ../../DEPLOY.md ../../DEVELOP.md dist/
 
 # Prepare jsr package
 
-cp dist/npm/index.d.ts dist/jsr/
+mkdir -p dist/jsr
+cp dist/index.d.ts dist/jsr/
 echo "/// <reference types=\"./index.d.ts\" />
 " > dist/jsr/index.js
-cat dist/npm/index.mjs >> dist/jsr/index.js
-cp LICENSE README.md dist/jsr/
+cat dist/index.mjs >> dist/jsr/index.js
+cp ../../LICENSE ../../README.md dist/jsr/
 
 
 # Note: --keep-names adds about 10KB to the bundle size, but it gives us error

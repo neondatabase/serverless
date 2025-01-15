@@ -1,10 +1,10 @@
 import { Client, Connection, Pool } from 'pg';
-import { Socket } from '../shims/net';
+import { Socket } from '@pgshims/net';
 import { neon, NeonDbError } from './httpQuery';
 import type { NeonConfigGlobalAndClient } from './neonConfig';
 
 // @ts-ignore -- this isn't officially exported by pg
-import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
+import ConnectionParameters from 'pg/lib/connection-parameters';
 
 interface ConnectionParameters {
   user: string;

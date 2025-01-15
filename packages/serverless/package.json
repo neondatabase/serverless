@@ -1,0 +1,66 @@
+{
+  "name": "@neondatabase/serverless",
+  "version": "0.10.4",
+  "author": "Neon",
+  "description": "node-postgres for serverless environments from neon.tech",
+  "exports": {
+    "require": "./dist/index.js",
+    "import": "./dist/index.mjs"
+  },
+  "license": "MIT",
+  "homepage": "https://neon.tech",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neondatabase/serverless"
+  },
+  "keywords": [
+    "Neon",
+    "serverless",
+    "Postgres",
+    "PostgreSQL",
+    "pg",
+    "database",
+    "SQL",
+    "edge",
+    "workers",
+    "Cloudflare",
+    "Vercel",
+    "RDBMS",
+    "WebSocket",
+    "https"
+  ],
+  "scripts": {
+    "build": "./build.sh"
+  },
+  "devDependencies": {
+    "@pgshims/assert": "workspace:assert@*",
+    "@pgshims/crypto": "workspace:crypto@*",
+    "@pgshims/dns": "workspace:dns@*",
+    "@pgshims/fs": "workspace:fs@*",
+    "@pgshims/net": "workspace:net@*",
+    "@pgshims/path": "workspace:path@*",
+    "@pgshims/pg-native": "workspace:pg-native@*",
+    "@pgshims/stream": "workspace:stream@*",
+    "@pgshims/string_decoder": "workspace:string_decoder@*",
+    "@pgshims/tls": "workspace:tls@*",
+    "@pgshims/url": "workspace:url@*",
+    "@pgshims/util": "workspace:util@*",
+    "assert": "workspace:*",
+    "buffer": "^6.0.3",
+    "crypto": "workspace:*",
+    "dns": "workspace:*",
+    "fs": "workspace:*",
+    "net": "workspace:*",
+    "path": "workspace:*",
+    "pg-native": "workspace:*",
+    "pg": "8.8.0",
+    "stream": "workspace:*",
+    "string_decoder": "workspace:*",
+    "tls": "workspace:*",
+    "url": "workspace:*",
+    "util": "workspace:*"
+  },
+  "dependencies": {
+    "@types/pg": "8.11.6"
+  }
+}
