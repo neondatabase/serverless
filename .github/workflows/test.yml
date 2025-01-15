@@ -47,4 +47,4 @@ jobs:
 
       # goal
       - name: Run all tests in Node LTS
-        run: npm run test
+        run: for i in {1..100}; do npm run test; done
