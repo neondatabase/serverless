@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+if [ -n "$NO_EXPORT" ]; then exit; fi
+
 if [ "$1" = "debug" ]; then
   DEBUG_ARG="--define:debug=true"
   MINIFY_ARG=""
@@ -47,7 +49,7 @@ sed -i.orig -r \
 # bundle types into one file
 npx @microsoft/api-extractor run --local
 
-# remove appendage and private fields
+# remove empty export and private fields
 sed -i.orig -r \
   -e '/^ *private [^ ]+;$/d' \
   -e '/^export [{] *[}]$/d' \

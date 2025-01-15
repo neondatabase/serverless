@@ -30,7 +30,7 @@ jobs:
           npm install
 
       # goal
-      - name: Run tests in Node 16 (no native WebSocket or fetch), node environment
+      - name: Run CLI-based tests in Node 16 (no native WebSocket or fetch), node environment
         run: npm run test:node
 
   test-node-lts:
@@ -46,20 +46,5 @@ jobs:
         run: npm install
 
       # goal
-      - name: Run tests in Node LTS, node environment
-        run: npm run test:node
-
-      - name: Run tests in Node LTS, edge-runtime environment
-        run: npm run test:edge
-
-      - name: Run tests with third-party packages in Node LTS, node environment
-        run: npm run test:packages
-
-      - name: Run browser tests
-        run: npm run test:browser
-
-      - name: Run Cloudflare Workers tests
-        run: npm run test:cloudflare
-
-      - name: Run Vercel Functions tests
-        run: npm run test:vercel
+      - name: Run all tests in Node LTS
+        run: npm run test:all
