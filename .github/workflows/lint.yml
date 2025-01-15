@@ -11,14 +11,14 @@ jobs:
     steps:
       # setup
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
 
       - name: Install package dependencies
-        run: bun install
+        run: npm install
 
       # goal
       - name: Check TypeScript types
-        run: bun run check
+        run: npm run check
 
       - name: Check code formatting
-        run: bun run format
+        run: npm run format
