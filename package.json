@@ -47,13 +47,14 @@
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "test": "./export.sh && export NO_EXPORT=1 && npm run test:node && npm run test:packages && npm run test:edge && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
-    "test:node": "./export.sh && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
-    "test:packages": "./export.sh && vitest run --dir=tests/packages --environment=node --no-file-parallelism",
-    "test:edge": "./export.sh && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
-    "test:cloudflare": "./export.sh && vitest run --dir=tests/cloudflare --no-file-parallelism",
-    "test:vercel": "./export.sh && vitest run --dir=tests/vercel --no-file-parallelism",
-    "test:browser": "./export.sh && playwright install --with-deps firefox && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
+    "export": "./export.sh",
+    "test": "npm run export && export NO_EXPORT=1 && npm run test:node && npm run test:packages && npm run test:edge && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
+    "test:node": "npm run export && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
+    "test:packages": "npm run export && vitest run --dir=tests/packages --environment=node --no-file-parallelism",
+    "test:edge": "npm run export && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
+    "test:cloudflare": "npm run export && vitest run --dir=tests/cloudflare --no-file-parallelism",
+    "test:vercel": "npm run export && vitest run --dir=tests/vercel --no-file-parallelism",
+    "test:browser": "npm run export && playwright install --with-deps firefox && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241230.0",
