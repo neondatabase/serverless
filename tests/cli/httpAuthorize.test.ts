@@ -9,6 +9,7 @@ const CLERK_SECRET_KEY = process.env.VITE_CLERK_SECRET_KEY!;
 beforeAll(polyfill);
 
 async function clerkAPI(method: 'POST' | 'GET', endpoint: string, body?: any) {
+  if (!fetch) (globalThis as any).fetch = await import('node-fetch'); // for old Node
   const response = await fetch(`https://api.clerk.com/v1/${endpoint}`, {
     method,
     headers: {
