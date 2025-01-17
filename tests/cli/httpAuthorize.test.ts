@@ -33,5 +33,13 @@ test('connections with Neon Authorize', async () => {
 
   console.log(jwt);
 
-  // const sql = neon(DATABASE_URL);
+  const sql = neon(DATABASE_URL);
+  await sql`CREATE EXTENSION IF NOT EXISTS pg_session_jwt`;
+
+  const authSql = neon(DATABASE_URL.replace(/[^/]+@/, 'authenticated@'), {
+    authToken: jwt,
+  });
+  const queriedUserId = await authSql`SELECT auth.user_id()`;
+
+  console.log(queriedUserId);
 });
