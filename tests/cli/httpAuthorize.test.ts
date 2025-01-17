@@ -1,4 +1,4 @@
-import { expect, test, beforeAll, assertType } from 'vitest';
+import { expect, test, beforeAll } from 'vitest';
 import { neon } from '../../dist/npm';
 import { polyfill } from './polyfill';
 
@@ -21,10 +21,8 @@ async function clerkAPI(method: 'POST' | 'GET', endpoint: string, body?: any) {
 }
 
 test('connection with Neon Authorize', async () => {
-  const [{ id: user_id }] = await clerkAPI(
-    'GET',
-    `users?email_address[]=${CLERK_USER}`,
-  );
+  const userEndpoint = `users?email_address[]=${CLERK_USER}`;
+  const [{ id: user_id }] = await clerkAPI('GET', userEndpoint);
   const { id: session_id } = await clerkAPI('POST', 'sessions', { user_id });
   const { jwt } = await clerkAPI('POST', `sessions/${session_id}/tokens`);
 
