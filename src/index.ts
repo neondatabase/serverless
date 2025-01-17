@@ -2,7 +2,7 @@
 This file contains various checks that the driver is working.
 
 Different elements can be run using:
-  * `npm run node`, `npm run bun`, or `npm run browser`
+  * `npm run node` or `npm run browser`
   * `npm run cfDev` or `npm run cfDeploy`
 
 In the long run these checks should be turned into a formal test suits.
@@ -194,7 +194,7 @@ export async function latencies(
   const connectRepeats = 9;
 
   log('Warm-up ...\n\n');
-  await poolRunQuery(1, env.NEON_DB_URL, ctx, queries[0]);
+  await poolRunQuery(1, env.NEON_DB_URL, ctx as any, queries[0]);
 
   let counter = 0;
 
@@ -354,7 +354,7 @@ export async function latencies(
     console.log(err);
   }
   try {
-    await poolRunQuery(1, env.NEON_DB_URL, ctx, {
+    await poolRunQuery(1, env.NEON_DB_URL, ctx as any, {
       sql: errstatement,
       test: () => true,
     });
@@ -421,24 +421,24 @@ export async function latencies(
     await sections('Neon/wss, no pipelining', async (n) => {
       const client = new Client(env.NEON_DB_URL);
       client.neonConfig.pipelineConnect = false;
-      await clientRunQuery(n, client, ctx, query);
+      await clientRunQuery(n, client, ctx as any, query);
     });
 
     await sections('Neon/wss, pipelined connect (default)', async (n) => {
       const client = new Client(env.NEON_DB_URL);
-      await clientRunQuery(n, client, ctx, query);
+      await clientRunQuery(n, client, ctx as any, query);
     });
 
     await sections('Neon/wss, pipelined connect, no coalescing', async (n) => {
       const client = new Client(env.NEON_DB_URL);
       client.neonConfig.coalesceWrites = false;
-      await clientRunQuery(n, client, ctx, query);
+      await clientRunQuery(n, client, ctx as any, query);
     });
 
     await sections(
       'Neon/wss, pipelined connect using Pool.query',
       async (n) => {
-        await poolRunQuery(n, env.NEON_DB_URL, ctx, query);
+        await poolRunQuery(n, env.NEON_DB_URL, ctx as any, query);
       },
     );
 
@@ -466,7 +466,7 @@ export async function latencies(
         client.neonConfig.pipelineTLS = false; // only works with patched pg
         client.neonConfig.pipelineConnect = false; // only works with password auth, which we aren't offered this way
         try {
-          await clientRunQuery(n, client, ctx, query);
+          await clientRunQuery(n, client, ctx as any, query);
         } catch (err: any) {
           console.error(`\n*** ${err.message}`);
         }

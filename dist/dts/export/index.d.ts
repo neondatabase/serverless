@@ -43,7 +43,7 @@ declare class NeonPool extends Pool {
     query<R extends QueryResultRow = any, I = any[]>(queryTextOrConfig: string | QueryConfig<I>, callback: (err: Error, result: QueryResult<R>) => void): void;
     query<R extends QueryResultRow = any, I = any[]>(queryText: string, values: QueryConfigValues<I>, callback: (err: Error, result: QueryResult<R>) => void): void;
 }
-export { defaults, types } from 'pg';
+export { defaults, types, ClientBase } from 'pg';
 export type { BindConfig, ClientConfig, Connection, ConnectionConfig, CustomTypesConfig, Defaults, Events, ExecuteConfig, FieldDef, MessageConfig, Notification, PoolConfig, Query, QueryArrayConfig, QueryArrayResult, QueryConfig, QueryParse, QueryResult, QueryResultBase, QueryResultRow, ResultBuilder, Submittable, } from 'pg';
 export * from './httpQuery';
 export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError, };

@@ -2,6 +2,7 @@
 
 import { BindConfig } from 'pg';
 import { Client as Client_2 } from 'pg';
+import { ClientBase } from 'pg';
 import { ClientConfig } from 'pg';
 import { Connection } from 'pg';
 import { ConnectionConfig } from 'pg';
@@ -205,6 +206,8 @@ export declare class Client extends Client_2 {
     connect(callback: (err?: Error) => void): void;
     _handleAuthSASLContinue(msg: any): Promise<void>;
 }
+
+export { ClientBase }
 
 export { ClientConfig }
 

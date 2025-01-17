@@ -404,7 +404,7 @@ class NeonPool extends Pool {
   }
 }
 
-export { defaults, types } from 'pg';
+export { defaults, types, ClientBase } from 'pg';
 export type {
   BindConfig,
   ClientConfig,
@@ -450,5 +450,4 @@ export type {
 
 // @ts-ignore -- this is defined by esbuild so we can track whether we imported .js or .mjs
 const _bundleExt: 'js' | 'mjs' = BUNDLE_EXT;
-
 export { _bundleExt };
