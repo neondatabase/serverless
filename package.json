@@ -56,7 +56,6 @@
     "test:browser": "npm run export && playwright install --with-deps firefox && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
   },
   "devDependencies": {
-    "@clerk/backend": "^1.23.2",
     "@cloudflare/workers-types": "^4.20241230.0",
     "@edge-runtime/vm": "^5.0.0",
     "@microsoft/api-extractor": "^7.48.1",

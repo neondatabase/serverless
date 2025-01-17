@@ -9,7 +9,9 @@ env:
   VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
   VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
   VITE_VERCEL_TOKEN: ${{ secrets.VITE_VERCEL_TOKEN }}
+  VITE_CLERK_SECRET_KEY: ${{ secrets.VITE_CLERK_SECRET_KEY }}
   VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
+  VITE_CLERK_USER: ${{ vars.VITE_CLERK_USER }}
 
 jobs:
   test-node-16:
