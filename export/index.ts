@@ -448,6 +448,8 @@ export type {
   subtls,
 } from '../shims/net';
 
-// @ts-ignore -- this is defined by esbuild so we can track whether we imported .js or .mjs
+// for debugging purposes, this gets defined by esbuild, so users can track
+// whether they've imported .js (CJS) or .mjs (ESM) or (uh-oh) both
+// @ts-ignore
 const _bundleExt: 'js' | 'mjs' = BUNDLE_EXT;
 export { _bundleExt };
