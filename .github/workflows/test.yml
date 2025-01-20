@@ -14,25 +14,20 @@ env:
   VITE_CLERK_USER: ${{ vars.VITE_CLERK_USER }}
 
 jobs:
-  test-node-16:
+  test-node-old:
     runs-on: ubuntu-latest
     steps:
       # setup
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Install package dependencies
-        run: |
-          # strip Prisma, whose preinstall script throws on Node versions less than 18.x
-          sudo apt-get install jq && \
-            mv package.json package.json.old && \
-            jq 'del(.devDependencies.prisma, .devDependencies."@prisma/client")' package.json.old > package.json
-          npm install
+        run: npm install
 
       # goal
-      - name: Run CLI-based tests in Node 16 (no native WebSocket or fetch), node environment
+      - name: Run CLI-based tests in Node 18 (no native WebSocket), node environment
         run: npm run test:node
 
   test-node-lts:
