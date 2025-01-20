@@ -17,7 +17,7 @@ circumstances are right.
 */
 
 import { Client, Connection, Pool } from 'pg';
-import { Socket } from '../shims/net';
+import { Socket, type SocketDefaults } from '../shims/net';
 import { neon, NeonDbError } from './httpQuery';
 import type {
   QueryResultRow,
@@ -27,6 +27,8 @@ import type {
   QueryConfig,
   QueryArrayResult,
   QueryResult,
+  ClientBase,
+  PoolClient,
 } from 'pg';
 
 // @ts-ignore -- this isn't officially exported by pg
@@ -40,9 +42,6 @@ interface ConnectionParameters {
 }
 
 declare interface NeonClient {
-  // these types suppress type errors in this file, but do not carry over to
-  // the npm package
-
   connection: Connection & {
     stream: Socket;
     sendSCRAMClientFinalMessage: (response: any) => void;
@@ -299,6 +298,16 @@ class NeonClient extends Client {
   }
 }
 
+// class 'ClientBase' exists only in @types/pg: under the hood in pg it's just a `Client extends EventEmitter`
+interface NeonClientBase extends ClientBase {
+  neonConfig: NeonConfigGlobalAndClient;
+}
+
+// class 'PoolClient' exists only in @types/pg: under the hood in pg it's just a `Client extends EventEmitter`
+interface NeonPoolClient extends PoolClient {
+  neonConfig: NeonConfigGlobalAndClient;
+}
+
 // copied from pg to support NeonPool.query
 function promisify(Promise: any, callback: any) {
   if (callback) return { callback: callback, result: undefined };
@@ -404,7 +413,7 @@ class NeonPool extends Pool {
   }
 }
 
-export { defaults, types, ClientBase } from 'pg';
+export { defaults, types, DatabaseError } from 'pg';
 export type {
   BindConfig,
   ClientConfig,
@@ -441,12 +450,32 @@ export {
 };
 
 export type {
-  SocketDefaults,
+  NeonPoolClient as PoolClient,
+  NeonClientBase as ClientBase,
+};
+
+export type {
+  SocketDefaults as NeonConfig,
   FetchEndpointOptions,
   WebSocketConstructor,
   WebSocketLike,
   subtls,
 } from '../shims/net';
+
+// provided for backwards-compatibility
+export type NeonConfigGlobalOnly = Pick<
+  SocketDefaults,
+  | 'fetchEndpoint'
+  | 'poolQueryViaFetch'
+  | 'fetchConnectionCache'
+  | 'fetchFunction'
+>;
+
+// provided for backwards-compatibility
+export type NeonConfigGlobalAndClient = Omit<
+  SocketDefaults,
+  keyof NeonConfigGlobalOnly
+>;
 
 // for debugging purposes, this gets defined by esbuild, so users can track
 // whether they've imported .js (CJS) or .mjs (ESM) or (uh-oh) both

@@ -74,8 +74,25 @@ export interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends
     resultCallback?: (query: ParameterizedQuery, result: any, rows: any, opts: any) => void;
 }
 export interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
+    /**
+     * Postgres transaction isolation level: see https://www.postgresql.org/docs/current/transaction-iso.html.
+     * Note that `ReadUncommitted` actually gets you `ReadCommitted` in Postgres.
+     * */
     isolationLevel?: 'ReadUncommitted' | 'ReadCommitted' | 'RepeatableRead' | 'Serializable';
+    /**
+     * When `readOnly` is `false`, which is the default, a `READ WRITE` Postgres
+     * transaction is used.
+     *
+     * When `readOnly` is `true`, a `READ ONLY` Postgres transaction is used.
+     * */
     readOnly?: boolean;
+    /**
+     * When `deferrable` is `false`, which is the default, a `NOT DEFERRABLE`
+     * Postgres transaction is used.
+     *
+     * When `deferrable` is `true` (and `isolationLevel` is `Serializable` and
+     * `readOnly` is `true`), a `DEFERRABLE` Postgres transaction is used.
+     * */
     deferrable?: boolean;
 }
 export interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
