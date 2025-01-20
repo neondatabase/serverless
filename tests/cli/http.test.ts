@@ -1,6 +1,6 @@
 import { expect, test, vi, beforeAll, assertType } from 'vitest';
 import nodeFetch from 'node-fetch';
-import { neon, neonConfig, Pool, type FullQueryResults } from '../../dist/npm';
+import { neon, neonConfig, Pool, type FullQueryResults } from '../..';
 import { sampleQueries } from './sampleQueries';
 import { polyfill } from './polyfill';
 
@@ -11,38 +11,31 @@ const pool = new Pool({ connectionString: DATABASE_URL });
 
 beforeAll(polyfill);
 
-test(
-  'http query results match WebSocket query results',
-  { timeout: 30000 },
-  async () => {
-    const client = await pool.connect();
+test('http query results match WebSocket query results', { timeout: 30000 }, async () => {
+  const client = await pool.connect();
 
-    for (const queryPromise of sampleQueries(sqlFull)) {
-      const { query, params } = queryPromise.parameterizedQuery;
-      const [httpResult, wsResult] = await Promise.all([
-        queryPromise,
-        client.query(query, params),
-      ]);
+  for (const queryPromise of sampleQueries(sqlFull)) {
+    const { query, params } = queryPromise.parameterizedQuery;
+    const [httpResult, wsResult] = await Promise.all([queryPromise, client.query(query, params)]);
 
-      // account for known/accepted differences:
-      // * http results are plain Objects, not Result instances
-      // * http results lack `oid` and `RowCtor` fields (which are both usually `null`)
-      // * http result `fields` array contains plain Objects, not Field instances
-      // * http results have `"viaNeonFetch": true`
+    // account for known/accepted differences:
+    // * http results are plain Objects, not Result instances
+    // * http results lack `oid` and `RowCtor` fields (which are both usually `null`)
+    // * http result `fields` array contains plain Objects, not Field instances
+    // * http results have `"viaNeonFetch": true`
 
-      const httpResultProcessed = { ...httpResult, oid: null, RowCtor: null };
-      const wsResultProcessed = {
-        ...wsResult,
-        fields: wsResult.fields.map((f) => ({ ...f })),
-        viaNeonFetch: true,
-      };
+    const httpResultProcessed = { ...httpResult, oid: null, RowCtor: null };
+    const wsResultProcessed = {
+      ...wsResult,
+      fields: wsResult.fields.map((f) => ({ ...f })),
+      viaNeonFetch: true,
+    };
 
-      expect(httpResultProcessed).toStrictEqual(wsResultProcessed);
-    }
+    expect(httpResultProcessed).toStrictEqual(wsResultProcessed);
+  }
 
-    client.release();
-  },
-);
+  client.release();
+});
 
 interface FieldDef {
   name: string;
@@ -169,13 +162,9 @@ test('errors match WebSocket query errors', async () => {
 });
 
 test('http queries with too few or too many parameters', async () => {
-  await expect(sql('SELECT $1', [])).rejects.toThrowError(
-    'bind message supplies 0 parameters',
-  );
+  await expect(sql('SELECT $1', [])).rejects.toThrowError('bind message supplies 0 parameters');
 
-  await expect(sql('SELECT $1', [1, 2])).rejects.toThrowError(
-    'bind message supplies 2 parameters',
-  );
+  await expect(sql('SELECT $1', [1, 2])).rejects.toThrowError('bind message supplies 2 parameters');
 });
 
 test('timeout aborting an http query', { timeout: 5000 }, async () => {
@@ -187,9 +176,9 @@ test('timeout aborting an http query', { timeout: 5000 }, async () => {
 
   const signal = AbortSignal.timeout(250);
 
-  await expect(
-    sql('SELECT pg_sleep(2)', [], { fetchOptions: { signal } }),
-  ).rejects.toThrow('aborted');
+  await expect(sql('SELECT pg_sleep(2)', [], { fetchOptions: { signal } })).rejects.toThrow(
+    'aborted',
+  );
 });
 
 test('timeout not aborting an http query', { timeout: 5000 }, async () => {
@@ -230,17 +219,13 @@ test('database URL with wrong project to `neon()`', async () => {
   );
 });
 
-test(
-  'database URL with wrong host to `neon()`',
-  { timeout: 10000 },
-  async () => {
-    const urlWithBadHost = DATABASE_URL.replace('.neon.tech', '.neon.techh');
-    const sqlBad = neon(urlWithBadHost);
-    await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
-      /fetch failed|ENOTFOUND/, // accounts for both native fetch and node-fetch error messages
-    );
-  },
-);
+test('database URL with wrong host to `neon()`', { timeout: 10000 }, async () => {
+  const urlWithBadHost = DATABASE_URL.replace('.neon.tech', '.neon.techh');
+  const sqlBad = neon(urlWithBadHost);
+  await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
+    /fetch failed|ENOTFOUND/, // accounts for both native fetch and node-fetch error messages
+  );
+});
 
 test('undefined database URL', async () => {
   expect(() => neon(undefined as unknown as string)).toThrowError(
@@ -249,9 +234,7 @@ test('undefined database URL', async () => {
 });
 
 test('empty database URL to `neon()`', async () => {
-  expect(() => neon('')).toThrowError(
-    'No database connection string was provided',
-  );
+  expect(() => neon('')).toThrowError('No database connection string was provided');
 });
 
 test('wrong-scheme database URL to `neon()`', async () => {

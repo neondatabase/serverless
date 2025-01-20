@@ -1,11 +1,11 @@
 {
-  "mainEntryPointFilePath": "dist/dts/export/index.d.ts",
+  "mainEntryPointFilePath": "build/types/index.d.ts",
   "newlineKind": "lf",
   "enumMemberOrder": "preserve",
   "bundledPackages": ["subtls"],
   "dtsRollup": {
     "enabled": true,
-    "untrimmedFilePath": "dist/dts/_extracted.d.ts"
+    "untrimmedFilePath": "build/generated.d.ts"
   },
   "apiReport": {
     "enabled": false
@@ -22,6 +22,9 @@
         "logLevel": "none"
       },
       "ae-missing-release-tag": {
+        "logLevel": "none"
+      },
+      "ae-forgotten-export": {
         "logLevel": "none"
       }
     }

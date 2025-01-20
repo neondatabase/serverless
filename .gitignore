@@ -1,6 +1,5 @@
-.dev.vars
 .env.*
 !.env.template
 node_modules
-tmp
 .DS_Store
+build

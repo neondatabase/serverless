@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { Pool } from '../../../dist/npm';
+import { Pool } from '../../..';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { sql } from 'drizzle-orm';
 

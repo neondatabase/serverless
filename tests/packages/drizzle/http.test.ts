@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { neon } from '../../../dist/npm';
+import { neon } from '../../..';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { sql } from 'drizzle-orm';
 

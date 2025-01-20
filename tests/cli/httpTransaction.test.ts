@@ -1,6 +1,6 @@
 import { assertType, beforeAll, expect, test } from 'vitest';
 import { polyfill } from './polyfill';
-import { neon } from '../../dist/npm';
+import { neon } from '../..';
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DATABASE_URL);
@@ -37,10 +37,7 @@ test('empty batch query with array', async () => {
 
 test('option setting on `transaction()`', async () => {
   const [a, b] = await sql.transaction(
-    (txn) => [
-      txn`SELECT ${1}::int AS "batchInt"`,
-      txn`SELECT ${'hello'} AS "batchStr"`,
-    ],
+    (txn) => [txn`SELECT ${1}::int AS "batchInt"`, txn`SELECT ${'hello'} AS "batchStr"`],
     { arrayMode: true, isolationLevel: 'Serializable', readOnly: true }, // arrayMode changes result format below
   );
   assertType<any[][]>(a);
@@ -67,10 +64,7 @@ test('option setting on `neon()`', async () => {
 test('option setting on `transaction()` overrides option setting on `neon()` (a)', async () => {
   const sqlArr = neon(DATABASE_URL, { arrayMode: true });
   const [a, b] = await sqlArr.transaction(
-    (txn) => [
-      txn`SELECT ${1}::int AS "batchInt"`,
-      txn`SELECT ${'hello'} AS "batchStr"`,
-    ],
+    (txn) => [txn`SELECT ${1}::int AS "batchInt"`, txn`SELECT ${'hello'} AS "batchStr"`],
     { arrayMode: false },
   );
   assertType<Record<string, unknown>[]>(a);
@@ -81,10 +75,7 @@ test('option setting on `transaction()` overrides option setting on `neon()` (a)
 
 test('option setting on `transaction()` overrides option setting on `neon()` (b)', async () => {
   const [a, b] = await sql.transaction(
-    (txn) => [
-      txn`SELECT ${1}::int AS "batchInt"`,
-      txn`SELECT ${'hello'} AS "batchStr"`,
-    ],
+    (txn) => [txn`SELECT ${1}::int AS "batchInt"`, txn`SELECT ${'hello'} AS "batchStr"`],
     { fullResults: true },
   );
   assertType<Record<string, unknown>[]>(a.rows);

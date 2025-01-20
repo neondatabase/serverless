@@ -1,4 +1,4 @@
-import type { NeonQueryFunction } from '../../dist/npm';
+import type { NeonQueryFunction } from '../..';
 
 const now = new Date();
 export const sampleQueries = (sql: NeonQueryFunction<any, any>) => [

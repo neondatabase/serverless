@@ -1,5 +1,5 @@
-import { expect, test, beforeAll, afterAll } from 'vitest';
-import fs from 'fs/promises';
+import { expect, test } from 'vitest';
+import fs from 'node:fs/promises';
 import { Vercel } from '@vercel/sdk';
 
 const projectName = 'neon-serverless-tests-project';
@@ -47,7 +47,7 @@ test(
     const utf8 = { encoding: 'utf-8' } as const;
     const moment = Date.now(); // used for double-checking we're fetching from this new deployment
 
-    const packageSrc = await fs.readFile('dist/npm/index.mjs', utf8);
+    const packageSrc = await fs.readFile('index.mjs', utf8);
     const fnRawSrc = await fs.readFile('tests/vercel/function.mjs', utf8);
     const fnSrc = fnRawSrc + `\nconst moment = ${moment};`;
 
@@ -94,11 +94,7 @@ test(
       });
       status = statusResponse.status;
       host = statusResponse.url;
-    } while (
-      status === 'QUEUED' ||
-      status === 'BUILDING' ||
-      status === 'INITIALIZING'
-    );
+    } while (status === 'QUEUED' || status === 'BUILDING' || status === 'INITIALIZING');
 
     if (status !== 'READY') {
       throw new Error(`Unexpected deployment status: ${status}`);

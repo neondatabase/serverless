@@ -1,5 +1,5 @@
 import { expect, test, beforeAll } from 'vitest';
-import { neon } from '../../dist/npm';
+import { neon } from '../..';
 import { polyfill } from './polyfill';
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;

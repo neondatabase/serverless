@@ -4,12 +4,7 @@ import * as subtls from 'subtls';
 import { sampleQueries } from './sampleQueries';
 import { polyfill } from './polyfill';
 import { ISRGX1Cert } from './subtlsCert';
-import {
-  neon,
-  neonConfig,
-  Pool as WsPool,
-  Client as WsClient,
-} from '../../dist/npm';
+import { neon, neonConfig, Pool as WsPool, Client as WsClient } from '../..';
 
 function recursiveTransform(x: any, transform: (x: any) => any) {
   if (Array.isArray(x)) {
@@ -24,9 +19,7 @@ function recursiveTransform(x: any, transform: (x: any) => any) {
 }
 
 function functionsToPlaceholders(x: any) {
-  return recursiveTransform(x, (x) =>
-    typeof x === 'function' ? `__fn_arity_${x.length}__` : x,
-  );
+  return recursiveTransform(x, (x) => (typeof x === 'function' ? `__fn_arity_${x.length}__` : x));
 }
 
 const DB_DIRECT_URL = process.env.VITE_NEON_DB_URL!;
@@ -62,9 +55,7 @@ describe.each([
         ]);
 
         // unprocessed results don't strictly match because functions are minified by ws driver
-        expect(functionsToPlaceholders(wsResult)).toStrictEqual(
-          functionsToPlaceholders(pgResult),
-        );
+        expect(functionsToPlaceholders(wsResult)).toStrictEqual(functionsToPlaceholders(pgResult));
       }
 
       wsClient.release();

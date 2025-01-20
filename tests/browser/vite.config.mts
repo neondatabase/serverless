@@ -3,10 +3,10 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   test: {
     browser: {
-      name: 'firefox',
       provider: 'playwright',
       headless: true,
       screenshotFailures: false,
+      instances: [{ browser: 'firefox' }, { browser: 'chromium' }],
     },
   },
   server: {
