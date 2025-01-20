@@ -53,7 +53,7 @@ export { defaults, types, DatabaseError } from 'pg';
 export type { BindConfig, ClientConfig, Connection, ConnectionConfig, CustomTypesConfig, Defaults, Events, ExecuteConfig, FieldDef, MessageConfig, Notification, PoolConfig, Query, QueryArrayConfig, QueryArrayResult, QueryConfig, QueryParse, QueryResult, QueryResultBase, QueryResultRow, ResultBuilder, Submittable, } from 'pg';
 export * from './httpQuery';
 export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError, };
-export type { NeonPoolClient as PoolClient, NeonClientBase as ClientBase, };
+export type { NeonPoolClient as PoolClient, NeonClientBase as ClientBase };
 export type { SocketDefaults as NeonConfig, FetchEndpointOptions, WebSocketConstructor, WebSocketLike, subtls, } from '../shims/net';
 export type NeonConfigGlobalOnly = Pick<SocketDefaults, 'fetchEndpoint' | 'poolQueryViaFetch' | 'fetchConnectionCache' | 'fetchFunction'>;
 export type NeonConfigGlobalAndClient = Omit<SocketDefaults, keyof NeonConfigGlobalOnly>;
