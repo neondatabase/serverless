@@ -30,9 +30,9 @@ export async function runQuery(
   query: Query,
 ) {
   const { sql, test } = query;
-  const { rows } = await (typeof queryable === 'function'
+  const { rows } = (await (typeof queryable === 'function'
     ? queryable(sql)
-    : queryable.query(sql));
+    : queryable.query(sql))) as any;
   if (!test(rows))
     throw new Error(
       `Result fails test\nQuery: ${sql}\nResult: ${JSON.stringify(rows)}`,
@@ -71,7 +71,7 @@ export async function httpRunQuery(
   query: Query,
 ) {
   const sql = neon(dbUrl, { fullResults: true });
-  const tPlusResults = await timedRepeats(n, () => runQuery(sql, query));
+  const tPlusResults = await timedRepeats(n, () => runQuery(sql as any, query));
   return tPlusResults;
 }
 

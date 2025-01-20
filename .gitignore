@@ -1,4 +1,6 @@
 .dev.vars
-.env.local
+.env.*
+!.env.template
 node_modules
 tmp
+.DS_Store

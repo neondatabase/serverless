@@ -2,7 +2,7 @@ export function connect({
   socket,
   servername,
 }: {
-  socket: any;
+  socket: { startTls: (servername: string) => void };
   servername: string;
 }) {
   socket.startTls(servername);

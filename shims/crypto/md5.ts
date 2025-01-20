@@ -1,5 +1,4 @@
 /*
-
 TypeScript Md5
 ==============
 
@@ -47,7 +46,6 @@ THE SOFTWARE.
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. You just DO WHAT YOU WANT TO.
-
 
 */
 

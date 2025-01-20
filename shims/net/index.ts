@@ -8,13 +8,28 @@
 
 import { EventEmitter } from 'events';
 import type * as subtls from 'subtls';
+export type { subtls };
 
 declare global {
   const debug: boolean; // e.g. --define:debug=false in esbuild command
-  interface WebSocket {
-    binaryType: 'arraybuffer' | 'blob'; // oddly not included in Cloudflare types
-    accept: () => void;
-  }
+}
+
+export interface WebSocketLike {
+  // we define our own WebSocket type because different implementations have
+  // different signatures and we want to be compatible with any of them
+  readonly readyState: number;
+  binaryType: string;
+  close(code?: number, reason?: string): void;
+  send(data: any): void;
+  addEventListener(
+    type: 'open' | 'message' | 'close' | 'error',
+    listener: (this: WebSocketLike, ev: any) => any,
+    options?: any,
+  ): void;
+}
+
+export interface WebSocketConstructor {
+  new (...args: any[]): WebSocketLike;
 }
 
 enum TlsState {
@@ -52,7 +67,7 @@ export function isIP(input: string) {
   return 0;
 }
 
-interface FetchEndpointOptions {
+export interface FetchEndpointOptions {
   jwtAuth?: boolean;
 }
 
@@ -69,7 +84,7 @@ export interface SocketDefaults {
   fetchConnectionCache: boolean;
   fetchFunction: any;
   // these options relate to the WebSocket transport
-  webSocketConstructor: typeof WebSocket | undefined;
+  webSocketConstructor: WebSocketConstructor | undefined;
   wsProxy: string | ((host: string, port: number | string) => string);
   useSecureWebSocket: boolean;
   forceDisablePgSSL: boolean;
@@ -125,6 +140,14 @@ export class Socket extends EventEmitter {
   static opts: Partial<SocketDefaults> = {};
   private opts: Partial<Omit<SocketDefaults, GlobalOnlyDefaults>> = {};
 
+  /**
+   * **Experimentally**, when `poolQueryViaFetch` is `true`, and no listeners
+   * for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set
+   * on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP
+   * fetch request.
+   *
+   * Default: `false`.
+   */
   static get poolQueryViaFetch() {
     return Socket.opts.poolQueryViaFetch ?? Socket.defaults.poolQueryViaFetch;
   }
@@ -132,6 +155,17 @@ export class Socket extends EventEmitter {
     Socket.opts.poolQueryViaFetch = newValue;
   }
 
+  /**
+   * Set `fetchEndpoint` to set the server endpoint to be sent queries via http
+   * fetch. May be useful in local development (e.g. to set a port that's not
+   * the default 443).
+   *
+   * Provide either the full endpoint URL, or a function that takes the
+   * database host address, port and options, and returns the full endpoint URL
+   * (including protocol).
+   *
+   * Default: custom logic to connect to Neon endpoints.
+   */
   static get fetchEndpoint() {
     return Socket.opts.fetchEndpoint ?? Socket.defaults.fetchEndpoint;
   }
@@ -139,6 +173,14 @@ export class Socket extends EventEmitter {
     Socket.opts.fetchEndpoint = newValue;
   }
 
+  /**
+   * **DEPRECATED**. Previously, only when `fetchConnectionCache` was `true`
+   * did queries carried via HTTP fetch make use of a connection pool/cache
+   * on the server. All queries now use the connection pool/cache: this setting
+   * is ignored.
+   *
+   * Default: `true`.
+   */
   static get fetchConnectionCache() {
     return true;
   }
@@ -150,6 +192,13 @@ export class Socket extends EventEmitter {
     );
   }
 
+  /**
+   * The `fetchFunction` option allows you to supply an alternative function
+   * for making http requests. The function must accept the same arguments as
+   * native `fetch`.
+   *
+   * Default: `undefined`.
+   */
   static get fetchFunction() {
     return Socket.opts.fetchFunction ?? Socket.defaults.fetchFunction;
   }
@@ -157,6 +206,14 @@ export class Socket extends EventEmitter {
     Socket.opts.fetchFunction = newValue;
   }
 
+  /**
+   * Only if no global `WebSocket` object is available, such as in older
+   * versions of Node, set `webSocketConstructor` to the constructor for a
+   * custom WebSocket implementation, such as those provided by `ws` or
+   * `undici`.
+   *
+   * Default: `undefined`.
+   */
   static get webSocketConstructor() {
     return (
       Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor
@@ -174,6 +231,17 @@ export class Socket extends EventEmitter {
     this.opts.webSocketConstructor = newValue;
   }
 
+  /**
+   * Set `wsProxy` to use your own WebSocket proxy server.
+   *
+   * Provide either the proxy server’s domain name, or a function that takes
+   * the database host and port and returns the proxy server address (without
+   * protocol).
+   *
+   * Example: `(host, port) => "myproxy.example.net?address=" + host + ":" + port`
+   *
+   * Default: `host => host + '/v2'`
+   */
   static get wsProxy() {
     return Socket.opts.wsProxy ?? Socket.defaults.wsProxy;
   }
@@ -187,6 +255,12 @@ export class Socket extends EventEmitter {
     this.opts.wsProxy = newValue;
   }
 
+  /**
+   * Batch multiple network writes per run-loop into a single outgoing
+   * WebSocket message.
+   *
+   * Default: `true`.
+   */
   static get coalesceWrites() {
     return Socket.opts.coalesceWrites ?? Socket.defaults.coalesceWrites;
   }
@@ -200,6 +274,11 @@ export class Socket extends EventEmitter {
     this.opts.coalesceWrites = newValue;
   }
 
+  /**
+   * Use a secure (`wss:`) connection to the WebSocket proxy.
+   *
+   * Default: `true`.
+   */
   static get useSecureWebSocket() {
     return Socket.opts.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket;
   }
@@ -215,6 +294,13 @@ export class Socket extends EventEmitter {
     this.opts.useSecureWebSocket = newValue;
   }
 
+  /**
+   * Disable TLS encryption in the Postgres protocol (as set via e.g.
+   * `?sslmode=require` in the connection string). Connection remains secure
+   * as long as `useSecureWebSocket` is `true`, which is the default.
+   *
+   * Default: `true`
+   */
   static get forceDisablePgSSL() {
     return Socket.opts.forceDisablePgSSL ?? Socket.defaults.forceDisablePgSSL;
   }
@@ -228,6 +314,17 @@ export class Socket extends EventEmitter {
     this.opts.forceDisablePgSSL = newValue;
   }
 
+  /**
+   * When using subtls with `forceDisablePgSSL = false` and Postgres connection
+   * parameters that specify TLS, setting `disableSNI = true` means that no SNI
+   * data in included in the Postgres TLS handshake.
+   *
+   * On Neon, disabling SNI and including the Neon project name in the password
+   * avoids CPU-intensive SCRAM authentication, but this is only relevant for
+   * earlier iterations of Neon's WebSocket support.
+   *
+   * Default: `false`.
+   */
   static get disableSNI() {
     return Socket.opts.disableSNI ?? Socket.defaults.disableSNI;
   }
@@ -241,6 +338,12 @@ export class Socket extends EventEmitter {
     this.opts.disableSNI = newValue;
   }
 
+  /**
+   * Pipelines the startup message, cleartext password message and first query
+   * when set to `"password"`. This works only for cleartext password auth.
+   *
+   * Default: `"password"`.
+   */
   static get pipelineConnect() {
     return Socket.opts.pipelineConnect ?? Socket.defaults.pipelineConnect;
   }
@@ -254,6 +357,18 @@ export class Socket extends EventEmitter {
     this.opts.pipelineConnect = newValue;
   }
 
+  /**
+   * If `forceDisablePgSSL` is `false` and the Postgres connection parameters
+   * specify TLS, you must supply the subtls TLS library to this option:
+   *
+   * ```
+   * import { neonConfig } from '@neondatabase/serverless';
+   * import * as subtls from 'subtls';
+   * neonConfig.subtls = subtls;
+   * ```
+   *
+   * Default: `undefined`.
+   */
   static get subtls() {
     return Socket.opts.subtls ?? Socket.defaults.subtls;
   }
@@ -267,6 +382,13 @@ export class Socket extends EventEmitter {
     this.opts.subtls = newValue;
   }
 
+  /**
+   * Pipeline the pg SSL request and TLS handshake when `forceDisablePgSSL` is
+   * `false` and the Postgres connection parameters specify TLS. Currently
+   * compatible only with Neon hosts.
+   *
+   * Default: `false`.
+   */
   static get pipelineTLS() {
     return Socket.opts.pipelineTLS ?? Socket.defaults.pipelineTLS;
   }
@@ -280,6 +402,14 @@ export class Socket extends EventEmitter {
     this.opts.pipelineTLS = newValue;
   }
 
+  /**
+   * Set `rootCerts` to a string comprising one or more PEM files. These are
+   * the trusted root certificates for a TLS connection to Postgres when
+   * `forceDisablePgSSL` is `false` and the Postgres connection parameters
+   * specify TLS.
+   *
+   * Default: `""`.
+   */
   static get rootCerts() {
     return Socket.opts.rootCerts ?? Socket.defaults.rootCerts;
   }
@@ -312,7 +442,7 @@ export class Socket extends EventEmitter {
   authorized = false;
   destroyed = false;
 
-  private ws: WebSocket | null = null;
+  private ws: WebSocketLike | null = null;
   private writeBuffer: Uint8Array | undefined; // used only if coalesceWrites === true
   private tlsState = TlsState.None;
   private tlsRead: undefined | (() => Promise<Uint8Array | undefined>);
@@ -347,7 +477,7 @@ export class Socket extends EventEmitter {
       this.emit('ready');
     };
 
-    const configureWebSocket = (ws: WebSocket, immediateOpen = false) => {
+    const configureWebSocket = (ws: WebSocketLike, immediateOpen = false) => {
       ws.binaryType = 'arraybuffer';
 
       ws.addEventListener('error', (err) => {
@@ -398,12 +528,12 @@ export class Socket extends EventEmitter {
       } else {
         try {
           // second, try a common-or-garden WebSocket, e.g. in a web browser
-          this.ws = new WebSocket(wsAddrFull);
-          configureWebSocket(this.ws);
+          this.ws = new WebSocket(wsAddrFull) as any;
+          configureWebSocket(this.ws!);
         } catch (err) {
           debug && log('new WebSocket() failed');
 
-          // @ts-ignore -- third, how about a Vercel Edge Functions __unstable_WebSocket (as at early 2023)?Í
+          // @ts-ignore -- unknown Vercel-specific object
           this.ws = new __unstable_WebSocket(wsAddrFull);
           configureWebSocket(this.ws!);
         }
@@ -417,11 +547,12 @@ export class Socket extends EventEmitter {
 
       fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } })
         .then((resp) => {
-          // @ts-ignore webSocket is defined in the Cloudflare types, but there are conflicts
+          // @ts-ignore -- unknown Cloudflare-specific property
           this.ws = resp.webSocket;
           if (this.ws == null) throw err; // deliberate loose equality
 
-          this.ws.accept();
+          // @ts-ignore -- unknown Cloudflare-specific method
+          this.ws.accept!();
           configureWebSocket(this.ws, true);
           debug && log('Cloudflare WebSocket opened');
         })
@@ -430,7 +561,7 @@ export class Socket extends EventEmitter {
           this.emit(
             'error',
             new Error(
-              `All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err.message}`,
+              `All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err}`,
             ),
           );
           this.emit('close');
@@ -447,8 +578,8 @@ export class Socket extends EventEmitter {
 
     this.tlsState = TlsState.Handshake;
 
-    const rootCerts = this.subtls.TrustedCert.fromPEM(this.rootCerts);
-    const readQueue = new this.subtls.WebSocketReadQueue(this.ws!);
+    const rootCerts = this.subtls.TrustedCert.databaseFromPEM(this.rootCerts);
+    const readQueue = new this.subtls.WebSocketReadQueue(this.ws! as any);
     const networkRead = readQueue.read.bind(readQueue);
     const networkWrite = this.rawWrite.bind(this);
 
@@ -472,7 +603,7 @@ export class Socket extends EventEmitter {
     this.authorized = true;
     this.emit('secureConnection', this);
 
-    this.tlsReadLoop();
+    this.tlsReadLoop(); // deliberately NOT awaited
   }
 
   async tlsReadLoop() {

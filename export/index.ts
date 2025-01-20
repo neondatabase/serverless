@@ -1,7 +1,35 @@
+/*
+We export the pg library mostly unchanged, but we do make a few tweaks.
+
+(1) Connecting and querying can require a lot of network round-trips. We
+add a pipelining option for the connection (startup + auth + first query),
+but this works with cleartext password auth only. We can also pipeline TLS
+startup, but currently this works only with Neon hosts (not vanilla pg or
+pgbouncer).
+
+(2) SCRAM auth is deliberately CPU-intensive, and this is not appropriate
+for a serverless environment. In case it is still used, however, we replace
+the standard (synchronous) pg implementation with one that uses SubtleCrypto
+for repeated SHA-256 digests. This saves some time and CPU.
+
+(3) We now (experimentally) redirect Pool.query over a fetch request if the
+circumstances are right.
+*/
+
 import { Client, Connection, Pool } from 'pg';
-import { Socket } from '../shims/net';
+import { Socket, type SocketDefaults } from '../shims/net';
 import { neon, NeonDbError } from './httpQuery';
-import type { NeonConfigGlobalAndClient } from './neonConfig';
+import type {
+  QueryResultRow,
+  Submittable,
+  QueryArrayConfig,
+  QueryConfigValues,
+  QueryConfig,
+  QueryArrayResult,
+  QueryResult,
+  ClientBase,
+  PoolClient,
+} from 'pg';
 
 // @ts-ignore -- this isn't officially exported by pg
 import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
@@ -13,28 +41,7 @@ interface ConnectionParameters {
   database: string;
 }
 
-/**
- * We export the pg library mostly unchanged, but we do make a few tweaks.
- *
- * (1) Connecting and querying can require a lot of network round-trips. We
- * add a pipelining option for the connection (startup + auth + first query),
- * but this works with cleartext password auth only. We can also pipeline TLS
- * startup, but currently this works only with Neon hosts (not vanilla pg or
- * pgbouncer).
- *
- * (2) SCRAM auth is deliberately CPU-intensive, and this is not appropriate
- * for a serverless environment. In case it is still used, however, we replace
- * the standard (synchronous) pg implementation with one that uses SubtleCrypto
- * for repeated SHA-256 digests. This saves some time and CPU.
- *
- * (3) We now (experimentally) redirect Pool.query over a fetch request if the
- * circumstances are right.
- */
-
 declare interface NeonClient {
-  // these types suppress type errors in this file, but do not carry over to
-  // the npm package
-
   connection: Connection & {
     stream: Socket;
     sendSCRAMClientFinalMessage: (response: any) => void;
@@ -47,18 +54,22 @@ declare interface NeonClient {
   saslSession: any;
 }
 
+/**
+ * The node-postgres `Client` object re-exported with minor modifications.
+ * https://node-postgres.com/apis/client
+ */
 class NeonClient extends Client {
-  get neonConfig(): NeonConfigGlobalAndClient {
-    return this.connection.stream;
+  get neonConfig() {
+    return this.connection.stream as Socket;
   }
 
   constructor(public config: any) {
     super(config);
   }
 
-  connect(): Promise<void>;
-  connect(callback: (err?: Error) => void): void;
-  connect(callback?: (err?: Error) => void) {
+  override connect(): Promise<void>;
+  override connect(callback: (err?: Error) => void): void;
+  override connect(callback?: (err?: Error) => void) {
     const { neonConfig } = this;
 
     // disable TLS if requested
@@ -132,6 +143,17 @@ class NeonClient extends Client {
   }
 
   async _handleAuthSASLContinue(msg: any) {
+    if (
+      typeof crypto === 'undefined' ||
+      crypto.subtle === undefined ||
+      crypto.subtle.importKey === undefined
+    ) {
+      throw new Error(
+        'Cannot use SASL auth when `crypto.subtle` is not defined',
+      );
+    }
+
+    const cs = crypto.subtle;
     const session = this.saslSession;
     const password = this.password;
     const serverData = msg.data;
@@ -187,7 +209,7 @@ class NeonClient extends Client {
     const saltBytes = Buffer.from(salt, 'base64');
     const enc = new TextEncoder();
     const passwordBytes = enc.encode(password);
-    const iterHmacKey = await crypto.subtle.importKey(
+    const iterHmacKey = await cs.importKey(
       'raw',
       passwordBytes,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
@@ -195,7 +217,7 @@ class NeonClient extends Client {
       ['sign'],
     );
     let ui1 = new Uint8Array(
-      await crypto.subtle.sign(
+      await cs.sign(
         'HMAC',
         iterHmacKey,
         Buffer.concat([saltBytes, Buffer.from([0, 0, 0, 1])]),
@@ -203,12 +225,12 @@ class NeonClient extends Client {
     );
     let ui = ui1;
     for (var i = 0; i < iterations - 1; i++) {
-      ui1 = new Uint8Array(await crypto.subtle.sign('HMAC', iterHmacKey, ui1));
+      ui1 = new Uint8Array(await cs.sign('HMAC', iterHmacKey, ui1));
       ui = Buffer.from(ui.map((_, i) => ui[i] ^ ui1[i]));
     }
     const saltedPassword = ui;
 
-    const ckHmacKey = await crypto.subtle.importKey(
+    const ckHmacKey = await cs.importKey(
       'raw',
       saltedPassword,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
@@ -216,9 +238,9 @@ class NeonClient extends Client {
       ['sign'],
     );
     const clientKey = new Uint8Array(
-      await crypto.subtle.sign('HMAC', ckHmacKey, enc.encode('Client Key')),
+      await cs.sign('HMAC', ckHmacKey, enc.encode('Client Key')),
     );
-    const storedKey = await crypto.subtle.digest('SHA-256', clientKey);
+    const storedKey = await cs.digest('SHA-256', clientKey);
 
     const clientFirstMessageBare = 'n=*,r=' + session.clientNonce;
     const serverFirstMessage = 'r=' + nonce + ',s=' + salt + ',i=' + iterations;
@@ -230,7 +252,7 @@ class NeonClient extends Client {
       ',' +
       clientFinalMessageWithoutProof;
 
-    const csHmacKey = await crypto.subtle.importKey(
+    const csHmacKey = await cs.importKey(
       'raw',
       storedKey,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
@@ -238,26 +260,26 @@ class NeonClient extends Client {
       ['sign'],
     );
     var clientSignature = new Uint8Array(
-      await crypto.subtle.sign('HMAC', csHmacKey, enc.encode(authMessage)),
+      await cs.sign('HMAC', csHmacKey, enc.encode(authMessage)),
     );
     var clientProofBytes = Buffer.from(
       clientKey.map((_, i) => clientKey[i] ^ clientSignature[i]),
     );
     var clientProof = clientProofBytes.toString('base64');
 
-    const skHmacKey = await crypto.subtle.importKey(
+    const skHmacKey = await cs.importKey(
       'raw',
       saltedPassword,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
       false,
       ['sign'],
     );
-    const serverKey = await crypto.subtle.sign(
+    const serverKey = await cs.sign(
       'HMAC',
       skHmacKey,
       enc.encode('Server Key'),
     );
-    const ssbHmacKey = await crypto.subtle.importKey(
+    const ssbHmacKey = await cs.importKey(
       'raw',
       serverKey,
       { name: 'HMAC', hash: { name: 'SHA-256' } },
@@ -265,7 +287,7 @@ class NeonClient extends Client {
       ['sign'],
     );
     var serverSignatureBytes = Buffer.from(
-      await crypto.subtle.sign('HMAC', ssbHmacKey, enc.encode(authMessage)),
+      await cs.sign('HMAC', ssbHmacKey, enc.encode(authMessage)),
     );
 
     session.message = 'SASLResponse';
@@ -274,6 +296,16 @@ class NeonClient extends Client {
 
     this.connection.sendSCRAMClientFinalMessage(this.saslSession.response);
   }
+}
+
+// class 'ClientBase' exists only in @types/pg: under the hood in pg it's just a `Client extends EventEmitter`
+interface NeonClientBase extends ClientBase {
+  neonConfig: NeonConfigGlobalAndClient;
+}
+
+// class 'PoolClient' exists only in @types/pg: under the hood in pg it's just a `Client extends EventEmitter`
+interface NeonPoolClient extends PoolClient {
+  neonConfig: NeonConfigGlobalAndClient;
 }
 
 // copied from pg to support NeonPool.query
@@ -290,11 +322,15 @@ function promisify(Promise: any, callback: any) {
   return { callback: cb, result: result };
 }
 
+/**
+ * The node-postgres `Pool` object re-exported with minor modifications.
+ * https://node-postgres.com/apis/pool
+ */
 class NeonPool extends Pool {
   Client = NeonClient;
   hasFetchUnsupportedListeners = false;
 
-  on(
+  override on(
     event: 'error' | 'connect' | 'acquire' | 'release' | 'remove',
     listener: any,
   ) {
@@ -302,8 +338,35 @@ class NeonPool extends Pool {
     return super.on(event as any, listener);
   }
 
-  // @ts-ignore -- is it even possible to make TS happy with these overloaded function types?
-  query(config?: any, values?: any, cb?: any) {
+  override addListener = this.on;
+
+  override query<T extends Submittable>(queryStream: T): T;
+  // tslint:disable:no-unnecessary-generics
+  override query<R extends any[] = any[], I = any[]>(
+    queryConfig: QueryArrayConfig<I>,
+    values?: QueryConfigValues<I>,
+  ): Promise<QueryArrayResult<R>>;
+  override query<R extends QueryResultRow = any, I = any[]>(
+    queryConfig: QueryConfig<I>,
+  ): Promise<QueryResult<R>>;
+  override query<R extends QueryResultRow = any, I = any[]>(
+    queryTextOrConfig: string | QueryConfig<I>,
+    values?: QueryConfigValues<I>,
+  ): Promise<QueryResult<R>>;
+  override query<R extends any[] = any[], I = any[]>(
+    queryConfig: QueryArrayConfig<I>,
+    callback: (err: Error, result: QueryArrayResult<R>) => void,
+  ): void;
+  override query<R extends QueryResultRow = any, I = any[]>(
+    queryTextOrConfig: string | QueryConfig<I>,
+    callback: (err: Error, result: QueryResult<R>) => void,
+  ): void;
+  override query<R extends QueryResultRow = any, I = any[]>(
+    queryText: string,
+    values: QueryConfigValues<I>,
+    callback: (err: Error, result: QueryResult<R>) => void,
+  ): void;
+  override query(config?: any, values?: any, cb?: any) {
     if (
       !Socket.poolQueryViaFetch ||
       this.hasFetchUnsupportedListeners ||
@@ -325,8 +388,8 @@ class NeonPool extends Pool {
 
     try {
       const cp = new ConnectionParameters(this.options) as ConnectionParameters;
-      const euc = encodeURIComponent,
-        eu = encodeURI;
+      const euc = encodeURIComponent;
+      const eu = encodeURI;
       const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
 
       const queryText = typeof config === 'string' ? config : config.text;
@@ -350,6 +413,34 @@ class NeonPool extends Pool {
   }
 }
 
+export { defaults, types, DatabaseError } from 'pg';
+export type {
+  BindConfig,
+  ClientConfig,
+  Connection,
+  ConnectionConfig,
+  CustomTypesConfig,
+  Defaults,
+  Events,
+  ExecuteConfig,
+  FieldDef,
+  MessageConfig,
+  Notification,
+  PoolConfig,
+  Query,
+  QueryArrayConfig,
+  QueryArrayResult,
+  QueryConfig,
+  QueryParse,
+  QueryResult,
+  QueryResultBase,
+  QueryResultRow,
+  ResultBuilder,
+  Submittable,
+} from 'pg';
+
+export * from './httpQuery';
+
 export {
   Socket as neonConfig,
   NeonPool as Pool,
@@ -358,11 +449,33 @@ export {
   NeonDbError,
 };
 
-export {
-  Connection,
-  DatabaseError,
-  Query,
-  ClientBase,
-  defaults,
-  types,
-} from 'pg';
+export type { NeonPoolClient as PoolClient, NeonClientBase as ClientBase };
+
+export type {
+  SocketDefaults as NeonConfig,
+  FetchEndpointOptions,
+  WebSocketConstructor,
+  WebSocketLike,
+  subtls,
+} from '../shims/net';
+
+// provided for backwards-compatibility
+export type NeonConfigGlobalOnly = Pick<
+  SocketDefaults,
+  | 'fetchEndpoint'
+  | 'poolQueryViaFetch'
+  | 'fetchConnectionCache'
+  | 'fetchFunction'
+>;
+
+// provided for backwards-compatibility
+export type NeonConfigGlobalAndClient = Omit<
+  SocketDefaults,
+  keyof NeonConfigGlobalOnly
+>;
+
+// for debugging purposes, this gets defined by esbuild, so users can track
+// whether they've imported .js (CJS) or .mjs (ESM) or (uh-oh) both
+// @ts-ignore
+const _bundleExt: 'js' | 'mjs' = BUNDLE_EXT;
+export { _bundleExt };

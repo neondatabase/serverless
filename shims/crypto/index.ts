@@ -1,8 +1,23 @@
 import { sha256 } from './sha256';
 import { Md5 } from './md5';
 
+// try to escape the attention of over-zealous bundlers
+const cryptoLib = `node${String.fromCharCode(58)}crypto`;
+
 export function randomBytes(length: number) {
-  return crypto.getRandomValues(Buffer.alloc(length));
+  // three possibilities:
+  // (1) old Node, no crypto object
+  // (2) newer Node, crypto object
+  // (3) browsers, crypto object of type WebCrypto
+  if (
+    typeof crypto !== 'undefined' &&
+    (crypto as any).randomBytes !== undefined
+  ) {
+    const webcrypto = (crypto as any).webcrypto ?? crypto;
+    return webcrypto.getRandomValues(Buffer.alloc(length));
+  } else {
+    return require(cryptoLib).randomBytes(length);
+  }
 }
 
 // hash/hmac notes:
@@ -58,8 +73,8 @@ export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
           const innerKey = new Uint8Array(64);
           const outerKey = new Uint8Array(64);
           for (let i = 0; i < 64; i++) {
-            innerKey[i] = 0x36 ^ key[i];
-            outerKey[i] = 0x5c ^ key[i];
+            innerKey[i] = 0x36 ^ (key[i] as number); // cast should be unnecessary but dts-bundle-generator appears to need it
+            outerKey[i] = 0x5c ^ (key[i] as number); // ditto
           }
 
           const msg = new Uint8Array(data.length + 64);

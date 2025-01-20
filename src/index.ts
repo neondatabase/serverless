@@ -2,7 +2,7 @@
 This file contains various checks that the driver is working.
 
 Different elements can be run using:
-  * `npm run node`, `npm run bun`, or `npm run browser`
+  * `npm run node` or `npm run browser`
   * `npm run cfDev` or `npm run cfDeploy`
 
 In the long run these checks should be turned into a formal test suits.
@@ -14,7 +14,7 @@ import * as subtls from 'subtls';
 import isrgRootX1 from './isrgrootx1.pem';
 
 import { deepEqual } from 'fast-equals';
-import { Client, Pool, neon, neonConfig } from '../export';
+import { Client, NeonQueryFunction, Pool, neon, neonConfig } from '../export';
 import {
   timedRepeats,
   runQuery,
@@ -23,8 +23,6 @@ import {
   httpRunQuery,
 } from './util';
 import { queries } from './queries';
-
-import type { ExecutionContext } from '@cloudflare/workers-types';
 
 export { neonConfig } from '../export';
 
@@ -38,7 +36,7 @@ export interface Env {
 export async function cf(
   request: Request,
   env: Env,
-  ctx: ExecutionContext,
+  ctx: any,
 ): Promise<Response> {
   let results: any[] = [];
 
@@ -143,6 +141,7 @@ export async function batchQueryTest(env: Env, log = (...s: any[]) => {}) {
   // option setting on individual queries within a batch: should be honoured (despite types not supporting it)
   const [[r9], [r10]] = await sql.transaction((txn) => [
     txn`SELECT ${1}::int AS "batchInt"`,
+    // @ts-expect-error
     txn('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: true }),
   ]);
   log(
@@ -195,7 +194,7 @@ export async function latencies(
   const connectRepeats = 9;
 
   log('Warm-up ...\n\n');
-  await poolRunQuery(1, env.NEON_DB_URL, ctx, queries[0]);
+  await poolRunQuery(1, env.NEON_DB_URL, ctx as any, queries[0]);
 
   let counter = 0;
 
@@ -295,7 +294,7 @@ export async function latencies(
 
   // timeout
   function sqlWithRetries(
-    sql: ReturnType<typeof neon>,
+    sql: NeonQueryFunction<any, any>,
     timeoutMs: number,
     attempts = 3,
   ) {
@@ -355,7 +354,7 @@ export async function latencies(
     console.log(err);
   }
   try {
-    await poolRunQuery(1, env.NEON_DB_URL, ctx, {
+    await poolRunQuery(1, env.NEON_DB_URL, ctx as any, {
       sql: errstatement,
       test: () => true,
     });
@@ -422,24 +421,24 @@ export async function latencies(
     await sections('Neon/wss, no pipelining', async (n) => {
       const client = new Client(env.NEON_DB_URL);
       client.neonConfig.pipelineConnect = false;
-      await clientRunQuery(n, client, ctx, query);
+      await clientRunQuery(n, client, ctx as any, query);
     });
 
     await sections('Neon/wss, pipelined connect (default)', async (n) => {
       const client = new Client(env.NEON_DB_URL);
-      await clientRunQuery(n, client, ctx, query);
+      await clientRunQuery(n, client, ctx as any, query);
     });
 
     await sections('Neon/wss, pipelined connect, no coalescing', async (n) => {
       const client = new Client(env.NEON_DB_URL);
       client.neonConfig.coalesceWrites = false;
-      await clientRunQuery(n, client, ctx, query);
+      await clientRunQuery(n, client, ctx as any, query);
     });
 
     await sections(
       'Neon/wss, pipelined connect using Pool.query',
       async (n) => {
-        await poolRunQuery(n, env.NEON_DB_URL, ctx, query);
+        await poolRunQuery(n, env.NEON_DB_URL, ctx as any, query);
       },
     );
 
@@ -467,7 +466,7 @@ export async function latencies(
         client.neonConfig.pipelineTLS = false; // only works with patched pg
         client.neonConfig.pipelineConnect = false; // only works with password auth, which we aren't offered this way
         try {
-          await clientRunQuery(n, client, ctx, query);
+          await clientRunQuery(n, client, ctx as any, query);
         } catch (err: any) {
           console.error(`\n*** ${err.message}`);
         }

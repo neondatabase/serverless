@@ -5,17 +5,48 @@ on:
     branches:
       - main
 
+env:
+  VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
+  VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
+  VITE_VERCEL_TOKEN: ${{ secrets.VITE_VERCEL_TOKEN }}
+  VITE_CLERK_SECRET_KEY: ${{ secrets.VITE_CLERK_SECRET_KEY }}
+  VITE_WSPROXY: ${{ vars.VITE_WSPROXY }}
+  VITE_CLERK_USER: ${{ vars.VITE_CLERK_USER }}
+
 jobs:
-  test:
+  test-node-16:
     runs-on: ubuntu-latest
     steps:
       # setup
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
 
       - name: Install package dependencies
-        run: bun install
+        run: |
+          # strip Prisma, whose preinstall script throws on Node versions less than 18.x
+          sudo apt-get install jq && \
+            mv package.json package.json.old && \
+            jq 'del(.devDependencies.prisma, .devDependencies."@prisma/client")' package.json.old > package.json
+          npm install
 
       # goal
-      - name: Run tests
-        run: bun run test
+      - name: Run CLI-based tests in Node 16 (no native WebSocket or fetch), node environment
+        run: npm run test:node
+
+  test-node-lts:
+    runs-on: ubuntu-latest
+    steps:
+      # setup
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install package dependencies
+        run: npm install
+
+      # goal
+      - name: Run all tests in Node LTS
+        run: npm run test

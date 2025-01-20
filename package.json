@@ -22,7 +22,7 @@
     "stream": "file:shims/stream",
     "string_decoder": "file:shims/string_decoder",
     "tls": "file:shims/tls",
-    "undici": "^6.0.1",
+    "undici": "^7.1.0",
     "url": "file:shims/url",
     "util": "file:shims/util",
     "ws": "^8.12.1"
@@ -32,7 +32,6 @@
   },
   "scripts": {
     "check": "tsc --noEmit",
-    "export": "npm run check && ./export.sh",
     "build": "./build.sh",
     "buildDebug": "./build.sh debug",
     "watch": "./build.sh watch",
@@ -43,24 +42,45 @@
     "launch": "DOTENV_CONFIG_PATH=.dev.vars node -r dotenv/config --no-warnings dist/node/index.mjs",
     "node": "npm run build && npm run launch",
     "nodeDebug": "npm run buildDebug && npm run launch",
-    "bun": "npm run build && DOTENV_CONFIG_PATH=.dev.vars bun -r dotenv/config dist/node/index.mjs",
     "cfDev": "npm run build && wrangler dev",
     "cfDeploy": "npm run build && wrangler deploy",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "test": "vitest run"
+    "export": "./export.sh",
+    "test": "npm run export && export NO_EXPORT=1 && npm run test:node && npm run test:packages && npm run test:edge && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
+    "test:node": "npm run export && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
+    "test:packages": "npm run export && vitest run --dir=tests/packages --environment=node --no-file-parallelism",
+    "test:edge": "npm run export && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
+    "test:cloudflare": "npm run export && vitest run --dir=tests/cloudflare --no-file-parallelism",
+    "test:vercel": "npm run export && vitest run --dir=tests/vercel --no-file-parallelism",
+    "test:browser": "npm run export && playwright install --with-deps firefox && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230115.0",
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "@edge-runtime/vm": "^5.0.0",
+    "@microsoft/api-extractor": "^7.48.1",
+    "@neondatabase/serverless": "file:dist/npm",
+    "@prisma/adapter-neon": "^6.2.1",
+    "@prisma/client": "^6.2.1",
     "@types/events": "^3.0.0",
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.4",
+    "@vercel/edge": "^1.2.1",
+    "@vercel/sdk": "^1.2.2",
+    "@vitest/browser": "^2.1.8",
     "dotenv": "^16.0.3",
+    "drizzle-orm": "^0.38.3",
     "esbuild": "^0.24.0",
     "fast-equals": "^5.0.1",
-    "subtls": "^0.3.0",
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.49.1",
+    "prisma": "^6.2.1",
+    "subtls": "^0.4.6",
     "typescript": "^5.0.4",
-    "vitest": "^2.1.6",
+    "vitest": "^2.1.8",
     "wrangler": "^3.0.1"
+  },
+  "prisma": {
+    "schema": "tests/packages/prisma/schema.prisma"
   }
 }
