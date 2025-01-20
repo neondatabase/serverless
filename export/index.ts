@@ -449,10 +449,7 @@ export {
   NeonDbError,
 };
 
-export type {
-  NeonPoolClient as PoolClient,
-  NeonClientBase as ClientBase,
-};
+export type { NeonPoolClient as PoolClient, NeonClientBase as ClientBase };
 
 export type {
   SocketDefaults as NeonConfig,
