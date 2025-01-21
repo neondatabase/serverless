@@ -1,6 +1,6 @@
 // these basic tests are run in Bun and Deno (which are not supported by vitest)
 
-import { Client, Pool, neon } from '../index.mjs';
+import { Client, Pool, neon } from '../../index.mjs';
 
 const pv = process.versions;
 for (const platform of ['deno', 'bun', 'node']) {
