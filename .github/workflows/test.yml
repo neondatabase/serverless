@@ -38,7 +38,7 @@ jobs:
 
       # goal
       - name: Using vitest@2, run CLI-based tests in Node 16
-        run: npx run test:node
+        run: npm run test:node
 
   test-current:
     runs-on: ubuntu-latest
