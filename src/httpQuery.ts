@@ -7,7 +7,7 @@ import type {
   NeonQueryPromise,
   NeonQueryFunction,
   ParameterizedQuery,
-  ProcessQueryResultOptions,  
+  ProcessQueryResultOptions,
 } from './httpTypes';
 
 // @ts-ignore -- this isn't officially exported by pg
