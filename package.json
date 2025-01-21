@@ -105,8 +105,5 @@
   },
   "overrides": {
     "pg-connection-string": "2.5.0"
-  },
-  "prisma": {
-    "schema": "tests/packages/prisma/schema.prisma"
   }
 }

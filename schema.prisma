@@ -1,3 +1,5 @@
+// for tests
+
 datasource db {
   url      = env("VITE_NEON_DB_URL")
   provider = "postgresql"
