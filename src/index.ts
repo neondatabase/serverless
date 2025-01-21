@@ -47,11 +47,7 @@ export interface PoolClient extends PgPoolClient {
   neonConfig: NeonConfigGlobalAndClient;
 }
 
-export { 
-  defaults, 
-  types, 
-  DatabaseError 
-} from 'pg';
+export { defaults, types, DatabaseError } from 'pg';
 
 export type {
   BindConfig,
