@@ -2,19 +2,19 @@ import { sha256 } from './sha256';
 import { Md5 } from './md5';
 
 // try to escape the attention of over-zealous bundlers
-const cryptoLib = `node${String.fromCharCode(58)}crypto`;
+const cryptoLib = 'node:crypto';
 
 export function randomBytes(length: number) {
   // three possibilities:
   // (1) old Node, no crypto object
   // (2) newer Node, crypto object
   // (3) browsers, crypto object of type WebCrypto
-  if (typeof crypto !== 'undefined' && (crypto as any).randomBytes !== undefined) {
-    const webcrypto = (crypto as any).webcrypto ?? crypto;
-    return webcrypto.getRandomValues(Buffer.alloc(length));
-  } else {
-    return require(cryptoLib).randomBytes(length);
+  if (typeof crypto !== 'undefined') {
+    const c: any = crypto;
+    if (c.randomBytes) return c.randomBytes(length);
+    if (c.webcrypto) c.webcrypto.getRandomValues(Buffer.alloc(length));
   }
+  return require(cryptoLib).randomBytes(length);
 }
 
 // hash/hmac notes:

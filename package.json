@@ -40,6 +40,9 @@
     "CONFIG.md",
     "DEPLOY.md"
   ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "build": "./build.sh",
     "format": "prettier -c .",
