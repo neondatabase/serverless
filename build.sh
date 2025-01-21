@@ -49,9 +49,10 @@ sed -i.orig -r \
 # bundle types into one file
 npx @microsoft/api-extractor run --local
 
-# remove empty export and private fields
+# remove empty export, and private/protected fields
 sed -r \
-  -e '/^ *private [^ ]+;$/d' \
+  -e '/^ *private [^;]+;$/d' \
+  -e '/^ *protected [^;]+;$/d' \
   -e '/^export [{] *[}]$/d' \
   build/generated.d.ts > index.d.ts
 

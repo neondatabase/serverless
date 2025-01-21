@@ -1,20 +1,10 @@
 import { sha256 } from './sha256';
 import { Md5 } from './md5';
 
-// try to escape the attention of over-zealous bundlers
-const cryptoLib = 'node:crypto';
+// we now specify Node 19+, which has top-level crypto (= webcrypto)
 
 export function randomBytes(length: number) {
-  // three possibilities:
-  // (1) old Node, no crypto object
-  // (2) newer Node, crypto object
-  // (3) browsers, crypto object of type WebCrypto
-  if (typeof crypto !== 'undefined') {
-    const c: any = crypto;
-    if (c.randomBytes) return c.randomBytes(length);
-    if (c.webcrypto) c.webcrypto.getRandomValues(Buffer.alloc(length));
-  }
-  return require(cryptoLib).randomBytes(length);
+  return crypto.getRandomValues(Buffer.alloc(length));
 }
 
 // hash/hmac notes:
@@ -67,8 +57,8 @@ export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
           const innerKey = new Uint8Array(64);
           const outerKey = new Uint8Array(64);
           for (let i = 0; i < 64; i++) {
-            innerKey[i] = 0x36 ^ (key[i] as number); // cast should be unnecessary but dts-bundle-generator appears to need it
-            outerKey[i] = 0x5c ^ (key[i] as number); // ditto
+            innerKey[i] = 0x36 ^ key[i];
+            outerKey[i] = 0x5c ^ key[i];
           }
 
           const msg = new Uint8Array(data.length + 64);

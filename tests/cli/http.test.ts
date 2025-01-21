@@ -2,7 +2,7 @@ import { expect, test, vi, beforeAll, assertType } from 'vitest';
 import nodeFetch from 'node-fetch';
 import { neon, neonConfig, Pool, type FullQueryResults } from '../..';
 import { sampleQueries } from './sampleQueries';
-import { polyfill } from './polyfill';
+import { polyfill } from '../polyfill';
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DATABASE_URL);

@@ -21,27 +21,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 19
 
       - name: Install package dependencies
-        run: |
-          # strip Prisma, whose preinstall script throws on Node versions less than 18.x
-          # and downgrade to vitest 2.x, which supports Node 16
-
-          sudo apt-get install jq
-          mv package.json package.json.old
-          cat package.json.old \
-            | jq '.devDependencies.vitest = "2.x"' \
-            | jq 'del(.devDependencies.prisma,.devDependencies."@prisma/client",.devDependencies."@vitest/browser")' \
-            > package.json
-          cat package.json
-
-          # then install
-
-          npm install
+        run: npm install
 
       # goal
-      - name: Using vitest@2, run CLI-based tests in Node 16
+      - name: Run CLI-based tests in Node 19
         run: npm run test:node
 
   test-current:

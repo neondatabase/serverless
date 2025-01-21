@@ -1,6 +1,6 @@
 import { expect, test, beforeAll } from 'vitest';
 import { neon } from '../..';
-import { polyfill } from './polyfill';
+import { polyfill } from '../polyfill';
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 const CLERK_USER = process.env.VITE_CLERK_USER!;

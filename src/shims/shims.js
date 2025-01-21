@@ -3,9 +3,6 @@ export const global = globalThis;
 export const setImmediate = globalThis.setImmediate ?? ((fn) => setTimeout(fn, 0));
 export const clearImmediate = globalThis.clearImmediate ?? ((id) => clearTimeout(id));
 
-export const crypto = globalThis.crypto ?? {};
-crypto.subtle ??= {};
-
 // --- Buffer ---
 
 // Next.js has a booby-trapped Buffer object that just springs errors, so we test allocUnsafe as well

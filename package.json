@@ -41,7 +41,7 @@
     "DEPLOY.md"
   ],
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=19.0.0"
   },
   "scripts": {
     "build": "./build.sh",
@@ -50,8 +50,8 @@
     "test": "npm run build && export NEON_NO_BUILD=1 && npm run test:node && npm run test:edge && npm run test:bun && npm run test:deno && npm run test:packages && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
     "test:node": "npm run build && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
     "test:edge": "npm run build && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
-    "test:bun": "npm run build && bun run --env-file=.env.test tests/basic.ts",
-    "test:deno": "npm run build && deno run --env-file=.env.test --allow-all tests/basic.ts",
+    "test:bun": "npm run build && bun run --env-file=.env.test tests/basic/basic.ts",
+    "test:deno": "npm run build && deno run --env-file=.env.test --allow-all tests/basic/basic.ts",
     "test:packages": "npm run build && vitest run --dir=tests/packages --environment=node --no-file-parallelism",
     "test:cloudflare": "npm run build && vitest run --dir=tests/cloudflare --no-file-parallelism",
     "test:vercel": "npm run build && vitest run --dir=tests/vercel --no-file-parallelism",

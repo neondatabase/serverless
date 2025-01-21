@@ -805,7 +805,6 @@ export declare interface WebSocketLike {
 }
 
 export declare class WebSocketReadQueue extends ReadQueue {
-    protected socket: WebSocket;
     constructor(socket: WebSocket);
     moreDataMayFollow(): boolean;
 }

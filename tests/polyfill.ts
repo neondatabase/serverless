@@ -1,4 +1,4 @@
-import { neonConfig } from '../..';
+import { neonConfig } from '..';
 
 export async function polyfill() {
   if (typeof fetch !== 'function') {
