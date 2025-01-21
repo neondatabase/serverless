@@ -31,7 +31,7 @@ jobs:
           sudo apt-get install jq
           mv package.json package.json.old
           cat package.json.old \
-            | jq '.devDependencies.vitest = "<3"' \
+            | jq '.devDependencies.vitest = "2.x"' \
             | jq 'del(.devDependencies.prisma,.devDependencies."@prisma/client",.devDependencies."@vitest/browser")' \
             > package.json
           cat package.json
