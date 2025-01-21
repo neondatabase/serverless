@@ -2,7 +2,7 @@ import { expect, test, describe, beforeAll, vi, assertType } from 'vitest';
 import { Pool as PgPool, type QueryResult } from 'pg';
 import * as subtls from 'subtls';
 import { sampleQueries } from './sampleQueries';
-import { polyfill } from './polyfill';
+import { polyfill } from '../polyfill';
 import { ISRGX1Cert } from './subtlsCert';
 import { neon, neonConfig, Pool as WsPool, Client as WsClient } from '../..';
 
