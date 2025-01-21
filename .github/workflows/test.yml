@@ -29,10 +29,10 @@ jobs:
           # and downgrade to vitest 2.x, which supports Node 16
           sudo apt-get install jq && \
             mv package.json package.json.old && \
-            jq \
-              '.devDependencies.vitest = "<3"' \
-              'del(.devDependencies.prisma, .devDependencies."@prisma/client")' \
-              package.json.old > package.json
+            cat package.json.old \
+              | jq '.devDependencies.vitest = "<3"' \
+              | jq 'del(.devDependencies.prisma, .devDependencies."@prisma/client")' \
+              > package.json
           # install
           npm install
 
