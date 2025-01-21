@@ -14,7 +14,7 @@ env:
   VITE_CLERK_USER: ${{ vars.VITE_CLERK_USER }}
 
 jobs:
-  test-node-old:
+  test-old:
     runs-on: ubuntu-latest
     steps:
       # setup
@@ -35,11 +35,13 @@ jobs:
       - name: Using vitest@2, run CLI-based tests in Node 16
         run: npx vitest@2 run --dir=tests/cli --environment=node --no-file-parallelism
 
-  test-node-lts:
+  test-current:
     runs-on: ubuntu-latest
     steps:
       # setup
       - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: denoland/setup-deno@v2
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -48,5 +50,5 @@ jobs:
         run: npm install
 
       # goal
-      - name: Run all tests in Node LTS
+      - name: Run all tests
         run: npm run test

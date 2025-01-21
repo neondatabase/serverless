@@ -16,7 +16,7 @@ In CI we run these tests:
 2. On Node 16 (using `node-fetch` and `ws`)
 3. On current Node LTS using vitest's `edge-runtime` environment
 
-Currently we do not test on Bun, as it is [not supported by vitest](https://github.com/oven-sh/bun/issues/4145), nor on Deno, [for the same reason](https://github.com/denoland/deno/issues/23882).
+Currently we run only a few simple tests with Bun, as it is [not supported by vitest](https://github.com/oven-sh/bun/issues/4145). The same goes for Deno, [for the same reason](https://github.com/denoland/deno/issues/23882).
 
 ### `packages`
 
