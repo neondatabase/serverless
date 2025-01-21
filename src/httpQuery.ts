@@ -1,20 +1,3 @@
-import { Socket } from './shims/net';
-import { parse } from './shims/url';
-import { toHex } from 'hextreme';
-import type {
-  HTTPQueryOptions,
-  HTTPTransactionOptions,
-  NeonQueryPromise,
-  NeonQueryFunction,
-  ParameterizedQuery,
-  ProcessQueryResultOptions,
-} from './httpTypes';
-
-// @ts-ignore -- this isn't officially exported by pg
-import { prepareValue } from 'pg/lib/utils';
-// @ts-ignore -- this isn't officially exported by pg
-import TypeOverrides from 'pg/lib/type-overrides';
-
 /* 
 Note: most config options can be set in 3 places:
 
@@ -32,6 +15,23 @@ That is:
 * `transaction` options override `neon` ones, and
 * `neon` options override defaults.
 */
+
+import { Socket } from './shims/net';
+import { parse } from './shims/url';
+import { toHex } from 'hextreme';
+import type {
+  HTTPQueryOptions,
+  HTTPTransactionOptions,
+  NeonQueryPromise,
+  NeonQueryFunction,
+  ParameterizedQuery,
+  ProcessQueryResultOptions,
+} from './httpTypes';
+
+// @ts-ignore -- this isn't officially exported by pg
+import { prepareValue } from 'pg/lib/utils';
+// @ts-ignore -- this isn't officially exported by pg
+import TypeOverrides from 'pg/lib/type-overrides';
 
 function encodeBuffersAsBytea(value: unknown): unknown {
   // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT

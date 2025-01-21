@@ -37,6 +37,10 @@ function promisify(Promise: any, callback: any) {
   return { callback: cb, result: result };
 }
 
+export declare interface NeonPool {
+  Promise: typeof Promise;
+}
+
 /**
  * The node-postgres `Pool` object re-exported with minor modifications.
  * https://node-postgres.com/apis/pool
@@ -53,7 +57,6 @@ export class NeonPool extends Pool {
   override addListener = this.on;
 
   override query<T extends Submittable>(queryStream: T): T;
-  // tslint:disable:no-unnecessary-generics
   override query<R extends any[] = any[], I = any[]>(
     queryConfig: QueryArrayConfig<I>,
     values?: QueryConfigValues<I>,
@@ -94,7 +97,6 @@ export class NeonPool extends Pool {
     }
 
     // create a synthetic callback that resolves the returned Promise
-    // @ts-ignore -- TS doesn't know about this.Promise
     const response = promisify(this.Promise, cb);
     cb = response.callback;
 

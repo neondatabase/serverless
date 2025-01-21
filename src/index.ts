@@ -16,23 +16,43 @@ for repeated SHA-256 digests. This saves some time and CPU.
 circumstances are right.
 */
 
-import type { ClientBase, PoolClient } from 'pg';
-import { Socket, type SocketDefaults } from './shims/net';
-import { neon, NeonDbError } from './httpQuery';
-import { NeonClient } from './client';
-import { NeonPool } from './pool';
+import type { ClientBase as PgClientBase, PoolClient as PgPoolClient } from 'pg';
+import { type SocketDefaults } from './shims/net';
+
+export * from './httpQuery';
+export type * from './httpTypes';
+
+export { NeonPool as Pool } from './pool';
+export { NeonClient as Client } from './client';
+
+export { Socket as neonConfig } from './shims/net';
+export type {
+  SocketDefaults as NeonConfig,
+  FetchEndpointOptions,
+  WebSocketConstructor,
+  WebSocketLike,
+  subtls,
+  startTls,
+  TrustedCert,
+  WebSocketReadQueue,
+} from './shims/net';
 
 // class 'ClientBase' exists only in @types/pg: under the hood in pg it's just a `Client extends EventEmitter`
-interface NeonClientBase extends ClientBase {
+export interface ClientBase extends PgClientBase {
   neonConfig: NeonConfigGlobalAndClient;
 }
 
 // class 'PoolClient' exists only in @types/pg: under the hood in pg it's just a `Client extends EventEmitter`
-interface NeonPoolClient extends PoolClient {
+export interface PoolClient extends PgPoolClient {
   neonConfig: NeonConfigGlobalAndClient;
 }
 
-export { defaults, types, DatabaseError } from 'pg';
+export { 
+  defaults, 
+  types, 
+  DatabaseError 
+} from 'pg';
+
 export type {
   BindConfig,
   ClientConfig,
@@ -57,23 +77,6 @@ export type {
   ResultBuilder,
   Submittable,
 } from 'pg';
-
-export * from './httpQuery';
-
-export { Socket as neonConfig, NeonPool as Pool, NeonClient as Client, neon, NeonDbError };
-
-export type { NeonPoolClient as PoolClient, NeonClientBase as ClientBase };
-
-export type {
-  SocketDefaults as NeonConfig,
-  FetchEndpointOptions,
-  WebSocketConstructor,
-  WebSocketLike,
-  subtls,
-  startTls,
-  TrustedCert,
-  WebSocketReadQueue,
-} from './shims/net';
 
 // provided for backwards-compatibility
 export type NeonConfigGlobalOnly = Pick<
