@@ -2,6 +2,7 @@ import { types as defaultTypes } from '.';
 import { Socket } from './shims/net';
 import { parse } from './shims/url';
 import type { FieldDef, types as PgTypes } from 'pg';
+import { toHex } from 'hextreme';
 
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from 'pg/lib/utils';
@@ -10,9 +11,8 @@ import TypeOverrides from 'pg/lib/type-overrides';
 
 function encodeBuffersAsBytea(value: unknown): unknown {
   if (value instanceof Buffer) {
-    // convert Buffer to bytea hex format
-    // https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
-    return '\\x' + value.toString('hex');
+    // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
+    return '\\x' + toHex(value);
   }
   return value;
 }
