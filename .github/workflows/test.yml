@@ -26,14 +26,19 @@ jobs:
       - name: Install package dependencies
         run: |
           # strip Prisma, whose preinstall script throws on Node versions less than 18.x
+          # and downgrade to vitest 2.x, which supports Node 16
           sudo apt-get install jq && \
             mv package.json package.json.old && \
-            jq 'del(.devDependencies.prisma, .devDependencies."@prisma/client")' package.json.old > package.json
+            jq \
+              '.devDependencies.vitest = "<3"' \
+              'del(.devDependencies.prisma, .devDependencies."@prisma/client")' \
+              package.json.old > package.json
+          # install
           npm install
 
       # goal
       - name: Using vitest@2, run CLI-based tests in Node 16
-        run: npx vitest@2 run --dir=tests/cli --environment=node --no-file-parallelism
+        run: npx run test:node
 
   test-current:
     runs-on: ubuntu-latest
