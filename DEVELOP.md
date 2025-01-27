@@ -2,27 +2,24 @@
 
 The code is at https://github.com/neondatabase/serverless.
 
-
 ## Test
 
 To run the tests:
 
-* Install Node + npm, Bun and Deno
+- Install Node + npm, Bun and Deno
 
-* Copy `.env.template` to `.env.test` and fill in the blanks.
+- Copy `.env.template` to `.env.test` and fill in the blanks.
 
-* `npm install`
+- `npm install`
 
-* `npm test`
-
+- `npm test`
 
 ## Install a specific branch or commit as a dependency
 
 `npm install '@neondatabase/serverless'@'github:neondatabase/serverless#${BRANCH_OR_COMMIT}'`
 
-
 ## Publish
 
 Tests must be passing. To update and publish the npm & JSR packages:
 
-* `npm version [patch|minor|major]`
+- `npm version [patch|minor|major]`

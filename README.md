@@ -37,7 +37,6 @@ Note: to install with npm for use by another package that declares a dependency 
   ...
 ```
 
-
 ### Configure it
 
 Get your connection string from the [Neon console](https://console.neon.tech/) and set it as an environment variable. Something like:
