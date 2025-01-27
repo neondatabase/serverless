@@ -1,9 +1,8 @@
+.DS_Store
+.wrangler
+
 .env.*
 !.env.template
+
 node_modules
-.DS_Store
 build
-index.js
-index.d.ts
-index.mjs
-index.d.mts

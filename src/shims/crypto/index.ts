@@ -1,8 +1,6 @@
 import { sha256 } from './sha256';
 import { Md5 } from './md5';
 
-// we now specify Node 19+, which has top-level crypto (= webcrypto)
-
 export function randomBytes(length: number) {
   return crypto.getRandomValues(Buffer.alloc(length));
 }

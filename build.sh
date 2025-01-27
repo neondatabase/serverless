@@ -1,6 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
+set -ex
 
+# this is used so that we can build only once for all the different testing modes
 if [ -n "$NEON_NO_BUILD" ]; then exit; fi
+
 
 if [ "$1" = "debug" ]; then
   DEBUG_ARG="--define:debug=true"
@@ -49,7 +52,7 @@ sed -i.orig -r \
 # bundle types into one file
 npx @microsoft/api-extractor run --local
 
-# remove empty export, and private/protected fields
+# remove private/protected fields and empty exports
 sed -r \
   -e '/^ *private [^;]+;$/d' \
   -e '/^ *protected [^;]+;$/d' \

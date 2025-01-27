@@ -24,6 +24,20 @@ bunx jsr add @neon/serverless
 
 Using TypeScript? No worries: types are included either way.
 
+Note: to install with npm for use by another package that declares a dependency on `pg` (node-postgres), use an alias plus an override, which will look something like this in your `package.json`:
+
+```json
+  ...
+  "dependencies": {
+    "pg": "npm:@neondatabase/serverless@^0.10.4"
+  },
+  "overrides": {
+    "pg": "npm:@neondatabase/serverless@^0.10.4"
+  }
+  ...
+```
+
+
 ### Configure it
 
 Get your connection string from the [Neon console](https://console.neon.tech/) and set it as an environment variable. Something like:
