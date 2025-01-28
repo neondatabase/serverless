@@ -172,7 +172,9 @@ try {
   await client.query('BEGIN');
   const {
     rows: [{ id: postId }],
-  } = await client.query('INSERT INTO posts (title) VALUES ($1) RETURNING id', ['Welcome']);
+  } = await client.query('INSERT INTO posts (title) VALUES ($1) RETURNING id', [
+    'Welcome',
+  ]);
   await client.query('INSERT INTO photos (post_id, url) VALUES ($1, $2)', [
     postId,
     's3.bucket/photo/url',

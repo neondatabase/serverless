@@ -16,7 +16,10 @@ for repeated SHA-256 digests. This saves some time and CPU.
 circumstances are right.
 */
 
-import type { ClientBase as PgClientBase, PoolClient as PgPoolClient } from 'pg';
+import type {
+  ClientBase as PgClientBase,
+  PoolClient as PgPoolClient,
+} from 'pg';
 import { type SocketDefaults } from './shims/net';
 
 export * from './httpQuery';
@@ -77,11 +80,17 @@ export type {
 // provided for backwards-compatibility
 export type NeonConfigGlobalOnly = Pick<
   SocketDefaults,
-  'fetchEndpoint' | 'poolQueryViaFetch' | 'fetchConnectionCache' | 'fetchFunction'
+  | 'fetchEndpoint'
+  | 'poolQueryViaFetch'
+  | 'fetchConnectionCache'
+  | 'fetchFunction'
 >;
 
 // provided for backwards-compatibility
-export type NeonConfigGlobalAndClient = Omit<SocketDefaults, keyof NeonConfigGlobalOnly>;
+export type NeonConfigGlobalAndClient = Omit<
+  SocketDefaults,
+  keyof NeonConfigGlobalOnly
+>;
 
 // for debugging purposes, this gets defined by esbuild, so users can track
 // whether they've imported .js (CJS) or .mjs (ESM) or (uh-oh) both

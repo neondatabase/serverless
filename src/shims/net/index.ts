@@ -48,7 +48,10 @@ enum TlsState {
 function hexDump(data: Uint8Array) {
   return (
     `${data.length} bytes` +
-    data.reduce((memo, byte) => memo + ' ' + byte.toString(16).padStart(2, '0'), '\nhex:') +
+    data.reduce(
+      (memo, byte) => memo + ' ' + byte.toString(16).padStart(2, '0'),
+      '\nhex:',
+    ) +
     '\nstr: ' +
     new TextDecoder().decode(data)
   );
@@ -80,7 +83,11 @@ export interface SocketDefaults {
   poolQueryViaFetch: boolean;
   fetchEndpoint:
     | string
-    | ((host: string, port: number | string, options?: FetchEndpointOptions) => string);
+    | ((
+        host: string,
+        port: number | string,
+        options?: FetchEndpointOptions,
+      ) => string);
   fetchConnectionCache: boolean;
   fetchFunction: any;
   // these options relate to the WebSocket transport
@@ -184,8 +191,12 @@ export class Socket extends EventEmitter {
   static get fetchConnectionCache() {
     return true;
   }
-  static set fetchConnectionCache(newValue: SocketDefaults['fetchConnectionCache']) {
-    console.warn('The `fetchConnectionCache` option is deprecated (now always `true`)');
+  static set fetchConnectionCache(
+    newValue: SocketDefaults['fetchConnectionCache'],
+  ) {
+    console.warn(
+      'The `fetchConnectionCache` option is deprecated (now always `true`)',
+    );
   }
 
   /**
@@ -211,9 +222,13 @@ export class Socket extends EventEmitter {
    * Default: `undefined`.
    */
   static get webSocketConstructor() {
-    return Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor;
+    return (
+      Socket.opts.webSocketConstructor ?? Socket.defaults.webSocketConstructor
+    );
   }
-  static set webSocketConstructor(newValue: SocketDefaults['webSocketConstructor']) {
+  static set webSocketConstructor(
+    newValue: SocketDefaults['webSocketConstructor'],
+  ) {
     Socket.opts.webSocketConstructor = newValue;
   }
   get webSocketConstructor() {
@@ -274,7 +289,9 @@ export class Socket extends EventEmitter {
   static get useSecureWebSocket() {
     return Socket.opts.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket;
   }
-  static set useSecureWebSocket(newValue: SocketDefaults['useSecureWebSocket']) {
+  static set useSecureWebSocket(
+    newValue: SocketDefaults['useSecureWebSocket'],
+  ) {
     Socket.opts.useSecureWebSocket = newValue;
   }
   get useSecureWebSocket() {
@@ -496,7 +513,10 @@ export class Socket extends EventEmitter {
 
     let wsAddr: string;
     try {
-      wsAddr = this.wsProxyAddrForHost(host, typeof port === 'string' ? parseInt(port, 10) : port);
+      wsAddr = this.wsProxyAddrForHost(
+        host,
+        typeof port === 'string' ? parseInt(port, 10) : port,
+      );
     } catch (err) {
       this.emit('error', err);
       this.emit('close');
@@ -565,7 +585,9 @@ export class Socket extends EventEmitter {
 
     this.tlsState = TlsState.Handshake;
 
-    const rootCerts = await this.subtls.TrustedCert.databaseFromPEM(this.rootCerts);
+    const rootCerts = await this.subtls.TrustedCert.databaseFromPEM(
+      this.rootCerts,
+    );
     const readQueue = new this.subtls.WebSocketReadQueue(this.ws! as any);
     const networkRead = readQueue.read.bind(readQueue);
     const networkWrite = this.rawWrite.bind(this);
@@ -630,7 +652,11 @@ export class Socket extends EventEmitter {
     }
   }
 
-  write(data: Buffer | string, encoding = 'utf8', callback = (err?: any) => {}) {
+  write(
+    data: Buffer | string,
+    encoding = 'utf8',
+    callback = (err?: any) => {},
+  ) {
     if (data.length === 0) {
       callback();
       return true;

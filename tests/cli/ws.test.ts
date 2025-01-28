@@ -19,7 +19,9 @@ function recursiveTransform(x: any, transform: (x: any) => any) {
 }
 
 function functionsToPlaceholders(x: any) {
-  return recursiveTransform(x, (x) => (typeof x === 'function' ? `__fn_arity_${x.length}__` : x));
+  return recursiveTransform(x, (x) =>
+    typeof x === 'function' ? `__fn_arity_${x.length}__` : x,
+  );
 }
 
 const DB_DIRECT_URL = process.env.VITE_NEON_DB_URL!;
@@ -55,7 +57,9 @@ describe.each([
         ]);
 
         // unprocessed results don't strictly match because functions are minified by ws driver
-        expect(functionsToPlaceholders(wsResult)).toStrictEqual(functionsToPlaceholders(pgResult));
+        expect(functionsToPlaceholders(wsResult)).toStrictEqual(
+          functionsToPlaceholders(pgResult),
+        );
       }
 
       wsClient.release();

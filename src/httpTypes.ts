@@ -18,7 +18,10 @@ export interface ParameterizedQuery {
   params: any[];
 }
 
-export interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends boolean> {
+export interface HTTPQueryOptions<
+  ArrayMode extends boolean,
+  FullResults extends boolean,
+> {
   /**
    * When `arrayMode` is `false`, which is the default, result rows are
    * returned as objects whose keys represent column names, such as
@@ -62,16 +65,27 @@ export interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends
 
   queryCallback?: (query: ParameterizedQuery) => void;
 
-  resultCallback?: (query: ParameterizedQuery, result: any, rows: any, opts: any) => void;
+  resultCallback?: (
+    query: ParameterizedQuery,
+    result: any,
+    rows: any,
+    opts: any,
+  ) => void;
 }
 
-export interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean>
-  extends HTTPQueryOptions<ArrayMode, FullResults> {
+export interface HTTPTransactionOptions<
+  ArrayMode extends boolean,
+  FullResults extends boolean,
+> extends HTTPQueryOptions<ArrayMode, FullResults> {
   /**
    * Postgres transaction isolation level: see https://www.postgresql.org/docs/current/transaction-iso.html.
    * Note that `ReadUncommitted` actually gets you `ReadCommitted` in Postgres.
    * */
-  isolationLevel?: 'ReadUncommitted' | 'ReadCommitted' | 'RepeatableRead' | 'Serializable';
+  isolationLevel?:
+    | 'ReadUncommitted'
+    | 'ReadCommitted'
+    | 'RepeatableRead'
+    | 'Serializable';
 
   /**
    * When `readOnly` is `false`, which is the default, a `READ WRITE` Postgres
@@ -91,8 +105,11 @@ export interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults e
   deferrable?: boolean;
 }
 
-export interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any>
-  extends Promise<T> {
+export interface NeonQueryPromise<
+  ArrayMode extends boolean,
+  FullResults extends boolean,
+  T = any,
+> extends Promise<T> {
   parameterizedQuery: ParameterizedQuery;
   opts?: HTTPQueryOptions<ArrayMode, FullResults>;
 }
@@ -120,7 +137,9 @@ export interface NeonQueryFunctionInTransaction<
   ): NeonQueryPromise<
     ArrayMode,
     FullResults,
-    FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>
+    FullResults extends true
+      ? FullQueryResults<ArrayMode>
+      : QueryRows<ArrayMode>
   >;
 
   // ordinary function usage (*no* options overrides)
@@ -130,7 +149,9 @@ export interface NeonQueryFunctionInTransaction<
   ): NeonQueryPromise<
     ArrayMode,
     FullResults,
-    FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>
+    FullResults extends true
+      ? FullQueryResults<ArrayMode>
+      : QueryRows<ArrayMode>
   >;
 }
 
@@ -139,7 +160,10 @@ export interface NeonQueryInTransaction {
   parameterizedQuery: ParameterizedQuery;
 }
 
-export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
+export interface NeonQueryFunction<
+  ArrayMode extends boolean,
+  FullResults extends boolean,
+> {
   // tagged-template function usage
   (
     strings: TemplateStringsArray,
@@ -147,7 +171,9 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
   ): NeonQueryPromise<
     ArrayMode,
     FullResults,
-    FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>
+    FullResults extends true
+      ? FullQueryResults<ArrayMode>
+      : QueryRows<ArrayMode>
   >;
 
   // ordinary function usage, with options overrides
@@ -205,7 +231,10 @@ export interface NeonQueryFunction<ArrayMode extends boolean, FullResults extend
     queriesOrFn:
       | NeonQueryPromise<ArrayMode, FullResults>[] // not ArrayModeOverride or FullResultsOverride: clamp these values to the current ones
       | ((
-          sql: NeonQueryFunctionInTransaction<ArrayModeOverride, FullResultsOverride>,
+          sql: NeonQueryFunctionInTransaction<
+            ArrayModeOverride,
+            FullResultsOverride
+          >,
         ) => NeonQueryInTransaction[]),
     opts?: HTTPTransactionOptions<ArrayModeOverride, FullResultsOverride>,
   ) => Promise<

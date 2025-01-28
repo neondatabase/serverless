@@ -64,7 +64,10 @@ export class NeonDbError extends Error {
   constructor(message: string) {
     super(message);
 
-    if ('captureStackTrace' in Error && typeof Error.captureStackTrace === 'function') {
+    if (
+      'captureStackTrace' in Error &&
+      typeof Error.captureStackTrace === 'function'
+    ) {
       Error.captureStackTrace(this, NeonDbError);
     }
   }
@@ -145,7 +148,10 @@ const errorFields = [
  * pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
-export function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(
+export function neon<
+  ArrayMode extends boolean = false,
+  FullResults extends boolean = false,
+>(
   connectionString: string,
   {
     arrayMode: neonOptArrayMode,
@@ -233,11 +239,13 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
 
     if (!Array.isArray(queries)) throw new Error(txnArgErrMsg);
     queries.forEach((query) => {
-      if (query[Symbol.toStringTag] !== 'NeonQueryPromise') throw new Error(txnArgErrMsg);
+      if (query[Symbol.toStringTag] !== 'NeonQueryPromise')
+        throw new Error(txnArgErrMsg);
     });
 
     const parameterizedQueries = queries.map(
-      (query) => (query as NeonQueryPromise<ArrayMode, FullResults>).parameterizedQuery,
+      (query) =>
+        (query as NeonQueryPromise<ArrayMode, FullResults>).parameterizedQuery,
     );
     const opts = queries.map(
       (query) => (query as NeonQueryPromise<ArrayMode, FullResults>).opts ?? {},
@@ -275,11 +283,15 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
           ...resolvedFetchOptions,
           ...txnOpts.fetchOptions,
         };
-      if (txnOpts.arrayMode !== undefined) resolvedArrayMode = txnOpts.arrayMode;
-      if (txnOpts.fullResults !== undefined) resolvedFullResults = txnOpts.fullResults;
-      if (txnOpts.isolationLevel !== undefined) resolvedIsolationLevel = txnOpts.isolationLevel;
+      if (txnOpts.arrayMode !== undefined)
+        resolvedArrayMode = txnOpts.arrayMode;
+      if (txnOpts.fullResults !== undefined)
+        resolvedFullResults = txnOpts.fullResults;
+      if (txnOpts.isolationLevel !== undefined)
+        resolvedIsolationLevel = txnOpts.isolationLevel;
       if (txnOpts.readOnly !== undefined) resolvedReadOnly = txnOpts.readOnly;
-      if (txnOpts.deferrable !== undefined) resolvedDeferrable = txnOpts.deferrable;
+      if (txnOpts.deferrable !== undefined)
+        resolvedDeferrable = txnOpts.deferrable;
     }
 
     // single query -- cannot be true at same time as `txnOpts !== undefined` above
@@ -342,7 +354,9 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
         ...resolvedFetchOptions, // this is last, so it gets the final say
       });
     } catch (err: any) {
-      const connectErr = new NeonDbError(`Error connecting to database: ${err}`);
+      const connectErr = new NeonDbError(
+        `Error connecting to database: ${err}`,
+      );
       connectErr.sourceError = err;
       throw connectErr;
     }
@@ -354,9 +368,12 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
         // batch query
         const resultArray = rawResults.results;
         if (!Array.isArray(resultArray))
-          throw new NeonDbError('Neon internal error: unexpected result format');
+          throw new NeonDbError(
+            'Neon internal error: unexpected result format',
+          );
         return resultArray.map((result, i) => {
-          let sqlOpts = (allSqlOpts as HTTPQueryOptions<ArrayMode, FullResults>[])[i] ?? {};
+          let sqlOpts =
+            (allSqlOpts as HTTPQueryOptions<ArrayMode, FullResults>[])[i] ?? {};
           let arrayMode = sqlOpts.arrayMode ?? resolvedArrayMode;
           let fullResults = sqlOpts.fullResults ?? resolvedFullResults;
           return processQueryResult(result, {
@@ -369,7 +386,8 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
         });
       } else {
         // single query
-        let sqlOpts = (allSqlOpts as HTTPQueryOptions<ArrayMode, FullResults>) ?? {};
+        let sqlOpts =
+          (allSqlOpts as HTTPQueryOptions<ArrayMode, FullResults>) ?? {};
         let arrayMode = sqlOpts.arrayMode ?? resolvedArrayMode;
         let fullResults = sqlOpts.fullResults ?? resolvedFullResults;
         return processQueryResult(rawResults, {
@@ -385,7 +403,8 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
       if (status === 400) {
         const json = (await response.json()) as any;
         const dbError = new NeonDbError(json.message);
-        for (const field of errorFields) dbError[field] = json[field] ?? undefined;
+        for (const field of errorFields)
+          dbError[field] = json[field] ?? undefined;
         throw dbError;
       } else {
         const text = await response.text();
@@ -397,8 +416,14 @@ export function neon<ArrayMode extends boolean = false, FullResults extends bool
   return resolve as any;
 }
 
-function createNeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean>(
-  execute: (pq: ParameterizedQuery, hqo?: HTTPQueryOptions<ArrayMode, FullResults>) => Promise<any>,
+function createNeonQueryPromise<
+  ArrayMode extends boolean,
+  FullResults extends boolean,
+>(
+  execute: (
+    pq: ParameterizedQuery,
+    hqo?: HTTPQueryOptions<ArrayMode, FullResults>,
+  ) => Promise<any>,
   parameterizedQuery: ParameterizedQuery,
   opts?: HTTPQueryOptions<ArrayMode, FullResults>,
 ) {
@@ -406,9 +431,11 @@ function createNeonQueryPromise<ArrayMode extends boolean, FullResults extends b
     [Symbol.toStringTag]: 'NeonQueryPromise',
     parameterizedQuery,
     opts,
-    then: (resolve: any, reject: any) => execute(parameterizedQuery, opts).then(resolve, reject),
+    then: (resolve: any, reject: any) =>
+      execute(parameterizedQuery, opts).then(resolve, reject),
     catch: (reject: any) => execute(parameterizedQuery, opts).catch(reject),
-    finally: (finallyFn: any) => execute(parameterizedQuery, opts).finally(finallyFn),
+    finally: (finallyFn: any) =>
+      execute(parameterizedQuery, opts).finally(finallyFn),
   } as NeonQueryPromise<ArrayMode, FullResults>;
 }
 
@@ -424,19 +451,26 @@ function processQueryResult(
 ) {
   const types = new TypeOverrides(customTypes);
   const colNames = rawResults.fields.map((field: any) => field.name);
-  const parsers = rawResults.fields.map((field: any) => types.getTypeParser(field.dataTypeID));
+  const parsers = rawResults.fields.map((field: any) =>
+    types.getTypeParser(field.dataTypeID),
+  );
 
   // now parse and possibly restructure the rows data like node-postgres does
   const rows =
     arrayMode === true
       ? // maintain array-of-arrays structure
         rawResults.rows.map((row: any) =>
-          row.map((col: any, i: number) => (col === null ? null : parsers[i](col))),
+          row.map((col: any, i: number) =>
+            col === null ? null : parsers[i](col),
+          ),
         )
       : // turn into an object
         rawResults.rows.map((row: any) => {
           return Object.fromEntries(
-            row.map((col: any, i: number) => [colNames[i], col === null ? null : parsers[i](col)]),
+            row.map((col: any, i: number) => [
+              colNames[i],
+              col === null ? null : parsers[i](col),
+            ]),
           );
         });
 
@@ -458,7 +492,9 @@ function processQueryResult(
   return rows;
 }
 
-async function getAuthToken(authToken: HTTPQueryOptions<false, false>['authToken']) {
+async function getAuthToken(
+  authToken: HTTPQueryOptions<false, false>['authToken'],
+) {
   if (typeof authToken === 'string') {
     return authToken;
   }

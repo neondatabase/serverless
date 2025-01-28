@@ -92,7 +92,9 @@ export class Md5 {
     return this.onePassHasher.start().appendAsciiStr(str).end(raw);
   }
   // Private Static Variables
-  private static stateIdentity = new Int32Array([1732584193, -271733879, -1732584194, 271733878]);
+  private static stateIdentity = new Int32Array([
+    1732584193, -271733879, -1732584194, 271733878,
+  ]);
   private static buffer32Identity = new Int32Array([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
@@ -123,7 +125,10 @@ export class Md5 {
     return ho.join('');
   }
 
-  private static _md5cycle(x: Int32Array | Uint32Array, k: Int32Array | Uint32Array) {
+  private static _md5cycle(
+    x: Int32Array | Uint32Array,
+    k: Int32Array | Uint32Array,
+  ) {
     let a = x[0];
     let b = x[1];
     let c = x[2];
@@ -318,9 +323,12 @@ export class Md5 {
         buf8[bufLen++] = ((code >>> 6) & 0x3f) | 0x80;
         buf8[bufLen++] = (code & 0x3f) | 0x80;
       } else {
-        code = (code - 0xd800) * 0x400 + (str.charCodeAt(++i) - 0xdc00) + 0x10000;
+        code =
+          (code - 0xd800) * 0x400 + (str.charCodeAt(++i) - 0xdc00) + 0x10000;
         if (code > 0x10ffff) {
-          throw new Error('Unicode standard supports code points up to U+10FFFF');
+          throw new Error(
+            'Unicode standard supports code points up to U+10FFFF',
+          );
         }
         buf8[bufLen++] = (code >>> 18) + 0xf0;
         buf8[bufLen++] = ((code >>> 12) & 0x3f) | 0x80;

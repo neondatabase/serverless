@@ -49,7 +49,10 @@ export class NeonPool extends Pool {
   Client = NeonClient;
   hasFetchUnsupportedListeners = false;
 
-  override on(event: 'error' | 'connect' | 'acquire' | 'release' | 'remove', listener: any) {
+  override on(
+    event: 'error' | 'connect' | 'acquire' | 'release' | 'remove',
+    listener: any,
+  ) {
     if (event !== 'error') this.hasFetchUnsupportedListeners = true;
     return super.on(event as any, listener);
   }

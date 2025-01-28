@@ -25,7 +25,9 @@ export function createHash(type: 'sha256') {
       update: function (data: string | Buffer | Uint8Array) {
         return {
           digest: function () {
-            return typeof data === 'string' ? Md5.hashStr(data) : Md5.hashByteArray(data);
+            return typeof data === 'string'
+              ? Md5.hashStr(data)
+              : Md5.hashByteArray(data);
           },
         };
       },
@@ -34,7 +36,8 @@ export function createHash(type: 'sha256') {
 }
 
 export function createHmac(type: 'sha256', key: string | Buffer | Uint8Array) {
-  if (type !== 'sha256') throw new Error(`Only sha256 is supported (requested: '${type}')`);
+  if (type !== 'sha256')
+    throw new Error(`Only sha256 is supported (requested: '${type}')`);
   return {
     update: function (data: string | Buffer | Uint8Array) {
       return {

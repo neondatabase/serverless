@@ -38,7 +38,12 @@ q = "SELECT 'fetch' AS fetchstr";
 const sql = neon(DATABASE_URL, { fullResults: true });
 const { rows: fetchRows } = await sql(q);
 
-const result = JSON.stringify({ clientRows, poolRows, poolClientRows, fetchRows });
+const result = JSON.stringify({
+  clientRows,
+  poolRows,
+  poolClientRows,
+  fetchRows,
+});
 const expected =
   '{"clientRows":[{"clientstr":"client"}],"poolRows":[{"poolstr":"pool"}],"poolClientRows":[{"poolclientstr":"poolclient"}],"fetchRows":[{"fetchstr":"fetch"}]}';
 
