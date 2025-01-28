@@ -2,11 +2,13 @@
 
 The code is at https://github.com/neondatabase/serverless.
 
+To ensure code passes format checks and build output is up to date before commit, please copy `pre-commit` to `.git/hooks`.
+
 ## Test
 
-To run the tests:
+To run tests:
 
-- Install Node + npm, Bun and Deno
+- Install Node LTS + npm, Bun and Deno
 
 - Copy `.env.template` to `.env.test` and fill in the blanks.
 
@@ -16,10 +18,10 @@ To run the tests:
 
 ## `npm install` a specific branch or commit
 
-`npm install @neondatabase/serverless@github:neondatabase/serverless#${BRANCH_OR_COMMIT}`
+```bash
+npm install @neondatabase/serverless@github:neondatabase/serverless#BRANCH_OR_COMMIT
+```
 
-## Publish
+## Publish on npm and JSR
 
-Tests must be passing. To update and publish the npm & JSR packages:
-
-- `npm version [patch|minor|major]`
+Tests must be passing locally, you must be on branch `main`, the repo must be clean, and `CHANGELOG.md` must include notes for the new version. Then simply run `npm version` with `patch`, `minor` or `major`.

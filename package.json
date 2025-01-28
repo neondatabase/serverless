@@ -45,8 +45,8 @@
   },
   "scripts": {
     "build": "./build.sh",
-    "preversion": "([[ $(git branch --show-current) = 'main' ]] || echo 'Must be on main') && npm run format && npm run test && npm run build && git add index.js index.d.ts index.mjs index.d.mts",
-    "version": "(grep \"^## $(jq -r .version package.json)\" CHANGELOG.md || 'Needs CHANGELOG.md') && jq --arg v \"$(jq -r .version package.json)\" '.version = $v' jsr.json > build/jsr.json && mv build/jsr.json jsr.json && git add jsr.json",
+    "preversion": "([[ $(git branch --show-current) = 'main' ]] || echo 'Must be on main') && npm run format && npm run test && git add index.js index.d.ts index.mjs index.d.mts",
+    "version": "(grep \"^## $(jq -r .version package.json)\" CHANGELOG.md || 'Update CHANGELOG.md') && jq --arg v \"$(jq -r .version package.json)\" '.version = $v' jsr.json > build/jsr.json && mv build/jsr.json jsr.json && git add jsr.json",
     "postversion": "git push && git push --tags && npm publish && jsr publish",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
