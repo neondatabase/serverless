@@ -46,11 +46,11 @@
   "scripts": {
     "build": "./build.sh",
     "preversion": "([[ $(git branch --show-current) = 'main' ]] || echo 'Must be on main') && npm run format && npm run test && npm run build && git add index.js index.d.ts index.mjs index.d.mts",
-    "version": "jq --arg v \"$(jq -r .version package.json)\" '.version = $v' jsr.json > build/jsr.json && mv build/jsr.json jsr.json && git add jsr.json",
+    "version": "(grep \"^## $(jq -r .version package.json)\" CHANGELOG.md || 'Needs CHANGELOG.md') && jq --arg v \"$(jq -r .version package.json)\" '.version = $v' jsr.json > build/jsr.json && mv build/jsr.json jsr.json && git add jsr.json",
     "postversion": "git push && git push --tags && npm publish && jsr publish",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
-    "test": "npm run build && export NEON_NO_BUILD=1 && npm run test:node && npm run test:edge && npm run test:bun && npm run test:deno && npm run test:packages && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
+    "test": "touch src && npm run test:node && npm run test:edge && npm run test:bun && npm run test:deno && npm run test:packages && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
     "test:node": "npm run build && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
     "test:edge": "npm run build && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
     "test:bun": "npm run build && bun run --env-file=.env.test tests/basic/basic.ts",

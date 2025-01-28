@@ -1,10 +1,10 @@
 #!/usr/bin/env bash 
-set -ex
+set -e
 
-# this is used so that we can build only once for all the different testing modes
-if [ -n "$NEON_NO_BUILD" ]; then exit; fi
+# if nothing modified, stop (`touch src` to force build)
+find src -newer index.js | read || exit 0
 
-
+# handle "debug" argument
 if [ "$1" = "debug" ]; then
   DEBUG_ARG="--define:debug=true"
   MINIFY_ARG=""
@@ -13,9 +13,7 @@ else
   MINIFY_ARG="--minify --line-limit=100"
 fi
 
-
-# == CJS code: index.js ==
-
+# bundle CJS code to index.js
 npx esbuild src/index.ts \
   --format=cjs \
   --bundle \
@@ -26,9 +24,7 @@ npx esbuild src/index.ts \
   --outfile=index.js \
   $DEBUG_ARG $MINIFY_ARG
 
-
-# == ESM code: index.mjs ==
-
+# bundle ESM code to index.mjs
 npx esbuild src/index.ts \
   --format=esm \
   --bundle \
@@ -39,34 +35,32 @@ npx esbuild src/index.ts \
   --outfile=index.mjs \
   $DEBUG_ARG $MINIFY_ARG
 
-
-# == types ==
-
+# update TypeScript types (.d.ts files)
 npx tsc
 
-# remove global declarations from types
+# remove global declarations from shims/net types
 sed -i.orig -r \
   -e "/^declare global [{]$/,/^[}]$/d" \
   build/types/shims/net/index.d.ts
 
-# bundle types into one file
-npx @microsoft/api-extractor run --local
+# bundle all types into one file
+npx @microsoft/api-extractor run
 
-# remove private/protected fields and empty exports
+# remove private/protected fields and empty exports from types
 sed -r \
   -e '/^ *private [^;]+;$/d' \
   -e '/^ *protected [^;]+;$/d' \
   -e '/^export [{] *[}]$/d' \
   build/generated.d.ts > index.d.ts
 
-# copy to .d.mts (for ESM)
+# copy d.ts to .d.mts (for ESM)
 cp index.d.ts index.d.mts
 
 
 # Note: --keep-names for esbuild adds about 10KB to the bundle size, but it
 # gives us error messages + stack traces with no short, cryptic variable names
 
-# WITHOUT (see `xe`, `pe`):
+# WITHOUT:
 
 # Uncaught:
 # xe [NeonDbError]: db error: ERROR: function xnow() does not exist

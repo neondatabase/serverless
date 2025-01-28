@@ -14,9 +14,9 @@ To run the tests:
 
 - `npm test`
 
-## Install a specific branch or commit as a dependency
+## `npm install` a specific branch or commit
 
-`npm install '@neondatabase/serverless'@'github:neondatabase/serverless#${BRANCH_OR_COMMIT}'`
+`npm install @neondatabase/serverless@github:neondatabase/serverless#${BRANCH_OR_COMMIT}`
 
 ## Publish
 
