@@ -136,11 +136,13 @@ Use the `Pool` or `Client` constructors, instead of the functions described abov
 
 Queries using `Pool` and `Client` are carried by WebSockets. There are **two key things** to know about this:
 
-1. **In Node.js** and some other environments, there's no built-in WebSocket support. In these cases, supply a WebSocket constructor function.
+1. **In Node.js v21 and earlier** and some other environments, there's no built-in WebSocket support. In these cases, supply a WebSocket constructor function.
 
 2. **In serverless environments** such as Vercel Edge Functions or Cloudflare Workers, WebSocket connections can't outlive a single request.
 
    That means `Pool` or `Client` objects must be connected, used and closed **within a single request handler**. Don't create them outside a request handler; don't create them in one handler and try to reuse them in another; and to avoid exhausting available connections, don't forget to close them.
+
+   Note: on Cloudflare Workers, consider [using Cloudflare Hyperdrive](https://neon.tech/blog/hyperdrive-neon-faq) instead of this driver.
 
 These points are demonstrated in the examples below.
 
