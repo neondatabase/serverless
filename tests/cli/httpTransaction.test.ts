@@ -1,11 +1,8 @@
-import { assertType, beforeAll, expect, test } from 'vitest';
-import { polyfill } from '../polyfill';
-import { neon } from '../..';
+import { assertType, expect, test } from 'vitest';
+import { neon } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DATABASE_URL);
-
-beforeAll(polyfill);
 
 test('basic batch query with array of sql', async () => {
   const [[a], [b]] = await sql.transaction([

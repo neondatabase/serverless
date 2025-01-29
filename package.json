@@ -51,14 +51,14 @@
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
     "test": "touch src && npm run test:node && npm run test:edge && npm run test:bun && npm run test:deno && npm run test:packages && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
-    "test:node": "npm run build && vitest run --dir=tests/cli --environment=node --no-file-parallelism --typecheck",
-    "test:edge": "npm run build && vitest run --dir=tests/cli --environment=edge-runtime --no-file-parallelism",
+    "test:node": "npm run build && vitest run --dir=tests/cli --environment=node --typecheck --config=tests/vite.config.mts",
+    "test:edge": "npm run build && vitest run --dir=tests/cli --environment=edge-runtime --config=tests/vite.config.mts",
     "test:bun": "npm run build && bun run --env-file=.env.test tests/basic/basic.ts",
     "test:deno": "npm run build && deno run --env-file=.env.test --allow-all tests/basic/basic.ts",
-    "test:packages": "npm run build && vitest run --dir=tests/packages --environment=node --no-file-parallelism",
-    "test:cloudflare": "npm run build && vitest run --dir=tests/cloudflare --no-file-parallelism",
-    "test:vercel": "npm run build && vitest run --dir=tests/vercel --no-file-parallelism",
-    "test:browser": "npm run build && playwright install --with-deps firefox chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts --no-file-parallelism"
+    "test:packages": "npm run build && vitest run --dir=tests/packages --environment=node --config=tests/vite.config.mts",
+    "test:cloudflare": "npm run build && vitest run --dir=tests/cloudflare --config=tests/vite.config.mts",
+    "test:vercel": "npm run build && vitest run --dir=tests/vercel --config=tests/vite.config.mts",
+    "test:browser": "npm run build && playwright install --with-deps firefox chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts"
   },
   "dependencies": {
     "@types/node": "^22.10.2",

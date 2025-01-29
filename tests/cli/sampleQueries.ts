@@ -1,4 +1,4 @@
-import type { NeonQueryFunction } from '../..';
+import type { NeonQueryFunction } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
 const now = new Date();
 export const sampleQueries = (sql: NeonQueryFunction<any, any>) => [

@@ -1,12 +1,9 @@
-import { expect, test, beforeAll } from 'vitest';
+import { expect, test } from 'vitest';
 import { Pool } from '@neondatabase/serverless'; // see package.json: this points to 'file:../../../dist/npm'
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '@prisma/client';
-import { polyfill } from '../../polyfill';
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
-
-beforeAll(polyfill);
 
 test('basic query using Prisma with WebSockets', async () => {
   const pool = new Pool({ connectionString: DATABASE_URL });

@@ -1,6 +1,6 @@
 import { expect, test, assertType } from 'vitest';
 import { server } from '@vitest/browser/context';
-import { neon, Pool, Client, type QueryResult } from '../..';
+import { neon, Pool, Client, type QueryResult } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
 const DATABASE_URL = server.config.env.VITE_NEON_DB_URL!;
 

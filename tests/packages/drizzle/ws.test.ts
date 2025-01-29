@@ -1,13 +1,10 @@
-import { expect, test, beforeAll } from 'vitest';
+import { expect, test } from 'vitest';
 import { Pool } from '../../..';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { sql } from 'drizzle-orm';
-import { polyfill } from '../../polyfill';
 
 // note that these tests rely on this line in package.json's "devDependencies":
-// "@neondatabase/serverless": "file:dist/npm"
-
-beforeAll(polyfill);
+// "@neondatabase/serverless": "file:."
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 

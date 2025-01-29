@@ -1,4 +1,4 @@
-// at deployment we copy this from index.mjs in the npm package
+// see vercel.test.ts: we copy this from index.mjs in the root folder
 import { Client, Pool, neon } from '../../neondatabase-serverless.mjs';
 
 // note: we use this file for both Edge and Node runtimes

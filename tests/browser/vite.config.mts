@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   test: {
+    fileParallelism: false,
     browser: {
       provider: 'playwright',
       headless: true,

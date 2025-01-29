@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { neon } from '@neondatabase/serverless'; // see package.json: this points to 'file:../../../dist/npm'
+import { neon } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 import { PrismaNeonHTTP } from '@prisma/adapter-neon';
 import { PrismaClient } from '@prisma/client';
 

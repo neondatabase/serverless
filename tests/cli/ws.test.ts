@@ -2,9 +2,13 @@ import { expect, test, describe, beforeAll, vi, assertType } from 'vitest';
 import { Pool as PgPool, type QueryResult } from 'pg';
 import * as subtls from 'subtls';
 import { sampleQueries } from './sampleQueries';
-import { polyfill } from '../polyfill';
 import { ISRGX1Cert } from './subtlsCert';
-import { neon, neonConfig, Pool as WsPool, Client as WsClient } from '../..';
+import {
+  neon,
+  neonConfig,
+  Pool as WsPool,
+  Client as WsClient,
+} from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
 function recursiveTransform(x: any, transform: (x: any) => any) {
   if (Array.isArray(x)) {
@@ -28,8 +32,6 @@ const DB_DIRECT_URL = process.env.VITE_NEON_DB_URL!;
 const DB_POOLER_URL = process.env.VITE_NEON_DB_POOLER_URL!;
 
 const pgPool = new PgPool({ connectionString: DB_DIRECT_URL });
-
-beforeAll(polyfill);
 
 describe.each([
   {

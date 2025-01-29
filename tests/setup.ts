@@ -1,6 +1,7 @@
-import { neonConfig } from '..';
+import { neonConfig } from '@neondatabase/serverless';
+import { beforeAll } from 'vitest';
 
-export async function polyfill() {
+async function setup() {
   if (typeof fetch !== 'function') {
     console.info('Importing node-fetch for neonConfig.fetchFunction');
     const fetch = await import('node-fetch');
@@ -12,3 +13,5 @@ export async function polyfill() {
     neonConfig.webSocketConstructor = WebSocket;
   }
 }
+
+beforeAll(setup);
