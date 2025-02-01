@@ -65,6 +65,26 @@ class NeonClient extends Client {
 
   constructor(public config: any) {
     super(config);
+    this.on('error', () => {
+      // We need an error listener (at least one) to avoid a Client error event from terminating
+      // the process too early via an async exception without throwing the (more detailed)
+      // original error from the query to the application call site
+      //
+      // "If an EventEmitter does not have at least one listener registered for the 'error' event,
+      //  and an 'error' event is emitted, the error is thrown, a stack trace is printed, and the
+      //  Node.js process exits."
+      // - https://nodejs.org/api/events.html#error-events
+      //
+      // => pg's Client extends EventEmitter, and Neon's Client extends pg's Client
+      // so we need to have a default error listener here to avoid uncaught exceptions
+      // Without this listener, (or if we rethrow the error here) the error event will be thrown
+      // immediately to the global error handler, which will terminate the process before:
+      //
+      // 1) the associated error event is emitted to the Pool event listeners, and
+      //
+      // 2) the original Error from a query (with more detailed information about the
+      //    source of the error) is thrown up to the calling code
+    });
   }
 
   override connect(): Promise<void>;
