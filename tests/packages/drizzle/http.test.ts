@@ -1,10 +1,7 @@
 import { expect, test } from 'vitest';
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 import { drizzle } from 'drizzle-orm/neon-http';
 import { sql } from 'drizzle-orm';
-
-// note that these tests rely on this line in package.json's "devDependencies":
-// "@neondatabase/serverless": "file:dist/npm"
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 

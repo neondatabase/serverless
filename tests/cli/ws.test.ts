@@ -1,4 +1,4 @@
-import { expect, test, describe, beforeAll, vi, assertType } from 'vitest';
+import { expect, test, describe, vi, assertType } from 'vitest';
 import { Pool as PgPool, type QueryResult } from 'pg';
 import * as subtls from 'subtls';
 import { sampleQueries } from './sampleQueries';
