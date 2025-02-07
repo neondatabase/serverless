@@ -70,7 +70,7 @@ cp index.d.ts index.d.mts
 #     ERROR: function xnow() does not exist
 #     HINT: No function matches the given name and argument types. You might need to add explicit type casts.
 #     at processTicksAndRejections (node:internal/process/task_queues:95:5)
-#     at pe (/Users/george/Development/neon/pgshims/dist/npm/index.js:1459:56) {
+#     at pe (/path/to/index.js:1459:56) {
 #   code: '42883',
 #   sourceError: undefined
 # }
@@ -84,7 +84,7 @@ cp index.d.ts index.d.mts
 #     ERROR: function xnow() does not exist
 #     HINT: No function matches the given name and argument types. You might need to add explicit type casts.
 #     at processTicksAndRejections (node:internal/process/task_queues:95:5)
-#     at execute (/Users/george/Development/neon/pgshims/dist/npm/index.js:1539:48) {
+#     at execute (/path/to/index.js:1539:48) {
 #   code: '42883',
 #   sourceError: undefined
 # }
