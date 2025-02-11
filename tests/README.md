@@ -1,8 +1,8 @@
 # Testing notes
 
-- We _must_ test using the esbuild-bundled driver -- the code that's packaged up for npm -- because various shims are inserted only via this process. Importing the driver from `../export` would not test most of the code that it is intended to test.
+- We _must_ test using the esbuild-bundled driver -- the code that's packaged up for npm -- because various shims are inserted only via this process.
 
-- The reason the serverless driver exists is to enable connecting (and connecting speedily) from a variety of platforms. We therefore test on a variety of platforms. The `cli`, `browser`, `cloudflare` and `vercel` subfolders contains these tests.
+- The reason the serverless driver exists is to enable connecting (and connecting speedily) from a variety of platforms. We therefore test on a variety of platforms. The subfolders here contains these tests.
 
 ## Platforms
 
@@ -12,11 +12,11 @@ For convenience, the most extensive tests are run via CLI.
 
 In CI we run these tests:
 
-1. On current Node LTS (Node has native fetch from 18 onwards and native WebSocket from 22 onwards)
-2. On Node 16 (using node-fetch and ws)
-3. On current Node LTS using vitest's `edge-runtime` environment
+1. On current Node LTS (Node has top-level fetch from 18, crypto from 19, WebSocket from 22 onwards)
+2. On current Node LTS using vitest's `edge-runtime` environment
+3. On Node 19, using `ws` for WebSockets
 
-Currently we do not test on Bun, as it is [not supported by vitest](https://github.com/oven-sh/bun/issues/4145), nor on Deno, [for the same reason](https://github.com/denoland/deno/issues/23882).
+Currently we run only a few simple tests with Bun, as it is [not supported by vitest](https://github.com/oven-sh/bun/issues/4145). The same goes for Deno, [for the same reason](https://github.com/denoland/deno/issues/23882).
 
 ### `packages`
 
@@ -40,19 +40,13 @@ Both the `nodejs` and `edge` runtimes are tested.
 
 ### `browser`
 
-We run similar tests in a headless browser, using vitest's support for [playwright](https://playwright.dev/).
-
-We use Firefox as the browser, on the basis that this is a wholly independent JS engine to the test platforms above (which are all V8-based).
+We run similar tests in headless browsers -- Firefox and Chromium -- using vitest's support for [playwright](https://playwright.dev/).
 
 ## Extensions
 
 Possible future extensions to testing:
 
 - Test more scenarios!
-
-- Run the CLI tests on Bun and/or Deno
-
-- Run the browser tests on Chrome/Chromium
 
 - Run tests on AWS Lambda
 

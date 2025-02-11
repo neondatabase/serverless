@@ -1,4 +1,4 @@
-import { Client, Pool, neon } from '../../dist/npm';
+import { Client, Pool, neon } from '../..';
 import type { ExecutionContext } from '@cloudflare/workers-types';
 
 export default {

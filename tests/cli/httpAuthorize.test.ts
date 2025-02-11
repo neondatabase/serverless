@@ -1,12 +1,9 @@
-import { expect, test, beforeAll } from 'vitest';
-import { neon } from '../../dist/npm';
-import { polyfill } from './polyfill';
+import { expect, test } from 'vitest';
+import { neon } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 const CLERK_USER = process.env.VITE_CLERK_USER!;
 const CLERK_SECRET_KEY = process.env.VITE_CLERK_SECRET_KEY!;
-
-beforeAll(polyfill);
 
 async function clerkAPI(method: 'POST' | 'GET', endpoint: string, body?: any) {
   const fetchFn = globalThis.fetch ?? (await import('node-fetch')).default;

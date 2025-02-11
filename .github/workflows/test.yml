@@ -14,32 +14,29 @@ env:
   VITE_CLERK_USER: ${{ vars.VITE_CLERK_USER }}
 
 jobs:
-  test-node-16:
+  test-old:
     runs-on: ubuntu-latest
     steps:
       # setup
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 19
 
       - name: Install package dependencies
-        run: |
-          # strip Prisma, whose preinstall script throws on Node versions less than 18.x
-          sudo apt-get install jq && \
-            mv package.json package.json.old && \
-            jq 'del(.devDependencies.prisma, .devDependencies."@prisma/client")' package.json.old > package.json
-          npm install
+        run: npm install
 
       # goal
-      - name: Run CLI-based tests in Node 16 (no native WebSocket or fetch), node environment
+      - name: Run CLI-based tests in Node 19
         run: npm run test:node
 
-  test-node-lts:
+  test-current:
     runs-on: ubuntu-latest
     steps:
       # setup
       - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: denoland/setup-deno@v2
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -48,5 +45,5 @@ jobs:
         run: npm install
 
       # goal
-      - name: Run all tests in Node LTS
+      - name: Run all tests
         run: npm run test

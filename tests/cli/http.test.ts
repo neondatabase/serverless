@@ -1,15 +1,17 @@
-import { expect, test, vi, beforeAll, assertType } from 'vitest';
+import { expect, test, vi, assertType } from 'vitest';
 import nodeFetch from 'node-fetch';
-import { neon, neonConfig, Pool, type FullQueryResults } from '../../dist/npm';
+import {
+  neon,
+  neonConfig,
+  Pool,
+  type FullQueryResults,
+} from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 import { sampleQueries } from './sampleQueries';
-import { polyfill } from './polyfill';
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 const sql = neon(DATABASE_URL);
 const sqlFull = neon(DATABASE_URL, { fullResults: true });
 const pool = new Pool({ connectionString: DATABASE_URL });
-
-beforeAll(polyfill);
 
 test(
   'http query results match WebSocket query results',

@@ -1,8 +1,0 @@
-{
-  "name": "@neon/serverless",
-  "version": "0.10.4",
-  "exports": "./index.js",
-  "imports": {
-    "pg": "npm:@types/pg@8.11.6"
-  }
-}

@@ -24,6 +24,19 @@ bunx jsr add @neon/serverless
 
 Using TypeScript? No worries: types are included either way.
 
+Note: to install with npm for use by another package that declares a dependency on `pg` (node-postgres), use an alias plus an override, which will look something like this in your `package.json`:
+
+```json
+  ...
+  "dependencies": {
+    "pg": "npm:@neondatabase/serverless@^0.10.4"
+  },
+  "overrides": {
+    "pg": "npm:@neondatabase/serverless@^0.10.4"
+  }
+  ...
+```
+
 ### Configure it
 
 Get your connection string from the [Neon console](https://console.neon.tech/) and set it as an environment variable. Something like:
@@ -123,11 +136,13 @@ Use the `Pool` or `Client` constructors, instead of the functions described abov
 
 Queries using `Pool` and `Client` are carried by WebSockets. There are **two key things** to know about this:
 
-1. **In Node.js** and some other environments, there's no built-in WebSocket support. In these cases, supply a WebSocket constructor function.
+1. **In Node.js v21 and earlier** and some other environments, there's no built-in WebSocket support. In these cases, supply a WebSocket constructor function.
 
 2. **In serverless environments** such as Vercel Edge Functions or Cloudflare Workers, WebSocket connections can't outlive a single request.
 
    That means `Pool` or `Client` objects must be connected, used and closed **within a single request handler**. Don't create them outside a request handler; don't create them in one handler and try to reuse them in another; and to avoid exhausting available connections, don't forget to close them.
+
+   Note: on Cloudflare Workers, consider [using Cloudflare Hyperdrive](https://neon.tech/blog/hyperdrive-neon-faq) instead of this driver.
 
 These points are demonstrated in the examples below.
 

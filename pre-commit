@@ -1,0 +1,4 @@
+#!/usr/bin/env bash 
+# copy me to use Git hook: `cp pre-commit .git/hooks`
+
+npm run format && npm run build

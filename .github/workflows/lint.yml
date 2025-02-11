@@ -17,8 +17,5 @@ jobs:
         run: npm install
 
       # goal
-      - name: Check TypeScript types
-        run: npm run check
-
       - name: Check code formatting
         run: npm run format
