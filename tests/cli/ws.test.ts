@@ -123,6 +123,12 @@ describe.each([
     expect((wsResult as any).viaNeonFetch).toBeUndefined();
   });
 
+  test('client.connect() directly followed by client.end(), with no query', async () => {
+    const client = new WsClient(DB_URL);
+    await client.connect();
+    await client.end();
+  });
+
   test('client.query() with pipelined connect (yes, no) x coalesced writes (yes, no)', async () => {
     const { pipelineConnect, coalesceWrites } = neonConfig;
     try {
