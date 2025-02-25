@@ -1,5 +1,6 @@
 import type { FieldDef, types as PgTypes } from 'pg';
-import { types as defaultTypes, SqlTemplate } from '.';
+import { types as defaultTypes } from '.';
+import { SqlTemplate } from './sqlTemplate';
 
 export type QueryRows<ArrayMode extends boolean> = ArrayMode extends true
   ? any[][]
@@ -73,10 +74,10 @@ export interface HTTPTransactionOptions<
    * Note that `ReadUncommitted` actually gets you `ReadCommitted` in Postgres.
    * */
   isolationLevel?:
-  | 'ReadUncommitted'
-  | 'ReadCommitted'
-  | 'RepeatableRead'
-  | 'Serializable';
+    | 'ReadUncommitted'
+    | 'ReadCommitted'
+    | 'RepeatableRead'
+    | 'Serializable';
 
   /**
    * When `readOnly` is `false`, which is the default, a `READ WRITE` Postgres
@@ -101,7 +102,7 @@ export interface NeonQueryPromise<
   FullResults extends boolean,
   T = any,
 > extends Promise<T> {
-  sqlTemplate: SqlTemplate;
+  query: SqlTemplate | ParameterizedQuery;
   opts?: HTTPQueryOptions<ArrayMode, FullResults>;
 }
 
@@ -127,8 +128,8 @@ export interface NeonQueryFunctionInTransaction<
     ArrayMode,
     FullResults,
     FullResults extends true
-    ? FullQueryResults<ArrayMode>
-    : QueryRows<ArrayMode>
+      ? FullQueryResults<ArrayMode>
+      : QueryRows<ArrayMode>
   >;
 
   // ordinary function usage (*no* options overrides)
@@ -139,8 +140,8 @@ export interface NeonQueryFunctionInTransaction<
     ArrayMode,
     FullResults,
     FullResults extends true
-    ? FullQueryResults<ArrayMode>
-    : QueryRows<ArrayMode>
+      ? FullQueryResults<ArrayMode>
+      : QueryRows<ArrayMode>
   >;
 }
 
@@ -161,8 +162,8 @@ export interface NeonQueryFunction<
     ArrayMode,
     FullResults,
     FullResults extends true
-    ? FullQueryResults<ArrayMode>
-    : QueryRows<ArrayMode>
+      ? FullQueryResults<ArrayMode>
+      : QueryRows<ArrayMode>
   >;
 
   unsafe(rawSQL: string): SqlTemplate;
@@ -179,8 +180,8 @@ export interface NeonQueryFunction<
     ArrayModeOverride,
     FullResultsOverride,
     FullResultsOverride extends true
-    ? FullQueryResults<ArrayModeOverride>
-    : QueryRows<ArrayModeOverride>
+      ? FullQueryResults<ArrayModeOverride>
+      : QueryRows<ArrayModeOverride>
   >;
 
   // ordinary function usage, with options overrides
@@ -238,15 +239,15 @@ export interface NeonQueryFunction<
     queriesOrFn:
       | NeonQueryPromise<ArrayMode, FullResults>[] // not ArrayModeOverride or FullResultsOverride: clamp these values to the current ones
       | ((
-        sql: NeonQueryFunctionInTransaction<
-          ArrayModeOverride,
-          FullResultsOverride
-        >,
-      ) => NeonQueryInTransaction[]),
+          sql: NeonQueryFunctionInTransaction<
+            ArrayModeOverride,
+            FullResultsOverride
+          >,
+        ) => NeonQueryInTransaction[]),
     opts?: HTTPTransactionOptions<ArrayModeOverride, FullResultsOverride>,
   ) => Promise<
     FullResultsOverride extends true
-    ? FullQueryResults<ArrayModeOverride>[]
-    : QueryRows<ArrayModeOverride>[]
+      ? FullQueryResults<ArrayModeOverride>[]
+      : QueryRows<ArrayModeOverride>[]
   >;
 }

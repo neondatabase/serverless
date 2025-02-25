@@ -24,16 +24,15 @@ import type {
   HTTPTransactionOptions,
   NeonQueryPromise,
   NeonQueryFunction,
-  ParameterizedQuery,
   ProcessQueryResultOptions,
+  ParameterizedQuery,
 } from './httpTypes';
+import { SqlTemplate } from './sqlTemplate';
 
-// @ts-ignore -- this isn't officially exported by pg
-import { prepareValue } from 'pg/lib/utils';
 // @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
 
-function encodeBuffersAsBytea(value: unknown): unknown {
+export function encodeBuffersAsBytea(value: unknown): unknown {
   // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
   if (value instanceof Buffer) return '\\x' + toHex(value);
   return value;
@@ -94,32 +93,6 @@ const errorFields = [
   'line',
   'routine',
 ] as const;
-
-export class SqlTemplate {
-  constructor(
-    public strings: ReadonlyArray<string>,
-    public values: any[],
-  ) {}
-
-  compile(query = { query: '', params: [] as any[] }) {
-    const { strings, values } = this;
-    for (let i = 0, len = strings.length; i < len; i++) {
-      query.query += strings[i];
-      if (i < values.length) {
-        const param = values[i];
-        if (param instanceof SqlTemplate) {
-          param.compile(query);
-        } else {
-          const { params } = query;
-          const preparedParam = encodeBuffersAsBytea(prepareValue(param));
-          params.push(preparedParam);
-          query.query += '$' + params.length;
-        }
-      }
-    }
-    return query;
-  }
-}
 
 /**
  * This function returns an async tagged-template function that runs a single
@@ -239,7 +212,7 @@ export function neon<
   ) =>
     createNeonQueryPromise(
       execute,
-      new SqlTemplate([queryWithPlaceholders], params ?? []),
+      { query: queryWithPlaceholders, params: params ?? [] },
       queryOpts,
     );
 
@@ -262,16 +235,17 @@ export function neon<
         throw new Error(txnArgErrMsg);
     });
 
-    const sqlTemplates = queryPromises.map(
-      (queryPromise) => queryPromise.sqlTemplate,
-    );
+    const queries = queryPromises.map((queryPromise) => queryPromise.query);
     const opts = queryPromises.map((queryPromise) => queryPromise.opts ?? {});
-    return execute(sqlTemplates, opts, txnOpts);
+    return execute(queries, opts, txnOpts);
   };
 
   // execute query
   async function execute(
-    sqlTemplate: SqlTemplate | SqlTemplate[],
+    query:
+      | SqlTemplate
+      | ParameterizedQuery
+      | (SqlTemplate | ParameterizedQuery)[],
     allSqlOpts?:
       | HTTPQueryOptions<ArrayMode, FullResults>
       | HTTPQueryOptions<ArrayMode, FullResults>[],
@@ -279,9 +253,15 @@ export function neon<
   ) {
     const { fetchEndpoint, fetchFunction } = Socket;
 
-    const bodyData = Array.isArray(sqlTemplate)
-      ? { queries: sqlTemplate.map((t) => t.compile()) }
-      : sqlTemplate.compile();
+    const bodyData = Array.isArray(query)
+      ? {
+          queries: query.map((t) =>
+            t instanceof SqlTemplate ? t.compile() : t,
+          ),
+        }
+      : query instanceof SqlTemplate
+        ? query.compile()
+        : query;
 
     // --- resolve options to transaction level ---
 
@@ -349,7 +329,7 @@ export function neon<
       headers['Authorization'] = `Bearer ${validAuthToken}`;
     }
 
-    if (Array.isArray(sqlTemplate)) {
+    if (Array.isArray(query)) {
       // only send these headers for batch queries, where they matter
       if (resolvedIsolationLevel !== undefined)
         headers['Neon-Batch-Isolation-Level'] = resolvedIsolationLevel;
@@ -380,7 +360,7 @@ export function neon<
     if (response.ok) {
       const rawResults = (await response.json()) as any;
 
-      if (Array.isArray(sqlTemplate)) {
+      if (Array.isArray(query)) {
         // batch query
         const resultArray = rawResults.results;
         if (!Array.isArray(resultArray))
@@ -433,20 +413,25 @@ function createNeonQueryPromise<
   FullResults extends boolean,
 >(
   execute: (
-    sqlTemplate: SqlTemplate,
-    hqo?: HTTPQueryOptions<ArrayMode, FullResults>,
+    query:
+      | SqlTemplate
+      | ParameterizedQuery
+      | (SqlTemplate | ParameterizedQuery)[],
+    hqo?:
+      | HTTPQueryOptions<ArrayMode, FullResults>
+      | HTTPQueryOptions<ArrayMode, FullResults>[],
   ) => Promise<any>,
-  sqlTemplate: SqlTemplate,
+  query: SqlTemplate | ParameterizedQuery,
   opts?: HTTPQueryOptions<ArrayMode, FullResults>,
 ) {
   return {
     [Symbol.toStringTag]: 'NeonQueryPromise',
-    sqlTemplate,
+    query,
     opts,
     then: (resolve: any, reject: any) =>
-      execute(sqlTemplate, opts).then(resolve, reject),
-    catch: (reject: any) => execute(sqlTemplate, opts).catch(reject),
-    finally: (finallyFn: any) => execute(sqlTemplate, opts).finally(finallyFn),
+      execute(query, opts).then(resolve, reject),
+    catch: (reject: any) => execute(query, opts).catch(reject),
+    finally: (finallyFn: any) => execute(query, opts).finally(finallyFn),
   } as NeonQueryPromise<ArrayMode, FullResults>;
 }
 

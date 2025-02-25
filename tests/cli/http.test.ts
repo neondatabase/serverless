@@ -5,6 +5,7 @@ import {
   neonConfig,
   Pool,
   type FullQueryResults,
+  SqlTemplate,
 } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 import { sampleQueries } from './sampleQueries';
 
@@ -20,7 +21,11 @@ test(
     const client = await pool.connect();
 
     for (const queryPromise of sampleQueries(sqlFull)) {
-      const { query, params } = queryPromise.sqlTemplate.compile();
+      const { query, params } =
+        queryPromise.query instanceof SqlTemplate
+          ? queryPromise.query.compile()
+          : queryPromise.query;
+
       const [httpResult, wsResult] = await Promise.all([
         queryPromise,
         client.query(query, params),

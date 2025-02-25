@@ -23,6 +23,7 @@ import type {
 import { type SocketDefaults } from './shims/net';
 
 export * from './httpQuery';
+export * from './sqlTemplate';
 export type * from './httpTypes';
 
 export { NeonPool as Pool } from './pool';

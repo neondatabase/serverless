@@ -8,6 +8,7 @@ import {
   neonConfig,
   Pool as WsPool,
   Client as WsClient,
+  SqlTemplate,
 } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
 function recursiveTransform(x: any, transform: (x: any) => any) {
@@ -52,7 +53,11 @@ describe.each([
       const sql = neon('postgresql://dummy:dummy@dummy.dummy/dummy'); // the URL is not actually used
 
       for (const queryPromise of sampleQueries(sql)) {
-        const { query, params } = queryPromise.sqlTemplate.compile();
+        const { query, params } =
+          queryPromise.query instanceof SqlTemplate
+            ? queryPromise.query.compile()
+            : queryPromise.query;
+
         const [wsResult, pgResult] = await Promise.all([
           wsClient.query(query, params),
           pgClient.query(query, params),
