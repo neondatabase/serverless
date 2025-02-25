@@ -1251,7 +1251,7 @@ if(!(Array.isArray(P)&&Array.isArray(P.raw)&&Array.isArray(L)))throw new Error("
 tagged-template function: sql`...`, not sql(`...`)");return es(N,new Me(P,L))}a(_,"templateFn"),_.query=
 (P,L,C)=>es(N,new Me([P],L),C),_.unsafe=P=>new Me([P],[]),_.transaction=async(P,L)=>{if(typeof P=="f\
 unction"&&(P=P(_)),!Array.isArray(P))throw new Error(Xi);P.forEach(H=>{if(H[Symbol.toStringTag]!=="N\
-eonQueryPromise")throw new Error(Xi)});let C=P.map(H=>H.parameterizedQuery),S=P.map(H=>H.opts??{});return N(
+eonQueryPromise")throw new Error(Xi)});let C=P.map(H=>H.sqlTemplate),S=P.map(H=>H.opts??{});return N(
 C,S,L)};async function N(P,L,C){let{fetchEndpoint:S,fetchFunction:H}=de,le=Array.isArray(P)?{queries:P.
 map(J=>J.compile())}:P.compile(),q=n??{},ie=e??!1,se=t??!1,oe=i,B=s,G=o;C!==void 0&&(C.fetchOptions!==
 void 0&&(q={...q,...C.fetchOptions}),C.arrayMode!==void 0&&(ie=C.arrayMode),C.fullResults!==void 0&&

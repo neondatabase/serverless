@@ -310,8 +310,6 @@ export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults
      * Custom type parsers. See https://github.com/brianc/node-pg-types.
      */
     types?: typeof types;
-    queryCallback?: (query: ParameterizedQuery) => void;
-    resultCallback?: (query: ParameterizedQuery, result: any, rows: any, opts: any) => void;
 }
 
 export declare interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
@@ -392,7 +390,7 @@ export { MessageConfig }
  * pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
-export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, queryCallback, resultCallback, authToken, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
+export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, authToken, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
 
 export declare interface NeonConfig {
     poolQueryViaFetch: boolean;
@@ -671,7 +669,7 @@ export declare interface NeonQueryInTransaction {
 }
 
 export declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
-    parameterizedQuery: ParameterizedQuery;
+    sqlTemplate: SqlTemplate;
     opts?: HTTPQueryOptions<ArrayMode, FullResults>;
 }
 
@@ -715,8 +713,6 @@ export { PoolConfig }
 export declare interface ProcessQueryResultOptions {
     arrayMode: boolean;
     fullResults: boolean;
-    parameterizedQuery: ParameterizedQuery;
-    resultCallback: HTTPQueryOptions<false, false>['resultCallback'];
     types?: typeof types;
 }
 
@@ -766,6 +762,19 @@ declare interface RootCertsDatabase {
 declare interface RootCertsIndex {
     offsets: number[];
     subjects: Record<string, number>;
+}
+
+export declare class SqlTemplate {
+    strings: ReadonlyArray<string>;
+    values: any[];
+    constructor(strings: ReadonlyArray<string>, values: any[]);
+    compile(query?: {
+        query: string;
+        params: any[];
+    }): {
+        query: string;
+        params: any[];
+    };
 }
 
 export declare function startTls(host: string, rootCertsDatabase: RootCertsDatabase | string, networkRead: (bytes: number) => Promise<Uint8Array | undefined>, networkWrite: (data: Uint8Array) => void, { useSNI, requireServerTlsExtKeyUsage, requireDigitalSigKeyUsage, writePreData, expectPreData, commentPreData }?: {
