@@ -623,7 +623,8 @@ export declare class NeonDbError extends Error {
 
 export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
     (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
-    <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(string: string, params?: any[], opts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>): NeonQueryPromise<ArrayModeOverride, FullResultsOverride, FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>>;
+    unsafe(rawSQL: string): SqlTemplate;
+    query<ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(queryWithPlaceholders: string, params?: any[], queryOpts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>): NeonQueryPromise<ArrayModeOverride, FullResultsOverride, FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>>;
     /**
      * The `transaction()` function allows multiple queries to be submitted (over
      * HTTP) as a single, non-interactive Postgres transaction.

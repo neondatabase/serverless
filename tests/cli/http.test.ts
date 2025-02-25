@@ -20,7 +20,7 @@ test(
     const client = await pool.connect();
 
     for (const queryPromise of sampleQueries(sqlFull)) {
-      const { query, params } = queryPromise.parameterizedQuery;
+      const { query, params } = queryPromise.sqlTemplate.compile();
       const [httpResult, wsResult] = await Promise.all([
         queryPromise,
         client.query(query, params),
@@ -108,7 +108,7 @@ test('options to `neon()` and options on queries', async () => {
   expect(tt.rowAsArray).toBe(true);
 
   // check per-query option overrides
-  const fftt = await sqlff("SELECT 'xyz' AS str", [], {
+  const fftt = await sqlff.query("SELECT 'xyz' AS str", [], {
     arrayMode: true,
     fullResults: true,
   });
@@ -125,7 +125,7 @@ test('options to `neon()` and options on queries', async () => {
   expect(fftt.rowCount).toBe(1);
   expect(fftt.rowAsArray).toBe(true);
 
-  const ttff = await sqltt("SELECT 'xyz' AS str", [], {
+  const ttff = await sqltt.query("SELECT 'xyz' AS str", [], {
     arrayMode: false,
     fullResults: false,
   });
@@ -151,13 +151,13 @@ test('errors match WebSocket query errors', async () => {
   const q = 'SELECT 123 WHERE x';
 
   await Promise.all([
-    expect(sql(q)).rejects.toThrowError('column "x" does not exist'),
+    expect(sql.query(q)).rejects.toThrowError('column "x" does not exist'),
     expect(pool.query(q)).rejects.toThrowError('column "x" does not exist'),
   ]);
 
   // now compare all other properties (`code`, `routine`, `severity`, etc.)
   const [httpErr, wsErr] = (await Promise.all([
-    new Promise((resolve) => sql(q).catch((e: Error) => resolve(e))),
+    new Promise((resolve) => sql.query(q).catch((e: Error) => resolve(e))),
     new Promise((resolve) => pool.query(q).catch((e: Error) => resolve(e))),
   ])) as [any, any];
 
@@ -171,11 +171,11 @@ test('errors match WebSocket query errors', async () => {
 });
 
 test('http queries with too few or too many parameters', async () => {
-  await expect(sql('SELECT $1', [])).rejects.toThrowError(
+  await expect(sql.query('SELECT $1', [])).rejects.toThrowError(
     'bind message supplies 0 parameters',
   );
 
-  await expect(sql('SELECT $1', [1, 2])).rejects.toThrowError(
+  await expect(sql.query('SELECT $1', [1, 2])).rejects.toThrowError(
     'bind message supplies 2 parameters',
   );
 });
@@ -190,7 +190,7 @@ test('timeout aborting an http query', { timeout: 5000 }, async () => {
   const signal = AbortSignal.timeout(250);
 
   await expect(
-    sql('SELECT pg_sleep(2)', [], { fetchOptions: { signal } }),
+    sql.query('SELECT pg_sleep(2)', [], { fetchOptions: { signal } }),
   ).rejects.toThrow('aborted');
 });
 
@@ -204,7 +204,7 @@ test('timeout not aborting an http query', { timeout: 5000 }, async () => {
   const signal = AbortSignal.timeout(2500);
 
   await expect(
-    sql('SELECT pg_sleep(.25)', [], { fetchOptions: { signal } }),
+    sql.query('SELECT pg_sleep(.25)', [], { fetchOptions: { signal } }),
   ).resolves.toStrictEqual([{ pg_sleep: '' }]);
 });
 

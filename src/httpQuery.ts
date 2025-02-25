@@ -234,12 +234,12 @@ export function neon<
 
   templateFn.query = (
     queryWithPlaceholders: string,
-    params: any[],
+    params?: any[],
     queryOpts?: HTTPQueryOptions<ArrayMode, FullResults>,
   ) =>
     createNeonQueryPromise(
       execute,
-      new SqlTemplate([queryWithPlaceholders], params),
+      new SqlTemplate([queryWithPlaceholders], params ?? []),
       queryOpts,
     );
 

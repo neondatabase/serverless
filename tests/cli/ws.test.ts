@@ -52,7 +52,7 @@ describe.each([
       const sql = neon('postgresql://dummy:dummy@dummy.dummy/dummy'); // the URL is not actually used
 
       for (const queryPromise of sampleQueries(sql)) {
-        const { query, params } = queryPromise.parameterizedQuery;
+        const { query, params } = queryPromise.sqlTemplate.compile();
         const [wsResult, pgResult] = await Promise.all([
           wsClient.query(query, params),
           pgClient.query(query, params),
