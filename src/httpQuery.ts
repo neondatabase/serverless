@@ -95,6 +95,32 @@ const errorFields = [
   'routine',
 ] as const;
 
+export class SqlTemplate {
+  constructor(
+    public strings: ReadonlyArray<string>,
+    public values: any[],
+  ) {}
+
+  compile(query = { query: '', params: [] as any[] }) {
+    const { strings, values } = this;
+    for (let i = 0, len = strings.length; i < len; i++) {
+      query.query += strings[i];
+      if (i < values.length) {
+        const param = values[i];
+        if (param instanceof SqlTemplate) {
+          param.compile(query);
+        } else {
+          const { params } = query;
+          const preparedParam = encodeBuffersAsBytea(prepareValue(param));
+          params.push(preparedParam);
+          query.query += '$' + params.length;
+        }
+      }
+    }
+    return query;
+  }
+}
+
 /**
  * This function returns an async tagged-template function that runs a single
  * SQL query (no session or transactions) with low latency over https. Support
@@ -160,8 +186,6 @@ export function neon<
     isolationLevel: neonOptIsolationLevel,
     readOnly: neonOptReadOnly,
     deferrable: neonOptDeferrable,
-    queryCallback,
-    resultCallback,
     authToken,
   }: HTTPTransactionOptions<ArrayMode, FullResults> = {},
 ): NeonQueryFunction<ArrayMode, FullResults> {
@@ -194,68 +218,60 @@ export function neon<
     );
   }
 
-  // resolve query, params and opts
-  function resolve(strings: TemplateStringsArray | string, ...params: any[]) {
-    let query;
-    let queryOpts: HTTPQueryOptions<ArrayMode, FullResults> | undefined;
+  function templateFn(strings: TemplateStringsArray, ...params: any[]) {
+    const calledAsTemplateFn =
+      Array.isArray(strings) &&
+      Array.isArray(strings.raw) &&
+      Array.isArray(params);
 
-    if (typeof strings === 'string') {
-      // ordinary (non tagged-template) usage
-      query = strings;
-
-      // options passed here override options passed to neon
-      queryOpts = params[1]; // the third argument, which is the second of the ...rest arguments
-      params = params[0] ?? []; // the second argument, which is the first of the ...rest arguments
-    } else {
-      // tagged-template usage
-      query = '';
-      for (let i = 0; i < strings.length; i++) {
-        query += strings[i];
-        if (i < params.length) query += '$' + (i + 1);
-      }
+    if (!calledAsTemplateFn) {
+      throw new Error(
+        'Must be called as a tagged-template function: sql`...`, not sql(`...`)',
+      );
     }
-
-    // prepare the query params to make timezones and array types consistent with ordinary node-postgres/pg
-    params = params.map((param) => encodeBuffersAsBytea(prepareValue(param)));
-
-    const parameterizedQuery = { query, params };
-    if (queryCallback) queryCallback(parameterizedQuery);
-
-    return createNeonQueryPromise(execute, parameterizedQuery, queryOpts);
+    return createNeonQueryPromise(execute, new SqlTemplate(strings, params));
   }
 
-  resolve.transaction = async (
-    queries:
+  templateFn.query = (
+    queryWithPlaceholders: string,
+    params: any[],
+    queryOpts?: HTTPQueryOptions<ArrayMode, FullResults>,
+  ) =>
+    createNeonQueryPromise(
+      execute,
+      new SqlTemplate([queryWithPlaceholders], params),
+      queryOpts,
+    );
+
+  templateFn.unsafe = (rawSQL: string) => new SqlTemplate([rawSQL], []);
+
+  templateFn.transaction = async (
+    queryPromises:
       | NeonQueryPromise<ArrayMode, FullResults>[]
       | ((
-          sql: (
-            strings: TemplateStringsArray | string,
-            ...params: any[]
-          ) => NeonQueryPromise<ArrayMode, FullResults>,
+          sql: typeof templateFn,
         ) => NeonQueryPromise<ArrayMode, FullResults>[]),
     txnOpts?: HTTPTransactionOptions<ArrayMode, FullResults>,
   ) => {
-    if (typeof queries === 'function') queries = queries(resolve);
+    if (typeof queryPromises === 'function')
+      queryPromises = queryPromises(templateFn);
 
-    if (!Array.isArray(queries)) throw new Error(txnArgErrMsg);
-    queries.forEach((query) => {
-      if (query[Symbol.toStringTag] !== 'NeonQueryPromise')
+    if (!Array.isArray(queryPromises)) throw new Error(txnArgErrMsg);
+    queryPromises.forEach((queryPromise) => {
+      if (queryPromise[Symbol.toStringTag] !== 'NeonQueryPromise')
         throw new Error(txnArgErrMsg);
     });
 
-    const parameterizedQueries = queries.map(
-      (query) =>
-        (query as NeonQueryPromise<ArrayMode, FullResults>).parameterizedQuery,
+    const sqlTemplates = queryPromises.map(
+      (queryPromise) => queryPromise.sqlTemplate,
     );
-    const opts = queries.map(
-      (query) => (query as NeonQueryPromise<ArrayMode, FullResults>).opts ?? {},
-    );
-    return execute(parameterizedQueries, opts, txnOpts);
+    const opts = queryPromises.map((queryPromise) => queryPromise.opts ?? {});
+    return execute(sqlTemplates, opts, txnOpts);
   };
 
   // execute query
   async function execute(
-    parameterizedQuery: ParameterizedQuery | ParameterizedQuery[],
+    sqlTemplate: SqlTemplate | SqlTemplate[],
     allSqlOpts?:
       | HTTPQueryOptions<ArrayMode, FullResults>
       | HTTPQueryOptions<ArrayMode, FullResults>[],
@@ -263,9 +279,9 @@ export function neon<
   ) {
     const { fetchEndpoint, fetchFunction } = Socket;
 
-    const bodyData = Array.isArray(parameterizedQuery)
-      ? { queries: parameterizedQuery }
-      : parameterizedQuery;
+    const bodyData = Array.isArray(sqlTemplate)
+      ? { queries: sqlTemplate.map((t) => t.compile()) }
+      : sqlTemplate.compile();
 
     // --- resolve options to transaction level ---
 
@@ -333,7 +349,7 @@ export function neon<
       headers['Authorization'] = `Bearer ${validAuthToken}`;
     }
 
-    if (Array.isArray(parameterizedQuery)) {
+    if (Array.isArray(sqlTemplate)) {
       // only send these headers for batch queries, where they matter
       if (resolvedIsolationLevel !== undefined)
         headers['Neon-Batch-Isolation-Level'] = resolvedIsolationLevel;
@@ -364,7 +380,7 @@ export function neon<
     if (response.ok) {
       const rawResults = (await response.json()) as any;
 
-      if (Array.isArray(parameterizedQuery)) {
+      if (Array.isArray(sqlTemplate)) {
         // batch query
         const resultArray = rawResults.results;
         if (!Array.isArray(resultArray))
@@ -379,8 +395,6 @@ export function neon<
           return processQueryResult(result, {
             arrayMode,
             fullResults,
-            parameterizedQuery: parameterizedQuery[i],
-            resultCallback,
             types: sqlOpts.types,
           });
         });
@@ -393,8 +407,6 @@ export function neon<
         return processQueryResult(rawResults, {
           arrayMode,
           fullResults,
-          parameterizedQuery,
-          resultCallback,
           types: sqlOpts.types,
         });
       }
@@ -413,7 +425,7 @@ export function neon<
     }
   }
 
-  return resolve as any;
+  return templateFn as any; // actual type is specified in function signature above
 }
 
 function createNeonQueryPromise<
@@ -421,33 +433,26 @@ function createNeonQueryPromise<
   FullResults extends boolean,
 >(
   execute: (
-    pq: ParameterizedQuery,
+    sqlTemplate: SqlTemplate,
     hqo?: HTTPQueryOptions<ArrayMode, FullResults>,
   ) => Promise<any>,
-  parameterizedQuery: ParameterizedQuery,
+  sqlTemplate: SqlTemplate,
   opts?: HTTPQueryOptions<ArrayMode, FullResults>,
 ) {
   return {
     [Symbol.toStringTag]: 'NeonQueryPromise',
-    parameterizedQuery,
+    sqlTemplate,
     opts,
     then: (resolve: any, reject: any) =>
-      execute(parameterizedQuery, opts).then(resolve, reject),
-    catch: (reject: any) => execute(parameterizedQuery, opts).catch(reject),
-    finally: (finallyFn: any) =>
-      execute(parameterizedQuery, opts).finally(finallyFn),
+      execute(sqlTemplate, opts).then(resolve, reject),
+    catch: (reject: any) => execute(sqlTemplate, opts).catch(reject),
+    finally: (finallyFn: any) => execute(sqlTemplate, opts).finally(finallyFn),
   } as NeonQueryPromise<ArrayMode, FullResults>;
 }
 
 function processQueryResult(
   rawResults: any,
-  {
-    arrayMode,
-    fullResults,
-    parameterizedQuery,
-    resultCallback,
-    types: customTypes,
-  }: ProcessQueryResultOptions,
+  { arrayMode, fullResults, types: customTypes }: ProcessQueryResultOptions,
 ) {
   const types = new TypeOverrides(customTypes);
   const colNames = rawResults.fields.map((field: any) => field.name);
@@ -473,12 +478,6 @@ function processQueryResult(
             ]),
           );
         });
-
-  if (resultCallback)
-    resultCallback(parameterizedQuery, rawResults, rows, {
-      arrayMode,
-      fullResults,
-    });
 
   if (fullResults) {
     rawResults.viaNeonFetch = true;

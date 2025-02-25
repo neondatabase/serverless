@@ -1,5 +1,5 @@
 import type { FieldDef, types as PgTypes } from 'pg';
-import { types as defaultTypes } from '.';
+import { types as defaultTypes, SqlTemplate } from '.';
 
 export type QueryRows<ArrayMode extends boolean> = ArrayMode extends true
   ? any[][]
@@ -62,15 +62,6 @@ export interface HTTPQueryOptions<
    * Custom type parsers. See https://github.com/brianc/node-pg-types.
    */
   types?: typeof PgTypes;
-
-  queryCallback?: (query: ParameterizedQuery) => void;
-
-  resultCallback?: (
-    query: ParameterizedQuery,
-    result: any,
-    rows: any,
-    opts: any,
-  ) => void;
 }
 
 export interface HTTPTransactionOptions<
@@ -110,15 +101,13 @@ export interface NeonQueryPromise<
   FullResults extends boolean,
   T = any,
 > extends Promise<T> {
-  parameterizedQuery: ParameterizedQuery;
+  sqlTemplate: SqlTemplate;
   opts?: HTTPQueryOptions<ArrayMode, FullResults>;
 }
 
 export interface ProcessQueryResultOptions {
   arrayMode: boolean;
   fullResults: boolean;
-  parameterizedQuery: ParameterizedQuery;
-  resultCallback: HTTPQueryOptions<false, false>['resultCallback'];
   types?: typeof defaultTypes;
 }
 
