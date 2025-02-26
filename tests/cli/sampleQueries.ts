@@ -47,10 +47,20 @@ export const sampleQueries = (sql: NeonQueryFunction<any, any>) => [
   sql`SELECT ${[[2], [4]]} AS arrnumnested_uncast`,
   sql`SELECT ${now} AS timenow_uncast`,
   sql`SELECT ${now}::timestamp AS timestampnow`,
-  sql`SELECT ${new Uint8Array([65, 66, 67])} AS bytea`,
-  sql`SELECT ${new Uint8Array(65536).fill(128)} AS bytea`,
-  sql`SELECT ${Buffer.from([65, 66, 67])} AS bytea`,
+  sql`SELECT ${new Uint8Array([65, 66, 67])} AS bytea_u8_a`,
+  sql`SELECT ${new Uint8Array(65536).fill(128)} AS bytea_u8_b`,
+  sql`SELECT ${Buffer.from([65, 66, 67])} AS bytea_buf`,
   sql`SELECT ${1} AS one, ${sql.unsafe("'raw'")} AS raw, ${'x'} AS x, ${now} AS date`, // multiple types plus raw SQL
+
+  // composition
+  sql`
+    SELECT 
+      ${123} AS z, ${sql.unsafe('"generate_series"')}
+      ${sql`FROM generate_series(${1}::int, ${sql`4`})`}
+    UNION SELECT 
+      ${789} AS z, ${sql.unsafe('x')}
+      ${sql`FROM generate_series(${sql`${1}::int`}, ${3}::int) AS x`}
+    ${sql`ORDER BY ${sql`generate_series`}, z LIMIT ${3}`}`,
 
   // query function
   sql.query('SELECT $1::timestamp AS timestampnow', [now]),

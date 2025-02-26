@@ -31,12 +31,8 @@ import { SqlTemplate } from './sqlTemplate';
 
 // @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
-
-export function encodeBuffersAsBytea(value: unknown): unknown {
-  // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
-  if (value instanceof Buffer) return '\\x' + toHex(value);
-  return value;
-}
+// @ts-ignore -- this isn't officially exported by pg
+import { prepareValue } from 'pg/lib/utils';
 
 export class NeonDbError extends Error {
   override name = 'NeonDbError' as const;
@@ -93,6 +89,22 @@ const errorFields = [
   'line',
   'routine',
 ] as const;
+
+function encodeBuffersAsBytea(value: unknown): unknown {
+  // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
+  if (value instanceof Buffer) return '\\x' + toHex(value);
+  return value;
+}
+
+function prepareQuery(q: SqlTemplate | ParameterizedQuery) {
+  const { query, params } = q instanceof SqlTemplate ? q.compile() : q;
+  const result = {
+    query,
+    params: params.map((param) => encodeBuffersAsBytea(prepareValue(param))),
+  };
+  console.log(result);
+  return result;
+}
 
 /**
  * This function returns an async tagged-template function that runs a single
@@ -254,14 +266,8 @@ export function neon<
     const { fetchEndpoint, fetchFunction } = Socket;
 
     const bodyData = Array.isArray(query)
-      ? {
-          queries: query.map((t) =>
-            t instanceof SqlTemplate ? t.compile() : t,
-          ),
-        }
-      : query instanceof SqlTemplate
-        ? query.compile()
-        : query;
+      ? { queries: query.map((q) => prepareQuery(q)) }
+      : prepareQuery(query);
 
     // --- resolve options to transaction level ---
 

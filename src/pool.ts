@@ -117,9 +117,10 @@ export class NeonPool extends Pool {
         arrayMode: config.rowMode === 'array',
       });
 
-      sql(queryText, queryValues, {
-        types: config.types ?? this.options?.types,
-      })
+      sql
+        .query(queryText, queryValues, {
+          types: config.types ?? this.options?.types,
+        })
         .then((result) => cb(undefined, result))
         .catch((err) => cb(err));
     } catch (err) {

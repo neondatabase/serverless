@@ -255,8 +255,6 @@ export { defaults }
 
 declare type DistinguishedName = Record<string, string | string[]>;
 
-export declare function encodeBuffersAsBytea(value: unknown): unknown;
-
 export { Events }
 
 export { ExecuteConfig }
@@ -664,11 +662,11 @@ export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResult
 
 export declare interface NeonQueryFunctionInTransaction<ArrayMode extends boolean, FullResults extends boolean> {
     (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
-    (string: string, params?: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+    query(queryWithPlaceholders: string, params?: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
 }
 
 export declare interface NeonQueryInTransaction {
-    parameterizedQuery: ParameterizedQuery;
+    query: SqlTemplate | ParameterizedQuery;
 }
 
 export declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {

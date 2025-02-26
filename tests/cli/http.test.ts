@@ -4,8 +4,8 @@ import {
   neon,
   neonConfig,
   Pool,
-  type FullQueryResults,
   SqlTemplate,
+  type FullQueryResults,
 } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 import { sampleQueries } from './sampleQueries';
 
@@ -50,6 +50,31 @@ test(
     client.release();
   },
 );
+
+test('composable SQL and raw SQL', async () => {
+  const q = sql`
+    SELECT 
+      ${123} AS z, ${sql.unsafe('"generate_series"')}
+      ${sql`FROM generate_series(${1}::int, ${sql`4`})`}
+    UNION SELECT 
+      ${789} AS z, ${sql.unsafe('x')}
+      ${sql`FROM generate_series(${sql`${1}::int`}, ${3}::int) AS x`}
+    ${sql`ORDER BY generate_series, z LIMIT ${3}`}
+  `;
+
+  const compiled = (q.query as SqlTemplate).compile();
+  expect(compiled.query.replace(/\s+/g, ' ').trim()).toEqual(
+    'SELECT $1 AS z, "generate_series" FROM generate_series($2::int, 4) UNION SELECT $3 AS z, x FROM generate_series($4::int, $5::int) AS x ORDER BY generate_series, z LIMIT $6',
+  );
+  expect(compiled.params).toStrictEqual([123, 1, 789, 1, 3, 3]);
+
+  const result = await q;
+  expect(result).toStrictEqual([
+    { generate_series: 1, z: '123' },
+    { generate_series: 1, z: '789' },
+    { generate_series: 2, z: '123' },
+  ]);
+});
 
 interface FieldDef {
   name: string;

@@ -132,9 +132,9 @@ export interface NeonQueryFunctionInTransaction<
       : QueryRows<ArrayMode>
   >;
 
-  // ordinary function usage (*no* options overrides)
-  (
-    string: string,
+  // traditional query function (*no* options overrides)
+  query(
+    queryWithPlaceholders: string,
     params?: any[],
   ): NeonQueryPromise<
     ArrayMode,
@@ -143,11 +143,13 @@ export interface NeonQueryFunctionInTransaction<
       ? FullQueryResults<ArrayMode>
       : QueryRows<ArrayMode>
   >;
+
+  // no transaction function
 }
 
 export interface NeonQueryInTransaction {
-  // this is a simplified form of query, which has only a `parameterizedQuery` (no `opts` and not a `Promise`)
-  parameterizedQuery: ParameterizedQuery;
+  // this is a simplified form of NeonQueryPromise, which has only a `parameterizedQuery` (no `opts` and not a `Promise`)
+  query: SqlTemplate | ParameterizedQuery;
 }
 
 export interface NeonQueryFunction<
@@ -183,22 +185,6 @@ export interface NeonQueryFunction<
       ? FullQueryResults<ArrayModeOverride>
       : QueryRows<ArrayModeOverride>
   >;
-
-  // ordinary function usage, with options overrides
-  // <
-  //   ArrayModeOverride extends boolean = ArrayMode,
-  //   FullResultsOverride extends boolean = FullResults,
-  // >(
-  //   string: string,
-  //   params?: any[],
-  //   opts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>,
-  // ): NeonQueryPromise<
-  //   ArrayModeOverride,
-  //   FullResultsOverride,
-  //   FullResultsOverride extends true
-  //     ? FullQueryResults<ArrayModeOverride>
-  //     : QueryRows<ArrayModeOverride>
-  // >;
 
   /**
    * The `transaction()` function allows multiple queries to be submitted (over

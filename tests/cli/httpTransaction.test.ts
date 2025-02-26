@@ -94,7 +94,7 @@ test('option setting on individual queries within a batch (unsupported by types)
   const [[a], [b]] = await sql.transaction((txn) => [
     txn`SELECT ${1}::int AS "batchInt"`,
     // @ts-expect-error this works but is unsupported by the TS types
-    txn('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: true }),
+    txn.query('SELECT $1 AS "batchStr"', ['hello'], { arrayMode: true }),
   ]);
   expect(a.batchInt).toBe(1);
   expect(b[0]).toBe('hello');
