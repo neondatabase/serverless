@@ -221,9 +221,9 @@ export declare interface Client {
  * https://node-postgres.com/apis/client
  */
 export declare class Client extends Client_2 {
-    config: any;
+    config?: (string | ClientConfig) | undefined;
     get neonConfig(): neonConfig;
-    constructor(config: any);
+    constructor(config?: (string | ClientConfig) | undefined);
     connect(): Promise<void>;
     connect(callback: (err?: Error) => void): void;
     _handleAuthSASLContinue(msg: any): Promise<void>;
@@ -694,6 +694,8 @@ export declare interface ParameterizedQuery {
 
 export declare interface Pool {
     Promise: typeof Promise;
+    connect(): Promise<PoolClient>;
+    connect(callback: (err: Error | undefined, client: PoolClient | undefined, done: (release?: any) => void) => void): void;
 }
 
 /**
