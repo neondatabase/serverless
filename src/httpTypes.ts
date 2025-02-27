@@ -1,6 +1,7 @@
 import type { FieldDef, types as PgTypes } from 'pg';
 import { types as defaultTypes } from '.';
-import { SqlTemplate } from './sqlTemplate';
+import type { NeonQueryPromise } from './httpQuery';
+import type { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
 
 export type QueryRows<ArrayMode extends boolean> = ArrayMode extends true
   ? any[][]
@@ -97,14 +98,14 @@ export interface HTTPTransactionOptions<
   deferrable?: boolean;
 }
 
-export interface NeonQueryPromise<
-  ArrayMode extends boolean,
-  FullResults extends boolean,
-  T = any,
-> extends Promise<T> {
-  query: SqlTemplate | ParameterizedQuery;
-  opts?: HTTPQueryOptions<ArrayMode, FullResults>;
-}
+// export interface NeonQueryPromise<
+//   ArrayMode extends boolean,
+//   FullResults extends boolean,
+//   T = any,
+// > extends Promise<T> {
+//   query: SqlTemplate | ParameterizedQuery;
+//   opts?: HTTPQueryOptions<ArrayMode, FullResults>;
+// }
 
 export interface ProcessQueryResultOptions {
   arrayMode: boolean;
@@ -144,12 +145,14 @@ export interface NeonQueryFunctionInTransaction<
       : QueryRows<ArrayMode>
   >;
 
+  unsafe(rawSQL: string): UnsafeRawSql;
+
   // no transaction function
 }
 
 export interface NeonQueryInTransaction {
-  // this is a simplified form of NeonQueryPromise, which has only a `parameterizedQuery` (no `opts` and not a `Promise`)
-  query: SqlTemplate | ParameterizedQuery;
+  // this is a simplified form of NeonQueryPromise, which has only `queryData` (no `opts` and not a `Promise`)
+  queryData: SqlTemplate | ParameterizedQuery;
 }
 
 export interface NeonQueryFunction<
@@ -168,8 +171,6 @@ export interface NeonQueryFunction<
       : QueryRows<ArrayMode>
   >;
 
-  unsafe(rawSQL: string): SqlTemplate;
-
   // traditional query function with options
   query<
     ArrayModeOverride extends boolean = ArrayMode,
@@ -185,6 +186,8 @@ export interface NeonQueryFunction<
       ? FullQueryResults<ArrayModeOverride>
       : QueryRows<ArrayModeOverride>
   >;
+
+  unsafe(rawSQL: string): UnsafeRawSql;
 
   /**
    * The `transaction()` function allows multiple queries to be submitted (over

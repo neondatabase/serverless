@@ -623,8 +623,8 @@ export declare class NeonDbError extends Error {
 
 export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
     (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
-    unsafe(rawSQL: string): SqlTemplate;
     query<ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(queryWithPlaceholders: string, params?: any[], queryOpts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>): NeonQueryPromise<ArrayModeOverride, FullResultsOverride, FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>>;
+    unsafe(rawSQL: string): UnsafeRawSql;
     /**
      * The `transaction()` function allows multiple queries to be submitted (over
      * HTTP) as a single, non-interactive Postgres transaction.
@@ -663,15 +663,24 @@ export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResult
 export declare interface NeonQueryFunctionInTransaction<ArrayMode extends boolean, FullResults extends boolean> {
     (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
     query(queryWithPlaceholders: string, params?: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+    unsafe(rawSQL: string): UnsafeRawSql;
 }
 
 export declare interface NeonQueryInTransaction {
-    query: SqlTemplate | ParameterizedQuery;
+    queryData: SqlTemplate | ParameterizedQuery;
 }
 
 export declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
-    query: SqlTemplate | ParameterizedQuery;
-    opts?: HTTPQueryOptions<ArrayMode, FullResults>;
+}
+
+export declare class NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> {
+    execute: (queryData: SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[], opts?: HTTPQueryOptions<ArrayMode, FullResults> | HTTPQueryOptions<ArrayMode, FullResults>[]) => Promise<T>;
+    queryData: SqlTemplate | ParameterizedQuery;
+    opts?: HTTPQueryOptions<ArrayMode, FullResults> | undefined;
+    constructor(execute: (queryData: SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[], opts?: HTTPQueryOptions<ArrayMode, FullResults> | HTTPQueryOptions<ArrayMode, FullResults>[]) => Promise<T>, queryData: SqlTemplate | ParameterizedQuery, opts?: HTTPQueryOptions<ArrayMode, FullResults> | undefined);
+    then<TResult1 = T, TResult2 = never>(resolve?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, reject?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    catch<TResult = never>(reject?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    finally(finallyFn?: (() => void) | undefined | null): Promise<T>;
 }
 
 export { Notification }
@@ -769,7 +778,7 @@ export declare class SqlTemplate {
     strings: ReadonlyArray<string>;
     values: any[];
     constructor(strings: ReadonlyArray<string>, values: any[]);
-    compile(query?: {
+    toParameterizedQuery(result?: {
         query: string;
         params: any[];
     }): {
@@ -805,6 +814,11 @@ export declare class TrustedCert extends Cert {
 }
 
 export { types }
+
+export declare class UnsafeRawSql {
+    sql: string;
+    constructor(sql: string);
+}
 
 export declare interface WebSocketConstructor {
     new (...args: any[]): WebSocketLike;

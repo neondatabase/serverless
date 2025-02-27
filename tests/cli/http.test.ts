@@ -22,9 +22,9 @@ test(
 
     for (const queryPromise of sampleQueries(sqlFull)) {
       const { query, params } =
-        queryPromise.query instanceof SqlTemplate
-          ? queryPromise.query.compile()
-          : queryPromise.query;
+        queryPromise.queryData instanceof SqlTemplate
+          ? queryPromise.queryData.toParameterizedQuery()
+          : queryPromise.queryData;
 
       const [httpResult, wsResult] = await Promise.all([
         queryPromise,
@@ -62,7 +62,7 @@ test('composable SQL and raw SQL', async () => {
     ${sql`ORDER BY generate_series, z LIMIT ${3}`}
   `;
 
-  const compiled = (q.query as SqlTemplate).compile();
+  const compiled = (q.queryData as SqlTemplate).toParameterizedQuery();
   expect(compiled.query.replace(/\s+/g, ' ').trim()).toEqual(
     'SELECT $1 AS z, "generate_series" FROM generate_series($2::int, 4) UNION SELECT $3 AS z, x FROM generate_series($4::int, $5::int) AS x ORDER BY generate_series, z LIMIT $6',
   );

@@ -54,9 +54,9 @@ describe.each([
 
       for (const queryPromise of sampleQueries(sql)) {
         const { query, params } =
-          queryPromise.query instanceof SqlTemplate
-            ? queryPromise.query.compile()
-            : queryPromise.query;
+          queryPromise.queryData instanceof SqlTemplate
+            ? queryPromise.queryData.toParameterizedQuery()
+            : queryPromise.queryData;
 
         const [wsResult, pgResult] = await Promise.all([
           wsClient.query(query, params),

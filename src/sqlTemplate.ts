@@ -1,29 +1,38 @@
+import { NeonQueryPromise } from './httpQuery';
+
 export class SqlTemplate {
   constructor(
     public strings: ReadonlyArray<string>,
     public values: any[],
   ) {}
 
-  compile(query = { query: '', params: [] as any[] }) {
+  toParameterizedQuery(result = { query: '', params: [] as any[] }) {
     const { strings, values } = this;
 
     for (let i = 0, len = strings.length; i < len; i++) {
-      query.query += strings[i];
+      result.query += strings[i];
       if (i < values.length) {
-        const param = values[i];
+        const value = values[i];
 
-        if (param instanceof SqlTemplate) {
-          param.compile(query); // from sql.unsafe()
-        } else if (param && param[Symbol.toStringTag] === 'NeonQueryPromise') {
-          if (param.query instanceof SqlTemplate) param.query.compile(query);
-          else throw new Error('Only sql`...` template queries are composable');
+        if (value instanceof UnsafeRawSql) {
+          result.query += value.sql;
+        } else if (value instanceof NeonQueryPromise) {
+          if (value.queryData instanceof SqlTemplate)
+            value.queryData.toParameterizedQuery(result);
+          else if (value.queryData.params?.length)
+            throw new Error('This query is not composable');
+          else result.query += value.queryData.query;
         } else {
-          const { params } = query;
-          params.push(param);
-          query.query += '$' + params.length;
+          const { params } = result;
+          params.push(value);
+          result.query += '$' + params.length;
         }
       }
     }
-    return query;
+    return result;
   }
+}
+
+export class UnsafeRawSql {
+  constructor(public sql: string) {}
 }
