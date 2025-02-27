@@ -1231,8 +1231,9 @@ typeof r.toHex=="function"?r.toHex():Sa(r,e)}a(xi,"toHex");p();var gt=class gt{c
 let{strings:t,values:n}=this;for(let i=0,s=t.length;i<s;i++)if(e.query+=t[i],i<n.length){let o=n[i];
 if(o instanceof $e)e.query+=o.sql;else if(o instanceof Ae)if(o.queryData instanceof gt)o.queryData.toParameterizedQuery(
 e);else{if(o.queryData.params?.length)throw new Error("This query is not composable");e.query+=o.queryData.
-query}else{let{params:u}=e;u.push(o),e.query+="$"+u.length}}return e}};a(gt,"SqlTemplate");var Ge=gt,
-Yt=class Yt{constructor(e){this.sql=e}};a(Yt,"UnsafeRawSql");var $e=Yt;var ss=xe(St()),os=xe(rt());var At=class At extends Error{constructor(t){super(t);E(this,"name","NeonDbError");E(this,"severity");
+query}else{let{params:u}=e;u.push(o),e.query+="$"+u.length,(o instanceof d||ArrayBuffer.isView(o))&&
+(e.query+="::bytea")}}return e}};a(gt,"SqlTemplate");var Ge=gt,Yt=class Yt{constructor(e){this.sql=e}};
+a(Yt,"UnsafeRawSql");var $e=Yt;var ss=xe(St()),os=xe(rt());var At=class At extends Error{constructor(t){super(t);E(this,"name","NeonDbError");E(this,"severity");
 E(this,"code");E(this,"detail");E(this,"hint");E(this,"position");E(this,"internalPosition");E(this,
 "internalQuery");E(this,"where");E(this,"schema");E(this,"table");E(this,"column");E(this,"dataType");
 E(this,"constraint");E(this,"file");E(this,"line");E(this,"routine");E(this,"sourceError");"captureS\

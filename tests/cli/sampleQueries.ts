@@ -50,6 +50,21 @@ export const sampleQueries = (sql: NeonQueryFunction<any, any>) => [
   sql`SELECT ${now}::timestamp AS timestampnow`,
   sql`SELECT ${1} AS one, ${sql.unsafe("'raw'")} AS raw, ${'x'} AS x, ${now} AS date`, // multiple types plus raw SQL
 
+  // binary data with cast to bytea
+  sql`SELECT ${new Uint8Array([65, 66, 67])}::bytea AS bytea1`,
+  sql`SELECT ${new Uint8Array(65536).fill(128)}::bytea AS bytea2`,
+  sql`SELECT ${Buffer.from([65, 66, 67])}::bytea AS bytea3`,
+
+  // binary data with cast to text
+  sql`SELECT ${new Uint8Array([65, 66, 67])}::text AS text1`,
+  sql`SELECT ${new Uint8Array(65536).fill(128)}::text AS text2`,
+  sql`SELECT ${Buffer.from([65, 66, 67])}::text AS text3`,
+
+  // binary data without cast
+  sql`SELECT ${new Uint8Array([65, 66, 67])} AS bytea`,
+  sql`SELECT ${new Uint8Array(65536).fill(128)} AS bytea`,
+  sql`SELECT ${Buffer.from([65, 66, 67])} AS bytea`,
+
   // composition
   sql`
     SELECT 
@@ -60,14 +75,12 @@ export const sampleQueries = (sql: NeonQueryFunction<any, any>) => [
       ${sql`FROM generate_series(${sql`${1}::int`}, ${3}::int) AS x`}
     ${sql`ORDER BY ${sql`generate_series`}, z LIMIT ${3}`}`,
 
-  // query function
+  // sql.query function
   sql.query('SELECT $1::timestamp AS timestampnow', [now]),
   sql.query("SELECT $1 || ' ' || $2 AS greeting", ['hello', 'world']),
   sql.query('SELECT 123 AS num'),
   sql.query('SELECT 123 AS num', []),
 
-  // note: these would fail and are tested separately
-  // sql`SELECT ${new Uint8Array([65, 66, 67])} AS bytea`,
-  // sql`SELECT ${new Uint8Array(65536).fill(128)} AS bytea`,
-  // sql`SELECT ${Buffer.from([65, 66, 67])} AS bytea`,
+  // sql.query function including binary data without cast: this would fail and is tested separately
+  // sql.query('SELECT $1 AS bytea', [new Uint8Array([65, 66, 67])]),
 ];

@@ -43,7 +43,6 @@ test(
         fields: wsResult.fields.map((f) => ({ ...f })),
         viaNeonFetch: true,
       };
-
       expect(httpResultProcessed).toStrictEqual(wsResultProcessed);
     }
 
@@ -51,12 +50,25 @@ test(
   },
 );
 
-test('composable SQL and raw SQL', async () => {
+test(// unfortunately, using hex-escaped strings for binary data doesn't work the
+// same as sending raw binary data if Postgres can't tell it's binary data
+// -- if this started unexpectedly failing, it might be a good thing
+'sql.query() http results for uncast binary data (ideally we want this test to fail)', async () => {
+  const abc = await sql.query('SELECT $1 AS bytea', [
+    new Uint8Array([65, 66, 67]),
+  ]);
+  // over TCP or WebSockets or using sql`...`, this would be { "bytea": "ABC" }
+  expect(abc).toStrictEqual([{ bytea: '\\x414243' }]);
+});
+
+test('composable SQL and unsafe raw SQL', async () => {
   const q = sql`
     SELECT 
+      ${sql.query('0 AS n')},
       ${123} AS z, ${sql.unsafe('"generate_series"')}
       ${sql`FROM generate_series(${1}::int, ${sql`4`})`}
-    UNION SELECT 
+    UNION SELECT
+      ${sql.query('1 AS n', [])},
       ${789} AS z, ${sql.unsafe('x')}
       ${sql`FROM generate_series(${sql`${1}::int`}, ${3}::int) AS x`}
     ${sql`ORDER BY generate_series, z LIMIT ${3}`}
@@ -64,16 +76,24 @@ test('composable SQL and raw SQL', async () => {
 
   const compiled = (q.queryData as SqlTemplate).toParameterizedQuery();
   expect(compiled.query.replace(/\s+/g, ' ').trim()).toEqual(
-    'SELECT $1 AS z, "generate_series" FROM generate_series($2::int, 4) UNION SELECT $3 AS z, x FROM generate_series($4::int, $5::int) AS x ORDER BY generate_series, z LIMIT $6',
+    'SELECT 0 AS n, $1 AS z, "generate_series" FROM generate_series($2::int, 4) UNION SELECT 1 AS n, $3 AS z, x FROM generate_series($4::int, $5::int) AS x ORDER BY generate_series, z LIMIT $6',
   );
   expect(compiled.params).toStrictEqual([123, 1, 789, 1, 3, 3]);
 
   const result = await q;
   expect(result).toStrictEqual([
-    { generate_series: 1, z: '123' },
-    { generate_series: 1, z: '789' },
-    { generate_series: 2, z: '123' },
+    { generate_series: 1, z: '123', n: 0 },
+    { generate_series: 1, z: '789', n: 1 },
+    { generate_series: 2, z: '123', n: 0 },
   ]);
+});
+
+test('uncomposable SQL', async () => {
+  // sql.query() queries have manually-numbered parameters and thus cannot safely be composed
+  const q = sql`${sql.query('SELECT $1', [1])}`;
+  expect(() =>
+    (q.queryData as SqlTemplate).toParameterizedQuery(),
+  ).toThrowError('This query is not composable');
 });
 
 interface FieldDef {
