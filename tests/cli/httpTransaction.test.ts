@@ -27,6 +27,24 @@ test('empty batch query with function', async () => {
   expect(emptyResult).toHaveLength(0);
 });
 
+test('batch query with array using mix of template strings and query function', async () => {
+  const [[a], [b]] = await sql.transaction([
+    sql`SELECT ${1}::int AS "batchInt"`,
+    sql.query('SELECT $1 AS "batchStr"', ['hello']),
+  ]);
+  expect(a.batchInt).toBe(1);
+  expect(b.batchStr).toBe('hello');
+});
+
+test('batch query with function using mix of template strings and query function', async () => {
+  const [[a], [b]] = await sql.transaction((txn) => [
+    txn`SELECT ${2}::int AS "batchInt"`,
+    txn.query('SELECT $1 AS "batchStr"', ['goodbye']),
+  ]);
+  expect(a.batchInt).toBe(2);
+  expect(b.batchStr).toBe('goodbye');
+});
+
 test('empty batch query with array', async () => {
   const emptyResult = await sql.transaction([]);
   expect(emptyResult).toHaveLength(0);
