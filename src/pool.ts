@@ -7,11 +7,13 @@ import type {
   QueryConfig,
   QueryArrayResult,
   QueryResult,
+  PoolClient,
 } from 'pg';
 
 import { NeonClient } from './client';
 import { neon } from './httpQuery';
 import { Socket } from './shims/net';
+import type { NeonConfigGlobalAndClient } from '.';
 
 // @ts-ignore -- this isn't officially exported by pg
 import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
@@ -37,8 +39,21 @@ function promisify(Promise: any, callback: any) {
   return { callback: cb, result: result };
 }
 
+// class 'PoolClient' exists only in @types/pg: under the hood in pg it's just a `Client extends EventEmitter`
+export interface NeonPoolClient extends PoolClient {
+  neonConfig: NeonConfigGlobalAndClient;
+}
+
 export declare interface NeonPool {
   Promise: typeof Promise;
+  connect(): Promise<NeonPoolClient>;
+  connect(
+    callback: (
+      err: Error | undefined,
+      client: NeonPoolClient | undefined,
+      done: (release?: any) => void,
+    ) => void,
+  ): void;
 }
 
 /**
@@ -117,9 +132,10 @@ export class NeonPool extends Pool {
         arrayMode: config.rowMode === 'array',
       });
 
-      sql(queryText, queryValues, {
-        types: config.types ?? this.options?.types,
-      })
+      sql
+        .query(queryText, queryValues, {
+          types: config.types ?? this.options?.types,
+        })
         .then((result) => cb(undefined, result))
         .catch((err) => cb(err));
     } catch (err) {

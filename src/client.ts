@@ -1,4 +1,4 @@
-import { Client, Connection } from 'pg';
+import { Client, Connection, type ClientConfig } from 'pg';
 import { Socket } from './shims/net';
 
 export declare interface NeonClient {
@@ -23,7 +23,7 @@ export class NeonClient extends Client {
     return this.connection.stream as Socket;
   }
 
-  constructor(public config: any) {
+  constructor(public config?: string | ClientConfig) {
     super(config);
   }
 
@@ -46,8 +46,9 @@ export class NeonClient extends Client {
 
     // throw on likely missing DB connection params
     const hasConfiguredHost =
-      this.config?.host !== undefined ||
-      this.config?.connectionString !== undefined ||
+      (typeof this.config !== 'string' && this.config?.host !== undefined) ||
+      (typeof this.config !== 'string' &&
+        this.config?.connectionString !== undefined) ||
       process.env.PGHOST !== undefined;
     const defaultUser = process.env.USER ?? process.env.USERNAME;
     if (

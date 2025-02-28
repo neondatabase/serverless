@@ -28,7 +28,7 @@ jobs:
 
       # goal
       - name: Run CLI-based tests in Node 19
-        run: npm run test:node
+        run: touch src && npm run test:node
 
   test-current:
     runs-on: ubuntu-latest

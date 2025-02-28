@@ -1,5 +1,7 @@
 import type { FieldDef, types as PgTypes } from 'pg';
 import { types as defaultTypes } from '.';
+import type { NeonQueryPromise } from './httpQuery';
+import type { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
 
 export type QueryRows<ArrayMode extends boolean> = ArrayMode extends true
   ? any[][]
@@ -62,15 +64,6 @@ export interface HTTPQueryOptions<
    * Custom type parsers. See https://github.com/brianc/node-pg-types.
    */
   types?: typeof PgTypes;
-
-  queryCallback?: (query: ParameterizedQuery) => void;
-
-  resultCallback?: (
-    query: ParameterizedQuery,
-    result: any,
-    rows: any,
-    opts: any,
-  ) => void;
 }
 
 export interface HTTPTransactionOptions<
@@ -105,20 +98,18 @@ export interface HTTPTransactionOptions<
   deferrable?: boolean;
 }
 
-export interface NeonQueryPromise<
-  ArrayMode extends boolean,
-  FullResults extends boolean,
-  T = any,
-> extends Promise<T> {
-  parameterizedQuery: ParameterizedQuery;
-  opts?: HTTPQueryOptions<ArrayMode, FullResults>;
-}
+// export interface NeonQueryPromise<
+//   ArrayMode extends boolean,
+//   FullResults extends boolean,
+//   T = any,
+// > extends Promise<T> {
+//   query: SqlTemplate | ParameterizedQuery;
+//   opts?: HTTPQueryOptions<ArrayMode, FullResults>;
+// }
 
 export interface ProcessQueryResultOptions {
   arrayMode: boolean;
   fullResults: boolean;
-  parameterizedQuery: ParameterizedQuery;
-  resultCallback: HTTPQueryOptions<false, false>['resultCallback'];
   types?: typeof defaultTypes;
 }
 
@@ -142,9 +133,9 @@ export interface NeonQueryFunctionInTransaction<
       : QueryRows<ArrayMode>
   >;
 
-  // ordinary function usage (*no* options overrides)
-  (
-    string: string,
+  // traditional query function (*no* options overrides)
+  query(
+    queryWithPlaceholders: string,
     params?: any[],
   ): NeonQueryPromise<
     ArrayMode,
@@ -153,18 +144,21 @@ export interface NeonQueryFunctionInTransaction<
       ? FullQueryResults<ArrayMode>
       : QueryRows<ArrayMode>
   >;
+
+  unsafe(rawSQL: string): UnsafeRawSql;
+
+  // no transaction function
 }
 
 export interface NeonQueryInTransaction {
-  // this is a simplified form of query, which has only a `parameterizedQuery` (no `opts` and not a `Promise`)
-  parameterizedQuery: ParameterizedQuery;
+  // this is a simplified form of NeonQueryPromise, which has only `queryData` (no `opts` and not a `Promise`)
+  queryData: SqlTemplate | ParameterizedQuery;
 }
 
 export interface NeonQueryFunction<
   ArrayMode extends boolean,
   FullResults extends boolean,
 > {
-  // tagged-template function usage
   (
     strings: TemplateStringsArray,
     ...params: any[]
@@ -176,14 +170,31 @@ export interface NeonQueryFunction<
       : QueryRows<ArrayMode>
   >;
 
-  // ordinary function usage, with options overrides
-  <
+  /**
+   * The `query()` function takes a query string with embedded `$1`, `$2`
+   * (etc.) placeholders, followed by an array of query parameters, followed
+   * (optionally) by query options. For example:
+   *
+   * ```
+   * const sql = neon("postgres://user:pass@host/db");
+   * const rows = await sql.query(
+   *   "SELECT * FROM table WHERE id = $1", [123],
+   *   { fetchOptions: { priority: "high" } }
+   * );
+   * // -> [ { greeting: "hello world" } ]
+   * ```
+   *
+   * @param queryWithPlaceholders - SQL query with numbered placeholders (`$1`, `$2`, etc.), e.g. `"SELECT * FROM table WHERE id = $1"`
+   * @param params - array of values corresponding to placeholders, e.g. `[123]`
+   * @param queryOpts - e.g. query options, e.g. `{ fetchOptions: { priority: "high" } }`
+   */
+  query<
     ArrayModeOverride extends boolean = ArrayMode,
     FullResultsOverride extends boolean = FullResults,
   >(
-    string: string,
+    queryWithPlaceholders: string,
     params?: any[],
-    opts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>,
+    queryOpts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>,
   ): NeonQueryPromise<
     ArrayModeOverride,
     FullResultsOverride,
@@ -191,6 +202,21 @@ export interface NeonQueryFunction<
       ? FullQueryResults<ArrayModeOverride>
       : QueryRows<ArrayModeOverride>
   >;
+
+  /**
+   * The `unsafe()` function allows arbitrary strings to be interpolated in a
+   * SQL query. This must be used only with trusted string values under your
+   * control.
+   *
+   * ```
+   * const sql = neon("postgres://user:pass@host/db");
+   * const colName = 'greeting';
+   * const rows = await sql`SELECT 'hello world' AS ${sql.unsafe(colName)}`;
+   * ```
+   *
+   * @param rawSQL - string, SQL fragment
+   */
+  unsafe(rawSQL: string): UnsafeRawSql;
 
   /**
    * The `transaction()` function allows multiple queries to be submitted (over
@@ -202,15 +228,15 @@ export interface NeonQueryFunction<
    * const sql = neon("postgres://user:pass@host/db");
    *
    * const results = await sql.transaction([
-   *   sql`SELECT 1 AS num`,
-   *   sql`SELECT 'a' AS str`,
+   *   sql`SELECT ${1} AS num`,
+   *   sql`SELECT ${'a'} AS str`,
    * ]);
    * // -> [[{ num: 1 }], [{ str: "a" }]]
    *
    * // or equivalently:
    * const results = await sql.transaction(txn => [
-   *   txn`SELECT 1 AS num`,
-   *   txn`SELECT 'a' AS str`,
+   *   txn`SELECT ${1} AS num`,
+   *   txn`SELECT ${'a'} AS str`,
    * ]);
    * // -> [[{ num: 1 }], [{ str: "a" }]]
    * ```
