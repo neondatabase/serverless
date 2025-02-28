@@ -50,10 +50,18 @@ test(
   },
 );
 
-test(// unfortunately, using hex-escaped strings for binary data doesn't work the
-// same as sending raw binary data if Postgres can't tell it's binary data
-// -- if this started unexpectedly failing, it might be a good thing
-'sql.query() http results for uncast binary data (ideally we want this test to fail)', async () => {
+test('non-template usage is no longer allowed', () => {
+  // @ts-expect-error
+  const queryFunc = () => sql(`SELECT ${1}`);
+  expect(queryFunc).toThrowError(
+    'Must be called as a tagged-template function',
+  );
+});
+
+// unfortunately, using hex-escaped strings for binary data doesn't work the
+//  same as sending raw binary data if Postgres can't tell it's binary data
+//  -- if this test started unexpectedly failing, it might be a good thing
+test('sql.query() http results for uncast binary data (it might be preferable if this test would fail)', async () => {
   const abc = await sql.query('SELECT $1 AS bytea', [
     new Uint8Array([65, 66, 67]),
   ]);
@@ -88,9 +96,9 @@ test('composable SQL and unsafe raw SQL', async () => {
   ]);
 });
 
-test('uncomposable SQL', async () => {
+test('uncomposable SQL', () => {
   // sql.query() queries have manually-numbered parameters and thus cannot safely be composed
-  const q = sql`${sql.query('SELECT $1', [1])}`;
+  const q = sql`SELECT * FROM table ${sql.query('LIMIT $1', [1])}`;
   expect(() =>
     (q.queryData as SqlTemplate).toParameterizedQuery(),
   ).toThrowError('This query is not composable');

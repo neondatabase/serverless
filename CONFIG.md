@@ -2,29 +2,39 @@
 
 ## `neon(...)` function
 
-The `neon(...)` function returns a query function that can be used both as a tagged-template function and as an ordinary function:
+The `neon(...)` function returns a tagged-template query function:
 
 ```typescript
 import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL);
 
-// as a tagged-template function
-const rowsA = await sql`SELECT * FROM posts WHERE id = ${postId}`;
-
-// as an ordinary function (exactly equivalent)
-const rowsB = await sql('SELECT * FROM posts WHERE id = $1', [postId]);
-```
-
-By default, the query function returned by `neon(...)` returns only the rows resulting from the provided SQL query, and it returns them as an array of objects where the keys are column names. For example:
-
-```typescript
-import { neon } from '@neondatabase/serverless';
-const sql = neon(process.env.DATABASE_URL);
 const rows = await sql`SELECT * FROM posts WHERE id = ${postId}`;
 // -> [{ id: 12, title: "My post", ... }]
 ```
 
-However, you can customise the return format of the query function using the configuration options `fullResults` and `arrayMode`. These options are available both on the `neon(...)` function and on the query function it returns (but only when the query function is called as an ordinary function, not as a tagged-template function).
+These queries are composable. For example, this has the same effect:
+
+```javascript
+const whereClause = sql`WHERE id = ${postId}`;
+const [post] = await sql`SELECT * FROM posts ${whereClause}`;
+```
+
+If you need to pass SQL in a variable, not as a template-string literal, use the `query()` property of the template function and numbered placeholders (`$1`, `$2`, etc.):
+
+```javascript
+const q = 'SELECT * FROM posts WHERE id = $1';
+const [post] = await sql.query(q, [postId]);
+```
+
+If you need to interpolate _trusted_ arbitrary strings, such as the names of columns or tables, use the `unsafe()` property of the template function:
+
+```javascript
+const table = condition ? 'some_posts' : 'other_posts';
+const [post] =
+  await sql`SELECT * FROM ${sql.unsafe(table)} WHERE id = ${postId}`;
+```
+
+By default, only the rows resulting from the provided SQL query are returned, and they're returned as an array of objects where the keys are column names. However, you can customise the return format of the query function using the configuration options `fullResults` and `arrayMode`. These options are available both on the `neon(...)` function and on the `query()` function that's a property of the function it returns.
 
 ### `arrayMode: boolean`
 
@@ -42,7 +52,7 @@ Or, with the same effect:
 ```typescript
 import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL);
-const rows = await sql('SELECT * FROM posts WHERE id = $1', [postId], {
+const rows = await sql.query('SELECT * FROM posts WHERE id = $1', [postId], {
   arrayMode: true,
 });
 // -> [[12, "My post", ...]]
@@ -75,7 +85,7 @@ Or, with the same effect:
 ```typescript
 import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL);
-const results = await sql('SELECT * FROM posts WHERE id = $1', [postId], {
+const results = await sql.query('SELECT * FROM posts WHERE id = $1', [postId], {
   fullResults: true,
 });
 // -> { ... same as above ... }
@@ -100,9 +110,10 @@ Or to implement a `fetch` timeout:
 ```typescript
 import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL);
+
 const abortController = new AbortController();
 const timeout = setTimeout(() => abortController.abort('timed out'), 10000);
-const rows = await sql('SELECT * FROM posts WHERE id = $1', [postId], {
+const rows = await sql.query('SELECT * FROM posts WHERE id = $1', [postId], {
   fetchOptions: { signal: abortController.signal },
 }); // throws an error if no result received within 10s
 clearTimeout(timeout);
@@ -133,18 +144,21 @@ const sql = neon(process.env.DATABASE_URL, {
 
 ### `authToken: string | (() => Promise<string> | string)`
 
-The `authToken` option can be passed to `neon(...)` to set the `Authorization` header for the `fetch` request. This allows you to authenticate database requests against third-party authentication providers. So, this mechanism can be used to ensure that access control and authorization are managed effectively across different systems.
+The `authToken` option can be passed to `neon(...)` to set the `Authorization` header for the `fetch` request. This allows you to authenticate database requests against third-party authentication providers. This mechanism can thus be used to ensure that access control and authorization are managed effectively across different systems.
 
-Example of usage:
+For example:
 
 ```typescript
 import { neon } from '@neondatabase/serverless';
-// Retrieve the JWT token (implementation depends on your auth system)
+
+// retrieve the JWT token (implementation depends on your auth system)
 const authToken = getAuthToken();
-// Initialize the Neon client with a connection string and auth token
+
+// initialize the Neon client with a connection string and auth token
 const sql = neon(process.env.DATABASE_URL, { authToken });
-// Run a query
-const posts = await sql('SELECT * FROM posts');
+
+// run a query
+const posts = await sql`SELECT * FROM posts`;
 ```
 
 ## `transaction(...)` function

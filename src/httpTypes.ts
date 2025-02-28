@@ -159,7 +159,6 @@ export interface NeonQueryFunction<
   ArrayMode extends boolean,
   FullResults extends boolean,
 > {
-  // tagged-template function usage
   (
     strings: TemplateStringsArray,
     ...params: any[]
@@ -171,7 +170,24 @@ export interface NeonQueryFunction<
       : QueryRows<ArrayMode>
   >;
 
-  // traditional query function with options
+  /**
+   * The `query()` function takes a query string with embedded `$1`, `$2`
+   * (etc.) placeholders, followed by an array of query parameters, followed
+   * (optionally) by query options. For example:
+   *
+   * ```
+   * const sql = neon("postgres://user:pass@host/db");
+   * const rows = await sql.query(
+   *   "SELECT * FROM table WHERE id = $1", [123],
+   *   { fetchOptions: { priority: "high" } }
+   * );
+   * // -> [ { greeting: "hello world" } ]
+   * ```
+   *
+   * @param queryWithPlaceholders - SQL query with numbered placeholders (`$1`, `$2`, etc.), e.g. `"SELECT * FROM table WHERE id = $1"`
+   * @param params - array of values corresponding to placeholders, e.g. `[123]`
+   * @param queryOpts - e.g. query options, e.g. `{ fetchOptions: { priority: "high" } }`
+   */
   query<
     ArrayModeOverride extends boolean = ArrayMode,
     FullResultsOverride extends boolean = FullResults,
@@ -187,6 +203,19 @@ export interface NeonQueryFunction<
       : QueryRows<ArrayModeOverride>
   >;
 
+  /**
+   * The `unsafe()` function allows arbitrary strings to be interpolated in a
+   * SQL query. This must be used only with trusted string values under your
+   * control.
+   *
+   * ```
+   * const sql = neon("postgres://user:pass@host/db");
+   * const colName = 'greeting';
+   * const rows = await sql`SELECT 'hello world' AS ${sql.unsafe(colName)}`;
+   * ```
+   *
+   * @param rawSQL - string, SQL fragment
+   */
   unsafe(rawSQL: string): UnsafeRawSql;
 
   /**
@@ -199,15 +228,15 @@ export interface NeonQueryFunction<
    * const sql = neon("postgres://user:pass@host/db");
    *
    * const results = await sql.transaction([
-   *   sql`SELECT 1 AS num`,
-   *   sql`SELECT 'a' AS str`,
+   *   sql`SELECT ${1} AS num`,
+   *   sql`SELECT ${'a'} AS str`,
    * ]);
    * // -> [[{ num: 1 }], [{ str: "a" }]]
    *
    * // or equivalently:
    * const results = await sql.transaction(txn => [
-   *   txn`SELECT 1 AS num`,
-   *   txn`SELECT 'a' AS str`,
+   *   txn`SELECT ${1} AS num`,
+   *   txn`SELECT ${'a'} AS str`,
    * ]);
    * // -> [[{ num: 1 }], [{ str: "a" }]]
    * ```

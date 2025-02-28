@@ -3,7 +3,7 @@ Note: most config options can be set in 3 places:
 
 * in a call to `neon`, 
 * in a call to `transaction`, 
-* or in the call to `sql` (i.e. the function returned by `neon`).
+* or in a call to `sql.query` (where `sql` is the function returned by `neon`)
 
 The option variables corresponding these levels are prefixed
 `neonOpt`, `txnOpt` and `sqlOpt` respectively.
@@ -107,20 +107,28 @@ function prepareQuery(queryDatum: SqlTemplate | ParameterizedQuery) {
 }
 
 /**
- * This function returns an async tagged-template function that runs a single
- * SQL query (no session or transactions) with low latency over https. Support
- * for multiple queries (as a non-interactive transaction) is provided by
- * the `transaction` property of the query function.
+ * Returns an async tagged-template function that runs a single SQL query (no
+ * session or transactions) with low latency over https. Queries are
+ * composable: they can be embedded inside each other.
  *
  * By default, the query function returns database rows directly. Types should
- * match those returned by this driver (i.e. Pool or Client) over WebSockets.
+ * match those returned by this driver when using WebSockets (i.e. via `Pool`
+ * or `Client`).
  *
- * The returned function can also be called directly (i.e. not as a template
- * function). In that case, pass it a query string with embedded `$1`, `$2`
- * (etc.), followed by an array of query parameters, followed (optionally) by
- * any of the same options you can pass to this function.
+ * The returned function has a `transaction()` function property, which
+ * supports multiple queries run in a non-interactive transaction.
+ *
+ * It also has function properties `query()` and `unsafe()`.
+ *
+ * `query()` (like `client.query()` and `pool.query()`) takes a query string
+ * with embedded `$1`, `$2` (etc.) placeholders, followed by an array of query
+ * parameters, followed (optionally) by query options.
+ *
+ * `unsafe()` permits embedding arbitrary raw SQL strings, if you know they're
+ * safe.
  *
  * Some examples:
+ *
  * ```
  * import { neon } from "@neondatabase/serverless";
  * const h = "hello", w = "world";
@@ -130,10 +138,22 @@ function prepareQuery(queryDatum: SqlTemplate | ParameterizedQuery) {
  * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 2: `arrayMode` and `fullResults` options, ordinary function usage
+ * // example 2: composability
+ * const sql = neon("postgres://user:pass@host/db");
+ * const helloWorld = sql`${h} || ' ' || ${w}`;
+ * const rows = await sql`SELECT ${helloWorld} AS greeting`;
+ * // -> [ { greeting: "hello world" } ]
+ *
+ * // example 3: unsafe raw string interpolation
+ * const sql = neon("postgres://user:pass@host/db");
+ * const colName = 'greeting';
+ * const rows = await sql`SELECT ${h} || ' ' || ${w} AS ${sql.unsafe(colName)}`;
+ * // -> [ { greeting: "hello world" } ]
+ *
+ * // example 4: `arrayMode` and `fullResults` options
  * const options = { arrayMode: true, fullResults: true };
  * const sql = neon("postgres://user:pass@host/db", options);
- * const rows = await sql("SELECT $1 || ' ' || $2 AS greeting", [h, w]);
+ * const result = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
  * // -> {
  * //      command: "SELECT",
  * //      fields: [ { name: "greeting", dataTypeID: 25 } ],
@@ -142,16 +162,16 @@ function prepareQuery(queryDatum: SqlTemplate | ParameterizedQuery) {
  * //      rows: [ [ "hello world" ] ]
  * //    }
  *
- * // example 3: `fetchOptions` option, ordinary function usage
+ * // example 5: `fetchOptions` option direct to `query()` function
  * const sql = neon("postgres://user:pass@host/db");
- * const rows = await sql(
+ * const rows = await sql.query(
  *   "SELECT $1 || ' ' || $2 AS greeting", [h, w],
  *   { fetchOptions: { priority: "high" } }
  * );
  * // -> [ { greeting: "hello world" } ]
  * ```
  *
- * @param connectionString - this has the format `postgres://user:pass@host/db`
+ * @param connectionString - has the format `postgresql://user:pass@host/db`
  * @param options - pass `arrayMode: true` to receive results as an array of
  * arrays, instead of the default array of objects; pass `fullResults: true`
  * to receive a complete result object similar to one returned by node-postgres
@@ -414,33 +434,6 @@ export function neon<
   return templateFn as any; // actual type is specified in function signature above
 }
 
-// function createNeonQueryPromise<
-//   ArrayMode extends boolean,
-//   FullResults extends boolean,
-// >(
-//   execute: (
-//     query:
-//       | SqlTemplate
-//       | ParameterizedQuery
-//       | (SqlTemplate | ParameterizedQuery)[],
-//     hqo?:
-//       | HTTPQueryOptions<ArrayMode, FullResults>
-//       | HTTPQueryOptions<ArrayMode, FullResults>[],
-//   ) => Promise<any>,
-//   query: SqlTemplate | ParameterizedQuery,
-//   opts?: HTTPQueryOptions<ArrayMode, FullResults>,
-// ) {
-//   return {
-//     [Symbol.toStringTag]: 'NeonQueryPromise',
-//     query,
-//     opts,
-//     then: (resolve: any, reject: any) =>
-//       execute(query, opts).then(resolve, reject),
-//     catch: (reject: any) => execute(query, opts).catch(reject),
-//     finally: (finallyFn: any) => execute(query, opts).finally(finallyFn),
-//   } as NeonQueryPromise<ArrayMode, FullResults>;
-// }
-
 export interface NeonQueryPromise<
   ArrayMode extends boolean,
   FullResults extends boolean,
@@ -465,12 +458,6 @@ export class NeonQueryPromise<
     public queryData: SqlTemplate | ParameterizedQuery,
     public opts?: HTTPQueryOptions<ArrayMode, FullResults>,
   ) {}
-
-  // parameterizedQueries() {
-  //   return Array.isArray(this.queryData) ?
-  //     this.queryData.map(qd => qd instanceof SqlTemplate ? qd.toParameterizedQuery() : qd) :
-  //     this.queryData instanceof SqlTemplate ? this.queryData.toParameterizedQuery() : this.queryData;
-  // }
 
   then<TResult1 = T, TResult2 = never>(
     resolve?:
