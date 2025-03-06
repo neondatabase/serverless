@@ -33,7 +33,7 @@ export default async (req, rc) => {
   // test http fetch
   q = "SELECT 'fetch' AS fetchstr";
   const sql = neon(DATABASE_URL, { fullResults: true });
-  const { rows: fetchRows } = await sql(q);
+  const { rows: fetchRows } = await sql.query(q);
 
   // respond
   const responseData = {

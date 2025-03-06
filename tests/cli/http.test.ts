@@ -4,6 +4,7 @@ import {
   neon,
   neonConfig,
   Pool,
+  SqlTemplate,
   type FullQueryResults,
 } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 import { sampleQueries } from './sampleQueries';
@@ -20,7 +21,11 @@ test(
     const client = await pool.connect();
 
     for (const queryPromise of sampleQueries(sqlFull)) {
-      const { query, params } = queryPromise.parameterizedQuery;
+      const { query, params } =
+        queryPromise.queryData instanceof SqlTemplate
+          ? queryPromise.queryData.toParameterizedQuery()
+          : queryPromise.queryData;
+
       const [httpResult, wsResult] = await Promise.all([
         queryPromise,
         client.query(query, params),
@@ -38,13 +43,66 @@ test(
         fields: wsResult.fields.map((f) => ({ ...f })),
         viaNeonFetch: true,
       };
-
       expect(httpResultProcessed).toStrictEqual(wsResultProcessed);
     }
 
     client.release();
   },
 );
+
+test('non-template usage is no longer allowed', () => {
+  // @ts-expect-error
+  const queryFunc = () => sql(`SELECT ${1}`);
+  expect(queryFunc).toThrowError(
+    'Must be called as a tagged-template function',
+  );
+});
+
+// unfortunately, using hex-escaped strings for binary data doesn't work the
+//  same as sending raw binary data if Postgres can't tell it's binary data
+//  -- if this test started unexpectedly failing, it might be a good thing
+test('sql.query() http results for uncast binary data (it might be preferable if this test would fail)', async () => {
+  const abc = await sql.query('SELECT $1 AS bytea', [
+    new Uint8Array([65, 66, 67]),
+  ]);
+  // over TCP or WebSockets or using sql`...`, this would be { "bytea": "ABC" }
+  expect(abc).toStrictEqual([{ bytea: '\\x414243' }]);
+});
+
+test('composable SQL and unsafe raw SQL', async () => {
+  const q = sql`
+    SELECT 
+      ${sql.query('0 AS n')},
+      ${123} AS z, ${sql.unsafe('"generate_series"')}
+      ${sql`FROM generate_series(${1}::int, ${sql`4`})`}
+    UNION SELECT
+      ${sql.query('1 AS n', [])},
+      ${789} AS z, ${sql.unsafe('x')}
+      ${sql`FROM generate_series(${sql`${1}::int`}, ${3}::int) AS x`}
+    ${sql`ORDER BY generate_series, z LIMIT ${3}`}
+  `;
+
+  const compiled = (q.queryData as SqlTemplate).toParameterizedQuery();
+  expect(compiled.query.replace(/\s+/g, ' ').trim()).toEqual(
+    'SELECT 0 AS n, $1 AS z, "generate_series" FROM generate_series($2::int, 4) UNION SELECT 1 AS n, $3 AS z, x FROM generate_series($4::int, $5::int) AS x ORDER BY generate_series, z LIMIT $6',
+  );
+  expect(compiled.params).toStrictEqual([123, 1, 789, 1, 3, 3]);
+
+  const result = await q;
+  expect(result).toStrictEqual([
+    { generate_series: 1, z: '123', n: 0 },
+    { generate_series: 1, z: '789', n: 1 },
+    { generate_series: 2, z: '123', n: 0 },
+  ]);
+});
+
+test('uncomposable SQL', () => {
+  // sql.query() queries have manually-numbered parameters and thus cannot safely be composed
+  const q = sql`SELECT * FROM table ${sql.query('LIMIT $1', [1])}`;
+  expect(() =>
+    (q.queryData as SqlTemplate).toParameterizedQuery(),
+  ).toThrowError('This query is not composable');
+});
 
 interface FieldDef {
   name: string;
@@ -108,7 +166,7 @@ test('options to `neon()` and options on queries', async () => {
   expect(tt.rowAsArray).toBe(true);
 
   // check per-query option overrides
-  const fftt = await sqlff("SELECT 'xyz' AS str", [], {
+  const fftt = await sqlff.query("SELECT 'xyz' AS str", [], {
     arrayMode: true,
     fullResults: true,
   });
@@ -125,7 +183,7 @@ test('options to `neon()` and options on queries', async () => {
   expect(fftt.rowCount).toBe(1);
   expect(fftt.rowAsArray).toBe(true);
 
-  const ttff = await sqltt("SELECT 'xyz' AS str", [], {
+  const ttff = await sqltt.query("SELECT 'xyz' AS str", [], {
     arrayMode: false,
     fullResults: false,
   });
@@ -151,13 +209,13 @@ test('errors match WebSocket query errors', async () => {
   const q = 'SELECT 123 WHERE x';
 
   await Promise.all([
-    expect(sql(q)).rejects.toThrowError('column "x" does not exist'),
+    expect(sql.query(q)).rejects.toThrowError('column "x" does not exist'),
     expect(pool.query(q)).rejects.toThrowError('column "x" does not exist'),
   ]);
 
   // now compare all other properties (`code`, `routine`, `severity`, etc.)
   const [httpErr, wsErr] = (await Promise.all([
-    new Promise((resolve) => sql(q).catch((e: Error) => resolve(e))),
+    new Promise((resolve) => sql.query(q).catch((e: Error) => resolve(e))),
     new Promise((resolve) => pool.query(q).catch((e: Error) => resolve(e))),
   ])) as [any, any];
 
@@ -171,11 +229,11 @@ test('errors match WebSocket query errors', async () => {
 });
 
 test('http queries with too few or too many parameters', async () => {
-  await expect(sql('SELECT $1', [])).rejects.toThrowError(
+  await expect(sql.query('SELECT $1', [])).rejects.toThrowError(
     'bind message supplies 0 parameters',
   );
 
-  await expect(sql('SELECT $1', [1, 2])).rejects.toThrowError(
+  await expect(sql.query('SELECT $1', [1, 2])).rejects.toThrowError(
     'bind message supplies 2 parameters',
   );
 });
@@ -190,7 +248,7 @@ test('timeout aborting an http query', { timeout: 5000 }, async () => {
   const signal = AbortSignal.timeout(250);
 
   await expect(
-    sql('SELECT pg_sleep(2)', [], { fetchOptions: { signal } }),
+    sql.query('SELECT pg_sleep(2)', [], { fetchOptions: { signal } }),
   ).rejects.toThrow('aborted');
 });
 
@@ -204,7 +262,7 @@ test('timeout not aborting an http query', { timeout: 5000 }, async () => {
   const signal = AbortSignal.timeout(2500);
 
   await expect(
-    sql('SELECT pg_sleep(.25)', [], { fetchOptions: { signal } }),
+    sql.query('SELECT pg_sleep(.25)', [], { fetchOptions: { signal } }),
   ).resolves.toStrictEqual([{ pg_sleep: '' }]);
 });
 

@@ -221,9 +221,9 @@ export declare interface Client {
  * https://node-postgres.com/apis/client
  */
 export declare class Client extends Client_2 {
-    config: any;
+    config?: (string | ClientConfig) | undefined;
     get neonConfig(): neonConfig;
-    constructor(config: any);
+    constructor(config?: (string | ClientConfig) | undefined);
     connect(): Promise<void>;
     connect(callback: (err?: Error) => void): void;
     _handleAuthSASLContinue(msg: any): Promise<void>;
@@ -310,8 +310,6 @@ export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults
      * Custom type parsers. See https://github.com/brianc/node-pg-types.
      */
     types?: typeof types;
-    queryCallback?: (query: ParameterizedQuery) => void;
-    resultCallback?: (query: ParameterizedQuery, result: any, rows: any, opts: any) => void;
 }
 
 export declare interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
@@ -340,20 +338,28 @@ export declare interface HTTPTransactionOptions<ArrayMode extends boolean, FullR
 export { MessageConfig }
 
 /**
- * This function returns an async tagged-template function that runs a single
- * SQL query (no session or transactions) with low latency over https. Support
- * for multiple queries (as a non-interactive transaction) is provided by
- * the `transaction` property of the query function.
+ * Returns an async tagged-template function that runs a single SQL query (no
+ * session or transactions) with low latency over https. Queries are
+ * composable: they can be embedded inside each other.
  *
  * By default, the query function returns database rows directly. Types should
- * match those returned by this driver (i.e. Pool or Client) over WebSockets.
+ * match those returned by this driver when using WebSockets (i.e. via `Pool`
+ * or `Client`).
  *
- * The returned function can also be called directly (i.e. not as a template
- * function). In that case, pass it a query string with embedded `$1`, `$2`
- * (etc.), followed by an array of query parameters, followed (optionally) by
- * any of the same options you can pass to this function.
+ * The returned function has a `transaction()` function property, which
+ * supports multiple queries run in a non-interactive transaction.
+ *
+ * It also has function properties `query()` and `unsafe()`.
+ *
+ * `query()` (like `client.query()` and `pool.query()`) takes a query string
+ * with embedded `$1`, `$2` (etc.) placeholders, followed by an array of query
+ * parameters, followed (optionally) by query options.
+ *
+ * `unsafe()` permits embedding arbitrary raw SQL strings, if you know they're
+ * safe.
  *
  * Some examples:
+ *
  * ```
  * import { neon } from "@neondatabase/serverless";
  * const h = "hello", w = "world";
@@ -363,10 +369,22 @@ export { MessageConfig }
  * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 2: `arrayMode` and `fullResults` options, ordinary function usage
+ * // example 2: composability
+ * const sql = neon("postgres://user:pass@host/db");
+ * const helloWorld = sql`${h} || ' ' || ${w}`;
+ * const rows = await sql`SELECT ${helloWorld} AS greeting`;
+ * // -> [ { greeting: "hello world" } ]
+ *
+ * // example 3: unsafe raw string interpolation
+ * const sql = neon("postgres://user:pass@host/db");
+ * const colName = 'greeting';
+ * const rows = await sql`SELECT ${h} || ' ' || ${w} AS ${sql.unsafe(colName)}`;
+ * // -> [ { greeting: "hello world" } ]
+ *
+ * // example 4: `arrayMode` and `fullResults` options
  * const options = { arrayMode: true, fullResults: true };
  * const sql = neon("postgres://user:pass@host/db", options);
- * const rows = await sql("SELECT $1 || ' ' || $2 AS greeting", [h, w]);
+ * const result = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
  * // -> {
  * //      command: "SELECT",
  * //      fields: [ { name: "greeting", dataTypeID: 25 } ],
@@ -375,16 +393,16 @@ export { MessageConfig }
  * //      rows: [ [ "hello world" ] ]
  * //    }
  *
- * // example 3: `fetchOptions` option, ordinary function usage
+ * // example 5: `fetchOptions` option direct to `query()` function
  * const sql = neon("postgres://user:pass@host/db");
- * const rows = await sql(
+ * const rows = await sql.query(
  *   "SELECT $1 || ' ' || $2 AS greeting", [h, w],
  *   { fetchOptions: { priority: "high" } }
  * );
  * // -> [ { greeting: "hello world" } ]
  * ```
  *
- * @param connectionString - this has the format `postgres://user:pass@host/db`
+ * @param connectionString - has the format `postgresql://user:pass@host/db`
  * @param options - pass `arrayMode: true` to receive results as an array of
  * arrays, instead of the default array of objects; pass `fullResults: true`
  * to receive a complete result object similar to one returned by node-postgres
@@ -392,7 +410,7 @@ export { MessageConfig }
  * pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
-export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, queryCallback, resultCallback, authToken, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
+export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, authToken, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
 
 export declare interface NeonConfig {
     poolQueryViaFetch: boolean;
@@ -625,7 +643,39 @@ export declare class NeonDbError extends Error {
 
 export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
     (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
-    <ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(string: string, params?: any[], opts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>): NeonQueryPromise<ArrayModeOverride, FullResultsOverride, FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>>;
+    /**
+     * The `query()` function takes a query string with embedded `$1`, `$2`
+     * (etc.) placeholders, followed by an array of query parameters, followed
+     * (optionally) by query options. For example:
+     *
+     * ```
+     * const sql = neon("postgres://user:pass@host/db");
+     * const rows = await sql.query(
+     *   "SELECT * FROM table WHERE id = $1", [123],
+     *   { fetchOptions: { priority: "high" } }
+     * );
+     * // -> [ { greeting: "hello world" } ]
+     * ```
+     *
+     * @param queryWithPlaceholders - SQL query with numbered placeholders (`$1`, `$2`, etc.), e.g. `"SELECT * FROM table WHERE id = $1"`
+     * @param params - array of values corresponding to placeholders, e.g. `[123]`
+     * @param queryOpts - e.g. query options, e.g. `{ fetchOptions: { priority: "high" } }`
+     */
+    query<ArrayModeOverride extends boolean = ArrayMode, FullResultsOverride extends boolean = FullResults>(queryWithPlaceholders: string, params?: any[], queryOpts?: HTTPQueryOptions<ArrayModeOverride, FullResultsOverride>): NeonQueryPromise<ArrayModeOverride, FullResultsOverride, FullResultsOverride extends true ? FullQueryResults<ArrayModeOverride> : QueryRows<ArrayModeOverride>>;
+    /**
+     * The `unsafe()` function allows arbitrary strings to be interpolated in a
+     * SQL query. This must be used only with trusted string values under your
+     * control.
+     *
+     * ```
+     * const sql = neon("postgres://user:pass@host/db");
+     * const colName = 'greeting';
+     * const rows = await sql`SELECT 'hello world' AS ${sql.unsafe(colName)}`;
+     * ```
+     *
+     * @param rawSQL - string, SQL fragment
+     */
+    unsafe(rawSQL: string): UnsafeRawSql;
     /**
      * The `transaction()` function allows multiple queries to be submitted (over
      * HTTP) as a single, non-interactive Postgres transaction.
@@ -636,15 +686,15 @@ export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResult
      * const sql = neon("postgres://user:pass@host/db");
      *
      * const results = await sql.transaction([
-     *   sql`SELECT 1 AS num`,
-     *   sql`SELECT 'a' AS str`,
+     *   sql`SELECT ${1} AS num`,
+     *   sql`SELECT ${'a'} AS str`,
      * ]);
      * // -> [[{ num: 1 }], [{ str: "a" }]]
      *
      * // or equivalently:
      * const results = await sql.transaction(txn => [
-     *   txn`SELECT 1 AS num`,
-     *   txn`SELECT 'a' AS str`,
+     *   txn`SELECT ${1} AS num`,
+     *   txn`SELECT ${'a'} AS str`,
      * ]);
      * // -> [[{ num: 1 }], [{ str: "a" }]]
      * ```
@@ -663,16 +713,25 @@ export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResult
 
 export declare interface NeonQueryFunctionInTransaction<ArrayMode extends boolean, FullResults extends boolean> {
     (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
-    (string: string, params?: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+    query(queryWithPlaceholders: string, params?: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
+    unsafe(rawSQL: string): UnsafeRawSql;
 }
 
 export declare interface NeonQueryInTransaction {
-    parameterizedQuery: ParameterizedQuery;
+    queryData: SqlTemplate | ParameterizedQuery;
 }
 
 export declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
-    parameterizedQuery: ParameterizedQuery;
-    opts?: HTTPQueryOptions<ArrayMode, FullResults>;
+}
+
+export declare class NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> {
+    execute: (queryData: SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[], opts?: HTTPQueryOptions<ArrayMode, FullResults> | HTTPQueryOptions<ArrayMode, FullResults>[]) => Promise<T>;
+    queryData: SqlTemplate | ParameterizedQuery;
+    opts?: HTTPQueryOptions<ArrayMode, FullResults> | undefined;
+    constructor(execute: (queryData: SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[], opts?: HTTPQueryOptions<ArrayMode, FullResults> | HTTPQueryOptions<ArrayMode, FullResults>[]) => Promise<T>, queryData: SqlTemplate | ParameterizedQuery, opts?: HTTPQueryOptions<ArrayMode, FullResults> | undefined);
+    then<TResult1 = T, TResult2 = never>(resolve?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, reject?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    catch<TResult = never>(reject?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    finally(finallyFn?: (() => void) | undefined | null): Promise<T>;
 }
 
 export { Notification }
@@ -686,6 +745,8 @@ export declare interface ParameterizedQuery {
 
 export declare interface Pool {
     Promise: typeof Promise;
+    connect(): Promise<PoolClient>;
+    connect(callback: (err: Error | undefined, client: PoolClient | undefined, done: (release?: any) => void) => void): void;
 }
 
 /**
@@ -715,8 +776,6 @@ export { PoolConfig }
 export declare interface ProcessQueryResultOptions {
     arrayMode: boolean;
     fullResults: boolean;
-    parameterizedQuery: ParameterizedQuery;
-    resultCallback: HTTPQueryOptions<false, false>['resultCallback'];
     types?: typeof types;
 }
 
@@ -768,6 +827,19 @@ declare interface RootCertsIndex {
     subjects: Record<string, number>;
 }
 
+export declare class SqlTemplate {
+    strings: ReadonlyArray<string>;
+    values: any[];
+    constructor(strings: ReadonlyArray<string>, values: any[]);
+    toParameterizedQuery(result?: {
+        query: string;
+        params: any[];
+    }): {
+        query: string;
+        params: any[];
+    };
+}
+
 export declare function startTls(host: string, rootCertsDatabase: RootCertsDatabase | string, networkRead: (bytes: number) => Promise<Uint8Array | undefined>, networkWrite: (data: Uint8Array) => void, { useSNI, requireServerTlsExtKeyUsage, requireDigitalSigKeyUsage, writePreData, expectPreData, commentPreData }?: {
     useSNI?: boolean;
     requireServerTlsExtKeyUsage?: boolean;
@@ -795,6 +867,11 @@ export declare class TrustedCert extends Cert {
 }
 
 export { types }
+
+export declare class UnsafeRawSql {
+    sql: string;
+    constructor(sql: string);
+}
 
 export declare interface WebSocketConstructor {
     new (...args: any[]): WebSocketLike;

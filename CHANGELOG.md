@@ -1,3 +1,57 @@
+## 1.0.0 (2025-XX-XX)
+
+Breaking change: the HTTP query template function can now **only** be called as a template function, not as a conventional function. This improves safety from accidental SQL-injection vulnerabilities. For example:
+
+```js
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL);
+const id = 1;
+
+// this is safe and convenient, as before
+const result = await sql`SELECT * FROM table WHERE id = ${id}`;
+
+// this looks very similar and was previously allowed, but was open to SQL
+// injection attacks because it uses ordinary string interpolation -- it's now
+// both a TypeScript type error and a runtime error
+const throws = await sql(`SELECT * FROM table WHERE id = ${id}`);
+```
+
+To fill the gap left by this change, the template function has two new properties: a `query()` function that allows manually parameterized queries, and an `unsafe()` function that lets you interpolate trusted arbitrary string values. For example:
+
+```js
+// this was previously allowed, and was safe, but is now also an error so as to
+// prevent the vulnerability seen above
+const throws = await sql('SELECT * FROM table WHERE id = $1', [id]);
+
+// the `query()` function is the new way to manually specify placeholders and
+// values (the same way it's done by `client.query()` and `pool.query()`)
+const result = await sql.query('SELECT * FROM table WHERE id = $1', [id]);
+
+// to interpolate strings like column or table names, **only** if you know
+// they're safe, use the `unsafe()` function
+const table = condition ? 'table1' : 'table2'; // known-safe string values
+const result = await sql`SELECT * FROM ${sql.unsafe(table)} WHERE id = ${id}`;
+
+// but in the above case, you might prefer to do this instead
+const table = condition ? sql`table1` : sql`table2`;
+const result = await sql`SELECT * FROM ${table} WHERE id = ${id}`;
+```
+
+In addition, HTTP template queries are now fully composable, including those with parameters. For example:
+
+```js
+const name = 'Olivia';
+const limit = 1;
+const whereClause = sql`WHERE name = ${name}`;
+const limitClause = sql`LIMIT ${limit}`;
+
+// compilation to raw SQL now happens lazily, at query time, so that parameter
+// placeholders can be numbered appropriately
+result = await sql`SELECT * FROM table ${whereClause} ${limitClause}`;
+```
+
+Lastly: the repository has been rearranged and refactored, `.d.ts` files are now generated automatically, packages are published via `npm version`, and comprehensive tests have been put in place. This should ease the way for future enhancements and contributions.
+
 ## 0.10.4 (2024-11-25)
 
 Fixes insert `Buffer`/`ArrayBuffer` values into `BYTEA` fields when using HTTP fetch queries.

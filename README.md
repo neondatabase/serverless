@@ -29,10 +29,10 @@ Note: to install with npm for use by another package that declares a dependency 
 ```json
   ...
   "dependencies": {
-    "pg": "npm:@neondatabase/serverless@^0.10.4"
+    "pg": "npm:@neondatabase/serverless@^1.0.0"
   },
   "overrides": {
-    "pg": "npm:@neondatabase/serverless@^0.10.4"
+    "pg": "npm:@neondatabase/serverless@^1.0.0"
   }
   ...
 ```
@@ -42,12 +42,12 @@ Note: to install with npm for use by another package that declares a dependency 
 Get your connection string from the [Neon console](https://console.neon.tech/) and set it as an environment variable. Something like:
 
 ```
-DATABASE_URL=postgres://username:password@host.neon.tech/neondb
+DATABASE_URL="postgres://username:password@host.neon.tech/neondb"
 ```
 
 ### Use it
 
-For one-shot queries, use the `neon` function. For instance:
+For one-shot queries, use the `neon(...)` function. For instance:
 
 ```javascript
 import { neon } from '@neondatabase/serverless';
@@ -58,6 +58,8 @@ const [post] = await sql`SELECT * FROM posts WHERE id = ${postId}`;
 ```
 
 Note: interpolating `${postId}` here is [safe from SQL injection](https://neon.tech/blog/sql-template-tags).
+
+There are [more details and options for `neon()` function](CONFIG.md).
 
 ### Deploy it
 
@@ -98,8 +100,6 @@ npx vercel env add DATABASE_URL  # paste Neon connection string, select all envi
 npx vercel dev  # check working locally, then ...
 npx vercel deploy
 ```
-
-The `neon` query function has a few [additional options](CONFIG.md).
 
 ## Sessions, transactions, and node-postgres compatibility
 
@@ -142,7 +142,7 @@ Queries using `Pool` and `Client` are carried by WebSockets. There are **two key
 
    That means `Pool` or `Client` objects must be connected, used and closed **within a single request handler**. Don't create them outside a request handler; don't create them in one handler and try to reuse them in another; and to avoid exhausting available connections, don't forget to close them.
 
-   Note: on Cloudflare Workers, consider [using Cloudflare Hyperdrive](https://neon.tech/blog/hyperdrive-neon-faq) instead of this driver.
+   Note: on Cloudflare Workers, [consider using Cloudflare Hyperdrive](https://neon.tech/blog/hyperdrive-neon-faq) instead of this driver.
 
 These points are demonstrated in the examples below.
 
@@ -159,8 +159,9 @@ In Node.js, it takes two lines to configure WebSocket support. For example:
 ```javascript
 import { Pool, neonConfig } from '@neondatabase/serverless';
 
+// only do this in Node v21 and below
 import ws from 'ws';
-neonConfig.webSocketConstructor = ws; // <-- this is the key bit
+neonConfig.webSocketConstructor = ws;
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 pool.on('error', (err) => console.error(err)); // deal with e.g. re-connect

@@ -16,16 +16,14 @@ for repeated SHA-256 digests. This saves some time and CPU.
 circumstances are right.
 */
 
-import type {
-  ClientBase as PgClientBase,
-  PoolClient as PgPoolClient,
-} from 'pg';
+import type { ClientBase as PgClientBase } from 'pg';
 import { type SocketDefaults } from './shims/net';
 
 export * from './httpQuery';
+export * from './sqlTemplate';
 export type * from './httpTypes';
 
-export { NeonPool as Pool } from './pool';
+export { NeonPool as Pool, type NeonPoolClient as PoolClient } from './pool';
 export { NeonClient as Client } from './client';
 
 export { Socket as neonConfig } from './shims/net';
@@ -42,11 +40,6 @@ export type {
 
 // class 'ClientBase' exists only in @types/pg: under the hood in pg it's just a `Client extends EventEmitter`
 export interface ClientBase extends PgClientBase {
-  neonConfig: NeonConfigGlobalAndClient;
-}
-
-// class 'PoolClient' exists only in @types/pg: under the hood in pg it's just a `Client extends EventEmitter`
-export interface PoolClient extends PgPoolClient {
   neonConfig: NeonConfigGlobalAndClient;
 }
 
@@ -77,7 +70,6 @@ export type {
   Submittable,
 } from 'pg';
 
-// provided for backwards-compatibility
 export type NeonConfigGlobalOnly = Pick<
   SocketDefaults,
   | 'fetchEndpoint'
@@ -86,7 +78,6 @@ export type NeonConfigGlobalOnly = Pick<
   | 'fetchFunction'
 >;
 
-// provided for backwards-compatibility
 export type NeonConfigGlobalAndClient = Omit<
   SocketDefaults,
   keyof NeonConfigGlobalOnly
