@@ -47,7 +47,7 @@ const limitClause = sql`LIMIT ${limit}`;
 
 // compilation to raw SQL now happens lazily, at query time, so that parameter
 // placeholders can be numbered appropriately
-result = await sql`SELECT * FROM table ${whereClause} ${limitClause}`;
+const result = await sql`SELECT * FROM table ${whereClause} ${limitClause}`;
 ```
 
 Lastly: the repository has been rearranged and refactored, `.d.ts` files are now generated automatically, packages are published via `npm version`, and comprehensive tests have been put in place. This should ease the way for future enhancements and contributions.
