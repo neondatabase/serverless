@@ -1104,39 +1104,39 @@ result;if(this._isFull()||this._idle.length){if(this._idle.length&&m.nextTick(()
 !this.options.connectionTimeoutMillis)return this._pendingQueue.push(new Ne(t.callback)),n;let i=a((u,c,l)=>{
 clearTimeout(o),t.callback(u,c,l)},"queueCallback"),s=new Ne(i),o=setTimeout(()=>{eo(this._pendingQueue,
 u=>u.callback===i),s.timedOut=!0,t.callback(new Error("timeout exceeded when trying to connect"))},this.
-options.connectionTimeoutMillis);return this._pendingQueue.push(s),n}return this.newClient(new Ne(t.
-callback)),n}newClient(e){let t=new this.Client(this.options);this._clients.push(t);let n=nl(this,t);
-this.log("checking client timeout");let i,s=!1;this.options.connectionTimeoutMillis&&(i=setTimeout(()=>{
-this.log("ending client due to timeout"),s=!0,t.connection?t.connection.stream.destroy():t.end()},this.
-options.connectionTimeoutMillis)),this.log("connecting new client"),t.connect(o=>{if(i&&clearTimeout(
-i),t.on("error",n),o)this.log("client failed to connect",o),this._clients=this._clients.filter(u=>u!==
-t),s&&(o=new Error("Connection terminated due to connection timeout",{cause:o})),this._pulseQueue(),
-e.timedOut||e.callback(o,void 0,Xs);else{if(this.log("new client connected"),this.options.maxLifetimeSeconds!==
-0){let u=setTimeout(()=>{this.log("ending client due to expired lifetime"),this._expired.add(t),this.
-_idle.findIndex(l=>l.client===t)!==-1&&this._acquireClient(t,new Ne((l,f,y)=>y()),n,!1)},this.options.
-maxLifetimeSeconds*1e3);u.unref(),t.once("end",()=>clearTimeout(u))}return this._acquireClient(t,e,n,
-!0)}})}_acquireClient(e,t,n,i){i&&this.emit("connect",e),this.emit("acquire",e),e.release=this._releaseOnce(
-e,n),e.removeListener("error",n),t.timedOut?i&&this.options.verify?this.options.verify(e,e.release):
-e.release():i&&this.options.verify?this.options.verify(e,s=>{if(s)return e.release(s),t.callback(s,void 0,
-Xs);t.callback(void 0,e,e.release)}):t.callback(void 0,e,e.release)}_releaseOnce(e,t){let n=!1;return i=>{
-n&&rl(),n=!0,this._release(e,t,i)}}_release(e,t,n){if(e.on("error",t),e._poolUseCount=(e._poolUseCount||
-0)+1,this.emit("release",n,e),n||this.ending||!e._queryable||e._ending||e._poolUseCount>=this.options.
-maxUses){e._poolUseCount>=this.options.maxUses&&this.log("remove expended client"),this._remove(e),this.
-_pulseQueue();return}if(this._expired.has(e)){this.log("remove expired client"),this._expired.delete(
-e),this._remove(e),this._pulseQueue();return}let s;this.options.idleTimeoutMillis&&(s=setTimeout(()=>{
-this.log("remove idle client"),this._remove(e)},this.options.idleTimeoutMillis),this.options.allowExitOnIdle&&
-s.unref()),this.options.allowExitOnIdle&&e.unref(),this._idle.push(new _n(e,t,s)),this._pulseQueue()}query(e,t,n){
-if(typeof e=="function"){let s=Ut(this.Promise,e);return b(function(){return s.callback(new Error("P\
-assing a function as the first parameter to pool.query is not supported"))}),s.result}typeof t=="fun\
-ction"&&(n=t,t=void 0);let i=Ut(this.Promise,n);return n=i.callback,this.connect((s,o)=>{if(s)return n(
-s);let u=!1,c=a(l=>{u||(u=!0,o.release(l),n(l))},"onError");o.once("error",c),this.log("dispatching \
-query");try{o.query(e,t,(l,f)=>{if(this.log("query dispatched"),o.removeListener("error",c),!u)return u=
-!0,o.release(l),l?n(l):n(void 0,f)})}catch(l){return o.release(l),n(l)}}),i.result}end(e){if(this.log(
-"ending"),this.ending){let n=new Error("Called end on pool more than once");return e?e(n):this.Promise.
-reject(n)}this.ending=!0;let t=Ut(this.Promise,e);return this._endCallback=t.callback,this._pulseQueue(),
-t.result}get waitingCount(){return this._pendingQueue.length}get idleCount(){return this._idle.length}get expiredCount(){
-return this._clients.reduce((e,t)=>e+(this._expired.has(t)?1:0),0)}get totalCount(){return this._clients.
-length}};a(Rn,"Pool");var Tn=Rn;to.exports=Tn});var no={};ee(no,{default:()=>il});var il,io=z(()=>{"use strict";p();il={}});var so=I((sp,sl)=>{sl.exports={name:"pg",version:"8.8.0",description:"PostgreSQL client - pure javas\
+options.connectionTimeoutMillis);return o.unref&&o.unref(),this._pendingQueue.push(s),n}return this.
+newClient(new Ne(t.callback)),n}newClient(e){let t=new this.Client(this.options);this._clients.push(
+t);let n=nl(this,t);this.log("checking client timeout");let i,s=!1;this.options.connectionTimeoutMillis&&
+(i=setTimeout(()=>{this.log("ending client due to timeout"),s=!0,t.connection?t.connection.stream.destroy():
+t.end()},this.options.connectionTimeoutMillis)),this.log("connecting new client"),t.connect(o=>{if(i&&
+clearTimeout(i),t.on("error",n),o)this.log("client failed to connect",o),this._clients=this._clients.
+filter(u=>u!==t),s&&(o=new Error("Connection terminated due to connection timeout",{cause:o})),this.
+_pulseQueue(),e.timedOut||e.callback(o,void 0,Xs);else{if(this.log("new client connected"),this.options.
+maxLifetimeSeconds!==0){let u=setTimeout(()=>{this.log("ending client due to expired lifetime"),this.
+_expired.add(t),this._idle.findIndex(l=>l.client===t)!==-1&&this._acquireClient(t,new Ne((l,f,y)=>y()),
+n,!1)},this.options.maxLifetimeSeconds*1e3);u.unref(),t.once("end",()=>clearTimeout(u))}return this.
+_acquireClient(t,e,n,!0)}})}_acquireClient(e,t,n,i){i&&this.emit("connect",e),this.emit("acquire",e),
+e.release=this._releaseOnce(e,n),e.removeListener("error",n),t.timedOut?i&&this.options.verify?this.
+options.verify(e,e.release):e.release():i&&this.options.verify?this.options.verify(e,s=>{if(s)return e.
+release(s),t.callback(s,void 0,Xs);t.callback(void 0,e,e.release)}):t.callback(void 0,e,e.release)}_releaseOnce(e,t){
+let n=!1;return i=>{n&&rl(),n=!0,this._release(e,t,i)}}_release(e,t,n){if(e.on("error",t),e._poolUseCount=
+(e._poolUseCount||0)+1,this.emit("release",n,e),n||this.ending||!e._queryable||e._ending||e._poolUseCount>=
+this.options.maxUses){e._poolUseCount>=this.options.maxUses&&this.log("remove expended client"),this.
+_remove(e),this._pulseQueue();return}if(this._expired.has(e)){this.log("remove expired client"),this.
+_expired.delete(e),this._remove(e),this._pulseQueue();return}let s;this.options.idleTimeoutMillis&&(s=
+setTimeout(()=>{this.log("remove idle client"),this._remove(e)},this.options.idleTimeoutMillis),this.
+options.allowExitOnIdle&&s.unref()),this.options.allowExitOnIdle&&e.unref(),this._idle.push(new _n(e,
+t,s)),this._pulseQueue()}query(e,t,n){if(typeof e=="function"){let s=Ut(this.Promise,e);return b(function(){
+return s.callback(new Error("Passing a function as the first parameter to pool.query is not supporte\
+d"))}),s.result}typeof t=="function"&&(n=t,t=void 0);let i=Ut(this.Promise,n);return n=i.callback,this.
+connect((s,o)=>{if(s)return n(s);let u=!1,c=a(l=>{u||(u=!0,o.release(l),n(l))},"onError");o.once("er\
+ror",c),this.log("dispatching query");try{o.query(e,t,(l,f)=>{if(this.log("query dispatched"),o.removeListener(
+"error",c),!u)return u=!0,o.release(l),l?n(l):n(void 0,f)})}catch(l){return o.release(l),n(l)}}),i.result}end(e){
+if(this.log("ending"),this.ending){let n=new Error("Called end on pool more than once");return e?e(n):
+this.Promise.reject(n)}this.ending=!0;let t=Ut(this.Promise,e);return this._endCallback=t.callback,this.
+_pulseQueue(),t.result}get waitingCount(){return this._pendingQueue.length}get idleCount(){return this.
+_idle.length}get expiredCount(){return this._clients.reduce((e,t)=>e+(this._expired.has(t)?1:0),0)}get totalCount(){
+return this._clients.length}};a(Rn,"Pool");var Tn=Rn;to.exports=Tn});var no={};ee(no,{default:()=>il});var il,io=z(()=>{"use strict";p();il={}});var so=I((sp,sl)=>{sl.exports={name:"pg",version:"8.8.0",description:"PostgreSQL client - pure javas\
 cript & libpq with the same API",keywords:["database","libpq","pg","postgre","postgres","postgresql",
 "rdbms"],homepage:"https://github.com/brianc/node-postgres",repository:{type:"git",url:"git://github\
 .com/brianc/node-postgres.git",directory:"packages/pg"},author:"Brian Carlson <brian.m.carlson@gmail\

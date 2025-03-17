@@ -50,6 +50,8 @@ const limitClause = sql`LIMIT ${limit}`;
 const result = await sql`SELECT * FROM table ${whereClause} ${limitClause}`;
 ```
 
+The minimum supported version of Node is now v19 (this avoids having to do dynamic `crypto` imports, which can cause trouble with bundlers).
+
 Lastly: the repository has been rearranged and refactored, `.d.ts` files are now generated automatically, packages are published via `npm version`, and comprehensive tests have been put in place. This should ease the way for future enhancements and contributions.
 
 ## 0.10.4 (2024-11-25)
