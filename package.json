@@ -45,9 +45,9 @@
   },
   "scripts": {
     "build": "./build.sh",
-    "preversion": "([[ $(git branch --show-current) = 'main' ]] || echo 'Must be on main') && npm run format && npm run test && git add index.js index.d.ts index.mjs index.d.mts",
-    "version": "(grep \"^## $(jq -r .version package.json)\" CHANGELOG.md || 'Update CHANGELOG.md') && jq --arg v \"$(jq -r .version package.json)\" '.version = $v' jsr.json > build/jsr.json && mv build/jsr.json jsr.json && git add jsr.json",
-    "postversion": "git push && git push --tags && npm publish && jsr publish",
+    "preversion": "([[ $(git branch --show-current) = 'main' ]] || echo 'Must be on `main`') && git pull && npm run format && npm run test",
+    "version": "(grep $npm_package_version CHANGELOG.md || 'Update CHANGELOG.md') && git checkout -b release/v$npm_package_version && jq --arg v $npm_package_version '.version = $v' jsr.json > build/jsr.json && mv build/jsr.json jsr.json && git add jsr.json index.js index.d.ts index.mjs index.d.mts",
+    "postversion": "git push --follow-tags origin release/v$npm_package_version && echo 'Release $npm_package_version created. Run `npm publish` once PR is merged into `main`.'",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
     "test": "touch src && npm run test:node && npm run test:edge && npm run test:bun && npm run test:deno && npm run test:packages && npm run test:cloudflare && npm run test:vercel && npm run test:browser",

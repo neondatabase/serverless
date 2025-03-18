@@ -1,4 +1,4 @@
-## 1.0.0 (2025-XX-XX)
+## 1.0.0 (2025-03-25)
 
 Breaking change: the HTTP query template function can now **only** be called as a template function, not as a conventional function. This improves safety from accidental SQL-injection vulnerabilities. For example:
 
