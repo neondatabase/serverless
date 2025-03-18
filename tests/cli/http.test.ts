@@ -54,7 +54,7 @@ test('non-template usage is no longer allowed', () => {
   // @ts-expect-error
   const queryFunc = () => sql(`SELECT ${1}`);
   expect(queryFunc).toThrowError(
-    'Must be called as a tagged-template function',
+    'This function can now be called only as a tagged-template function',
   );
 });
 

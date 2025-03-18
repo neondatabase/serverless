@@ -231,7 +231,7 @@ export function neon<
 
     if (!calledAsTemplateFn) {
       throw new Error(
-        'Must be called as a tagged-template function: sql`...`, not sql(`...`)',
+        'This function can now be called only as a tagged-template function: sql`SELECT ${value}`, not sql("SELECT $1", [value], options). For a conventional function call with value placeholders ($1, $2, etc.), use sql.query("SELECT $1", [value], options).',
       );
     }
     return new NeonQueryPromise(execute, new SqlTemplate(strings, params));
