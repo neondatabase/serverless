@@ -1,6 +1,6 @@
 {
   "name": "@neon/serverless",
-  "version": "0.10.4",
+  "version": "1.0.0",
   "exports": "./index.mjs",
   "imports": {
     "pg": "npm:@types/pg@8.8.0",
