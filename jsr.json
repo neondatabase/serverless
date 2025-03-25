@@ -6,13 +6,15 @@
     "pg": "npm:@types/pg@8.8.0",
     "node": "npm:@types/node@22.10.2"
   },
-  "include": [
-    "index.mjs",
-    "index.d.mts",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md",
-    "CONFIG.md",
-    "DEPLOY.md"
-  ]
+  "publish": {
+    "include": [
+      "index.mjs",
+      "index.d.mts",
+      "README.md",
+      "LICENSE",
+      "CHANGELOG.md",
+      "CONFIG.md",
+      "DEPLOY.md"
+    ]
+  }
 }
