@@ -25,6 +25,7 @@ npx esbuild src/index.ts \
   $DEBUG_ARG $MINIFY_ARG
 
 # bundle ESM code to index.mjs
+# (--banner:js comment is for JSR's benefit)
 npx esbuild src/index.ts \
   --format=esm \
   --bundle \
@@ -32,6 +33,7 @@ npx esbuild src/index.ts \
   --inject:src/shims/shims.js \
   --define:BUNDLE_EXT=\"mjs\" \
   --target=es2020 \
+  --banner:js='/* @ts-self-types="./index.d.mts" */' \
   --outfile=index.mjs \
   $DEBUG_ARG $MINIFY_ARG
 

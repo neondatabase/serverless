@@ -1,3 +1,4 @@
+/* @ts-self-types="./index.d.mts" */
 var vo=Object.create;var Te=Object.defineProperty;var xo=Object.getOwnPropertyDescriptor;var So=Object.getOwnPropertyNames;var Eo=Object.getPrototypeOf,Ao=Object.prototype.hasOwnProperty;var Co=(r,e,t)=>e in r?Te(r,e,{enumerable:!0,configurable:!0,writable:!0,value:t}):r[e]=t;var a=(r,e)=>Te(r,"name",{value:e,configurable:!0});var z=(r,e)=>()=>(r&&(e=r(r=0)),e);var I=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports),ne=(r,e)=>{for(var t in e)Te(r,t,{get:e[t],
 enumerable:!0})},Mn=(r,e,t,n)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of So(e))!Ao.
 call(r,i)&&i!==t&&Te(r,i,{get:()=>e[i],enumerable:!(n=xo(e,i))||n.enumerable});return r};var xe=(r,e,t)=>(t=r!=null?vo(Eo(r)):{},Mn(e||!r||!r.__esModule?Te(t,"default",{value:r,enumerable:!0}):
