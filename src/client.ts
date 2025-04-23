@@ -1,5 +1,6 @@
 import { Client, Connection, type ClientConfig } from 'pg';
 import { Socket } from './shims/net';
+import { warnIfBrowser } from './utils';
 
 export declare interface NeonClient {
   connection: Connection & {
@@ -95,6 +96,8 @@ export class NeonClient extends Client {
 
       const connectEvent = this.ssl ? 'sslconnect' : 'connect';
       con.on(connectEvent, () => {
+        warnIfBrowser();
+
         this._handleAuthCleartextPassword();
         this._handleReadyForQuery();
       });

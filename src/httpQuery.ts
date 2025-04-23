@@ -27,6 +27,7 @@ import type {
   ParameterizedQuery,
 } from './httpTypes';
 import { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
+import { warnIfBrowser } from './utils';
 
 // @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
@@ -365,21 +366,7 @@ export function neon<
         headers['Neon-Batch-Deferrable'] = String(resolvedDeferrable);
     }
 
-    const isBrowser =
-      typeof window !== 'undefined' && typeof document !== 'undefined';
-    if (isBrowser) {
-      console.warn(`          
-          ************************************************************
-          *                                                          *
-          *  WARNING: Running SQL directly from the browser can have *
-          *  security implications. While your database is protected *
-          *  by Row-Level Security (RLS), use it at your own risk.   *
-          *  This approach is great for fast prototyping, but ensure *
-          *  proper safeguards are in place to prevent misuse or     *
-          *  execution of expensive SQL queries by your end users.   *
-          *                                                          *
-          ************************************************************`);
-    }
+    warnIfBrowser();
 
     // --- run query ---
 

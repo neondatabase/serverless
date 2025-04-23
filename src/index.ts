@@ -32,6 +32,7 @@ declare global {
 export * from './httpQuery';
 export * from './sqlTemplate';
 export type * from './httpTypes';
+export * from './utils';
 
 export { NeonPool as Pool, type NeonPoolClient as PoolClient } from './pool';
 export { NeonClient as Client } from './client';
