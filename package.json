@@ -80,7 +80,7 @@
     "buffer": "^6.0.3",
     "crypto": "file:src/shims/crypto",
     "dns": "file:src/shims/dns",
-    "drizzle-orm": "^0.40.1",
+    "drizzle-orm": "^0.43.0",
     "esbuild": "^0.25.0",
     "events": "^3.3.0",
     "fast-equals": "^5.0.1",
@@ -109,6 +109,7 @@
     "ws": "^8.12.1"
   },
   "overrides": {
-    "pg-connection-string": "2.5.0"
+    "pg-connection-string": "2.5.0",
+    "@neondatabase/serverless": "file:."
   }
 }

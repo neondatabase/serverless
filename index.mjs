@@ -941,8 +941,8 @@ t,i,s)}parseBackendKeyData(e,t,n){this.reader.setBuffer(e,n);let i=this.reader.i
 int32();return new M.BackendKeyDataMessage(t,i,s)}parseAuthenticationResponse(e,t,n){this.reader.setBuffer(
 e,n);let i=this.reader.int32(),s={name:"authenticationOk",length:t};switch(i){case 0:break;case 3:s.
 length===8&&(s.name="authenticationCleartextPassword");break;case 5:if(s.length===12){s.name="authen\
-ticationMD5Password";let u=this.reader.bytes(4);return new M.AuthenticationMD5Password(t,u)}break;case 10:
-s.name="authenticationSASL",s.mechanisms=[];let o;do o=this.reader.cstring(),o&&s.mechanisms.push(o);while(o);
+ticationMD5Password";let o=this.reader.bytes(4);return new M.AuthenticationMD5Password(t,o)}break;case 10:
+{s.name="authenticationSASL",s.mechanisms=[];let o;do o=this.reader.cstring(),o&&s.mechanisms.push(o);while(o)}
 break;case 11:s.name="authenticationSASLContinue",s.data=this.reader.string(t-8);break;case 12:s.name=
 "authenticationSASLFinal",s.data=this.reader.string(t-8);break;default:throw new Error("Unknown auth\
 enticationOk message type "+i)}return s}parseErrorMessage(e,t,n,i){this.reader.setBuffer(e,n);let s={},
