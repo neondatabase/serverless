@@ -10,6 +10,8 @@ import { CustomTypesConfig } from 'pg';
 import { DatabaseError } from 'pg';
 import { Defaults } from 'pg';
 import { defaults } from 'pg';
+import { escapeIdentifier } from 'pg';
+import { escapeLiteral } from 'pg';
 import { EventEmitter } from 'events';
 import { Events } from 'pg';
 import { ExecuteConfig } from 'pg';
@@ -254,6 +256,10 @@ export { Defaults }
 export { defaults }
 
 declare type DistinguishedName = Record<string, string | string[]>;
+
+export { escapeIdentifier }
+
+export { escapeLiteral }
 
 export { Events }
 
