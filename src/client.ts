@@ -96,7 +96,9 @@ export class NeonClient extends Client {
 
       const connectEvent = this.ssl ? 'sslconnect' : 'connect';
       con.on(connectEvent, () => {
-        warnIfBrowser();
+        if (!this.neonConfig.disableWarningBrowser) {
+          warnIfBrowser();
+        }
 
         this._handleAuthCleartextPassword();
         this._handleReadyForQuery();

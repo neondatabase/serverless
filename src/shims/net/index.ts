@@ -102,6 +102,7 @@ export interface SocketDefaults {
   rootCerts: string;
   pipelineTLS: boolean;
   disableSNI: boolean;
+  disableWarningBrowser: boolean;
 }
 type GlobalOnlyDefaults =
   | 'poolQueryViaFetch'
@@ -142,6 +143,7 @@ export class Socket extends EventEmitter {
     rootCerts: '',
     pipelineTLS: false,
     disableSNI: false,
+    disableWarningBrowser: false,
   };
 
   static opts: Partial<SocketDefaults> = {};
@@ -343,6 +345,29 @@ export class Socket extends EventEmitter {
   }
   set disableSNI(newValue: SocketDefaults['disableSNI']) {
     this.opts.disableSNI = newValue;
+  }
+
+  /**
+   * When `disableWarningBrowser` is set to `true`, it disables the warning about
+   * running this driver in the browser.
+   *
+   * Default: `false`.
+   */
+  static get disableWarningBrowser() {
+    return (
+      Socket.opts.disableWarningBrowser ?? Socket.defaults.disableWarningBrowser
+    );
+  }
+  static set disableWarningBrowser(
+    newValue: SocketDefaults['disableWarningBrowser'],
+  ) {
+    Socket.opts.disableWarningBrowser = newValue;
+  }
+  get disableWarningBrowser() {
+    return this.opts.disableWarningBrowser ?? Socket.disableWarningBrowser;
+  }
+  set disableWarningBrowser(newValue: SocketDefaults['disableWarningBrowser']) {
+    this.opts.disableWarningBrowser = newValue;
   }
 
   /**

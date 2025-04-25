@@ -64,6 +64,14 @@ export interface HTTPQueryOptions<
    * Custom type parsers. See https://github.com/brianc/node-pg-types.
    */
   types?: typeof PgTypes;
+
+  /**
+   * When `disableWarningBrowser` is set to `true`, it disables the warning about
+   * running this driver in the browser.
+   *
+   * Default: `false`
+   */
+  disableWarningBrowser?: boolean;
 }
 
 export interface HTTPTransactionOptions<

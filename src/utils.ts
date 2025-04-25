@@ -5,7 +5,11 @@
 export function warnIfBrowser(): void {
   const isBrowser =
     typeof window !== 'undefined' && typeof document !== 'undefined';
-  if (isBrowser) {
+  if (
+    isBrowser &&
+    typeof console !== 'undefined' &&
+    typeof console.warn === 'function'
+  ) {
     console.warn(`          
         ************************************************************
         *                                                          *

@@ -193,6 +193,7 @@ export function neon<
     readOnly: neonOptReadOnly,
     deferrable: neonOptDeferrable,
     authToken,
+    disableWarningBrowser,
   }: HTTPTransactionOptions<ArrayMode, FullResults> = {},
 ): NeonQueryFunction<ArrayMode, FullResults> {
   // check the connection string
@@ -366,7 +367,9 @@ export function neon<
         headers['Neon-Batch-Deferrable'] = String(resolvedDeferrable);
     }
 
-    warnIfBrowser();
+    if (!disableWarningBrowser) {
+      warnIfBrowser();
+    }
 
     // --- run query ---
 
