@@ -66,12 +66,12 @@ export interface HTTPQueryOptions<
   types?: typeof PgTypes;
 
   /**
-   * When `disableWarningBrowser` is set to `true`, it disables the warning about
+   * When `disableWarningInBrowsers` is set to `true`, it disables the warning about
    * running this driver in the browser.
    *
    * Default: `false`
    */
-  disableWarningBrowser?: boolean;
+  disableWarningInBrowsers?: boolean;
 }
 
 export interface HTTPTransactionOptions<
