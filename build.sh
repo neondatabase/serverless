@@ -48,11 +48,13 @@ sed -i.orig -r \
 # bundle all types into one file
 npx @microsoft/api-extractor run
 
-# remove private/protected fields and empty exports from types
+# remove private/protected fields, empty exports and Uint8Array generics from types
 sed -r \
   -e '/^ *private [^;]+;$/d' \
   -e '/^ *protected [^;]+;$/d' \
   -e '/^export [{] *[}]$/d' \
+  -e 's/Uint8Array<ArrayBuffer>/Uint8Array/' \
+  -e 's/Uint8Array<ArrayBufferLike>/Uint8Array/' \
   build/generated.d.ts > index.d.ts
 
 # copy d.ts to .d.mts (for ESM)
