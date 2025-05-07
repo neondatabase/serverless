@@ -29,6 +29,8 @@ import type {
 import { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
 import { warnIfBrowser } from './utils';
 
+import { Socket as neonConfig } from './shims/net';
+
 // @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
 // @ts-ignore -- this isn't officially exported by pg
@@ -367,7 +369,7 @@ export function neon<
         headers['Neon-Batch-Deferrable'] = String(resolvedDeferrable);
     }
 
-    if (!disableWarningInBrowsers) {
+    if (!(disableWarningInBrowsers || neonConfig.disableWarningInBrowsers)) {
       warnIfBrowser();
     }
 

@@ -21,6 +21,10 @@ export function warnIfBrowser(): void {
         *  misuse or execution of expensive SQL queries by your    *
         *  end users.                                              *
         *                                                          *
+        *  If you've assessed the risks, suppress this message     *
+        *  using the disableWarningInBrowsers configuration        *
+        *  parameter.                                              *
+        *                                                          *
         ************************************************************`);
   }
 }
