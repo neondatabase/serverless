@@ -19,9 +19,20 @@ circumstances are right.
 import type { ClientBase as PgClientBase } from 'pg';
 import { type SocketDefaults } from './shims/net';
 
+// Ensure we are very explicit while using these apis. This ensures more type safety
+// specially since this library is made to run both in the browser and node.js environments.
+declare global {
+  const window: Window | undefined;
+  const document: Document | undefined;
+
+  interface Window {}
+  interface Document {}
+}
+
 export * from './httpQuery';
 export * from './sqlTemplate';
 export type * from './httpTypes';
+export * from './utils';
 
 export { NeonPool as Pool, type NeonPoolClient as PoolClient } from './pool';
 export { NeonClient as Client } from './client';
