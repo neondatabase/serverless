@@ -6,8 +6,7 @@ import { PrismaClient } from '@prisma/client';
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 
 test('basic query using Prisma with http', async () => {
-  const sql = neon(DATABASE_URL);
-  const adapter = new PrismaNeonHTTP(sql);
+  const adapter = new PrismaNeonHTTP(DATABASE_URL, {});
   const prisma = new PrismaClient({ adapter });
   const tzName = 'Europe/London';
   const result = await prisma.pg_timezone_names.findFirst({

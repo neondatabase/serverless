@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "exports": "./index.mjs",
   "imports": {
-    "pg": "npm:@types/pg@8.8.0",
-    "node": "npm:@types/node@22.10.2"
+    "pg": "npm:@types/pg@^8.8.0",
+    "node": "npm:@types/node"
   },
   "publish": {
     "include": [

@@ -47,7 +47,7 @@
     "build": "./build.sh",
     "preversion": "([[ $(git branch --show-current) = 'main' ]] || echo 'Must be on `main`') && git pull && npm run format && npm run test",
     "version": "(grep $npm_package_version CHANGELOG.md || 'Update CHANGELOG.md') && git checkout -b release/v$npm_package_version && jq --arg v $npm_package_version '.version = $v' jsr.json > build/jsr.json && mv build/jsr.json jsr.json && git add jsr.json index.js index.d.ts index.mjs index.d.mts",
-    "postversion": "git push --follow-tags origin release/v$npm_package_version && echo 'Release $npm_package_version created. Run `npm publish` once PR is merged into `main`.'",
+    "postversion": "git push --follow-tags origin release/v$npm_package_version && echo 'Release $npm_package_version created. Run `npm publish` and `npx jsr publish` once PR is merged into `main`.'",
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
     "test": "touch src && npm run test:node && npm run test:edge && npm run test:bun && npm run test:deno && npm run test:packages && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
@@ -61,7 +61,7 @@
     "test:browser": "npm run build && playwright install --with-deps firefox chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts"
   },
   "dependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "*",
     "@types/pg": "^8.8.0"
   },
   "devDependencies": {
@@ -80,7 +80,7 @@
     "buffer": "^6.0.3",
     "crypto": "file:src/shims/crypto",
     "dns": "file:src/shims/dns",
-    "drizzle-orm": "^0.40.1",
+    "drizzle-orm": "^0.43.0",
     "esbuild": "^0.25.0",
     "events": "^3.3.0",
     "fast-equals": "^5.0.1",
@@ -109,6 +109,7 @@
     "ws": "^8.12.1"
   },
   "overrides": {
-    "pg-connection-string": "2.5.0"
+    "pg-connection-string": "2.5.0",
+    "@neondatabase/serverless": "file:."
   }
 }
