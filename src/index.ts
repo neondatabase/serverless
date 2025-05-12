@@ -54,7 +54,7 @@ export interface ClientBase extends PgClientBase {
   neonConfig: NeonConfigGlobalAndClient;
 }
 
-export { defaults, types, DatabaseError } from 'pg';
+export { defaults, types, DatabaseError, escapeIdentifier } from 'pg';
 
 export type {
   BindConfig,
