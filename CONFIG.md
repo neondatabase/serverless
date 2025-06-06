@@ -119,7 +119,7 @@ const rows = await sql.query('SELECT * FROM posts WHERE id = $1', [postId], {
 clearTimeout(timeout);
 ```
 
-### `types: typeof PgTypes`
+### `types: CustomTypesConfig`
 
 The `types` option can be passed to `neon(...)` to override the default PostgreSQL type parsers provided by `PgTypes`. This is useful if you want to define custom parsing behavior for specific PostgreSQL data types, allowing you to control how data is converted when retrieved from the database. Learn more in the [PgTypes official documentation](https://github.com/brianc/node-pg-types).
 
@@ -129,16 +129,23 @@ Example of usage:
 import PgTypes from 'pg-types';
 import { neon } from '@neondatabase/serverless';
 
-// Define custom parsers for specific PostgreSQL types
-// Parse PostgreSQL `DATE` fields as JavaScript `Date` objects
-PgTypes.setTypeParser(PgTypes.builtins.DATE, (val) => new Date(val));
-
-// Parse PostgreSQL `NUMERIC` fields as JavaScript `float` values
-PgTypes.setTypeParser(PgTypes.builtins.NUMERIC, parseFloat);
-
 // Configure the Neon client with the custom `types` parser
 const sql = neon(process.env.DATABASE_URL, {
-  types: PgTypes, // Pass in the custom PgTypes object here
+  types: {
+    getTypeParser: ((oid, format?: any) => {
+      // Define custom parsers for specific PostgreSQL types
+      // Parse PostgreSQL `DATE` fields as JavaScript `Date` objects
+      if (oid === PgTypes.builtins.DATE) {
+        return (val: any) => new Date(val);
+      }
+      // Parse PostgreSQL `NUMERIC` fields as JavaScript `float` values
+      if (oid === PgTypes.builtins.NUMERIC) {
+        return parseFloat;
+      }
+      // For all other types, use the default parser
+      return PgTypes.getTypeParser(oid, format);
+    }) as typeof PgTypes.getTypeParser,
+  },
 });
 ```
 

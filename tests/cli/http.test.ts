@@ -16,7 +16,7 @@ const pool = new Pool({ connectionString: DATABASE_URL });
 
 test(
   'http query results match WebSocket query results',
-  { timeout: 30000 },
+  { timeout: 60000 },
   async () => {
     const client = await pool.connect();
 

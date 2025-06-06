@@ -663,15 +663,16 @@ export class Socket extends EventEmitter {
   }
 
   rawWrite(data: Uint8Array) {
+    // note: `this.ws` is undefined if the connection is ended before any query is sent: https://github.com/neondatabase/serverless/issues/131
     if (!this.coalesceWrites) {
-      this.ws!.send(data);
+      if (this.ws) this.ws.send(data);
       return;
     }
 
     if (this.writeBuffer === undefined) {
       this.writeBuffer = data;
       setTimeout(() => {
-        this.ws!.send(this.writeBuffer!);
+        if (this.ws) this.ws.send(this.writeBuffer!);
         this.writeBuffer = undefined;
       }, 0);
     } else {
