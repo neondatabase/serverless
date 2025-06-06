@@ -10,6 +10,8 @@ import { CustomTypesConfig } from 'pg';
 import { DatabaseError } from 'pg';
 import { Defaults } from 'pg';
 import { defaults } from 'pg';
+import { escapeIdentifier } from 'pg';
+import { escapeLiteral } from 'pg';
 import { EventEmitter } from 'events';
 import { Events } from 'pg';
 import { ExecuteConfig } from 'pg';
@@ -43,7 +45,7 @@ declare class ASN1Bytes extends Bytes {
     readASN1UTCTime(comment?: string): Promise<Date>;
     readASN1GeneralizedTime(comment?: string): Promise<Date>;
     readASN1Time(comment?: string): Promise<Date>;
-    readASN1BitString(comment?: string): Promise<Uint8Array<ArrayBuffer>>;
+    readASN1BitString(comment?: string): Promise<Uint8Array>;
     expectASN1Sequence(comment?: string): Promise<readonly [() => void, () => number]>;
     expectASN1OctetString(comment?: string): Promise<readonly [() => void, () => number]>;
     expectASN1DERDoc(): Promise<readonly [() => void, () => number]>;
@@ -77,9 +79,9 @@ declare class Bytes {
     expectLength(length: number, indentDelta?: number): readonly [() => void, () => number];
     comment(s: string, offset?: number): this;
     lengthComment(length: number, comment?: string, inclusive?: boolean): string;
-    subarrayForRead(length: number): Promise<Uint8Array<ArrayBufferLike>>;
+    subarrayForRead(length: number): Promise<Uint8Array>;
     skipRead(length: number, comment?: string): Promise<this>;
-    readBytes(length: number): Promise<Uint8Array<ArrayBuffer>>;
+    readBytes(length: number): Promise<Uint8Array>;
     readUTF8String(length: number): Promise<string>;
     readUTF8StringNullTerminated(): Promise<string>;
     readUint8(comment?: string): Promise<number>;
@@ -100,7 +102,7 @@ declare class Bytes {
     expectLengthUint16Incl(comment?: string): Promise<readonly [() => void, () => number]>;
     expectLengthUint24Incl(comment?: string): Promise<readonly [() => void, () => number]>;
     expectLengthUint32Incl(comment?: string): Promise<readonly [() => void, () => number]>;
-    subarrayForWrite(length: number): Uint8Array<ArrayBufferLike>;
+    subarrayForWrite(length: number): Uint8Array;
     skipWrite(length: number, comment?: string): this;
     writeBytes(bytes: number[] | Uint8Array): this;
     writeUTF8String(s: string): this;
@@ -119,7 +121,7 @@ declare class Bytes {
     writeLengthUint24Incl(comment?: string): () => void;
     writeLengthUint32Incl(comment?: string): () => void;
     expectWriteLength(length: number, indentDelta?: number): readonly [() => void, () => number];
-    array(): Uint8Array<ArrayBufferLike>;
+    array(): Uint8Array;
     commentedString(all?: boolean): string;
 }
 
@@ -197,7 +199,7 @@ declare class Cert {
         signedData: string;
         rawData: string;
     };
-    static uint8ArraysFromPEM(pem: string): Uint8Array<ArrayBuffer>[];
+    static uint8ArraysFromPEM(pem: string): Uint8Array[];
     static fromPEM(pem: string): Promise<Cert[]>;
 }
 
@@ -254,6 +256,10 @@ export { Defaults }
 export { defaults }
 
 declare type DistinguishedName = Record<string, string | string[]>;
+
+export { escapeIdentifier }
+
+export { escapeLiteral }
 
 export { Events }
 
@@ -810,7 +816,7 @@ declare abstract class ReadQueue {
     enqueue(data: Uint8Array): void;
     dequeue(): void;
     bytesInQueue(): number;
-    read(bytes: number, readMode?: ReadMode): Promise<Uint8Array<ArrayBufferLike> | undefined>;
+    read(bytes: number, readMode?: ReadMode): Promise<Uint8Array | undefined>;
 }
 
 export { ResultBuilder }
@@ -848,7 +854,7 @@ export declare function startTls(host: string, rootCertsDatabase: RootCertsDatab
     expectPreData?: Uint8Array;
     commentPreData?: string;
 }): Promise<{
-    readonly read: () => Promise<Uint8Array<ArrayBufferLike> | undefined>;
+    readonly read: () => Promise<Uint8Array | undefined>;
     readonly write: (data: Uint8Array) => Promise<void>;
     readonly userCert: Cert;
 }>;
