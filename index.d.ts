@@ -315,7 +315,14 @@ export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults
     /**
      * Custom type parsers. See https://github.com/brianc/node-pg-types.
      */
-    types?: typeof types;
+    types?: CustomTypesConfig;
+    /**
+     * When `disableWarningInBrowsers` is set to `true`, it disables the warning about
+     * running this driver in the browser.
+     *
+     * Default: `false`
+     */
+    disableWarningInBrowsers?: boolean;
 }
 
 export declare interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
@@ -416,7 +423,7 @@ export { MessageConfig }
  * pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
-export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, authToken, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
+export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, authToken, disableWarningInBrowsers, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
 
 export declare interface NeonConfig {
     poolQueryViaFetch: boolean;
@@ -433,6 +440,7 @@ export declare interface NeonConfig {
     rootCerts: string;
     pipelineTLS: boolean;
     disableSNI: boolean;
+    disableWarningInBrowsers: boolean;
 }
 
 export declare class neonConfig extends EventEmitter {
@@ -552,6 +560,16 @@ export declare class neonConfig extends EventEmitter {
     static set disableSNI(newValue: NeonConfig['disableSNI']);
     get disableSNI(): NeonConfig["disableSNI"];
     set disableSNI(newValue: NeonConfig['disableSNI']);
+    /**
+     * When `disableWarningInBrowsers` is set to `true`, it disables the warning about
+     * running this driver in the browser.
+     *
+     * Default: `false`.
+     */
+    static get disableWarningInBrowsers(): NeonConfig["disableWarningInBrowsers"];
+    static set disableWarningInBrowsers(newValue: NeonConfig['disableWarningInBrowsers']);
+    get disableWarningInBrowsers(): NeonConfig["disableWarningInBrowsers"];
+    set disableWarningInBrowsers(newValue: NeonConfig['disableWarningInBrowsers']);
     /**
      * Pipelines the startup message, cleartext password message and first query
      * when set to `"password"`. This works only for cleartext password auth.
@@ -782,7 +800,7 @@ export { PoolConfig }
 export declare interface ProcessQueryResultOptions {
     arrayMode: boolean;
     fullResults: boolean;
-    types?: typeof types;
+    types?: CustomTypesConfig;
 }
 
 export { Query }
@@ -878,6 +896,12 @@ export declare class UnsafeRawSql {
     sql: string;
     constructor(sql: string);
 }
+
+/**
+ * Detects if the code is running in a browser environment and displays a warning
+ * about the security implications of running SQL directly from the browser.
+ */
+export declare function warnIfBrowser(): void;
 
 export declare interface WebSocketConstructor {
     new (...args: any[]): WebSocketLike;

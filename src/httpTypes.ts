@@ -1,4 +1,4 @@
-import type { FieldDef, types as PgTypes } from 'pg';
+import type { FieldDef, CustomTypesConfig } from 'pg';
 import { types as defaultTypes } from '.';
 import type { NeonQueryPromise } from './httpQuery';
 import type { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
@@ -63,7 +63,7 @@ export interface HTTPQueryOptions<
   /**
    * Custom type parsers. See https://github.com/brianc/node-pg-types.
    */
-  types?: typeof PgTypes;
+  types?: CustomTypesConfig;
 
   /**
    * When `disableWarningInBrowsers` is set to `true`, it disables the warning about
@@ -118,7 +118,7 @@ export interface HTTPTransactionOptions<
 export interface ProcessQueryResultOptions {
   arrayMode: boolean;
   fullResults: boolean;
-  types?: typeof defaultTypes;
+  types?: CustomTypesConfig;
 }
 
 export interface NeonQueryFunctionInTransaction<

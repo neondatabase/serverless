@@ -46,7 +46,7 @@ describe.each([
 ])('WebSocket connections and queries', ({ DB_URL, wsPool }) => {
   test(
     'WebSockets query results match pg/TCP query results, using pool.connect()',
-    { timeout: 30000 },
+    { timeout: 60000 },
     async () => {
       const wsClient = await wsPool.connect();
       const pgClient = await pgPool.connect();

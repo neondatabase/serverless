@@ -61,7 +61,7 @@
     "test:browser": "npm run build && playwright install --with-deps firefox chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts"
   },
   "dependencies": {
-    "@types/node": "*",
+    "@types/node": "^22.15.30",
     "@types/pg": "^8.8.0"
   },
   "devDependencies": {
@@ -80,7 +80,7 @@
     "buffer": "^6.0.3",
     "crypto": "file:src/shims/crypto",
     "dns": "file:src/shims/dns",
-    "drizzle-orm": "^0.43.0",
+    "drizzle-orm": "^0.44.2",
     "esbuild": "^0.25.0",
     "events": "^3.3.0",
     "fast-equals": "^5.0.1",
