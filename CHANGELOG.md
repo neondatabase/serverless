@@ -1,3 +1,7 @@
+## 1.0.1 (2025-06-06)
+
+The package now prints a security warning to the console when a connection is made in a web browser. This behaviour can be suppressed with a new configuration option: `disableWarningInBrowsers`. There are a few other very minor fixes.
+
 ## 1.0.0 (2025-03-25)
 
 Breaking change: the HTTP query template function can now **only** be called as a template function, not as a conventional function. This improves safety from accidental SQL-injection vulnerabilities. For example:
