@@ -11,7 +11,7 @@
   "homepage": "https://neon.tech",
   "repository": {
     "type": "git",
-    "url": "https://github.com/neondatabase/serverless"
+    "url": "git+https://github.com/neondatabase/serverless.git"
   },
   "keywords": [
     "Neon",
