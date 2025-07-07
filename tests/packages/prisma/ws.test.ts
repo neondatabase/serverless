@@ -1,5 +1,4 @@
 import { expect, test } from 'vitest';
-import { Pool } from '@neondatabase/serverless'; // see package.json: this points to 'file:../../../dist/npm'
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '@prisma/client';
 
