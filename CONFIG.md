@@ -361,7 +361,7 @@ Set `isNeonLocal` to `true` when connecting to a Neon Local proxy instance. This
 
 For example:
 
-```javascript
+````javascript
 ```javascript
 import { neonConfig, Client } from '@neondatabase/serverless';
 
@@ -372,7 +372,7 @@ neonConfig.isNeonLocal = true;
 const client = new Client('postgresql://postgres:password@localhost:5432/mydb');
 await client.connect();
 // WebSocket headers: X-Neon-User: postgres, X-Neon-Password: password, X-Neon-Database: mydb
-```
+````
 
 **Note**: This feature requires a custom `webSocketConstructor` (like the `ws` library in Node.js) that supports headers. Browser WebSocket APIs don't support custom headers, but Neon Local typically runs in server-side environments.
 Default: `false`.

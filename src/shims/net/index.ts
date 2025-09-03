@@ -35,8 +35,14 @@ export interface WebSocketLike {
   ): void;
   onopen?: (this: WebSocketLike) => void;
   onmessage?: (this: WebSocketLike, ev: { data: any }) => void;
-  onerror?: (this: WebSocketLike, ev: { error?: any; message?: string }) => void;
-  onclose?: (this: WebSocketLike, ev: { code: number; reason?: string }) => void;
+  onerror?: (
+    this: WebSocketLike,
+    ev: { error?: any; message?: string },
+  ) => void;
+  onclose?: (
+    this: WebSocketLike,
+    ev: { code: number; reason?: string },
+  ) => void;
 }
 
 export interface WebSocketConstructor {
@@ -132,7 +138,8 @@ export class Socket extends EventEmitter {
       // If connecting to Neon Local, use the original host:port directly
       if (Socket.isNeonLocal) {
         const protocol = 'http'; // Always use HTTP for local development
-        const portSuffix = port && port !== '443' && port !== '80' ? `:${port}` : '';
+        const portSuffix =
+          port && port !== '443' && port !== '80' ? `:${port}` : '';
         return `${protocol}://${host}${portSuffix}/sql`;
       }
 
@@ -406,7 +413,6 @@ export class Socket extends EventEmitter {
     Socket.opts.disableWarningInBrowsers = newValue;
   }
 
-
   get disableWarningInBrowsers() {
     return (
       this.opts.disableWarningInBrowsers ?? Socket.disableWarningInBrowsers
@@ -503,13 +509,13 @@ export class Socket extends EventEmitter {
     this.opts.rootCerts = newValue;
   }
 
-   /**
+  /**
    * Set `isNeonLocal` to `true` when connecting to a Neon Local proxy instance.
    * This flag can be used by the driver to enable specific optimizations and
    * behaviors when working with local development environments.
    *
    * Default: `false`.
-   */  
+   */
   static get isNeonLocal() {
     return Socket.opts.isNeonLocal ?? Socket.defaults.isNeonLocal;
   }
@@ -609,38 +615,49 @@ export class Socket extends EventEmitter {
       if (Socket.isNeonLocal) {
         // Automatically configure for local development - force insecure WebSocket
         const wsProtocol = 'ws:'; // Always use ws:// for local development
-        const portSuffix = port && port !== '443' && port !== '80' ? `:${port}` : '';
+        const portSuffix =
+          port && port !== '443' && port !== '80' ? `:${port}` : '';
         const wsAddrFull = `${wsProtocol}//${host}${portSuffix}/sql`;
-        
-        debug && log('Neon Local: Auto-configured for insecure WebSocket', { wsAddrFull });
+
+        debug &&
+          log('Neon Local: Auto-configured for insecure WebSocket', {
+            wsAddrFull,
+          });
 
         // Build WebSocket options with headers for Neon Local credential injection
         let wsOptions: any = {
           headers: {
-            'Upgrade': 'websocket',
-            'Connection': 'Upgrade'
-          }
+            Upgrade: 'websocket',
+            Connection: 'Upgrade',
+          },
         };
-        
+
         if (this.connectionCredentials) {
           const creds = this.connectionCredentials;
-          
+
           // Only include non-empty credential values
           if (creds.user) wsOptions.headers['X-Neon-User'] = creds.user;
-          if (creds.password) wsOptions.headers['X-Neon-Password'] = creds.password;
-          if (creds.database) wsOptions.headers['X-Neon-Database'] = creds.database;
-          
-          debug && log('Adding Neon Local credential headers from connection string', {
-            user: creds.user,
-            database: creds.database
-          });
+          if (creds.password)
+            wsOptions.headers['X-Neon-Password'] = creds.password;
+          if (creds.database)
+            wsOptions.headers['X-Neon-Database'] = creds.database;
+
+          debug &&
+            log('Adding Neon Local credential headers from connection string', {
+              user: creds.user,
+              database: creds.database,
+            });
         }
 
         // Use the provided WebSocket constructor or fall back to global WebSocket
-        const WebSocketImpl = this.webSocketConstructor || (typeof WebSocket !== 'undefined' ? WebSocket : undefined);
-        
+        const WebSocketImpl =
+          this.webSocketConstructor ||
+          (typeof WebSocket !== 'undefined' ? WebSocket : undefined);
+
         if (!WebSocketImpl) {
-          throw new Error('No WebSocket implementation available. Please provide a webSocketConstructor.');
+          throw new Error(
+            'No WebSocket implementation available. Please provide a webSocketConstructor.',
+          );
         }
 
         this.ws = new WebSocketImpl(wsAddrFull, wsOptions);
@@ -716,9 +733,7 @@ export class Socket extends EventEmitter {
       debug && log('WebSocket constructors failed');
       this.emit(
         'error',
-        new Error(
-          `Failed to establish WebSocket connection. ${err}`,
-        ),
+        new Error(`Failed to establish WebSocket connection. ${err}`),
       );
       this.emit('close');
     }

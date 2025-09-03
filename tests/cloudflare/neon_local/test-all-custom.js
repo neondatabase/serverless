@@ -9,9 +9,9 @@ const __dirname = dirname(__filename);
 
 const tests = [
   'test-non-local.js',
-  'test-legacy-behavior.js', 
+  'test-legacy-behavior.js',
   'test-neon-local-behavior.js',
-  'test-comprehensive.js'
+  'test-comprehensive.js',
 ];
 
 async function runTest(testFile) {
@@ -19,13 +19,13 @@ async function runTest(testFile) {
     console.log(`\n${'='.repeat(60)}`);
     console.log(`🚀 Running: ${testFile}`);
     console.log(`${'='.repeat(60)}`);
-    
+
     const testPath = join(__dirname, testFile);
-    const child = spawn('node', [testPath], { 
+    const child = spawn('node', [testPath], {
       stdio: 'inherit',
-      cwd: __dirname
+      cwd: __dirname,
     });
-    
+
     child.on('close', (code) => {
       if (code === 0) {
         console.log(`✅ ${testFile} PASSED`);
@@ -35,7 +35,7 @@ async function runTest(testFile) {
         reject(new Error(`Test ${testFile} failed with exit code ${code}`));
       }
     });
-    
+
     child.on('error', (err) => {
       console.log(`❌ ${testFile} ERROR: ${err.message}`);
       reject(err);
@@ -46,10 +46,10 @@ async function runTest(testFile) {
 async function runAllTests() {
   console.log('🧪 Running All Custom Serverless Driver Tests');
   console.log('📋 Testing both legacy and new isNeonLocal functionality\n');
-  
+
   let passed = 0;
   let failed = 0;
-  
+
   for (const test of tests) {
     try {
       await runTest(test);
@@ -59,13 +59,13 @@ async function runAllTests() {
       failed++;
     }
   }
-  
+
   console.log(`\n${'='.repeat(60)}`);
   console.log('📊 FINAL RESULTS');
   console.log(`${'='.repeat(60)}`);
   console.log(`✅ Passed: ${passed}/${tests.length}`);
   console.log(`❌ Failed: ${failed}/${tests.length}`);
-  
+
   if (failed === 0) {
     console.log('\n🎉 ALL TESTS PASSED!');
     console.log('✅ Legacy behavior (isNeonLocal = false) works correctly');
@@ -80,7 +80,7 @@ async function runAllTests() {
   }
 }
 
-runAllTests().catch(error => {
+runAllTests().catch((error) => {
   console.error('\n❌ Test runner failed:', error);
   process.exit(1);
 });
