@@ -441,11 +441,17 @@ export declare interface NeonConfig {
     pipelineTLS: boolean;
     disableSNI: boolean;
     disableWarningInBrowsers: boolean;
+    isNeonLocal: boolean;
 }
 
 export declare class neonConfig extends EventEmitter {
     static defaults: NeonConfig;
     static opts: Partial<NeonConfig>;
+    /**
+     * Set connection string credentials for automatic injection in Neon Local mode.
+     * This is called automatically by the Client class when isNeonLocal is true.
+     */
+    setConnectionCredentials(credentials: NeonLocalCredentials): void;
     /**
      * **Experimentally**, when `poolQueryViaFetch` is `true`, and no listeners
      * for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set
@@ -619,6 +625,17 @@ export declare class neonConfig extends EventEmitter {
     static set rootCerts(newValue: NeonConfig['rootCerts']);
     get rootCerts(): NeonConfig["rootCerts"];
     set rootCerts(newValue: NeonConfig['rootCerts']);
+    /**
+     * Set `isNeonLocal` to `true` when connecting to a Neon Local proxy instance.
+     * This flag can be used by the driver to enable specific optimizations and
+     * behaviors when working with local development environments.
+     *
+     * Default: `false`.
+     */
+    static get isNeonLocal(): NeonConfig["isNeonLocal"];
+    static set isNeonLocal(newValue: NeonConfig['isNeonLocal']);
+    get isNeonLocal(): NeonConfig["isNeonLocal"];
+    set isNeonLocal(newValue: NeonConfig['isNeonLocal']);
     wsProxyAddrForHost(host: string, port: number): string;
     connecting: boolean;
     pending: boolean;
@@ -663,6 +680,12 @@ export declare class NeonDbError extends Error {
     routine: string | undefined;
     sourceError: Error | undefined;
     constructor(message: string);
+}
+
+declare interface NeonLocalCredentials {
+    user?: string;
+    password?: string;
+    database?: string;
 }
 
 export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
@@ -797,6 +820,8 @@ export declare interface PoolClient extends PoolClient_2 {
 
 export { PoolConfig }
 
+export declare function processQueryResult(rawResults: any, { arrayMode, fullResults, types: customTypes }: ProcessQueryResultOptions): any;
+
 export declare interface ProcessQueryResultOptions {
     arrayMode: boolean;
     fullResults: boolean;
@@ -913,6 +938,18 @@ export declare interface WebSocketLike {
     close(code?: number, reason?: string): void;
     send(data: any): void;
     addEventListener(type: 'open' | 'message' | 'close' | 'error', listener: (this: WebSocketLike, ev: any) => any, options?: any): void;
+    onopen?: (this: WebSocketLike) => void;
+    onmessage?: (this: WebSocketLike, ev: {
+        data: any;
+    }) => void;
+    onerror?: (this: WebSocketLike, ev: {
+        error?: any;
+        message?: string;
+    }) => void;
+    onclose?: (this: WebSocketLike, ev: {
+        code: number;
+        reason?: string;
+    }) => void;
 }
 
 export declare class WebSocketReadQueue extends ReadQueue {

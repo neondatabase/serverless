@@ -29,8 +29,6 @@ import type {
 import { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
 import { warnIfBrowser } from './utils';
 
-import { Socket as neonConfig } from './shims/net';
-
 // @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
 // @ts-ignore -- this isn't officially exported by pg
@@ -205,7 +203,7 @@ export function neon<
       'No database connection string was provided to `neon()`. Perhaps an environment variable has not been set?',
     );
 
-  let db;
+  let db: ReturnType<typeof parse>;
   try {
     db = parse(connectionString);
   } catch {
@@ -287,8 +285,9 @@ export function neon<
       | HTTPQueryOptions<ArrayMode, FullResults>[],
     txnOpts?: HTTPTransactionOptions<ArrayMode, FullResults>,
   ) {
-    const { fetchEndpoint, fetchFunction } = Socket;
+    const { fetchEndpoint, fetchFunction, isNeonLocal } = Socket;
 
+    // --- set up request body ---
     const bodyData = Array.isArray(queryData)
       ? { queries: queryData.map((queryDatum) => prepareQuery(queryDatum)) }
       : prepareQuery(queryData);
@@ -353,6 +352,13 @@ export function neon<
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
     };
 
+    // For Neon Local, add credential headers
+    if (isNeonLocal) {
+      headers['X-Neon-User'] = username;
+      headers['X-Neon-Password'] = db.password || '';
+      headers['X-Neon-Database'] = pathname.slice(1);
+    }
+
     // --- add auth token to headers ---
     const validAuthToken = await getAuthToken(resolvedAuthToken);
     if (validAuthToken) {
@@ -369,7 +375,7 @@ export function neon<
         headers['Neon-Batch-Deferrable'] = String(resolvedDeferrable);
     }
 
-    if (!(disableWarningInBrowsers || neonConfig.disableWarningInBrowsers)) {
+    if (!(disableWarningInBrowsers || Socket.disableWarningInBrowsers)) {
       warnIfBrowser();
     }
 
@@ -552,3 +558,5 @@ async function getAuthToken(
     }
   }
 }
+
+export { processQueryResult };
