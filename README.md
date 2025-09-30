@@ -1,8 +1,8 @@
 # @neondatabase/serverless
 
-`@neondatabase/serverless` is [Neon](https://neon.tech)'s PostgreSQL driver for JavaScript and TypeScript. It's:
+`@neondatabase/serverless` is [Neon](https://neon.com)'s PostgreSQL driver for JavaScript and TypeScript. It's:
 
-- **Low-latency**, thanks to [message pipelining](https://neon.tech/blog/quicker-serverless-postgres) and other optimizations
+- **Low-latency**, thanks to [message pipelining](https://neon.com/blog/quicker-serverless-postgres) and other optimizations
 - **Ideal for serverless/edge** deployment, using https and WebSockets in place of TCP
 - **A drop-in replacement** for [node-postgres](https://node-postgres.com/), aka [`pg`](https://www.npmjs.com/package/pg) (on which it's based)
 
@@ -55,7 +55,7 @@ const [post] = await sql`SELECT * FROM posts WHERE id = ${postId}`;
 // `post` is now { id: 12, title: 'My post', ... } (or undefined)
 ```
 
-Note: interpolating `${postId}` here is [safe from SQL injection](https://neon.tech/blog/sql-template-tags).
+Note: interpolating `${postId}` here is [safe from SQL injection](https://neon.com/blog/sql-template-tags).
 
 There are [more details and options for `neon()` function](CONFIG.md).
 
@@ -140,7 +140,7 @@ Queries using `Pool` and `Client` are carried by WebSockets. There are **two key
 
    That means `Pool` or `Client` objects must be connected, used and closed **within a single request handler**. Don't create them outside a request handler; don't create them in one handler and try to reuse them in another; and to avoid exhausting available connections, don't forget to close them.
 
-   Note: on Cloudflare Workers, [consider using Cloudflare Hyperdrive](https://neon.tech/blog/hyperdrive-neon-faq) instead of this driver.
+   Note: on Cloudflare Workers, [consider using Cloudflare Hyperdrive](https://neon.com/blog/hyperdrive-neon-faq) instead of this driver.
 
 These points are demonstrated in the examples below.
 
@@ -300,4 +300,4 @@ This code is released under the [MIT license](LICENSE).
 
 ## Feedback and support
 
-Please visit [Neon Community](https://community.neon.tech/) or [Support](https://neon.tech/docs/introduction/support).
+Please visit [Neon Community](https://community.neon.tech/) or [Support](https://neon.com/docs/introduction/support).

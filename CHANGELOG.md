@@ -1,3 +1,7 @@
+## 1.0.2 (2025-09-30)
+
+Update neon.tech references to neon.com domain.
+
 ## 1.0.1 (2025-06-06)
 
 The package now prints a security warning to the console when a connection is made in a web browser. This behaviour can be suppressed with a new configuration option: `disableWarningInBrowsers`. There are a few other very minor fixes.
