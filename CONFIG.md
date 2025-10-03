@@ -348,6 +348,35 @@ Its value is a string containing zero or more certificates in PEM format.
 
 Default: `""` (the empty string).
 
+#### `isNeonLocal: boolean`
+
+Set `isNeonLocal` to `true` when connecting to a Neon Local proxy instance. This flag enables specific optimizations and behaviors for local development environments.
+
+**Key behaviors when `isNeonLocal` is `true`:**
+
+1. **Automatic endpoint configuration**: The SQL fetch endpoint automatically uses the host and port from your connection string instead of the Neon cloud API endpoints.
+2. **Protocol handling**: Uses `https://` when `useSecureWebSocket` is `true`, `http://` when `false`.
+3. **Port handling**: Standard ports (443 for HTTPS, 80 for HTTP) are omitted from URLs; custom ports are included.
+4. **Automatic credential injection**: Credentials from the connection string are automatically sent as WebSocket headers for the Neon Local proxy to inject into the PostgreSQL protocol.
+
+For example:
+
+````javascript
+```javascript
+import { neonConfig, Client } from '@neondatabase/serverless';
+
+// Enable Neon Local mode
+neonConfig.isNeonLocal = true;
+
+// Connection string credentials are automatically extracted and sent as headers
+const client = new Client('postgresql://postgres:password@localhost:5432/mydb');
+await client.connect();
+// WebSocket headers: X-Neon-User: postgres, X-Neon-Password: password, X-Neon-Database: mydb
+````
+
+**Note**: This feature requires a custom `webSocketConstructor` (like the `ws` library in Node.js) that supports headers. Browser WebSocket APIs don't support custom headers, but Neon Local typically runs in server-side environments.
+Default: `false`.
+
 #### `pipelineTLS: boolean`
 
 **Only when using experimental pure-JS encryption**, the driver will pipeline the SSL request message and TLS Client Hello if `pipelineTLS` is set to `true`. Currently, this is only supported by Neon database hosts, and will fail when communicating with an ordinary Postgres or pgbouncer back-end.

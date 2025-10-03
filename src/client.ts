@@ -33,6 +33,15 @@ export class NeonClient extends Client {
   override connect(callback?: (err?: Error) => void) {
     const { neonConfig } = this;
 
+    // For Neon Local, automatically inject connection string credentials
+    if (neonConfig.isNeonLocal) {
+      neonConfig.setConnectionCredentials({
+        user: this.user || undefined,
+        password: this.password || undefined,
+        database: this.database || undefined,
+      });
+    }
+
     // disable TLS if requested
     if (neonConfig.forceDisablePgSSL) {
       this.ssl = this.connection.ssl = false;
@@ -62,6 +71,7 @@ export class NeonClient extends Client {
       throw new Error(
         `No database host or connection string was set, and key parameters have default values (host: localhost, user: ${defaultUser}, db: ${defaultUser}, password: null). Is an environment variable missing? Alternatively, if you intended to connect with these parameters, please set the host to 'localhost' explicitly.`,
       );
+
     // pipelining
     const result = super.connect(callback as any) as void | Promise<void>;
 

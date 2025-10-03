@@ -33,6 +33,16 @@ export interface WebSocketLike {
     listener: (this: WebSocketLike, ev: any) => any,
     options?: any,
   ): void;
+  onopen?: (this: WebSocketLike) => void;
+  onmessage?: (this: WebSocketLike, ev: { data: any }) => void;
+  onerror?: (
+    this: WebSocketLike,
+    ev: { error?: any; message?: string },
+  ) => void;
+  onclose?: (
+    this: WebSocketLike,
+    ev: { code: number; reason?: string },
+  ) => void;
 }
 
 export interface WebSocketConstructor {
@@ -78,6 +88,12 @@ export interface FetchEndpointOptions {
   jwtAuth?: boolean;
 }
 
+export interface NeonLocalCredentials {
+  user?: string;
+  password?: string;
+  database?: string;
+}
+
 export interface SocketDefaults {
   // these options relate to the fetch transport and take effect *only* when set globally
   poolQueryViaFetch: boolean;
@@ -103,6 +119,8 @@ export interface SocketDefaults {
   pipelineTLS: boolean;
   disableSNI: boolean;
   disableWarningInBrowsers: boolean;
+  // Neon Local proxy configuration
+  isNeonLocal: boolean;
 }
 type GlobalOnlyDefaults =
   | 'poolQueryViaFetch'
@@ -116,7 +134,16 @@ export class Socket extends EventEmitter {
   static defaults: SocketDefaults = {
     // these options relate to the fetch transport and take effect *only* when set globally
     poolQueryViaFetch: false,
-    fetchEndpoint: (host, _port, options) => {
+    fetchEndpoint: (host, port, options) => {
+      // If connecting to Neon Local, use the original host:port directly
+      if (Socket.isNeonLocal) {
+        const protocol = 'http'; // Always use HTTP for local development
+        const portSuffix =
+          port && port !== '443' && port !== '80' ? `:${port}` : '';
+        return `${protocol}://${host}${portSuffix}/sql`;
+      }
+
+      // Default Neon cloud behavior
       let newHost;
       if (options?.jwtAuth) {
         // If the caller sends in a JWT, we need to use the Neon Authorize API
@@ -144,10 +171,23 @@ export class Socket extends EventEmitter {
     pipelineTLS: false,
     disableSNI: false,
     disableWarningInBrowsers: false,
+    // Neon Local proxy configuration
+    isNeonLocal: false,
   };
 
   static opts: Partial<SocketDefaults> = {};
   private opts: Partial<Omit<SocketDefaults, GlobalOnlyDefaults>> = {};
+
+  // Storage for connection string credentials (for Neon Local auto-injection)
+  private connectionCredentials: NeonLocalCredentials | undefined = undefined;
+
+  /**
+   * Set connection string credentials for automatic injection in Neon Local mode.
+   * This is called automatically by the Client class when isNeonLocal is true.
+   */
+  setConnectionCredentials(credentials: NeonLocalCredentials) {
+    this.connectionCredentials = credentials;
+  }
 
   /**
    * **Experimentally**, when `poolQueryViaFetch` is `true`, and no listeners
@@ -289,6 +329,10 @@ export class Socket extends EventEmitter {
    * Default: `true`.
    */
   static get useSecureWebSocket() {
+    // Auto-configure for Neon Local: always use insecure WebSocket for local development
+    if (Socket.isNeonLocal) {
+      return false;
+    }
     return Socket.opts.useSecureWebSocket ?? Socket.defaults.useSecureWebSocket;
   }
   static set useSecureWebSocket(
@@ -297,6 +341,10 @@ export class Socket extends EventEmitter {
     Socket.opts.useSecureWebSocket = newValue;
   }
   get useSecureWebSocket() {
+    // Auto-configure for Neon Local: always use insecure WebSocket for local development
+    if (Socket.isNeonLocal || this.isNeonLocal) {
+      return false;
+    }
     return this.opts.useSecureWebSocket ?? Socket.useSecureWebSocket;
   }
   set useSecureWebSocket(newValue: SocketDefaults['useSecureWebSocket']) {
@@ -364,6 +412,7 @@ export class Socket extends EventEmitter {
   ) {
     Socket.opts.disableWarningInBrowsers = newValue;
   }
+
   get disableWarningInBrowsers() {
     return (
       this.opts.disableWarningInBrowsers ?? Socket.disableWarningInBrowsers
@@ -460,6 +509,26 @@ export class Socket extends EventEmitter {
     this.opts.rootCerts = newValue;
   }
 
+  /**
+   * Set `isNeonLocal` to `true` when connecting to a Neon Local proxy instance.
+   * This flag can be used by the driver to enable specific optimizations and
+   * behaviors when working with local development environments.
+   *
+   * Default: `false`.
+   */
+  static get isNeonLocal() {
+    return Socket.opts.isNeonLocal ?? Socket.defaults.isNeonLocal;
+  }
+  static set isNeonLocal(newValue: SocketDefaults['isNeonLocal']) {
+    Socket.opts.isNeonLocal = newValue;
+  }
+  get isNeonLocal() {
+    return this.opts.isNeonLocal ?? Socket.isNeonLocal;
+  }
+  set isNeonLocal(newValue: SocketDefaults['isNeonLocal']) {
+    this.opts.isNeonLocal = newValue;
+  }
+
   wsProxyAddrForHost(host: string, port: number) {
     const wsProxy = this.wsProxy;
     if (wsProxy === undefined) {
@@ -479,7 +548,7 @@ export class Socket extends EventEmitter {
   authorized = false;
   destroyed = false;
 
-  private ws: WebSocketLike | null = null;
+  private ws: any = null;
   private writeBuffer: Uint8Array | undefined; // used only if coalesceWrites === true
   private tlsState = TlsState.None;
   private tlsRead: undefined | (() => Promise<Uint8Array | undefined>);
@@ -541,68 +610,132 @@ export class Socket extends EventEmitter {
       else ws.addEventListener('open', handleWebSocketOpen);
     };
 
-    let wsAddr: string;
     try {
-      wsAddr = this.wsProxyAddrForHost(
-        host,
-        typeof port === 'string' ? parseInt(port, 10) : port,
-      );
-    } catch (err) {
-      this.emit('error', err);
-      this.emit('close');
-      return;
-    }
+      // For Neon Local, always use WebSocket
+      if (Socket.isNeonLocal) {
+        // Automatically configure for local development - force insecure WebSocket
+        const wsProtocol = 'ws:'; // Always use ws:// for local development
+        const portSuffix =
+          port && port !== '443' && port !== '80' ? `:${port}` : '';
+        const wsAddrFull = `${wsProtocol}//${host}${portSuffix}/sql`;
 
-    try {
-      // ordinary/browser path
-      const wsProtocol = this.useSecureWebSocket ? 'wss:' : 'ws:';
-      const wsAddrFull = wsProtocol + '//' + wsAddr;
+        debug &&
+          log('Neon Local: Auto-configured for insecure WebSocket', {
+            wsAddrFull,
+          });
 
-      // first, use a custom constructor, if supplied
-      if (this.webSocketConstructor !== undefined) {
-        this.ws = new this.webSocketConstructor(wsAddrFull);
-        configureWebSocket(this.ws);
-      } else {
-        try {
-          // second, try a common-or-garden WebSocket, e.g. in a web browser
-          this.ws = new WebSocket(wsAddrFull) as any;
-          configureWebSocket(this.ws!);
-        } catch (err) {
-          debug && log('new WebSocket() failed');
+        // Build WebSocket options with headers for Neon Local credential injection
+        let wsOptions: any = {
+          headers: {
+            Upgrade: 'websocket',
+            Connection: 'Upgrade',
+          },
+        };
 
-          // @ts-ignore -- unknown Vercel-specific object
-          this.ws = new __unstable_WebSocket(wsAddrFull);
-          configureWebSocket(this.ws!);
+        if (this.connectionCredentials) {
+          const creds = this.connectionCredentials;
+
+          // Only include non-empty credential values
+          if (creds.user) wsOptions.headers['X-Neon-User'] = creds.user;
+          if (creds.password)
+            wsOptions.headers['X-Neon-Password'] = creds.password;
+          if (creds.database)
+            wsOptions.headers['X-Neon-Database'] = creds.database;
+
+          debug &&
+            log('Adding Neon Local credential headers from connection string', {
+              user: creds.user,
+              database: creds.database,
+            });
         }
+
+        // Use the provided WebSocket constructor or fall back to global WebSocket
+        const WebSocketImpl =
+          this.webSocketConstructor ||
+          (typeof WebSocket !== 'undefined' ? WebSocket : undefined);
+
+        if (!WebSocketImpl) {
+          throw new Error(
+            'No WebSocket implementation available. Please provide a webSocketConstructor.',
+          );
+        }
+
+        this.ws = new WebSocketImpl(wsAddrFull, wsOptions);
+        if (this.ws) configureWebSocket(this.ws);
+        return;
+      }
+
+      // Regular Neon cloud path
+      let wsAddr: string;
+      try {
+        wsAddr = this.wsProxyAddrForHost(
+          host,
+          typeof port === 'string' ? parseInt(port, 10) : port,
+        );
+      } catch (err) {
+        this.emit('error', err);
+        this.emit('close');
+        return;
+      }
+
+      try {
+        // ordinary/browser path
+        const wsProtocol = this.useSecureWebSocket ? 'wss:' : 'ws:';
+        const wsAddrFull = wsProtocol + '//' + wsAddr;
+
+        // first, use a custom constructor, if supplied
+        if (this.webSocketConstructor !== undefined) {
+          this.ws = new this.webSocketConstructor(wsAddrFull);
+          configureWebSocket(this.ws);
+        } else {
+          try {
+            // second, try a common-or-garden WebSocket, e.g. in a web browser
+            this.ws = new WebSocket(wsAddrFull) as any;
+            configureWebSocket(this.ws!);
+          } catch (err) {
+            debug && log('new WebSocket() failed');
+
+            // @ts-ignore -- unknown Vercel-specific object
+            this.ws = new __unstable_WebSocket(wsAddrFull);
+            configureWebSocket(this.ws!);
+          }
+        }
+      } catch (err) {
+        debug && log('WebSocket constructors failed');
+
+        // fourth and finally, let's try the Cloudflare Workers method ...
+        const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
+        const fetchAddrFull = wsProtocol + '//' + wsAddr;
+
+        fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } })
+          .then((resp) => {
+            // @ts-ignore -- unknown Cloudflare-specific property
+            this.ws = resp.webSocket;
+            if (this.ws == null) throw err; // deliberate loose equality
+
+            // @ts-ignore -- unknown Cloudflare-specific method
+            this.ws.accept!();
+            configureWebSocket(this.ws, true);
+            debug && log('Cloudflare WebSocket opened');
+          })
+          .catch((err) => {
+            debug && log(`fetch() with { Upgrade: "websocket" } failed`);
+            this.emit(
+              'error',
+              new Error(
+                `All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err}`,
+              ),
+            );
+            this.emit('close');
+          });
       }
     } catch (err) {
       debug && log('WebSocket constructors failed');
-
-      // fourth and finally, let's try the Cloudflare Workers method ...
-      const wsProtocol = this.useSecureWebSocket ? 'https:' : 'http:';
-      const fetchAddrFull = wsProtocol + '//' + wsAddr;
-
-      fetch(fetchAddrFull, { headers: { Upgrade: 'websocket' } })
-        .then((resp) => {
-          // @ts-ignore -- unknown Cloudflare-specific property
-          this.ws = resp.webSocket;
-          if (this.ws == null) throw err; // deliberate loose equality
-
-          // @ts-ignore -- unknown Cloudflare-specific method
-          this.ws.accept!();
-          configureWebSocket(this.ws, true);
-          debug && log('Cloudflare WebSocket opened');
-        })
-        .catch((err) => {
-          debug && log(`fetch() with { Upgrade: "websocket" } failed`);
-          this.emit(
-            'error',
-            new Error(
-              `All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: ${err}`,
-            ),
-          );
-          this.emit('close');
-        });
+      this.emit(
+        'error',
+        new Error(`Failed to establish WebSocket connection. ${err}`),
+      );
+      this.emit('close');
     }
   }
 
