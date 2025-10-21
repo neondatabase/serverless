@@ -174,4 +174,33 @@ describe.each([
       expect((wsResult as any).viaNeonFetch).toBeUndefined();
     });
   }
+
+  test('Client.getConnectionParameters() returns connection parameters', async () => {
+    const client = new WsClient({ connectionString: DB_URL });
+
+    // Before connect, parameters should be empty
+    const paramsBefore = client.getConnectionParameters();
+    expect(paramsBefore.size).toBe(0);
+
+    await client.connect();
+
+    // Run a query to ensure parameters are populated (due to connection pipelining)
+    await client.query('SELECT 1');
+
+    // After query, parameters should be populated
+    const params = client.getConnectionParameters();
+    expect(params.size).toBeGreaterThan(0);
+
+    // Check for common PostgreSQL parameters
+    expect(params.get('client_encoding')).toBeDefined();
+    expect(params.get('server_version')).toBeDefined();
+    expect(params.get('TimeZone')).toBeDefined();
+    expect(params.get('DateStyle')).toBeDefined();
+    expect(params.get('integer_datetimes')).toBeDefined();
+
+    // Verify it's typed as ReadonlyMap (compile-time check)
+    assertType<ReadonlyMap<string, string>>(params);
+
+    await client.end();
+  });
 });

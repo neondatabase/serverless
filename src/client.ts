@@ -20,12 +20,29 @@ export declare interface NeonClient {
  * https://node-postgres.com/apis/client
  */
 export class NeonClient extends Client {
+  private _connectionParameters: Map<string, string> = new Map();
+
   get neonConfig() {
     return this.connection.stream as Socket;
   }
 
   constructor(public config?: string | ClientConfig) {
     super(config);
+
+    // Set up parameterStatus listener to capture connection parameters from PostgreSQL
+    this.connection.on('parameterStatus', (msg: any) => {
+      this._connectionParameters.set(msg.parameterName, msg.parameterValue);
+    });
+  }
+
+  /**
+   * Get connection parameters sent by PostgreSQL server.
+   * Returns a read-only Map containing parameters like 'client_encoding', 'TimeZone', 'server_version', etc.
+   * This is only available for WebSocket connections (Client/Pool), not for HTTP queries.
+   * The Map is populated after connect() completes.
+   */
+  getConnectionParameters(): ReadonlyMap<string, string> {
+    return this._connectionParameters;
   }
 
   override connect(): Promise<void>;

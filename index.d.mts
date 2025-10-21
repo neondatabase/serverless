@@ -226,6 +226,13 @@ export declare class Client extends Client_2 {
     config?: (string | ClientConfig) | undefined;
     get neonConfig(): neonConfig;
     constructor(config?: (string | ClientConfig) | undefined);
+    /**
+     * Get connection parameters sent by PostgreSQL server.
+     * Returns a read-only Map containing parameters like 'client_encoding', 'TimeZone', 'server_version', etc.
+     * This is only available for WebSocket connections (Client/Pool), not for HTTP queries.
+     * The Map is populated after connect() completes.
+     */
+    getConnectionParameters(): ReadonlyMap<string, string>;
     connect(): Promise<void>;
     connect(callback: (err?: Error) => void): void;
     _handleAuthSASLContinue(msg: any): Promise<void>;

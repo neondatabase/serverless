@@ -1305,13 +1305,15 @@ c.dataTypeID)),u=e===!0?r.rows.map(c=>c.map((l,f)=>l===null?null:o[f](l))):r.row
 c.map((l,f)=>[s[f],l===null?null:o[f](l)])));return t?(r.viaNeonFetch=!0,r.rowAsArray=e,r.rows=u,r._parsers=
 o,r._types=i,r):u}a(os,"processQueryResult");async function Fu(r){if(typeof r=="string")return r;if(typeof r==
 "function")try{return await Promise.resolve(r())}catch(e){let t=new be("Error getting auth token.");
-throw e instanceof Error&&(t=new be(`Error getting auth token: ${e.message}`)),t}}a(Fu,"getAuthToken");p();var go=Se(ot());p();var wo=Se(ot());var kn=class kn extends wo.Client{constructor(t){super(t);this.config=t}get neonConfig(){return this.
-connection.stream}connect(t){let{neonConfig:n}=this;n.forceDisablePgSSL&&(this.ssl=this.connection.ssl=
-!1),this.ssl&&n.useSecureWebSocket&&console.warn("SSL is enabled for both Postgres (e.g. ?sslmode=re\
-quire in the connection string + forceDisablePgSSL = false) and the WebSocket tunnel (useSecureWebSo\
-cket = true). Double encryption will increase latency and CPU usage. It may be appropriate to disabl\
-e SSL in the Postgres connection parameters or set forceDisablePgSSL = true.");let i=typeof this.config!=
-"string"&&this.config?.host!==void 0||typeof this.config!="string"&&this.config?.connectionString!==
+throw e instanceof Error&&(t=new be(`Error getting auth token: ${e.message}`)),t}}a(Fu,"getAuthToken");p();var go=Se(ot());p();var wo=Se(ot());var kn=class kn extends wo.Client{constructor(t){super(t);this.config=t;E(this,"_connectionParameter\
+s",new Map);this.connection.on("parameterStatus",n=>{this._connectionParameters.set(n.parameterName,
+n.parameterValue)})}get neonConfig(){return this.connection.stream}getConnectionParameters(){return this.
+_connectionParameters}connect(t){let{neonConfig:n}=this;n.forceDisablePgSSL&&(this.ssl=this.connection.
+ssl=!1),this.ssl&&n.useSecureWebSocket&&console.warn("SSL is enabled for both Postgres (e.g. ?sslmod\
+e=require in the connection string + forceDisablePgSSL = false) and the WebSocket tunnel (useSecureW\
+ebSocket = true). Double encryption will increase latency and CPU usage. It may be appropriate to di\
+sable SSL in the Postgres connection parameters or set forceDisablePgSSL = true.");let i=typeof this.
+config!="string"&&this.config?.host!==void 0||typeof this.config!="string"&&this.config?.connectionString!==
 void 0||m.env.PGHOST!==void 0,s=m.env.USER??m.env.USERNAME;if(!i&&this.host==="localhost"&&this.user===
 s&&this.database===s&&this.password===null)throw new Error(`No database host or connection string wa\
 s set, and key parameters have default values (host: localhost, user: ${s}, db: ${s}, password: null\
