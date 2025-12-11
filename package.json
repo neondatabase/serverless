@@ -61,7 +61,6 @@
     "test:browser": "npm run build && playwright install --with-deps firefox chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts"
   },
   "dependencies": {
-    "@types/node": "^22.15.30",
     "@types/pg": "^8.8.0"
   },
   "devDependencies": {
@@ -72,6 +71,7 @@
     "@prisma/adapter-neon": "^6.5.0",
     "@prisma/client": "^6.2.1",
     "@types/events": "^3.0.0",
+    "@types/node": "^22.15.30",
     "@types/ws": "^8.5.4",
     "@vercel/edge": "^1.2.1",
     "@vercel/sdk": "^1.2.2",
