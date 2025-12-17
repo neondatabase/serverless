@@ -267,6 +267,7 @@ export { ExecuteConfig }
 
 export declare interface FetchEndpointOptions {
     jwtAuth?: boolean;
+    override?: boolean;
 }
 
 export { FieldDef }

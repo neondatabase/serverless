@@ -215,7 +215,7 @@ export function neon<
     );
   }
 
-  const { protocol, username, hostname, port, pathname } = db;
+  const { protocol, username, hostname, port, pathname, password, endpoint } = db;
   if (
     (protocol !== 'postgres:' && protocol !== 'postgresql:') ||
     !username ||
@@ -225,6 +225,13 @@ export function neon<
     throw new Error(
       'Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value',
     );
+  }
+
+  let override = false;
+  if (endpoint && !hostname.startsWith(endpoint)) {
+    connectionString = rewriteConnectionString(connectionString, password, endpoint);
+    console.table({endpoint, connectionString})
+    override = true;
   }
 
   function templateFn(strings: TemplateStringsArray, ...params: any[]) {
@@ -343,6 +350,7 @@ export function neon<
       typeof fetchEndpoint === 'function'
         ? fetchEndpoint(hostname, port, {
             jwtAuth: resolvedAuthToken !== undefined,
+            override,
           })
         : fetchEndpoint;
 
@@ -551,4 +559,14 @@ async function getAuthToken(
       throw authError;
     }
   }
+}
+
+function rewriteConnectionString(connectionString: string, password: string, endpoint: string): string {
+  const { protocol } = new URL(connectionString);
+  // we now swap the protocol to http: so that `new URL()` will parse it fully
+  const httpUrl = 'http:' + connectionString.substring(protocol.length);
+  let url = new URL(httpUrl);
+  url.password = password;
+  url.hostname = endpoint;
+  return protocol + url.toString().substring(5);
 }
