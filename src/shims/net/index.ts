@@ -76,6 +76,7 @@ export function isIP(input: string) {
 
 export interface FetchEndpointOptions {
   jwtAuth?: boolean;
+  override?: boolean;
 }
 
 export interface SocketDefaults {
@@ -118,7 +119,12 @@ export class Socket extends EventEmitter {
     poolQueryViaFetch: false,
     fetchEndpoint: (host, _port, options) => {
       let newHost;
-      if (options?.jwtAuth) {
+      if (options?.override) {
+        // if we're using a connection string workaround specified in
+        // https://neon.com/docs/connect/connection-errors#the-endpoint-id-is-not-specified
+        // then we do not want to modify the base connection string.
+        newHost = host;
+      } else if (options?.jwtAuth) {
         // If the caller sends in a JWT, we need to use the Neon Authorize API
         // endpoint instead (this goes to the Auth Broker instead of the Neon
         // Proxy).
