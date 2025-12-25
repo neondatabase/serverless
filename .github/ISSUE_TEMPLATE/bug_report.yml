@@ -1,0 +1,127 @@
+name: Bug Report
+description: Report a bug or issue with @neondatabase/serverless
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please provide as much detail as possible to help us resolve the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: What happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Install @neondatabase/serverless
+        2. Run query '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened instead?
+      placeholder: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-sample
+    attributes:
+      label: Code sample
+      description: If applicable, provide a minimal code sample that reproduces the issue
+      placeholder: |
+        ```typescript
+        import { neon } from '@neondatabase/serverless';
+
+        const sql = neon(process.env.DATABASE_URL);
+        // Your code here
+        ```
+      render: typescript
+
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime environment
+      description: Where are you running the code?
+      options:
+        - Node.js
+        - Cloudflare Workers
+        - Vercel Edge Functions
+        - Deno
+        - Bun
+        - Browser
+        - Other
+      multiple: true
+    validations:
+      required: true
+
+  - type: input
+    id: package-version
+    attributes:
+      label: "@neondatabase/serverless version"
+      description: What version of @neondatabase/serverless are you using?
+      placeholder: "e.g., 0.9.0"
+    validations:
+      required: true
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js version (if applicable)
+      description: If running in Node.js, what version?
+      placeholder: "e.g., 20.10.0"
+
+  - type: input
+    id: typescript-version
+    attributes:
+      label: TypeScript version (if applicable)
+      description: If using TypeScript, what version?
+      placeholder: "e.g., 5.3.0"
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Additional environment details
+      description: |
+        Any other relevant environment details (OS, framework versions, deployment platform, etc.)
+      placeholder: |
+        - OS: macOS 14.1
+        - Framework: Next.js 14.0.0
+        - Deployment: Vercel
+
+  - type: textarea
+    id: error-logs
+    attributes:
+      label: Error logs and stack traces
+      description: If applicable, add error logs or stack traces
+      placeholder: Paste error logs here
+      render: shell
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here (screenshots, related issues, etc.)
