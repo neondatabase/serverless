@@ -210,7 +210,9 @@ export declare interface Client {
         stream: neonConfig;
         sendSCRAMClientFinalMessage: (response: any) => void;
         ssl: any;
+        _connecting: boolean;
     };
+    _connecting: boolean;
     _handleReadyForQuery: any;
     _handleAuthCleartextPassword: any;
     startup: any;
