@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 env:
   VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
   VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
