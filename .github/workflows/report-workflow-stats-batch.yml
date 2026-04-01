@@ -13,7 +13,9 @@ jobs:
   gh-workflow-stats-batch-2h:
     name: GitHub Workflow Stats Batch 2 hours
     if: github.event.schedule == '*/15 * * * *'
-    runs-on: ubuntu-22.04
+    runs-on:
+      group: neondatabase-protected-runner-group
+      labels: linux-ubuntu-latest
     permissions:
       actions: read
     steps:
@@ -33,7 +35,9 @@ jobs:
   gh-workflow-stats-batch-48h:
     name: GitHub Workflow Stats Batch 48 hours
     if: github.event.schedule == '25 0 * * *'
-    runs-on: ubuntu-22.04
+    runs-on:
+      group: neondatabase-protected-runner-group
+      labels: linux-ubuntu-latest
     permissions:
       actions: read
     steps:
@@ -53,7 +57,9 @@ jobs:
   gh-workflow-stats-batch-30d:
     name: GitHub Workflow Stats Batch 30 days
     if: github.event.schedule == '25 1 * * 6'
-    runs-on: ubuntu-22.04
+    runs-on:
+      group: neondatabase-protected-runner-group
+      labels: linux-ubuntu-latest
     permissions:
       actions: read
     steps:

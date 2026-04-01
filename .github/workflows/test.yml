@@ -18,7 +18,9 @@ env:
 
 jobs:
   test-old:
-    runs-on: ubuntu-latest
+    runs-on:
+      group: neondatabase-protected-runner-group
+      labels: linux-ubuntu-latest
     steps:
       # setup
       - name: Harden the runner (Audit all outbound calls)
@@ -39,7 +41,9 @@ jobs:
         run: touch src && npm run test:node
 
   test-current:
-    runs-on: ubuntu-latest
+    runs-on:
+      group: neondatabase-protected-runner-group
+      labels: linux-ubuntu-latest
     steps:
       # setup
       - name: Harden the runner (Audit all outbound calls)
