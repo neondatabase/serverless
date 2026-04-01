@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 env:
   VITE_NEON_DB_URL: ${{ secrets.VITE_NEON_DB_URL }}
   VITE_NEON_DB_POOLER_URL: ${{ secrets.VITE_NEON_DB_POOLER_URL }}
@@ -29,7 +32,7 @@ jobs:
           node-version: 19
 
       - name: Install package dependencies
-        run: npm install
+        run: npm clean-install
 
       # goal
       - name: Run CLI-based tests in Node 19
@@ -52,7 +55,7 @@ jobs:
           node-version: lts/*
 
       - name: Install package dependencies
-        run: npm install
+        run: npm clean-install
 
       # goal
       - name: Run all tests
