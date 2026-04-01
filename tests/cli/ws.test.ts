@@ -1,15 +1,15 @@
-import { expect, test, describe, vi, assertType } from 'vitest';
-import { Pool as PgPool, type QueryResult } from 'pg';
-import * as subtls from 'subtls';
-import { sampleQueries } from './sampleQueries';
-import { ISRGX1Cert } from './subtlsCert';
 import {
   neon,
   neonConfig,
-  Pool as WsPool,
-  Client as WsClient,
   SqlTemplate,
+  Client as WsClient,
+  Pool as WsPool,
 } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
+import { Pool as PgPool, type QueryResult } from 'pg';
+import * as subtls from 'subtls';
+import { assertType, describe, expect, test, vi } from 'vitest';
+import { sampleQueries } from './sampleQueries';
+import { ISRGX1Cert } from './subtlsCert';
 
 function recursiveTransform(x: any, transform: (x: any) => any) {
   if (Array.isArray(x)) {
@@ -116,6 +116,16 @@ describe.each([
       neonConfig.poolQueryViaFetch = false;
       customPool.end();
     }
+  });
+
+  test('client.connect() returns the client in a promise', () => {
+    const client = new WsClient(DB_URL);
+
+    return client.connect().then((clientInside) => {
+      expect(client).toEqual(clientInside);
+
+      return client.end().then(() => {});
+    });
   });
 
   test('client.query()', async () => {

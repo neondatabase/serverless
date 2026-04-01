@@ -226,8 +226,8 @@ export declare class Client extends Client_2 {
     config?: (string | ClientConfig) | undefined;
     get neonConfig(): neonConfig;
     constructor(config?: (string | ClientConfig) | undefined);
-    connect(): Promise<void>;
-    connect(callback: (err?: Error) => void): void;
+    connect(): Promise<Client_2>;
+    connect(callback: ((err: Error) => void) | ((err: null, c: Client_2) => void)): void;
     _handleAuthSASLContinue(msg: any): Promise<void>;
 }
 
