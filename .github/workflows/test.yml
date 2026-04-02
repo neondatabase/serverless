@@ -6,6 +6,7 @@ on:
       - main
 
 permissions:
+  id-token: write
   contents: read
 
 env:
@@ -18,7 +19,9 @@ env:
 
 jobs:
   test-old:
-    runs-on: ubuntu-latest
+    runs-on:
+      group: neondatabase-protected-runner-group
+      labels: linux-ubuntu-latest
     steps:
       # setup
       - name: Harden the runner (Audit all outbound calls)
@@ -31,15 +34,26 @@ jobs:
         with:
           node-version: 19
 
+      - name: Setup JFrog CLI with OIDC
+        uses: jfrog/setup-jfrog-cli@279b1f629f43dd5bc658d8361ac4802a7ef8d2d5 # v4.9.1
+        env:
+          JF_URL: https://databricks.jfrog.io
+        with:
+          oidc-provider-name: github-actions
+
       - name: Install package dependencies
-        run: npm clean-install
+        run: |
+          jf npmc --repo-resolve=db-npm
+          jf npm clean-install
 
       # goal
       - name: Run CLI-based tests in Node 19
         run: touch src && npm run test:node
 
   test-current:
-    runs-on: ubuntu-latest
+    runs-on:
+      group: neondatabase-protected-runner-group
+      labels: linux-ubuntu-latest
     steps:
       # setup
       - name: Harden the runner (Audit all outbound calls)
@@ -54,8 +68,17 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: Setup JFrog CLI with OIDC
+        uses: jfrog/setup-jfrog-cli@279b1f629f43dd5bc658d8361ac4802a7ef8d2d5 # v4.9.1
+        env:
+          JF_URL: https://databricks.jfrog.io
+        with:
+          oidc-provider-name: github-actions
+
       - name: Install package dependencies
-        run: npm clean-install
+        run: |
+          jf npmc --repo-resolve=db-npm
+          jf npm clean-install
 
       # goal
       - name: Run all tests
