@@ -262,6 +262,7 @@ declare class ClientBase_2 extends EventEmitter {
     getTypeParser(id: PgTypeId, format?: PgTypeFormat): any;
     on(event: 'drain', listener: () => void): this;
     on(event: 'error', listener: (err: Error) => void): this;
+    on(event: 'notice', listener: (notice: NoticeMessage) => void): this;
     on(event: 'notification', listener: (message: Notification) => void): this;
     on(event: 'end', listener: () => void): this;
 }
@@ -904,6 +905,28 @@ export declare class NeonQueryPromise<ArrayMode extends boolean, FullResults ext
     then<TResult1 = T, TResult2 = never>(resolve?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, reject?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
     catch<TResult = never>(reject?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
     finally(finallyFn?: (() => void) | undefined | null): Promise<T>;
+}
+
+declare interface NoticeMessage {
+    readonly name: 'notice';
+    readonly length: number;
+    readonly message: string | undefined;
+    severity: string | undefined;
+    code: string | undefined;
+    detail: string | undefined;
+    hint: string | undefined;
+    position: string | undefined;
+    internalPosition: string | undefined;
+    internalQuery: string | undefined;
+    where: string | undefined;
+    schema: string | undefined;
+    table: string | undefined;
+    column: string | undefined;
+    dataType: string | undefined;
+    constraint: string | undefined;
+    file: string | undefined;
+    line: string | undefined;
+    routine: string | undefined;
 }
 
 export declare interface Notification {
