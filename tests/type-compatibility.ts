@@ -20,19 +20,6 @@ import type * as Real from '../node_modules/@types/pg/index.d.ts';
 // fails to compile if the real type has a property key that our shim lacks.
 type AssertKeys<_T extends true> = void;
 
-type AssertNever<_T extends never> = void;
-
-type FunctionKeys<T> = {
-  [K in keyof T]-?: T[K] extends (...args: any[]) => any ? K : never;
-}[keyof T];
-type MismatchedKeys<FromT, ToT, IgnoreK extends PropertyKey = never> = {
-  [K in Exclude<keyof FromT, IgnoreK>]-?: K extends keyof ToT
-    ? [FromT[K]] extends [ToT[K]]
-      ? never
-      : K
-    : K;
-}[Exclude<keyof FromT, IgnoreK>];
-
 // every key on Real.X must exist on Shims.X
 type _ClientConfig = AssertKeys<keyof Real.ClientConfig extends keyof Shims.ClientConfig ? true : false>;
 type _ConnectionConfig = AssertKeys<keyof Real.ConnectionConfig extends keyof Shims.ConnectionConfig ? true : false>;
@@ -79,6 +66,17 @@ type _Submittable2 = AssertKeys<keyof Shims.Submittable extends keyof Real.Submi
 // - inputs accepted by the library: Real -> Shim
 // - outputs exposed by the library: Shim -> Real
 
+type AssertNever<_T extends never> = void;
+
+type MismatchedKeys<FromT, ToT, IgnoreK extends PropertyKey = never> = {
+  [K in Exclude<keyof FromT, IgnoreK>]-?: K extends keyof ToT
+    ? [FromT[K]] extends [ToT[K]]
+      ? never
+      : K
+    : K;
+}[Exclude<keyof FromT, IgnoreK>];
+
+
 // inputs (Real -> Shim), with key-level diagnostics in error output
 type _ClientConfigInputCompat = AssertNever<MismatchedKeys<Real.ClientConfig, Shims.ClientConfig>>;
 type _ConnectionConfigInputCompat = AssertNever<MismatchedKeys<Real.ConnectionConfig, Shims.ConnectionConfig>>;
@@ -121,6 +119,10 @@ type _PoolInputCompat = AssertNever<MismatchedKeys<Real.Pool, Shims.Pool, keyof 
 type _QueryInputCompat = AssertNever<MismatchedKeys<Real.Query, Shims.Query>>;
 type _EventsInputCompat = AssertNever<MismatchedKeys<Real.Events, Shims.Events, keyof import('events').EventEmitter>>;
 type _ConnectionOutputCompat = AssertNever<MismatchedKeys<Shims.Connection, Real.Connection>>;
+
+type FunctionKeys<T> = {
+    [K in keyof T]-?: T[K] extends (...args: any[]) => any ? K : never;
+  }[keyof T];
 
 // for class outputs, check data properties only (method variance can be noisy)
 type _ClientBaseOutputCompat = AssertNever<MismatchedKeys<Shims.ClientBase, Real.ClientBase, keyof import('events').EventEmitter | FunctionKeys<Shims.ClientBase>>>;
