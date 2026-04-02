@@ -21,13 +21,17 @@ import type * as Real from '../node_modules/@types/pg/index.d.ts';
 type AssertKeys<_T extends true> = void;
 
 type AssertNever<_T extends never> = void;
-type MismatchedKeys<FromT, ToT> = {
-  [K in keyof FromT]-?: K extends keyof ToT
-    ? FromT[K] extends ToT[K]
+
+type FunctionKeys<T> = {
+  [K in keyof T]-?: T[K] extends (...args: any[]) => any ? K : never;
+}[keyof T];
+type MismatchedKeys<FromT, ToT, IgnoreK extends PropertyKey = never> = {
+  [K in Exclude<keyof FromT, IgnoreK>]-?: K extends keyof ToT
+    ? [FromT[K]] extends [ToT[K]]
       ? never
       : K
     : K;
-}[keyof FromT];
+}[Exclude<keyof FromT, IgnoreK>];
 
 // every key on Real.X must exist on Shims.X
 type _ClientConfig = AssertKeys<keyof Real.ClientConfig extends keyof Shims.ClientConfig ? true : false>;
@@ -72,10 +76,10 @@ type _Notification2 = AssertKeys<keyof Shims.Notification extends keyof Real.Not
 type _Submittable2 = AssertKeys<keyof Shims.Submittable extends keyof Real.Submittable ? true : false>;
 
 // Usage compatibility checks:
-// - Inputs accepted by the library: Real -> Shim
-// - Outputs exposed by the library: Shim -> Real
+// - inputs accepted by the library: Real -> Shim
+// - outputs exposed by the library: Shim -> Real
 
-// Inputs (Real -> Shim), with key-level diagnostics in error output.
+// inputs (Real -> Shim), with key-level diagnostics in error output
 type _ClientConfigInputCompat = AssertNever<MismatchedKeys<Real.ClientConfig, Shims.ClientConfig>>;
 type _ConnectionConfigInputCompat = AssertNever<MismatchedKeys<Real.ConnectionConfig, Shims.ConnectionConfig>>;
 type _DefaultsInputCompat = AssertNever<MismatchedKeys<Real.Defaults, Shims.Defaults>>;
@@ -89,7 +93,7 @@ type _ExecuteConfigInputCompat = AssertNever<MismatchedKeys<Real.ExecuteConfig, 
 type _MessageConfigInputCompat = AssertNever<MismatchedKeys<Real.MessageConfig, Shims.MessageConfig>>;
 type _SubmittableInputCompat = AssertNever<MismatchedKeys<Real.Submittable, Shims.Submittable>>;
 
-// Outputs (Shim -> Real), with key-level diagnostics in error output.
+// outputs (Shim -> Real), with key-level diagnostics in error output
 type _FieldDefOutputCompat = AssertNever<MismatchedKeys<Shims.FieldDef, Real.FieldDef>>;
 type _QueryResultBaseOutputCompat = AssertNever<MismatchedKeys<Shims.QueryResultBase, Real.QueryResultBase>>;
 type _QueryResultRowOutputCompat = AssertNever<MismatchedKeys<Shims.QueryResultRow, Real.QueryResultRow>>;
@@ -97,3 +101,31 @@ type _QueryResultOutputCompat = AssertNever<MismatchedKeys<Shims.QueryResult, Re
 type _QueryArrayResultOutputCompat = AssertNever<MismatchedKeys<Shims.QueryArrayResult, Real.QueryArrayResult>>;
 type _ResultBuilderOutputCompat = AssertNever<MismatchedKeys<Shims.ResultBuilder, Real.ResultBuilder>>;
 type _NotificationOutputCompat = AssertNever<MismatchedKeys<Shims.Notification, Real.Notification>>;
+
+// class + method compatibility checks --
+// constructors/statics (Real -> Shim): user code that instantiates/classes against
+// real types should still type-check against shims
+type _ConnectionCtorCompat = AssertKeys<typeof Real.Connection extends typeof Shims.Connection ? true : false>;
+type _ClientBaseCtorCompat = AssertKeys<typeof Real.ClientBase extends typeof Shims.ClientBase ? true : false>;
+type _ClientCtorCompat = AssertKeys<typeof Real.Client extends typeof Shims.Client ? true : false>;
+type _PoolCtorCompat = AssertKeys<typeof Real.Pool extends typeof Shims.Pool ? true : false>;
+type _QueryCtorCompat = AssertKeys<typeof Real.Query extends typeof Shims.Query ? true : false>;
+type _EventsCtorCompat = AssertKeys<typeof Real.Events extends typeof Shims.Events ? true : false>;
+
+// instance methods/properties: inputs use Real -> Shim and outputs use Shim -> Real
+type _ConnectionInputCompat = AssertNever<MismatchedKeys<Real.Connection, Shims.Connection>>;
+type _ClientBaseInputCompat = AssertNever<MismatchedKeys<Real.ClientBase, Shims.ClientBase, keyof import('events').EventEmitter>>;
+type _ClientInputCompat = AssertNever<MismatchedKeys<Real.Client, Shims.Client, keyof import('events').EventEmitter>>;
+type _PoolClientInputCompat = AssertNever<MismatchedKeys<Real.PoolClient, Shims.PoolClient, keyof import('events').EventEmitter>>;
+type _PoolInputCompat = AssertNever<MismatchedKeys<Real.Pool, Shims.Pool, keyof import('events').EventEmitter>>;
+type _QueryInputCompat = AssertNever<MismatchedKeys<Real.Query, Shims.Query>>;
+type _EventsInputCompat = AssertNever<MismatchedKeys<Real.Events, Shims.Events, keyof import('events').EventEmitter>>;
+type _ConnectionOutputCompat = AssertNever<MismatchedKeys<Shims.Connection, Real.Connection>>;
+
+// for class outputs, check data properties only (method variance can be noisy)
+type _ClientBaseOutputCompat = AssertNever<MismatchedKeys<Shims.ClientBase, Real.ClientBase, keyof import('events').EventEmitter | FunctionKeys<Shims.ClientBase>>>;
+type _ClientOutputCompat = AssertNever<MismatchedKeys<Shims.Client, Real.Client, keyof import('events').EventEmitter | FunctionKeys<Shims.Client>>>;
+type _PoolClientOutputCompat = AssertNever<MismatchedKeys<Shims.PoolClient, Real.PoolClient, keyof import('events').EventEmitter | FunctionKeys<Shims.PoolClient>>>;
+type _PoolOutputCompat = AssertNever<MismatchedKeys<Shims.Pool, Real.Pool, keyof import('events').EventEmitter | FunctionKeys<Shims.Pool>>>;
+type _QueryOutputCompat = AssertNever<MismatchedKeys<Shims.Query, Real.Query, FunctionKeys<Shims.Query>>>;
+type _EventsOutputCompat = AssertNever<MismatchedKeys<Shims.Events, Real.Events, keyof import('events').EventEmitter | FunctionKeys<Shims.Events>>>;

@@ -100,17 +100,18 @@ export interface PoolConfig extends ClientConfig {
   allowExitOnIdle?: boolean | undefined;
   maxUses?: number | undefined;
   maxLifetimeSeconds?: number | undefined;
-  Client?: (new () => ClientBase) | undefined;
+  Client?: (new () => any) | undefined;
 }
 
-// Keep this aligned with pg-types TypeId enum values.
-type PgTypeId =
-  | 16 | 17 | 18 | 20 | 21 | 23 | 24 | 25 | 26 | 27 | 28 | 29
-  | 114 | 142 | 194 | 210 | 602 | 604 | 650 | 700 | 701 | 702 | 703 | 704
-  | 718 | 774 | 790 | 829 | 869 | 1033 | 1042 | 1043 | 1082 | 1083
-  | 1114 | 1184 | 1186 | 1266 | 1560 | 1562 | 1700 | 1790 | 2202 | 2203
-  | 2204 | 2205 | 2206 | 2950 | 2970 | 3220 | 3361 | 3402 | 3614 | 3615
-  | 3642 | 3734 | 3769 | 3802 | 4089 | 4096;
+export interface PoolOptions extends PoolConfig {
+  max: number;
+  maxUses: number;
+  allowExitOnIdle: boolean;
+  maxLifetimeSeconds: number;
+  idleTimeoutMillis: number | null;
+}
+
+type PgTypeId = number;
 type PgTypeFormat = 'text' | 'binary';
 
 export interface CustomTypesConfig {
@@ -204,8 +205,17 @@ export class ClientBase extends EventEmitter {
   ): void;
   pauseDrain(): void;
   resumeDrain(): void;
+  copyFrom(queryText: string): any;
+  copyTo(queryText: string): any;
   escapeIdentifier(str: string): string;
   escapeLiteral(str: string): string;
+  setTypeParser(id: PgTypeId, parseFn: (value: string) => any): void;
+  setTypeParser(
+    id: PgTypeId,
+    format: PgTypeFormat,
+    parseFn: (value: string) => any,
+  ): void;
+  getTypeParser(id: PgTypeId, format?: PgTypeFormat): any;
   on(event: 'drain', listener: () => void): this;
   on(event: 'error', listener: (err: Error) => void): this;
   on(event: 'notification', listener: (message: Notification) => void): this;
@@ -231,7 +241,7 @@ export interface PoolClient extends ClientBase {
 
 export class Pool extends EventEmitter {
   constructor(config?: PoolConfig);
-  options: PoolConfig;
+  options: PoolOptions;
   readonly totalCount: number;
   readonly idleCount: number;
   readonly waitingCount: number;
