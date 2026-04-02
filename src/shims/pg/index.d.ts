@@ -103,8 +103,18 @@ export interface PoolConfig extends ClientConfig {
   Client?: (new () => ClientBase) | undefined;
 }
 
+// Keep this aligned with pg-types TypeId enum values.
+type PgTypeId =
+  | 16 | 17 | 18 | 20 | 21 | 23 | 24 | 25 | 26 | 27 | 28 | 29
+  | 114 | 142 | 194 | 210 | 602 | 604 | 650 | 700 | 701 | 702 | 703 | 704
+  | 718 | 774 | 790 | 829 | 869 | 1033 | 1042 | 1043 | 1082 | 1083
+  | 1114 | 1184 | 1186 | 1266 | 1560 | 1562 | 1700 | 1790 | 2202 | 2203
+  | 2204 | 2205 | 2206 | 2950 | 2970 | 3220 | 3361 | 3402 | 3614 | 3615
+  | 3642 | 3734 | 3769 | 3802 | 4089 | 4096;
+type PgTypeFormat = 'text' | 'binary';
+
 export interface CustomTypesConfig {
-  getTypeParser: (id: number, format?: string) => any;
+  getTypeParser: (id: PgTypeId, format?: PgTypeFormat) => any;
 }
 
 // -- Message types ----------------------------------------------------------

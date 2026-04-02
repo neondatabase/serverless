@@ -51,7 +51,7 @@
     "format": "prettier -c .",
     "format:fix": "prettier -w .",
     "test": "touch src && npm run test:type-shims && npm run test:node && npm run test:edge && npm run test:bun && npm run test:deno && npm run test:packages && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
-    "test:type-shims": "tsc --noEmit --strict --moduleResolution node --module es2022 --target es2022 tests/type-compatibility.ts",
+    "test:type-shims": "npm run build && tsc --noEmit --strict --moduleResolution node --module es2022 --target es2022 tests/type-compatibility.ts",
     "test:node": "npm run build && vitest run --dir=tests/cli --environment=node --typecheck --config=tests/vite.config.mts",
     "test:edge": "npm run build && vitest run --dir=tests/cli --environment=edge-runtime --config=tests/vite.config.mts",
     "test:bun": "npm run build && bun run --env-file=.env.test tests/basic/basic.ts",
