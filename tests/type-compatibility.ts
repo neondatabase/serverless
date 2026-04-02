@@ -40,8 +40,12 @@ type _ExecuteConfig = Assert<keyof Real.ExecuteConfig extends keyof Shims.Execut
 type _MessageConfig = Assert<keyof Real.MessageConfig extends keyof Shims.MessageConfig ? true : false>;
 type _Notification = Assert<keyof Real.Notification extends keyof Shims.Notification ? true : false>;
 type _Submittable = Assert<keyof Real.Submittable extends keyof Shims.Submittable ? true : false>;
+type _PoolOptions = Assert<keyof Real.PoolOptions extends keyof Shims.PoolOptions ? true : false>;
+type _Result = Assert<keyof Real.Result extends keyof Shims.Result ? true : false>;
+type _TypeOverrides = Assert<keyof Real.TypeOverrides extends keyof Shims.TypeOverrides ? true : false>;
+type _DatabaseError = Assert<keyof Real.DatabaseError extends keyof Shims.DatabaseError ? true : false>;
 
-// And vice versa: our shim shouldn't have keys the real type doesn't
+// and vice versa: our shim shouldn't have keys the real type doesn't
 type _ClientConfig2 = Assert<keyof Shims.ClientConfig extends keyof Real.ClientConfig ? true : false>;
 type _ConnectionConfig2 = Assert<keyof Shims.ConnectionConfig extends keyof Real.ConnectionConfig ? true : false>;
 type _Defaults2 = Assert<keyof Shims.Defaults extends keyof Real.Defaults ? true : false>;
@@ -61,6 +65,10 @@ type _ExecuteConfig2 = Assert<keyof Shims.ExecuteConfig extends keyof Real.Execu
 type _MessageConfig2 = Assert<keyof Shims.MessageConfig extends keyof Real.MessageConfig ? true : false>;
 type _Notification2 = Assert<keyof Shims.Notification extends keyof Real.Notification ? true : false>;
 type _Submittable2 = Assert<keyof Shims.Submittable extends keyof Real.Submittable ? true : false>;
+type _PoolOptions2 = Assert<keyof Shims.PoolOptions extends keyof Real.PoolOptions ? true : false>;
+type _Result2 = Assert<keyof Shims.Result extends keyof Real.Result ? true : false>;
+type _TypeOverrides2 = Assert<keyof Shims.TypeOverrides extends keyof Real.TypeOverrides ? true : false>;
+type _DatabaseError2 = Assert<keyof Shims.DatabaseError extends keyof Real.DatabaseError ? true : false>;
 
 // Usage compatibility checks:
 // - inputs accepted by the library: Real -> Shim
@@ -75,7 +83,6 @@ type MismatchedKeys<FromT, ToT, IgnoreK extends PropertyKey = never> = {
       : K
     : K;
 }[Exclude<keyof FromT, IgnoreK>];
-
 
 // inputs (Real -> Shim), with key-level diagnostics in error output
 type _ClientConfigInputCompat = AssertNever<MismatchedKeys<Real.ClientConfig, Shims.ClientConfig>>;
@@ -109,6 +116,9 @@ type _ClientCtorCompat = Assert<typeof Real.Client extends typeof Shims.Client ?
 type _PoolCtorCompat = Assert<typeof Real.Pool extends typeof Shims.Pool ? true : false>;
 type _QueryCtorCompat = Assert<typeof Real.Query extends typeof Shims.Query ? true : false>;
 type _EventsCtorCompat = Assert<typeof Real.Events extends typeof Shims.Events ? true : false>;
+type _ResultCtorCompat = Assert<typeof Real.Result extends typeof Shims.Result ? true : false>;
+type _TypeOverridesCtorCompat = Assert<typeof Real.TypeOverrides extends typeof Shims.TypeOverrides ? true : false>;
+type _DatabaseErrorCtorCompat = Assert<typeof Real.DatabaseError extends typeof Shims.DatabaseError ? true : false>;
 
 // instance methods/properties: inputs use Real -> Shim and outputs use Shim -> Real
 type _ConnectionInputCompat = AssertNever<MismatchedKeys<Real.Connection, Shims.Connection>>;
@@ -131,9 +141,22 @@ type _PoolClientOutputCompat = AssertNever<MismatchedKeys<Shims.PoolClient, Real
 type _PoolOutputCompat = AssertNever<MismatchedKeys<Shims.Pool, Real.Pool, keyof import('events').EventEmitter | FunctionKeys<Shims.Pool>>>;
 type _QueryOutputCompat = AssertNever<MismatchedKeys<Shims.Query, Real.Query, FunctionKeys<Shims.Query>>>;
 type _EventsOutputCompat = AssertNever<MismatchedKeys<Shims.Events, Real.Events, keyof import('events').EventEmitter | FunctionKeys<Shims.Events>>>;
+type _ResultInputCompat = AssertNever<MismatchedKeys<Real.Result, Shims.Result, FunctionKeys<Real.Result>>>;
+type _ResultOutputCompat = AssertNever<MismatchedKeys<Shims.Result, Real.Result, FunctionKeys<Shims.Result>>>;
+type _TypeOverridesInputCompat = AssertNever<MismatchedKeys<Real.TypeOverrides, Shims.TypeOverrides, FunctionKeys<Real.TypeOverrides>>>;
+type _TypeOverridesOutputCompat = AssertNever<MismatchedKeys<Shims.TypeOverrides, Real.TypeOverrides, FunctionKeys<Shims.TypeOverrides>>>;
+type _DatabaseErrorInputCompat = AssertNever<MismatchedKeys<Real.DatabaseError, Shims.DatabaseError, keyof Error>>;
+type _DatabaseErrorOutputCompat = AssertNever<MismatchedKeys<Shims.DatabaseError, Real.DatabaseError, keyof Error>>;
 
-// Real-world usage contract checks (compile-time only)
-// These mimic common app patterns to catch practical type regressions.
+// value exports compatibility: Real -> Shim (consumers using real types should work with shims)
+type _TypesExportCompat = Assert<typeof Real.types extends typeof Shims.types ? true : false>;
+type _DefaultsExportCompat = Assert<typeof Real.defaults extends typeof Shims.defaults ? true : false>;
+type _EscapeIdentifierExportCompat = Assert<typeof Real.escapeIdentifier extends typeof Shims.escapeIdentifier ? true : false>;
+type _EscapeLiteralExportCompat = Assert<typeof Real.escapeLiteral extends typeof Shims.escapeLiteral ? true : false>;
+type _NativeExportCompat = Assert<typeof Real.native extends typeof Shims.native ? true : false>;
+
+// real-world usage contract checks (compile-time only):
+// these mimic common app patterns to catch practical type regressions
 
 type AppRow = { id: number; name: string };
 
@@ -146,6 +169,7 @@ declare const _shimFieldDef: Shims.FieldDef;
 declare const _realPool: Real.Pool;
 
 // config compatibility: minimal + commonly used options
+
 const _poolConfigMinimal: Shims.PoolConfig = {
   connectionString: 'postgres://user:pass@localhost:5432/db',
 };
@@ -176,6 +200,7 @@ const _clientConfigStreamFactory: Shims.ClientConfig = {
 };
 
 // connect() contract and PoolClient release()
+
 const _shimPoolConnectPromise = _shimPool.connect();
 const _realPoolConnectPromise = _realPool.connect();
 type _PoolConnectReturnsPoolClient = Assert<
@@ -190,6 +215,7 @@ type _PoolClientHasRelease = Assert<
 const _clientBaseFromPoolClient: Shims.ClientBase = _shimPoolClient;
 
 // generic query return typing
+
 const _poolQueryResultPromise = _shimPool.query<AppRow>(
   'select 1 as id, \'neon\' as name',
 );
@@ -217,6 +243,7 @@ type _PoolArrayQueryRowsPreserveTuple = Assert<
 >;
 
 // prepared statement/query config usage
+
 const _queryConfigWithValues: Shims.QueryConfig<[number, string]> = {
   name: 'get-user-by-id',
   text: 'select * from users where id = $1 and org = $2',
@@ -229,6 +256,7 @@ const _queryArrayConfig: Shims.QueryArrayConfig<[number]> = {
 };
 
 // query output shape used by app code
+
 const _rows: AppRow[] = _shimQueryResult.rows;
 const _rowCount: number | null = _shimQueryResult.rowCount;
 const _command: string = _shimQueryResult.command;
@@ -237,6 +265,7 @@ const _fieldName: string = _shimFieldDef.name;
 const _fieldDataTypeId: number = _shimFieldDef.dataTypeID;
 
 // event callback usage patterns
+
 _shimClientBase.on('notification', (message) => {
   const _channel: string = message.channel;
   const _processId: number = message.processId;
@@ -260,7 +289,8 @@ _shimPool.on('error', (err, client) => {
   client.release();
 });
 
-// Submittable passthrough support in query APIs
+// submittable passthrough support in query APIs
+
 const _submittable: Shims.Submittable = {
   submit(_connection: Shims.Connection) {},
 };
@@ -270,6 +300,7 @@ type _SubmittableQueryReturnsInput = Assert<
 >;
 
 // negative checks to ensure invalid usage still fails
+
 // @ts-expect-error QueryArrayConfig rowMode must be "array"
 const _badRowMode: Shims.QueryArrayConfig = { text: 'select 1', rowMode: 'object' };
 // @ts-expect-error unknown PoolConfig property should not type-check
@@ -280,8 +311,9 @@ const _badPoolConfig: Shims.PoolConfig = { max: 1, doesNotExist: true };
 
 import { PrismaNeon } from '@prisma/adapter-neon';
 
-// Drizzle-style node-postgres contract subset.
-// We keep this focused on the pieces Drizzle commonly relies on in practice.
+// drizzle-style node-postgres contract subset --
+// we keep this focused on the pieces Drizzle commonly relies on in practice
+
 interface DrizzleNodePgClientLike {
   query: Shims.ClientBase['query'];
 }
@@ -294,7 +326,8 @@ const _drizzleClientLikeFromShimClient: DrizzleNodePgClientLike = _shimClient;
 const _drizzleClientLikeFromShimPoolClient: DrizzleNodePgClientLike = _shimPoolClient;
 const _drizzlePoolLikeFromShimPool: DrizzleNodePgPoolLike = _shimPool;
 
-// node-postgres compatibility nuance: many consumers rely on the "notice" event.
+// node-postgres compatibility nuance: many consumers rely on the "notice" event
+
 interface PgNoticeEventLike {
   on(event: 'notice', listener: (notice: Shims.NoticeMessage) => void): unknown;
 }
@@ -308,7 +341,8 @@ type _ShimPoolSupportsDrizzleLikeConnect = Assert<
   Shims.Pool['connect'] extends DrizzleNodePgPoolLike['connect'] ? true : false
 >;
 
-// Prisma Neon adapter should accept pg-like pool config from shims.
+// Prisma Neon adapter should accept pg-like pool config from shims
+
 const _shimPoolConfigForPrisma: Shims.PoolConfig = {
   connectionString: 'postgres://user:pass@localhost:5432/db',
   ssl: { rejectUnauthorized: true },

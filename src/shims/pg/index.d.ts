@@ -360,6 +360,26 @@ export class DatabaseError extends Error {
   constructor(message: string, length: number, name: string);
 }
 
+export class Result<R extends QueryResultRow = any> implements QueryResult<R> {
+  command: string;
+  rowCount: number | null;
+  oid: number;
+  fields: FieldDef[];
+  rows: R[];
+  constructor(rowMode: string, types: CustomTypesConfig);
+}
+
+export class TypeOverrides implements CustomTypesConfig {
+  constructor(types?: CustomTypesConfig);
+  setTypeParser(id: PgTypeId, parseFn: (value: string) => any): void;
+  setTypeParser(
+    id: PgTypeId,
+    format: PgTypeFormat,
+    parseFn: (value: string | Uint8Array) => any,
+  ): void;
+  getTypeParser(id: PgTypeId, format?: PgTypeFormat): any;
+}
+
 // -- Value exports ----------------------------------------------------------
 
 export declare const types: {
@@ -378,3 +398,6 @@ export declare const defaults: Defaults & ClientConfig;
 
 export declare function escapeIdentifier(str: string): string;
 export declare function escapeLiteral(str: string): string;
+
+import type * as Pg from './index.d.ts';
+export declare const native: typeof Pg | null;
