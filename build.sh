@@ -45,6 +45,12 @@ sed -i.orig -r \
   -e "/^declare global [{]$/,/^[}]$/d" \
   build/types/shims/net/index.d.ts
 
+# strip /// <reference types="node" /> from subtls (added because its upstream
+# .d.ts references node types, but our shims replace those)
+sed -i.orig \
+  -e '/^\/\/\/ <reference types="node" \/>$/d' \
+  node_modules/subtls/index.d.ts
+
 # bundle all types into one file
 npx @microsoft/api-extractor run
 
