@@ -7,7 +7,9 @@ export declare interface NeonClient {
     stream: Socket;
     sendSCRAMClientFinalMessage: (response: any) => void;
     ssl: any;
+    _connecting: boolean;
   };
+  _connecting: boolean;
   _handleReadyForQuery: any;
   _handleAuthCleartextPassword: any;
   startup: any;
@@ -26,6 +28,15 @@ export class NeonClient extends Client {
 
   constructor(public config?: string | ClientConfig) {
     super(config);
+
+    // pg leaves these flags set after an end during startup, which makes a
+    // later client.end() wait for an end event that already happened.
+    this.connection.on('end', () => {
+      this.connection._connecting = false;
+    });
+    this.on('end', () => {
+      this._connecting = false;
+    });
   }
 
   override connect(): Promise<void>;

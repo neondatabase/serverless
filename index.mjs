@@ -17,13 +17,13 @@ c)]<<2|te[r.charCodeAt(c+1)]>>4,s[o++]=e&255),i===1&&(e=te[r.charCodeAt(c)]<<10|
 t;s+=3)n=(r[s]<<16&16711680)+(r[s+1]<<8&65280)+(r[s+2]&255),i.push(Lo(n));return i.join("")}a(Fo,"en\
 codeChunk");function ko(r){for(var e,t=r.length,n=t%3,i=[],s=16383,o=0,u=t-n;o<u;o+=s)i.push(Fo(r,o,
 o+s>u?u:o+s));return n===1?(e=r[t-1],i.push(ae[e>>2]+ae[e<<4&63]+"==")):n===2&&(e=(r[t-2]<<8)+r[t-1],
-i.push(ae[e>>10]+ae[e>>4&63]+ae[e<<2&63]+"=")),i.join("")}a(ko,"fromByteArray")});var Nn=T(Qt=>{p();Qt.read=function(r,e,t,n,i){var s,o,u=i*8-n-1,c=(1<<u)-1,l=c>>1,f=-7,y=t?i-1:0,g=t?
--1:1,A=r[e+y];for(y+=g,s=A&(1<<-f)-1,A>>=-f,f+=u;f>0;s=s*256+r[e+y],y+=g,f-=8);for(o=s&(1<<-f)-1,s>>=
--f,f+=n;f>0;o=o*256+r[e+y],y+=g,f-=8);if(s===0)s=1-l;else{if(s===c)return o?NaN:(A?-1:1)*(1/0);o=o+Math.
+i.push(ae[e>>10]+ae[e>>4&63]+ae[e<<2&63]+"=")),i.join("")}a(ko,"fromByteArray")});var Nn=T(Qt=>{p();Qt.read=function(r,e,t,n,i){var s,o,u=i*8-n-1,c=(1<<u)-1,l=c>>1,f=-7,y=t?i-1:0,w=t?
+-1:1,A=r[e+y];for(y+=w,s=A&(1<<-f)-1,A>>=-f,f+=u;f>0;s=s*256+r[e+y],y+=w,f-=8);for(o=s&(1<<-f)-1,s>>=
+-f,f+=n;f>0;o=o*256+r[e+y],y+=w,f-=8);if(s===0)s=1-l;else{if(s===c)return o?NaN:(A?-1:1)*(1/0);o=o+Math.
 pow(2,n),s=s-l}return(A?-1:1)*o*Math.pow(2,s-n)};Qt.write=function(r,e,t,n,i,s){var o,u,c,l=s*8-i-1,
-f=(1<<l)-1,y=f>>1,g=i===23?Math.pow(2,-24)-Math.pow(2,-77):0,A=n?0:s-1,C=n?1:-1,D=e<0||e===0&&1/e<0?
+f=(1<<l)-1,y=f>>1,w=i===23?Math.pow(2,-24)-Math.pow(2,-77):0,A=n?0:s-1,C=n?1:-1,D=e<0||e===0&&1/e<0?
 1:0;for(e=Math.abs(e),isNaN(e)||e===1/0?(u=isNaN(e)?1:0,o=f):(o=Math.floor(Math.log(e)/Math.LN2),e*(c=
-Math.pow(2,-o))<1&&(o--,c*=2),o+y>=1?e+=g/c:e+=g*Math.pow(2,1-y),e*c>=2&&(o++,c/=2),o+y>=f?(u=0,o=f):
+Math.pow(2,-o))<1&&(o--,c*=2),o+y>=1?e+=w/c:e+=w*Math.pow(2,1-y),e*c>=2&&(o++,c/=2),o+y>=f?(u=0,o=f):
 o+y>=1?(u=(e*c-1)*Math.pow(2,i),o=o+y):(u=e*Math.pow(2,y-1)*Math.pow(2,i),o=0));i>=8;r[t+A]=u&255,A+=
 C,u/=256,i-=8);for(o=o<<i|u,l+=i;l>0;r[t+A]=o&255,A+=C,o/=256,l-=8);r[t+A-C]|=D*128}});var ii=T(Re=>{"use strict";p();var Nt=Qn(),Pe=Nn(),Wn=typeof Symbol=="function"&&typeof Symbol.for==
 "function"?Symbol.for("nodejs.util.inspect.custom"):null;Re.Buffer=h;Re.SlowBuffer=Qo;Re.INSPECT_MAX_BYTES=
@@ -166,10 +166,10 @@ a(function(e,t){return e=e>>>0,t||q(e,2,this.length),this[e]<<8|this[e+1]},"read
 readUint32LE=h.prototype.readUInt32LE=a(function(e,t){return e=e>>>0,t||q(e,4,this.length),(this[e]|
 this[e+1]<<8|this[e+2]<<16)+this[e+3]*16777216},"readUInt32LE");h.prototype.readUint32BE=h.prototype.
 readUInt32BE=a(function(e,t){return e=e>>>0,t||q(e,4,this.length),this[e]*16777216+(this[e+1]<<16|this[e+
-2]<<8|this[e+3])},"readUInt32BE");h.prototype.readBigUInt64LE=we(a(function(e){e=e>>>0,Be(e,"offset");
+2]<<8|this[e+3])},"readUInt32BE");h.prototype.readBigUInt64LE=ge(a(function(e){e=e>>>0,Be(e,"offset");
 let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&je(e,this.length-8);let i=t+this[++e]*2**8+this[++e]*
 2**16+this[++e]*2**24,s=this[++e]+this[++e]*2**8+this[++e]*2**16+n*2**24;return BigInt(i)+(BigInt(s)<<
-BigInt(32))},"readBigUInt64LE"));h.prototype.readBigUInt64BE=we(a(function(e){e=e>>>0,Be(e,"offset");
+BigInt(32))},"readBigUInt64LE"));h.prototype.readBigUInt64BE=ge(a(function(e){e=e>>>0,Be(e,"offset");
 let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&je(e,this.length-8);let i=t*2**24+this[++e]*2**16+
 this[++e]*2**8+this[++e],s=this[++e]*2**24+this[++e]*2**16+this[++e]*2**8+n;return(BigInt(i)<<BigInt(
 32))+BigInt(s)},"readBigUInt64BE"));h.prototype.readIntLE=a(function(e,t,n){e=e>>>0,t=t>>>0,n||q(e,t,
@@ -183,10 +183,10 @@ a(function(e,t){e=e>>>0,t||q(e,2,this.length);let n=this[e+1]|this[e]<<8;return 
 n},"readInt16BE");h.prototype.readInt32LE=a(function(e,t){return e=e>>>0,t||q(e,4,this.length),this[e]|
 this[e+1]<<8|this[e+2]<<16|this[e+3]<<24},"readInt32LE");h.prototype.readInt32BE=a(function(e,t){return e=
 e>>>0,t||q(e,4,this.length),this[e]<<24|this[e+1]<<16|this[e+2]<<8|this[e+3]},"readInt32BE");h.prototype.
-readBigInt64LE=we(a(function(e){e=e>>>0,Be(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&
+readBigInt64LE=ge(a(function(e){e=e>>>0,Be(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&
 je(e,this.length-8);let i=this[e+4]+this[e+5]*2**8+this[e+6]*2**16+(n<<24);return(BigInt(i)<<BigInt(
 32))+BigInt(t+this[++e]*2**8+this[++e]*2**16+this[++e]*2**24)},"readBigInt64LE"));h.prototype.readBigInt64BE=
-we(a(function(e){e=e>>>0,Be(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&je(e,this.
+ge(a(function(e){e=e>>>0,Be(e,"offset");let t=this[e],n=this[e+7];(t===void 0||n===void 0)&&je(e,this.
 length-8);let i=(t<<24)+this[++e]*2**16+this[++e]*2**8+this[++e];return(BigInt(i)<<BigInt(32))+BigInt(
 this[++e]*2**24+this[++e]*2**16+this[++e]*2**8+n)},"readBigInt64BE"));h.prototype.readFloatLE=a(function(e,t){
 return e=e>>>0,t||q(e,4,this.length),Pe.read(this,e,!0,23,4)},"readFloatLE");h.prototype.readFloatBE=
@@ -214,8 +214,8 @@ s;let o=Number(e>>BigInt(32)&BigInt(4294967295));return r[t++]=o,o=o>>8,r[t++]=o
 8,r[t++]=o,t}a(Zn,"wrtBigUInt64LE");function Jn(r,e,t,n,i){ri(e,n,i,r,t,7);let s=Number(e&BigInt(4294967295));
 r[t+7]=s,s=s>>8,r[t+6]=s,s=s>>8,r[t+5]=s,s=s>>8,r[t+4]=s;let o=Number(e>>BigInt(32)&BigInt(4294967295));
 return r[t+3]=o,o=o>>8,r[t+2]=o,o=o>>8,r[t+1]=o,o=o>>8,r[t]=o,t+8}a(Jn,"wrtBigUInt64BE");h.prototype.
-writeBigUInt64LE=we(a(function(e,t=0){return Zn(this,e,t,BigInt(0),BigInt("0xffffffffffffffff"))},"w\
-riteBigUInt64LE"));h.prototype.writeBigUInt64BE=we(a(function(e,t=0){return Jn(this,e,t,BigInt(0),BigInt(
+writeBigUInt64LE=ge(a(function(e,t=0){return Zn(this,e,t,BigInt(0),BigInt("0xffffffffffffffff"))},"w\
+riteBigUInt64LE"));h.prototype.writeBigUInt64BE=ge(a(function(e,t=0){return Jn(this,e,t,BigInt(0),BigInt(
 "0xffffffffffffffff"))},"writeBigUInt64BE"));h.prototype.writeIntLE=a(function(e,t,n,i){if(e=+e,t=t>>>
 0,!i){let c=Math.pow(2,8*n-1);V(this,e,t,n,c-1,-c)}let s=0,o=1,u=0;for(this[t]=e&255;++s<n&&(o*=256);)
 e<0&&u===0&&this[t+s-1]!==0&&(u=1),this[t+s]=(e/o>>0)-u&255;return t+n},"writeIntLE");h.prototype.writeIntBE=
@@ -229,8 +229,8 @@ writeInt16BE=a(function(e,t,n){return e=+e,t=t>>>0,n||V(this,e,t,2,32767,-32768)
 e,t,4,2147483647,-2147483648),this[t]=e&255,this[t+1]=e>>>8,this[t+2]=e>>>16,this[t+3]=e>>>24,t+4},"\
 writeInt32LE");h.prototype.writeInt32BE=a(function(e,t,n){return e=+e,t=t>>>0,n||V(this,e,t,4,2147483647,
 -2147483648),e<0&&(e=4294967295+e+1),this[t]=e>>>24,this[t+1]=e>>>16,this[t+2]=e>>>8,this[t+3]=e&255,
-t+4},"writeInt32BE");h.prototype.writeBigInt64LE=we(a(function(e,t=0){return Zn(this,e,t,-BigInt("0x\
-8000000000000000"),BigInt("0x7fffffffffffffff"))},"writeBigInt64LE"));h.prototype.writeBigInt64BE=we(
+t+4},"writeInt32BE");h.prototype.writeBigInt64LE=ge(a(function(e,t=0){return Zn(this,e,t,-BigInt("0x\
+8000000000000000"),BigInt("0x7fffffffffffffff"))},"writeBigInt64LE"));h.prototype.writeBigInt64BE=ge(
 a(function(e,t=0){return Jn(this,e,t,-BigInt("0x8000000000000000"),BigInt("0x7fffffffffffffff"))},"w\
 riteBigInt64BE"));function Xn(r,e,t,n,i,s){if(t+n>r.length)throw new RangeError("Index out of range");
 if(t<0)throw new RangeError("Index out of range")}a(Xn,"checkIEEE754");function ei(r,e,t,n,i){return e=
@@ -288,12 +288,12 @@ ta(r))}a(ni,"base64ToBytes");function ht(r,e,t,n){let i;for(i=0;i<n&&!(i+t>=e.le
 e[i+t]=r[i];return i}a(ht,"blitBuffer");function ue(r,e){return r instanceof e||r!=null&&r.constructor!=
 null&&r.constructor.name!=null&&r.constructor.name===e.name}a(ue,"isInstance");function zt(r){return r!==
 r}a(zt,"numberIsNaN");var ia=function(){let r="0123456789abcdef",e=new Array(256);for(let t=0;t<16;++t){
-let n=t*16;for(let i=0;i<16;++i)e[n+i]=r[t]+r[i]}return e}();function we(r){return typeof BigInt>"u"?
-sa:r}a(we,"defineBigIntMethod");function sa(){throw new Error("BigInt not supported")}a(sa,"BufferBi\
+let n=t*16;for(let i=0;i<16;++i)e[n+i]=r[t]+r[i]}return e}();function ge(r){return typeof BigInt>"u"?
+sa:r}a(ge,"defineBigIntMethod");function sa(){throw new Error("BigInt not supported")}a(sa,"BufferBi\
 gIntNotDefined")});var b,v,x,d,m,p=G(()=>{"use strict";b=globalThis,v=globalThis.setImmediate??(r=>setTimeout(r,0)),x=globalThis.
 clearImmediate??(r=>clearTimeout(r)),d=typeof globalThis.Buffer=="function"&&typeof globalThis.Buffer.
 allocUnsafe=="function"?globalThis.Buffer:ii().Buffer,m=globalThis.process??{};m.env??(m.env={});try{
-m.nextTick(()=>{})}catch{let e=Promise.resolve();m.nextTick=e.then.bind(e)}});var ge=T((Rl,Kt)=>{"use strict";p();var Le=typeof Reflect=="object"?Reflect:null,si=Le&&typeof Le.apply==
+m.nextTick(()=>{})}catch{let e=Promise.resolve();m.nextTick=e.then.bind(e)}});var we=T((Rl,Kt)=>{"use strict";p();var Le=typeof Reflect=="object"?Reflect:null,si=Le&&typeof Le.apply==
 "function"?Le.apply:a(function(e,t,n){return Function.prototype.apply.call(e,t,n)},"ReflectApply"),pt;
 Le&&typeof Le.ownKeys=="function"?pt=Le.ownKeys:Object.getOwnPropertySymbols?pt=a(function(e){return Object.
 getOwnPropertyNames(e).concat(Object.getOwnPropertySymbols(e))},"ReflectOwnKeys"):pt=a(function(e){return Object.
@@ -358,8 +358,8 @@ fa(r,i,{once:!0})})}a(la,"once");function fa(r,e,t){typeof r.on=="function"&&di(
 "addErrorHandlerIfEventEmitter");function di(r,e,t,n){if(typeof r.on=="function")n.once?r.once(e,t):
 r.on(e,t);else if(typeof r.addEventListener=="function")r.addEventListener(e,a(function i(s){n.once&&
 r.removeEventListener(e,i),t(s)},"wrapListener"));else throw new TypeError('The "emitter" argument m\
-ust be of type EventEmitter. Received type '+typeof r)}a(di,"eventTargetAgnosticAddListener")});var wi={};ie(wi,{Socket:()=>ce,isIP:()=>ha});function ha(r){return 0}var mi,yi,S,ce,Fe=G(()=>{"use s\
-trict";p();mi=Se(ge(),1);a(ha,"isIP");yi=/^[^.]+\./,S=class S extends mi.EventEmitter{constructor(){
+ust be of type EventEmitter. Received type '+typeof r)}a(di,"eventTargetAgnosticAddListener")});var gi={};ie(gi,{Socket:()=>ce,isIP:()=>ha});function ha(r){return 0}var mi,yi,S,ce,Fe=G(()=>{"use s\
+trict";p();mi=Se(we(),1);a(ha,"isIP");yi=/^[^.]+\./,S=class S extends mi.EventEmitter{constructor(){
 super(...arguments);E(this,"opts",{});E(this,"connecting",!1);E(this,"pending",!0);E(this,"writable",
 !0);E(this,"encrypted",!1);E(this,"authorized",!1);E(this,"destroyed",!1);E(this,"ws",null);E(this,"\
 writeBuffer");E(this,"tlsState",0);E(this,"tlsRead");E(this,"tlsWrite")}static get poolQueryViaFetch(){
@@ -428,11 +428,11 @@ poolQueryViaFetch:!1,fetchEndpoint:a((t,n,i)=>{let s;return i?.jwtAuth?s=t.repla
 t.replace(yi,"api."),"https://"+s+"/sql"},"fetchEndpoint"),fetchConnectionCache:!0,fetchFunction:void 0,
 webSocketConstructor:void 0,wsProxy:a(t=>t+"/v2","wsProxy"),useSecureWebSocket:!0,forceDisablePgSSL:!0,
 coalesceWrites:!0,pipelineConnect:"password",subtls:void 0,rootCerts:"",pipelineTLS:!1,disableSNI:!1,
-disableWarningInBrowsers:!1}),E(S,"opts",{});ce=S});var gi={};ie(gi,{parse:()=>Yt});function Yt(r,e=!1){let{protocol:t}=new URL(r),n="http:"+r.substring(
-t.length),{username:i,password:s,host:o,hostname:u,port:c,pathname:l,search:f,searchParams:y,hash:g}=new URL(
+disableWarningInBrowsers:!1}),E(S,"opts",{});ce=S});var wi={};ie(wi,{parse:()=>Yt});function Yt(r,e=!1){let{protocol:t}=new URL(r),n="http:"+r.substring(
+t.length),{username:i,password:s,host:o,hostname:u,port:c,pathname:l,search:f,searchParams:y,hash:w}=new URL(
 n);s=decodeURIComponent(s),i=decodeURIComponent(i),l=decodeURIComponent(l);let A=i+":"+s,C=e?Object.
 fromEntries(y.entries()):f;return{href:r,protocol:t,auth:A,username:i,password:s,host:o,hostname:u,port:c,
-pathname:l,search:f,query:C,hash:g}}var Zt=G(()=>{"use strict";p();a(Yt,"parse")});var tr=T(Ai=>{"use strict";p();Ai.parse=function(r,e){return new er(r,e).parse()};var vt=class vt{constructor(e,t){
+pathname:l,search:f,query:C,hash:w}}var Zt=G(()=>{"use strict";p();a(Yt,"parse")});var tr=T(Ai=>{"use strict";p();Ai.parse=function(r,e){return new er(r,e).parse()};var vt=class vt{constructor(e,t){
 this.source=e,this.transform=t||Ca,this.position=0,this.entries=[],this.recorded=[],this.dimension=0}isEof(){
 return this.position>=this.source.length}nextCharacter(){var e=this.source[this.position++];return e===
 "\\"?{value:this.source[this.position++],escaped:!0}:{value:e,escaped:!1}}record(e){this.recorded.push(
@@ -450,8 +450,8 @@ parse(r,e)},"parse")}},"create")}});var Ti=T((ef,Ii)=>{"use strict";p();var Ia=/
 Ta=/^(\d{1,})-(\d{2})-(\d{2})( BC)?$/,Pa=/([Z+-])(\d{2})?:?(\d{2})?:?(\d{2})?/,Ba=/^-?infinity$/;Ii.
 exports=a(function(e){if(Ba.test(e))return Number(e.replace("i","I"));var t=Ia.exec(e);if(!t)return Ra(
 e)||null;var n=!!t[8],i=parseInt(t[1],10);n&&(i=_i(i));var s=parseInt(t[2],10)-1,o=t[3],u=parseInt(t[4],
-10),c=parseInt(t[5],10),l=parseInt(t[6],10),f=t[7];f=f?1e3*parseFloat(f):0;var y,g=La(e);return g!=null?
-(y=new Date(Date.UTC(i,s,o,u,c,l,f)),nr(i)&&y.setUTCFullYear(i),g!==0&&y.setTime(y.getTime()-g)):(y=
+10),c=parseInt(t[5],10),l=parseInt(t[6],10),f=t[7];f=f?1e3*parseFloat(f):0;var y,w=La(e);return w!=null?
+(y=new Date(Date.UTC(i,s,o,u,c,l,f)),nr(i)&&y.setUTCFullYear(i),w!==0&&y.setTime(y.getTime()-w)):(y=
 new Date(i,s,o,u,c,l,f),nr(i)&&y.setFullYear(i)),y},"parseDate");function Ra(r){var e=Ta.exec(r);if(e){
 var t=parseInt(e[1],10),n=!!e[4];n&&(t=_i(t));var i=parseInt(e[2],10)-1,s=e[3],o=new Date(t,i,s);return nr(
 t)&&o.setFullYear(t),o}}a(Ra,"getDate");function La(r){if(r.endsWith("+00"))return 0;var e=Pa.exec(r.
@@ -511,9 +511,9 @@ e===0)return n+u+i;for(c="",l=6-u.length,f=0;f<l;f++)c+="0";i=c+u+i}return s=e%z
 ""+o%z,n+u+i}a(ru,"readInt8");ji.exports=ru});var Ki=T((bf,zi)=>{p();var nu=Hi(),L=a(function(r,e,t,n,i){t=t||0,n=n||!1,i=i||function(A,C,D){return A*
 Math.pow(2,D)+C};var s=t>>3,o=a(function(A){return n?~A&255:A},"inv"),u=255,c=8-t%8;e<c&&(u=255<<8-e&
 255,c=e),t&&(u=u>>t%8);var l=0;t%8+e>=8&&(l=i(0,o(r[s])&u,c));for(var f=e+t>>3,y=s+1;y<f;y++)l=i(l,o(
-r[y]),8);var g=(e+t)%8;return g>0&&(l=i(l,o(r[f])>>8-g,g)),l},"parseBits"),Vi=a(function(r,e,t){var n=Math.
-pow(2,t-1)-1,i=L(r,1),s=L(r,t,1);if(s===0)return 0;var o=1,u=a(function(l,f,y){l===0&&(l=1);for(var g=1;g<=
-y;g++)o/=2,(f&1<<y-g)>0&&(l+=o);return l},"parsePrecisionBits"),c=L(r,e,t+1,!1,u);return s==Math.pow(
+r[y]),8);var w=(e+t)%8;return w>0&&(l=i(l,o(r[f])>>8-w,w)),l},"parseBits"),Vi=a(function(r,e,t){var n=Math.
+pow(2,t-1)-1,i=L(r,1),s=L(r,t,1);if(s===0)return 0;var o=1,u=a(function(l,f,y){l===0&&(l=1);for(var w=1;w<=
+y;w++)o/=2,(f&1<<y-w)>0&&(l+=o);return l},"parsePrecisionBits"),c=L(r,e,t+1,!1,u);return s==Math.pow(
 2,t+1)-1?c===0?i===0?1/0:-1/0:NaN:(i===0?1:-1)*Math.pow(2,s-n)*c},"parseFloatFromBits"),iu=a(function(r){
 return L(r,1)==1?-1*(L(r,15,1,!0)+1):L(r,15,1)},"parseInt16"),$i=a(function(r){return L(r,1)==1?-1*(L(
 r,31,1,!0)+1):L(r,31,1)},"parseInt32"),su=a(function(r){return Vi(r,23,8)},"parseFloat32"),ou=a(function(r){
@@ -526,8 +526,8 @@ usec=s},i.getUTCMicroSeconds=function(){return this.usec},i},"parseDate"),Ke=a(f
 r,32),t=L(r,32,32),n=L(r,32,64),i=96,s=[],o=0;o<e;o++)s[o]=L(r,32,i),i+=32,i+=32;var u=a(function(l){
 var f=L(r,32,i);if(i+=32,f==4294967295)return null;var y;if(l==23||l==20)return y=L(r,f*8,i),i+=f*8,
 y;if(l==25)return y=r.toString(this.encoding,i>>3,(i+=f<<3)>>3),y;console.log("ERROR: ElementType no\
-t implemented: "+l)},"parseElement"),c=a(function(l,f){var y=[],g;if(l.length>1){var A=l.shift();for(g=
-0;g<A;g++)y[g]=c(l,f);l.unshift(A)}else for(g=0;g<l[0];g++)y[g]=u(f);return y},"parse");return c(s,n)},
+t implemented: "+l)},"parseElement"),c=a(function(l,f){var y=[],w;if(l.length>1){var A=l.shift();for(w=
+0;w<A;w++)y[w]=c(l,f);l.unshift(A)}else for(w=0;w<l[0];w++)y[w]=u(f);return y},"parse");return c(s,n)},
 "parseArray"),uu=a(function(r){return r.toString("utf8")},"parseText"),cu=a(function(r){return r===null?
 null:L(r,8)>0},"parseBool"),lu=a(function(r){r(20,nu),r(21,iu),r(23,$i),r(26,$i),r(1700,au),r(700,su),
 r(701,ou),r(16,cu),r(1114,Gi.bind(null,!1)),r(1184,Gi.bind(null,!0)),r(1e3,Ke),r(1007,Ke),r(1016,Ke),
@@ -542,7 +542,7 @@ REGROLE:4096}});var Je=T(Ze=>{p();var fu=Wi(),hu=Ki(),pu=rr(),du=Zi();Ze.getType
 pu;Ze.builtins=du;var Ye={text:{},binary:{}};function Ji(r){return String(r)}a(Ji,"noParse");function yu(r,e){
 return e=e||"text",Ye[e]&&Ye[e][r]||Ji}a(yu,"getTypeParser");function mu(r,e,t){typeof e=="function"&&
 (t=e,e="text"),Ye[e][r]=t}a(mu,"setTypeParser");fu.init(function(r,e){Ye.text[r]=e});hu.init(function(r,e){
-Ye.binary[r]=e})});var At=T((If,Xi)=>{"use strict";p();var wu=Je();function Et(r){this._types=r||wu,this.text={},this.binary=
+Ye.binary[r]=e})});var At=T((If,Xi)=>{"use strict";p();var gu=Je();function Et(r){this._types=r||gu,this.text={},this.binary=
 {}}a(Et,"TypeOverrides");Et.prototype.getOverrides=function(r){switch(r){case"text":return this.text;case"\
 binary":return this.binary;default:return{}}};Et.prototype.setTypeParser=function(r,e,t){typeof e=="\
 function"&&(t=e,e="text"),this.getOverrides(e)[r]=t};Et.prototype.getTypeParser=function(r,e){return e=
@@ -553,21 +553,21 @@ c=1541459225,l=0,f=0,y=[1116352408,1899447441,3049323471,3921009573,961987163,15
 3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,
 1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,
 275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,
-2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298],g=a((I,w)=>I>>>w|I<<32-
-w,"rrot"),A=new Uint32Array(64),C=new Uint8Array(64),D=a(()=>{for(let R=0,j=0;R<16;R++,j+=4)A[R]=C[j]<<
-24|C[j+1]<<16|C[j+2]<<8|C[j+3];for(let R=16;R<64;R++){let j=g(A[R-15],7)^g(A[R-15],18)^A[R-15]>>>3,le=g(
-A[R-2],17)^g(A[R-2],19)^A[R-2]>>>10;A[R]=A[R-16]+j+A[R-7]+le|0}let I=e,w=t,Z=n,W=i,J=s,X=o,se=u,oe=c;
-for(let R=0;R<64;R++){let j=g(J,6)^g(J,11)^g(J,25),le=J&X^~J&se,de=oe+j+le+y[R]+A[R]|0,We=g(I,2)^g(I,
-13)^g(I,22),fe=I&w^I&Z^w&Z,_e=We+fe|0;oe=se,se=X,X=J,J=W+de|0,W=Z,Z=w,w=I,I=de+_e|0}e=e+I|0,t=t+w|0,
+2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298],w=a((I,g)=>I>>>g|I<<32-
+g,"rrot"),A=new Uint32Array(64),C=new Uint8Array(64),D=a(()=>{for(let R=0,j=0;R<16;R++,j+=4)A[R]=C[j]<<
+24|C[j+1]<<16|C[j+2]<<8|C[j+3];for(let R=16;R<64;R++){let j=w(A[R-15],7)^w(A[R-15],18)^A[R-15]>>>3,le=w(
+A[R-2],17)^w(A[R-2],19)^A[R-2]>>>10;A[R]=A[R-16]+j+A[R-7]+le|0}let I=e,g=t,Z=n,W=i,J=s,X=o,se=u,oe=c;
+for(let R=0;R<64;R++){let j=w(J,6)^w(J,11)^w(J,25),le=J&X^~J&se,de=oe+j+le+y[R]+A[R]|0,We=w(I,2)^w(I,
+13)^w(I,22),fe=I&g^I&Z^g&Z,_e=We+fe|0;oe=se,se=X,X=J,J=W+de|0,W=Z,Z=g,g=I,I=de+_e|0}e=e+I|0,t=t+g|0,
 n=n+Z|0,i=i+W|0,s=s+J|0,o=o+X|0,u=u+se|0,c=c+oe|0,f=0},"process"),Y=a(I=>{typeof I=="string"&&(I=new TextEncoder().
-encode(I));for(let w=0;w<I.length;w++)C[f++]=I[w],f===64&&D();l+=I.length},"add"),P=a(()=>{if(C[f++]=
+encode(I));for(let g=0;g<I.length;g++)C[f++]=I[g],f===64&&D();l+=I.length},"add"),P=a(()=>{if(C[f++]=
 128,f==64&&D(),f+8>64){for(;f<64;)C[f++]=0;D()}for(;f<58;)C[f++]=0;let I=l*8;C[f++]=I/1099511627776&
-255,C[f++]=I/4294967296&255,C[f++]=I>>>24,C[f++]=I>>>16&255,C[f++]=I>>>8&255,C[f++]=I&255,D();let w=new Uint8Array(
-32);return w[0]=e>>>24,w[1]=e>>>16&255,w[2]=e>>>8&255,w[3]=e&255,w[4]=t>>>24,w[5]=t>>>16&255,w[6]=t>>>
-8&255,w[7]=t&255,w[8]=n>>>24,w[9]=n>>>16&255,w[10]=n>>>8&255,w[11]=n&255,w[12]=i>>>24,w[13]=i>>>16&255,
-w[14]=i>>>8&255,w[15]=i&255,w[16]=s>>>24,w[17]=s>>>16&255,w[18]=s>>>8&255,w[19]=s&255,w[20]=o>>>24,w[21]=
-o>>>16&255,w[22]=o>>>8&255,w[23]=o&255,w[24]=u>>>24,w[25]=u>>>16&255,w[26]=u>>>8&255,w[27]=u&255,w[28]=
-c>>>24,w[29]=c>>>16&255,w[30]=c>>>8&255,w[31]=c&255,w},"digest");return r===void 0?{add:Y,digest:P}:
+255,C[f++]=I/4294967296&255,C[f++]=I>>>24,C[f++]=I>>>16&255,C[f++]=I>>>8&255,C[f++]=I&255,D();let g=new Uint8Array(
+32);return g[0]=e>>>24,g[1]=e>>>16&255,g[2]=e>>>8&255,g[3]=e&255,g[4]=t>>>24,g[5]=t>>>16&255,g[6]=t>>>
+8&255,g[7]=t&255,g[8]=n>>>24,g[9]=n>>>16&255,g[10]=n>>>8&255,g[11]=n&255,g[12]=i>>>24,g[13]=i>>>16&255,
+g[14]=i>>>8&255,g[15]=i&255,g[16]=s>>>24,g[17]=s>>>16&255,g[18]=s>>>8&255,g[19]=s&255,g[20]=o>>>24,g[21]=
+o>>>16&255,g[22]=o>>>8&255,g[23]=o&255,g[24]=u>>>24,g[25]=u>>>16&255,g[26]=u>>>8&255,g[27]=u&255,g[28]=
+c>>>24,g[29]=c>>>16&255,g[30]=c>>>8&255,g[31]=c&255,g},"digest");return r===void 0?{add:Y,digest:P}:
 (Y(r),P())}var es=G(()=>{"use strict";p();a(Xe,"sha256")});var U,et,ts=G(()=>{"use strict";p();U=class U{constructor(){E(this,"_dataLength",0);E(this,"_bufferL\
 ength",0);E(this,"_state",new Int32Array(4));E(this,"_buffer",new ArrayBuffer(68));E(this,"_buffer8");
 E(this,"_buffer32");this._buffer8=new Uint8Array(this._buffer,0,68),this._buffer32=new Uint32Array(this.
@@ -630,7 +630,7 @@ o<=4294967295)i[14]=o;else{let u=o.toString(16).match(/(.*?)(.{0,8})$/);if(u===n
 u[2],16),l=parseInt(u[1],16)||0;i[14]=c,i[15]=l}return U._md5cycle(this._state,i),e?this._state:U._hex(
 this._state)}};a(U,"Md5"),E(U,"stateIdentity",new Int32Array([1732584193,-271733879,-1732584194,271733878])),
 E(U,"buffer32Identity",new Int32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])),E(U,"hexChars","0123456789\
-abcdef"),E(U,"hexOut",[]),E(U,"onePassHasher",new U);et=U});var lr={};ie(lr,{createHash:()=>bu,createHmac:()=>vu,randomBytes:()=>gu});function gu(r){return crypto.
+abcdef"),E(U,"hexOut",[]),E(U,"onePassHasher",new U);et=U});var lr={};ie(lr,{createHash:()=>bu,createHmac:()=>vu,randomBytes:()=>wu});function wu(r){return crypto.
 getRandomValues(d.alloc(r))}function bu(r){if(r==="sha256")return{update:a(function(e){return{digest:a(
 function(){return d.from(Xe(e))},"digest")}},"update")};if(r==="md5")return{update:a(function(e){return{
 digest:a(function(){return typeof e=="string"?et.hashStr(e):et.hashByteArray(e)},"digest")}},"update")};
@@ -640,7 +640,7 @@ typeof e=="string"&&(e=new TextEncoder().encode(e)),typeof t=="string"&&(t=new T
 t));let n=e.length;if(n>64)e=Xe(e);else if(n<64){let c=new Uint8Array(64);c.set(e),e=c}let i=new Uint8Array(
 64),s=new Uint8Array(64);for(let c=0;c<64;c++)i[c]=54^e[c],s[c]=92^e[c];let o=new Uint8Array(t.length+
 64);o.set(i,0),o.set(t,64);let u=new Uint8Array(96);return u.set(s,0),u.set(Xe(o),64),d.from(Xe(u))},
-"digest")}},"update")}}var fr=G(()=>{"use strict";p();es();ts();a(gu,"randomBytes");a(bu,"createHash");
+"digest")}},"update")}}var fr=G(()=>{"use strict";p();es();ts();a(wu,"randomBytes");a(bu,"createHash");
 a(vu,"createHmac")});var tt=T((Qf,hr)=>{"use strict";p();hr.exports={host:"localhost",user:m.platform==="win32"?m.env.USERNAME:
 m.env.USER,database:void 0,password:null,connectionString:void 0,port:5432,rows:0,binary:!1,max:10,idleTimeoutMillis:3e4,
 client_encoding:"",ssl:!1,application_name:void 0,fallback_application_name:void 0,options:void 0,parseInputDatesAsUTC:!1,
@@ -679,7 +679,7 @@ if(n.nonce.length===r.clientNonce.length)throw new Error("SASL: SCRAM-SERVER-FIR
 once is too short")}else throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce does not st\
 art with client nonce");var i=d.from(n.salt,"base64"),s=Wu(e,i,n.iteration),o=Ue(s,"Client Key"),u=Nu(
 o),c="n=*,r="+r.clientNonce,l="r="+n.nonce+",s="+n.salt+",i="+n.iteration,f="c=biws,r="+n.nonce,y=c+
-","+l+","+f,g=Ue(u,y),A=hs(o,g),C=A.toString("base64"),D=Ue(s,"Server Key"),Y=Ue(D,y);r.message="SAS\
+","+l+","+f,w=Ue(u,y),A=hs(o,w),C=A.toString("base64"),D=Ue(s,"Server Key"),Y=Ue(D,y);r.message="SAS\
 LResponse",r.serverSignature=Y.toString("base64"),r.response=f+",p="+C}a(Uu,"continueSession");function Du(r,e){
 if(r.message!=="SASLResponse")throw new Error("SASL: Last message was not SASLResponse");if(typeof e!=
 "string")throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: serverData must be a string");let{serverSignature:t}=Qu(
@@ -706,24 +706,24 @@ h");if(r.length===0)throw new Error("Buffers cannot be empty");return d.from(r.m
 a(hs,"xorBuffers");function Nu(r){return yr.createHash("sha256").update(r).digest()}a(Nu,"sha256");function Ue(r,e){
 return yr.createHmac("sha256",r).update(e).digest()}a(Ue,"hmacSha256");function Wu(r,e,t){for(var n=Ue(
 r,d.concat([e,d.from([0,0,0,1])])),i=n,s=0;s<t-1;s++)n=Ue(r,n),i=hs(i,n);return i}a(Wu,"Hi");ps.exports=
-{startSession:Mu,continueSession:Uu,finalizeSession:Du}});var mr={};ie(mr,{join:()=>ju});function ju(...r){return r.join("/")}var wr=G(()=>{"use strict";p();a(
-ju,"join")});var gr={};ie(gr,{stat:()=>Hu});function Hu(r,e){e(new Error("No filesystem"))}var br=G(()=>{"use str\
+{startSession:Mu,continueSession:Uu,finalizeSession:Du}});var mr={};ie(mr,{join:()=>ju});function ju(...r){return r.join("/")}var gr=G(()=>{"use strict";p();a(
+ju,"join")});var wr={};ie(wr,{stat:()=>Hu});function Hu(r,e){e(new Error("No filesystem"))}var br=G(()=>{"use str\
 ict";p();a(Hu,"stat")});var vr={};ie(vr,{default:()=>$u});var $u,xr=G(()=>{"use strict";p();$u={}});var ys={};ie(ys,{StringDecoder:()=>Sr});var Er,Sr,ms=G(()=>{"use strict";p();Er=class Er{constructor(e){
 E(this,"td");this.td=new TextDecoder(e)}write(e){return this.td.decode(e,{stream:!0})}end(e){return this.
 td.decode(e)}};a(Er,"StringDecoder");Sr=Er});var vs=T((fh,bs)=>{"use strict";p();var{Transform:Gu}=(xr(),O(vr)),{StringDecoder:Vu}=(ms(),O(ys)),ve=Symbol(
 "last"),It=Symbol("decoder");function zu(r,e,t){let n;if(this.overflow){if(n=this[It].write(r).split(
 this.matcher),n.length===1)return t();n.shift(),this.overflow=!1}else this[ve]+=this[It].write(r),n=
-this[ve].split(this.matcher);this[ve]=n.pop();for(let i=0;i<n.length;i++)try{gs(this,this.mapper(n[i]))}catch(s){
+this[ve].split(this.matcher);this[ve]=n.pop();for(let i=0;i<n.length;i++)try{ws(this,this.mapper(n[i]))}catch(s){
 return t(s)}if(this.overflow=this[ve].length>this.maxLength,this.overflow&&!this.skipOverflow){t(new Error(
 "maximum buffer reached"));return}t()}a(zu,"transform");function Ku(r){if(this[ve]+=this[It].end(),this[ve])
-try{gs(this,this.mapper(this[ve]))}catch(e){return r(e)}r()}a(Ku,"flush");function gs(r,e){e!==void 0&&
-r.push(e)}a(gs,"push");function ws(r){return r}a(ws,"noop");function Yu(r,e,t){switch(r=r||/\r?\n/,e=
-e||ws,t=t||{},arguments.length){case 1:typeof r=="function"?(e=r,r=/\r?\n/):typeof r=="object"&&!(r instanceof
+try{ws(this,this.mapper(this[ve]))}catch(e){return r(e)}r()}a(Ku,"flush");function ws(r,e){e!==void 0&&
+r.push(e)}a(ws,"push");function gs(r){return r}a(gs,"noop");function Yu(r,e,t){switch(r=r||/\r?\n/,e=
+e||gs,t=t||{},arguments.length){case 1:typeof r=="function"?(e=r,r=/\r?\n/):typeof r=="object"&&!(r instanceof
 RegExp)&&!r[Symbol.split]&&(t=r,r=/\r?\n/);break;case 2:typeof r=="function"?(t=e,e=r,r=/\r?\n/):typeof e==
-"object"&&(t=e,e=ws)}t=Object.assign({},t),t.autoDestroy=!0,t.transform=zu,t.flush=Ku,t.readableObjectMode=
+"object"&&(t=e,e=gs)}t=Object.assign({},t),t.autoDestroy=!0,t.transform=zu,t.flush=Ku,t.readableObjectMode=
 !0;let n=new Gu(t);return n[ve]="",n[It]=new Vu("utf8"),n.matcher=r,n.mapper=e,n.maxLength=t.maxLength,
 n.skipOverflow=t.skipOverflow||!1,n.overflow=!1,n._destroy=function(i,s){this._writableState.errorEmitted=
-!1,s(i)},n}a(Yu,"split");bs.exports=Yu});var Es=T((dh,pe)=>{"use strict";p();var xs=(wr(),O(mr)),Zu=(xr(),O(vr)).Stream,Ju=vs(),Ss=(it(),O(nt)),
+!1,s(i)},n}a(Yu,"split");bs.exports=Yu});var Es=T((dh,pe)=>{"use strict";p();var xs=(gr(),O(mr)),Zu=(xr(),O(vr)).Stream,Ju=vs(),Ss=(it(),O(nt)),
 Xu=5432,Tt=m.platform==="win32",st=m.stderr,ec=56,tc=7,rc=61440,nc=32768;function ic(r){return(r&rc)==
 nc}a(ic,"isRegFile");var De=["host","port","database","user","password"],Ar=De.length,sc=De[Ar-1];function Cr(){
 var r=st instanceof Zu&&st.writable===!0;if(r){var e=Array.prototype.slice.call(arguments).concat(`
@@ -740,15 +740,15 @@ Ju());function s(c){var l=ac(c);l&&uc(l)&&oc(r,l)&&(n=l[sc],i.end())}a(s,"onLine
 e.destroy(),t(n)},"onEnd"),u=a(function(c){e.destroy(),Cr("WARNING: error on reading file: %s",c),t(
 void 0)},"onErr");e.on("error",u),i.on("data",s).on("end",o).on("error",u)};var ac=pe.exports.parseLine=
 function(r){if(r.length<11||r.match(/^\s+#/))return null;for(var e="",t="",n=0,i=0,s=0,o={},u=!1,c=a(
-function(f,y,g){var A=r.substring(y,g);Object.hasOwnProperty.call(m.env,"PGPASS_NO_DEESCAPE")||(A=A.
+function(f,y,w){var A=r.substring(y,w);Object.hasOwnProperty.call(m.env,"PGPASS_NO_DEESCAPE")||(A=A.
 replace(/\\([:\\])/g,"$1")),o[De[f]]=A},"addToObj"),l=0;l<r.length-1;l+=1){if(e=r.charAt(l+1),t=r.charAt(
 l),u=n==Ar-1,u){c(n,i);break}l>=0&&e==":"&&t!=="\\"&&(c(n,i,l+1),i=l+2,n+=1)}return o=Object.keys(o).
 length===Ar?o:null,o},uc=pe.exports.isValidEntry=function(r){for(var e={0:function(o){return o.length>
 0},1:function(o){return o==="*"?!0:(o=Number(o),isFinite(o)&&o>0&&o<9007199254740992&&Math.floor(o)===
 o)},2:function(o){return o.length>0},3:function(o){return o.length>0},4:function(o){return o.length>
-0}},t=0;t<De.length;t+=1){var n=e[t],i=r[De[t]]||"",s=n(i);if(!s)return!1}return!0}});var Cs=T((gh,_r)=>{"use strict";p();var wh=(wr(),O(mr)),As=(br(),O(gr)),Pt=Es();_r.exports=function(r,e){
+0}},t=0;t<De.length;t+=1){var n=e[t],i=r[De[t]]||"",s=n(i);if(!s)return!1}return!0}});var Cs=T((wh,_r)=>{"use strict";p();var gh=(gr(),O(mr)),As=(br(),O(wr)),Pt=Es();_r.exports=function(r,e){
 var t=Pt.getFileName();As.stat(t,function(n,i){if(n||!Pt.usePgPass(i,t))return e(void 0);var s=As.createReadStream(
-t);Pt.getPassword(r,s,e)})};_r.exports.warnTo=Pt.warnTo});var _s={};ie(_s,{default:()=>cc});var cc,Is=G(()=>{"use strict";p();cc={}});var Ps=T((xh,Ts)=>{"use strict";p();var lc=(Zt(),O(gi)),Ir=(br(),O(gr));function Tr(r){if(r.charAt(0)===
+t);Pt.getPassword(r,s,e)})};_r.exports.warnTo=Pt.warnTo});var _s={};ie(_s,{default:()=>cc});var cc,Is=G(()=>{"use strict";p();cc={}});var Ps=T((xh,Ts)=>{"use strict";p();var lc=(Zt(),O(wi)),Ir=(br(),O(wr));function Tr(r){if(r.charAt(0)===
 "/"){var t=r.split(" ");return{host:t[0],database:t[1]}}var e=lc.parse(/ |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.
 test(r)?encodeURI(r).replace(/\%25(\d\d)/g,"%$1"):r,!0),t=e.query;for(var n in t)Array.isArray(t[n])&&
 (t[n]=t[n][t[n].length-1]);var i=(e.auth||":").split(":");if(t.user=i[0],t.password=i.splice(1).join(
@@ -797,7 +797,7 @@ for(var t={},n=0,i=e.length;n<i;n++){var s=e[n],o=this.fields[n].name;s!==null?t
 s):t[o]=null}return t}addRow(e){this.rows.push(e)}addFields(e){this.fields=e,this.fields.length&&(this.
 _parsers=new Array(e.length));for(var t=0;t<e.length;t++){var n=e[t];this._types?this._parsers[t]=this.
 _types.getTypeParser(n.dataTypeID,n.format||"text"):this._parsers[t]=pc.getTypeParser(n.dataTypeID,n.
-format||"text")}}};a(Lr,"Result");var Rr=Lr;ks.exports=Rr});var qs=T((Bh,Os)=>{"use strict";p();var{EventEmitter:dc}=ge(),Us=Ms(),Ds=rt(),kr=class kr extends dc{constructor(e,t,n){
+format||"text")}}};a(Lr,"Result");var Rr=Lr;ks.exports=Rr});var qs=T((Bh,Os)=>{"use strict";p();var{EventEmitter:dc}=we(),Us=Ms(),Ds=rt(),kr=class kr extends dc{constructor(e,t,n){
 super(),e=Ds.normalizeQueryConfig(e,t,n),this.text=e.text,this.values=e.values,this.rows=e.rows,this.
 types=e.types,this.name=e.name,this.binary=e.binary,this.portal=e.portal||"",this.callback=e.callback,
 this._rowMode=e.rowMode,m.domain&&e.callback&&(this.callback=m.domain.bind(e.callback)),this._result=
@@ -871,8 +871,8 @@ headerPosition=0,this.buffer=d.allocUnsafe(this.size),t}};a(hn,"Writer");var fn=
 var pn=Qs(),F=new pn.Writer,yc=a(r=>{F.addInt16(3).addInt16(0);for(let n of Object.keys(r))F.addCString(
 n).addCString(r[n]);F.addCString("client_encoding").addCString("UTF8");let e=F.addCString("").flush(),
 t=e.length+4;return new pn.Writer().addInt32(t).add(e).flush()},"startup"),mc=a(()=>{let r=d.allocUnsafe(
-8);return r.writeInt32BE(8,0),r.writeInt32BE(80877103,4),r},"requestSsl"),wc=a(r=>F.addCString(r).flush(
-112),"password"),gc=a(function(r,e){return F.addCString(r).addInt32(d.byteLength(e)).addString(e),F.
+8);return r.writeInt32BE(8,0),r.writeInt32BE(80877103,4),r},"requestSsl"),gc=a(r=>F.addCString(r).flush(
+112),"password"),wc=a(function(r,e){return F.addCString(r).addInt32(d.byteLength(e)).addString(e),F.
 flush(112)},"sendSASLInitialResponseMessage"),bc=a(function(r){return F.addString(r).flush(112)},"se\
 ndSCRAMClientFinalMessage"),vc=a(r=>F.addCString(r).flush(81),"query"),Ns=[],xc=a(r=>{let e=r.name||
 "";e.length>63&&(console.error("Warning! Postgres only supports 63 characters for query names."),console.
@@ -892,7 +892,7 @@ allocUnsafe(1+n);return i[0]=r,i.writeInt32BE(n,1),i.write(e,5,"utf-8"),i[n]=0,i
 Ic=F.addCString("P").flush(68),Tc=F.addCString("S").flush(68),Pc=a(r=>r.name?dn(68,`${r.type}${r.name||
 ""}`):r.type==="P"?Ic:Tc,"describe"),Bc=a(r=>{let e=`${r.type}${r.name||""}`;return dn(67,e)},"close"),
 Rc=a(r=>F.add(r).flush(100),"copyData"),Lc=a(r=>dn(102,r),"copyFail"),Lt=a(r=>d.from([r,0,0,0,4]),"c\
-odeOnlyBuffer"),Fc=Lt(72),kc=Lt(83),Mc=Lt(88),Uc=Lt(99),Dc={startup:yc,password:wc,requestSsl:mc,sendSASLInitialResponseMessage:gc,
+odeOnlyBuffer"),Fc=Lt(72),kc=Lt(83),Mc=Lt(88),Uc=Lt(99),Dc={startup:yc,password:gc,requestSsl:mc,sendSASLInitialResponseMessage:wc,
 sendSCRAMClientFinalMessage:bc,query:vc,parse:xc,bind:Ec,execute:Cc,describe:Pc,close:Bc,flush:a(()=>Fc,
 "flush"),sync:a(()=>kc,"sync"),end:a(()=>Mc,"end"),copyData:Rc,copyDone:a(()=>Uc,"copyDone"),copyFail:Lc,
 cancel:_c};Ft.serialize=Dc});var js=T(kt=>{"use strict";p();Object.defineProperty(kt,"__esModule",{value:!0});kt.BufferReader=void 0;
@@ -904,11 +904,11 @@ offset+=4,e}string(e){let t=this.buffer.toString(this.encoding,this.offset,this.
 offset+=e,t}cstring(){let e=this.offset,t=e;for(;this.buffer[t++]!==0;);return this.offset=t,this.buffer.
 toString(this.encoding,e,t-1)}bytes(e){let t=this.buffer.slice(this.offset,this.offset+e);return this.
 offset+=e,t}};a(mn,"BufferReader");var yn=mn;kt.BufferReader=yn});var Gs=T(Mt=>{"use strict";p();Object.defineProperty(Mt,"__esModule",{value:!0});Mt.Parser=void 0;var k=ln(),
-qc=js(),wn=1,Qc=4,Hs=wn+Qc,$s=d.allocUnsafe(0),bn=class bn{constructor(e){if(this.buffer=$s,this.bufferLength=
+qc=js(),gn=1,Qc=4,Hs=gn+Qc,$s=d.allocUnsafe(0),bn=class bn{constructor(e){if(this.buffer=$s,this.bufferLength=
 0,this.bufferOffset=0,this.reader=new qc.BufferReader,e?.mode==="binary")throw new Error("Binary mod\
 e not supported yet");this.mode=e?.mode||"text"}parse(e,t){this.mergeBuffer(e);let n=this.bufferOffset+
 this.bufferLength,i=this.bufferOffset;for(;i+Hs<=n;){let s=this.buffer[i],o=this.buffer.readUInt32BE(
-i+wn),u=wn+o;if(u+i<=n){let c=this.handlePacket(i+Hs,s,o,this.buffer);t(c),i+=u}else break}i===n?(this.
+i+gn),u=gn+o;if(u+i<=n){let c=this.handlePacket(i+Hs,s,o,this.buffer);t(c),i+=u}else break}i===n?(this.
 buffer=$s,this.bufferLength=0,this.bufferOffset=0):(this.bufferLength=n-i,this.bufferOffset=i)}mergeBuffer(e){
 if(this.bufferLength>0){let t=this.bufferLength+e.byteLength;if(t+this.bufferOffset>this.buffer.byteLength){
 let i;if(t<=this.buffer.byteLength&&this.bufferOffset>=this.bufferLength)i=this.buffer;else{let s=this.
@@ -955,12 +955,12 @@ o=this.reader.string(1);for(;o!=="\0";)s[o]=this.reader.cstring(),o=this.reader.
 c=i==="notice"?new k.NoticeMessage(t,u):new k.DatabaseError(u,t,i);return c.severity=s.S,c.code=s.C,
 c.detail=s.D,c.hint=s.H,c.position=s.P,c.internalPosition=s.p,c.internalQuery=s.q,c.where=s.W,c.schema=
 s.s,c.table=s.t,c.column=s.c,c.dataType=s.d,c.constraint=s.n,c.file=s.F,c.line=s.L,c.routine=s.R,c}};
-a(bn,"Parser");var gn=bn;Mt.Parser=gn});var vn=T(xe=>{"use strict";p();Object.defineProperty(xe,"__esModule",{value:!0});xe.DatabaseError=xe.
+a(bn,"Parser");var wn=bn;Mt.Parser=wn});var vn=T(xe=>{"use strict";p();Object.defineProperty(xe,"__esModule",{value:!0});xe.DatabaseError=xe.
 serialize=xe.parse=void 0;var Nc=ln();Object.defineProperty(xe,"DatabaseError",{enumerable:!0,get:a(
 function(){return Nc.DatabaseError},"get")});var Wc=Ws();Object.defineProperty(xe,"serialize",{enumerable:!0,
 get:a(function(){return Wc.serialize},"get")});var jc=Gs();function Hc(r,e){let t=new jc.Parser;return r.
 on("data",n=>t.parse(n,e)),new Promise(n=>r.on("end",()=>n()))}a(Hc,"parse");xe.parse=Hc});var Vs={};ie(Vs,{connect:()=>$c});function $c({socket:r,servername:e}){return r.startTls(e),r}var zs=G(
-()=>{"use strict";p();a($c,"connect")});var En=T((Xh,Zs)=>{"use strict";p();var Ks=(Fe(),O(wi)),Gc=ge().EventEmitter,{parse:Vc,serialize:Q}=vn(),
+()=>{"use strict";p();a($c,"connect")});var En=T((Xh,Zs)=>{"use strict";p();var Ks=(Fe(),O(gi)),Gc=we().EventEmitter,{parse:Vc,serialize:Q}=vn(),
 Ys=Q.flush(),zc=Q.sync(),Kc=Q.end(),Sn=class Sn extends Gc{constructor(e){super(),e=e||{},this.stream=
 e.stream||new Ks.Socket,this._keepAlive=e.keepAlive,this._keepAliveInitialDelayMillis=e.keepAliveInitialDelayMillis,
 this.lastBuffer=!1,this.parsedStatements={},this.ssl=e.ssl||!1,this._ending=!1,this._emitMessage=!1;
@@ -986,7 +986,7 @@ stream.ref()}unref(){this.stream.unref()}end(){if(this._ending=!0,!this._connect
 this.stream.end();return}return this.stream.write(Kc,()=>{this.stream.end()})}close(e){this._send(Q.
 close(e))}describe(e){this._send(Q.describe(e))}sendCopyFromChunk(e){this._send(Q.copyData(e))}endCopyFrom(){
 this._send(Q.copyDone())}sendCopyFail(e){this._send(Q.copyFail(e))}};a(Sn,"Connection");var xn=Sn;Zs.
-exports=xn});var eo=T((np,Xs)=>{"use strict";p();var Yc=ge().EventEmitter,rp=(it(),O(nt)),Zc=rt(),An=ds(),Jc=Cs(),
+exports=xn});var eo=T((np,Xs)=>{"use strict";p();var Yc=we().EventEmitter,rp=(it(),O(nt)),Zc=rt(),An=ds(),Jc=Cs(),
 Xc=At(),el=Bt(),Js=qs(),tl=tt(),rl=En(),Cn=class Cn extends Yc{constructor(e){super(),this.connectionParameters=
 new el(e),this.user=this.connectionParameters.user,this.database=this.connectionParameters.database,
 this.port=this.connectionParameters.port,this.host=this.connectionParameters.host,Object.defineProperty(
@@ -1068,7 +1068,7 @@ handleError(e,this.connection),this.readyForQuery=!0,this._pulseQueryQueue()})}e
 "Client was passed a null or undefined query");return typeof e.submit=="function"?(o=e.query_timeout||
 this.connectionParameters.query_timeout,s=i=e,typeof t=="function"&&(i.callback=i.callback||t)):(o=this.
 connectionParameters.query_timeout,i=new Js(e,t,n),i.callback||(s=new this._Promise((l,f)=>{i.callback=
-(y,g)=>y?f(y):l(g)}))),o&&(c=i.callback,u=setTimeout(()=>{var l=new Error("Query read timeout");m.nextTick(
+(y,w)=>y?f(y):l(w)}))),o&&(c=i.callback,u=setTimeout(()=>{var l=new Error("Query read timeout");m.nextTick(
 ()=>{i.handleError(l,this.connection)}),c(l),i.callback=()=>{};var f=this.queryQueue.indexOf(i);f>-1&&
 this.queryQueue.splice(f,1),this._pulseQueryQueue()},o),i.callback=(l,f)=>{clearTimeout(u),c(l,f)}),
 this.binary&&!i.binary&&(i.binary=!0),i._result&&!i._result._types&&(i._result._types=this._types),this.
@@ -1078,7 +1078,7 @@ handleError(new Error("Client has encountered a connection error and is not quer
 s)}ref(){this.connection.ref()}unref(){this.connection.unref()}end(e){if(this._ending=!0,!this.connection.
 _connecting)if(e)e();else return this._Promise.resolve();if(this.activeQuery||!this._queryable?this.
 connection.stream.destroy():this.connection.end(),e)this.connection.once("end",e);else return new this.
-_Promise(t=>{this.connection.once("end",t)})}};a(Cn,"Client");var Ut=Cn;Ut.Query=Js;Xs.exports=Ut});var io=T((op,no)=>{"use strict";p();var nl=ge().EventEmitter,to=a(function(){},"NOOP"),ro=a((r,e)=>{
+_Promise(t=>{this.connection.once("end",t)})}};a(Cn,"Client");var Ut=Cn;Ut.Query=Js;Xs.exports=Ut});var io=T((op,no)=>{"use strict";p();var nl=we().EventEmitter,to=a(function(){},"NOOP"),ro=a((r,e)=>{
 let t=r.findIndex(e);return t===-1?void 0:r.splice(t,1)[0]},"removeWhere"),Tn=class Tn{constructor(e,t,n){
 this.client=e,this.idleListener=t,this.timeoutId=n}};a(Tn,"IdleItem");var _n=Tn,Pn=class Pn{constructor(e){
 this.callback=e}};a(Pn,"PendingItem");var Qe=Pn;function il(){throw new Error("Release called on cli\
@@ -1152,7 +1152,7 @@ ing":"^2.5.0","pg-pool":"^3.5.2","pg-protocol":"^1.5.0","pg-types":"^2.1.0",pgpa
 async:"2.6.4",bluebird:"3.5.2",co:"4.6.0","pg-copy-streams":"0.3.0"},peerDependencies:{"pg-native":"\
 >=3.0.1"},peerDependenciesMeta:{"pg-native":{optional:!0}},scripts:{test:"make test-all"},files:["li\
 b","SPONSORS.md"],license:"MIT",engines:{node:">= 8.0.0"},gitHead:"c99fb2c127ddf8d712500db2c7b9a5491\
-a178655"}});var lo=T((fp,co)=>{"use strict";p();var uo=ge().EventEmitter,ul=(it(),O(nt)),Rn=rt(),Ne=co.exports=function(r,e,t){
+a178655"}});var lo=T((fp,co)=>{"use strict";p();var uo=we().EventEmitter,ul=(it(),O(nt)),Rn=rt(),Ne=co.exports=function(r,e,t){
 uo.call(this),r=Rn.normalizeQueryConfig(r,e,t),this.text=r.text,this.values=r.values,this.name=r.name,
 this.callback=r.callback,this.state="new",this._arrayMode=r.rowMode==="array",this._emitRowEvents=!1,
 this.on("newListener",function(n){n==="row"&&(this._emitRowEvents=!0)}.bind(this))};ul.inherits(Ne,uo);
@@ -1176,7 +1176,7 @@ red statements must be unique - '${this.name}' was used for a different statemen
 native.execute(this.name,n,t)}return r.native.prepare(this.name,this.text,n.length,function(s){return s?
 t(s):(r.namedQueries[e.name]=e.text,e.native.execute(e.name,n,t))})}else if(this.values){if(!Array.isArray(
 this.values)){let s=new Error("Query values must be an array");return t(s)}var i=this.values.map(Rn.
-prepareValue);r.native.query(this.text,i,t)}else r.native.query(this.text,t)}});var yo=T((yp,po)=>{"use strict";p();var ll=(oo(),O(so)),fl=At(),dp=ao(),fo=ge().EventEmitter,hl=(it(),O(nt)),
+prepareValue);r.native.query(this.text,i,t)}else r.native.query(this.text,t)}});var yo=T((yp,po)=>{"use strict";p();var ll=(oo(),O(so)),fl=At(),dp=ao(),fo=we().EventEmitter,hl=(it(),O(nt)),
 pl=Bt(),ho=lo(),K=po.exports=function(r){fo.call(this),r=r||{},this._Promise=r.Promise||b.Promise,this.
 _types=new fl(r.types),this.native=new ll({types:this._types}),this._queryQueue=[],this._ending=!1,this.
 _connecting=!1,this._connected=!1,this._queryable=!0;var e=this.connectionParameters=new pl(r);this.
@@ -1211,35 +1211,35 @@ in");return}this._activeQuery=e,e.submit(this);var t=this;e.once("_done",functio
 K.prototype.cancel=function(r){this._activeQuery===r?this.native.cancel(function(){}):this._queryQueue.
 indexOf(r)!==-1&&this._queryQueue.splice(this._queryQueue.indexOf(r),1)};K.prototype.ref=function(){};
 K.prototype.unref=function(){};K.prototype.setTypeParser=function(r,e,t){return this._types.setTypeParser(
-r,e,t)};K.prototype.getTypeParser=function(r,e){return this._types.getTypeParser(r,e)}});var Ln=T((gp,mo)=>{"use strict";p();mo.exports=yo()});var ot=T((vp,at)=>{"use strict";p();var dl=eo(),yl=tt(),ml=En(),wl=io(),{DatabaseError:gl}=vn(),bl=a(
-r=>{var e;return e=class extends wl{constructor(n){super(n,r)}},a(e,"BoundPool"),e},"poolFactory"),Fn=a(
+r,e,t)};K.prototype.getTypeParser=function(r,e){return this._types.getTypeParser(r,e)}});var Ln=T((wp,mo)=>{"use strict";p();mo.exports=yo()});var ot=T((vp,at)=>{"use strict";p();var dl=eo(),yl=tt(),ml=En(),gl=io(),{DatabaseError:wl}=vn(),bl=a(
+r=>{var e;return e=class extends gl{constructor(n){super(n,r)}},a(e,"BoundPool"),e},"poolFactory"),Fn=a(
 function(r){this.defaults=yl,this.Client=r,this.Query=this.Client.Query,this.Pool=bl(this.Client),this.
-_pools=[],this.Connection=ml,this.types=Je(),this.DatabaseError=gl},"PG");typeof m.env.NODE_PG_FORCE_NATIVE<
+_pools=[],this.Connection=ml,this.types=Je(),this.DatabaseError=wl},"PG");typeof m.env.NODE_PG_FORCE_NATIVE<
 "u"?at.exports=new Fn(Ln()):(at.exports=new Fn(dl),Object.defineProperty(at.exports,"native",{configurable:!0,
 enumerable:!1,get(){var r=null;try{r=new Fn(Ln())}catch(e){if(e.code!=="MODULE_NOT_FOUND")throw e}return Object.
 defineProperty(at.exports,"native",{value:r}),r}}))});p();p();Fe();Zt();p();var pa=Object.defineProperty,da=Object.defineProperties,ya=Object.getOwnPropertyDescriptors,bi=Object.
-getOwnPropertySymbols,ma=Object.prototype.hasOwnProperty,wa=Object.prototype.propertyIsEnumerable,vi=a(
+getOwnPropertySymbols,ma=Object.prototype.hasOwnProperty,ga=Object.prototype.propertyIsEnumerable,vi=a(
 (r,e,t)=>e in r?pa(r,e,{enumerable:!0,configurable:!0,writable:!0,value:t}):r[e]=t,"__defNormalProp"),
-ga=a((r,e)=>{for(var t in e||(e={}))ma.call(e,t)&&vi(r,t,e[t]);if(bi)for(var t of bi(e))wa.call(e,t)&&
+wa=a((r,e)=>{for(var t in e||(e={}))ma.call(e,t)&&vi(r,t,e[t]);if(bi)for(var t of bi(e))ga.call(e,t)&&
 vi(r,t,e[t]);return r},"__spreadValues"),ba=a((r,e)=>da(r,ya(e)),"__spreadProps"),va=1008e3,xi=new Uint8Array(
 new Uint16Array([258]).buffer)[0]===2,xa=new TextDecoder,Jt=new TextEncoder,yt=Jt.encode("0123456789\
 abcdef"),mt=Jt.encode("0123456789ABCDEF"),Sa=Jt.encode("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr\
-stuvwxyz0123456789+/");var Si=Sa.slice();Si[62]=45;Si[63]=95;var He,wt;function Ea(r,{alphabet:e,scratchArr:t}={}){if(!He)if(He=
-new Uint16Array(256),wt=new Uint16Array(256),xi)for(let C=0;C<256;C++)He[C]=yt[C&15]<<8|yt[C>>>4],wt[C]=
-mt[C&15]<<8|mt[C>>>4];else for(let C=0;C<256;C++)He[C]=yt[C&15]|yt[C>>>4]<<8,wt[C]=mt[C&15]|mt[C>>>4]<<
+stuvwxyz0123456789+/");var Si=Sa.slice();Si[62]=45;Si[63]=95;var He,gt;function Ea(r,{alphabet:e,scratchArr:t}={}){if(!He)if(He=
+new Uint16Array(256),gt=new Uint16Array(256),xi)for(let C=0;C<256;C++)He[C]=yt[C&15]<<8|yt[C>>>4],gt[C]=
+mt[C&15]<<8|mt[C>>>4];else for(let C=0;C<256;C++)He[C]=yt[C&15]|yt[C>>>4]<<8,gt[C]=mt[C&15]|mt[C>>>4]<<
 8;r.byteOffset%4!==0&&(r=new Uint8Array(r));let n=r.length,i=n>>>1,s=n>>>2,o=t||new Uint16Array(n),u=new Uint32Array(
-r.buffer,r.byteOffset,s),c=new Uint32Array(o.buffer,o.byteOffset,i),l=e==="upper"?wt:He,f=0,y=0,g;if(xi)
-for(;f<s;)g=u[f++],c[y++]=l[g>>>8&255]<<16|l[g&255],c[y++]=l[g>>>24]<<16|l[g>>>16&255];else for(;f<s;)
-g=u[f++],c[y++]=l[g>>>24]<<16|l[g>>>16&255],c[y++]=l[g>>>8&255]<<16|l[g&255];for(f<<=2;f<n;)o[f]=l[r[f++]];
+r.buffer,r.byteOffset,s),c=new Uint32Array(o.buffer,o.byteOffset,i),l=e==="upper"?gt:He,f=0,y=0,w;if(xi)
+for(;f<s;)w=u[f++],c[y++]=l[w>>>8&255]<<16|l[w&255],c[y++]=l[w>>>24]<<16|l[w>>>16&255];else for(;f<s;)
+w=u[f++],c[y++]=l[w>>>24]<<16|l[w>>>16&255],c[y++]=l[w>>>8&255]<<16|l[w&255];for(f<<=2;f<n;)o[f]=l[r[f++]];
 return xa.decode(o.subarray(0,n))}a(Ea,"_toHex");function Aa(r,e={}){let t="",n=r.length,i=va>>>1,s=Math.
-ceil(n/i),o=new Uint16Array(s>1?i:n);for(let u=0;u<s;u++){let c=u*i,l=c+i;t+=Ea(r.subarray(c,l),ba(ga(
+ceil(n/i),o=new Uint16Array(s>1?i:n);for(let u=0;u<s;u++){let c=u*i,l=c+i;t+=Ea(r.subarray(c,l),ba(wa(
 {},e),{scratchArr:o}))}return t}a(Aa,"_toHexChunked");function Ei(r,e={}){return e.alphabet!=="upper"&&
-typeof r.toHex=="function"?r.toHex():Aa(r,e)}a(Ei,"toHex");p();var gt=class gt{constructor(e,t){this.strings=e;this.values=t}toParameterizedQuery(e={query:"",params:[]}){
+typeof r.toHex=="function"?r.toHex():Aa(r,e)}a(Ei,"toHex");p();var wt=class wt{constructor(e,t){this.strings=e;this.values=t}toParameterizedQuery(e={query:"",params:[]}){
 let{strings:t,values:n}=this;for(let i=0,s=t.length;i<s;i++)if(e.query+=t[i],i<n.length){let o=n[i];
-if(o instanceof Ge)e.query+=o.sql;else if(o instanceof Ce)if(o.queryData instanceof gt)o.queryData.toParameterizedQuery(
+if(o instanceof Ge)e.query+=o.sql;else if(o instanceof Ce)if(o.queryData instanceof wt)o.queryData.toParameterizedQuery(
 e);else{if(o.queryData.params?.length)throw new Error("This query is not composable");e.query+=o.queryData.
 query}else{let{params:u}=e;u.push(o),e.query+="$"+u.length,(o instanceof d||ArrayBuffer.isView(o))&&
-(e.query+="::bytea")}}return e}};a(gt,"SqlTemplate");var $e=gt,Xt=class Xt{constructor(e){this.sql=e}};
+(e.query+="::bytea")}}return e}};a(wt,"SqlTemplate");var $e=wt,Xt=class Xt{constructor(e){this.sql=e}};
 a(Xt,"UnsafeRawSql");var Ge=Xt;p();function bt(){typeof window<"u"&&typeof document<"u"&&typeof console<"u"&&typeof console.warn=="func\
 tion"&&console.warn(`          
         ************************************************************
@@ -1270,22 +1270,22 @@ areQuery");function cs(r,{arrayMode:e,fullResults:t,fetchOptions:n,isolationLeve
 authToken:u,disableWarningInBrowsers:c}={}){if(!r)throw new Error("No database connection string was\
  provided to `neon()`. Perhaps an environment variable has not been set?");let l;try{l=Yt(r)}catch{throw new Error(
 "Database connection string provided to `neon()` is not a valid URL. Connection string: "+String(r))}
-let{protocol:f,username:y,hostname:g,port:A,pathname:C}=l;if(f!=="postgres:"&&f!=="postgresql:"||!y||
-!g||!C)throw new Error("Database connection string format for `neon()` should be: postgresql://user:\
+let{protocol:f,username:y,hostname:w,port:A,pathname:C}=l;if(f!=="postgres:"&&f!=="postgresql:"||!y||
+!w||!C)throw new Error("Database connection string format for `neon()` should be: postgresql://user:\
 password@host.tld/dbname?option=value");function D(P,...I){if(!(Array.isArray(P)&&Array.isArray(P.raw)&&
 Array.isArray(I)))throw new Error('This function can now be called only as a tagged-template functio\
 n: sql`SELECT ${value}`, not sql("SELECT $1", [value], options). For a conventional function call wi\
 th value placeholders ($1, $2, etc.), use sql.query("SELECT $1", [value], options).');return new Ce(
-Y,new $e(P,I))}a(D,"templateFn"),D.query=(P,I,w)=>new Ce(Y,{query:P,params:I??[]},w),D.unsafe=P=>new Ge(
+Y,new $e(P,I))}a(D,"templateFn"),D.query=(P,I,g)=>new Ce(Y,{query:P,params:I??[]},g),D.unsafe=P=>new Ge(
 P),D.transaction=async(P,I)=>{if(typeof P=="function"&&(P=P(D)),!Array.isArray(P))throw new Error(is);
-P.forEach(W=>{if(!(W instanceof Ce))throw new Error(is)});let w=P.map(W=>W.queryData),Z=P.map(W=>W.opts??
-{});return Y(w,Z,I)};async function Y(P,I,w){let{fetchEndpoint:Z,fetchFunction:W}=ce,J=Array.isArray(
-P)?{queries:P.map(ee=>ss(ee))}:ss(P),X=n??{},se=e??!1,oe=t??!1,R=i,j=s,le=o;w!==void 0&&(w.fetchOptions!==
-void 0&&(X={...X,...w.fetchOptions}),w.arrayMode!==void 0&&(se=w.arrayMode),w.fullResults!==void 0&&
-(oe=w.fullResults),w.isolationLevel!==void 0&&(R=w.isolationLevel),w.readOnly!==void 0&&(j=w.readOnly),
-w.deferrable!==void 0&&(le=w.deferrable)),I!==void 0&&!Array.isArray(I)&&I.fetchOptions!==void 0&&(X=
+P.forEach(W=>{if(!(W instanceof Ce))throw new Error(is)});let g=P.map(W=>W.queryData),Z=P.map(W=>W.opts??
+{});return Y(g,Z,I)};async function Y(P,I,g){let{fetchEndpoint:Z,fetchFunction:W}=ce,J=Array.isArray(
+P)?{queries:P.map(ee=>ss(ee))}:ss(P),X=n??{},se=e??!1,oe=t??!1,R=i,j=s,le=o;g!==void 0&&(g.fetchOptions!==
+void 0&&(X={...X,...g.fetchOptions}),g.arrayMode!==void 0&&(se=g.arrayMode),g.fullResults!==void 0&&
+(oe=g.fullResults),g.isolationLevel!==void 0&&(R=g.isolationLevel),g.readOnly!==void 0&&(j=g.readOnly),
+g.deferrable!==void 0&&(le=g.deferrable)),I!==void 0&&!Array.isArray(I)&&I.fetchOptions!==void 0&&(X=
 {...X,...I.fetchOptions});let de=u;!Array.isArray(I)&&I?.authToken!==void 0&&(de=I.authToken);let We=typeof Z==
-"function"?Z(g,A,{jwtAuth:de!==void 0}):Z,fe={"Neon-Connection-String":r,"Neon-Raw-Text-Output":"tru\
+"function"?Z(w,A,{jwtAuth:de!==void 0}):Z,fe={"Neon-Connection-String":r,"Neon-Raw-Text-Output":"tru\
 e","Neon-Array-Mode":"true"},_e=await Fu(de);_e&&(fe.Authorization=`Bearer ${_e}`),Array.isArray(P)&&
 (R!==void 0&&(fe["Neon-Batch-Isolation-Level"]=R),j!==void 0&&(fe["Neon-Batch-Read-Only"]=String(j)),
 le!==void 0&&(fe["Neon-Batch-Deferrable"]=String(le))),c||ce.disableWarningInBrowsers||bt();let ye;try{
@@ -1305,7 +1305,8 @@ c.dataTypeID)),u=e===!0?r.rows.map(c=>c.map((l,f)=>l===null?null:o[f](l))):r.row
 c.map((l,f)=>[s[f],l===null?null:o[f](l)])));return t?(r.viaNeonFetch=!0,r.rowAsArray=e,r.rows=u,r._parsers=
 o,r._types=i,r):u}a(os,"processQueryResult");async function Fu(r){if(typeof r=="string")return r;if(typeof r==
 "function")try{return await Promise.resolve(r())}catch(e){let t=new be("Error getting auth token.");
-throw e instanceof Error&&(t=new be(`Error getting auth token: ${e.message}`)),t}}a(Fu,"getAuthToken");p();var go=Se(ot());p();var wo=Se(ot());var kn=class kn extends wo.Client{constructor(t){super(t);this.config=t}get neonConfig(){return this.
+throw e instanceof Error&&(t=new be(`Error getting auth token: ${e.message}`)),t}}a(Fu,"getAuthToken");p();var wo=Se(ot());p();var go=Se(ot());var kn=class kn extends go.Client{constructor(t){super(t);this.config=t;this.connection.on("end",()=>{
+this.connection._connecting=!1}),this.on("end",()=>{this._connecting=!1})}get neonConfig(){return this.
 connection.stream}connect(t){let{neonConfig:n}=this;n.forceDisablePgSSL&&(this.ssl=this.connection.ssl=
 !1),this.ssl&&n.useSecureWebSocket&&console.warn("SSL is enabled for both Postgres (e.g. ?sslmode=re\
 quire in the connection string + forceDisablePgSSL = false) and the WebSocket tunnel (useSecureWebSo\
@@ -1333,20 +1334,20 @@ ntable");if(!l||!/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)
 "SASL: SCRAM-SERVER-FIRST-MESSAGE: missing/invalid iteration count");if(!c.startsWith(i.clientNonce))
 throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce does not start with client nonce");if(c.
 length===i.clientNonce.length)throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce is too\
- short");let y=parseInt(f,10),g=d.from(l,"base64"),A=new TextEncoder,C=A.encode(s),D=await n.importKey(
+ short");let y=parseInt(f,10),w=d.from(l,"base64"),A=new TextEncoder,C=A.encode(s),D=await n.importKey(
 "raw",C,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),Y=new Uint8Array(await n.sign("HMAC",D,d.concat(
-[g,d.from([0,0,0,1])]))),P=Y;for(var I=0;I<y-1;I++)Y=new Uint8Array(await n.sign("HMAC",D,Y)),P=d.from(
-P.map((M,$)=>P[$]^Y[$]));let w=P,Z=await n.importKey("raw",w,{name:"HMAC",hash:{name:"SHA-256"}},!1,
+[w,d.from([0,0,0,1])]))),P=Y;for(var I=0;I<y-1;I++)Y=new Uint8Array(await n.sign("HMAC",D,Y)),P=d.from(
+P.map((M,$)=>P[$]^Y[$]));let g=P,Z=await n.importKey("raw",g,{name:"HMAC",hash:{name:"SHA-256"}},!1,
 ["sign"]),W=new Uint8Array(await n.sign("HMAC",Z,A.encode("Client Key"))),J=await n.digest("SHA-256",
 W),X="n=*,r="+i.clientNonce,se="r="+c+",s="+l+",i="+y,oe="c=biws,r="+c,R=X+","+se+","+oe,j=await n.importKey(
 "raw",J,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]);var le=new Uint8Array(await n.sign("HMAC",j,
 A.encode(R))),de=d.from(W.map((M,$)=>W[$]^le[$])),We=de.toString("base64");let fe=await n.importKey(
-"raw",w,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),_e=await n.sign("HMAC",fe,A.encode("Server \
+"raw",g,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]),_e=await n.sign("HMAC",fe,A.encode("Server \
 Key")),ye=await n.importKey("raw",_e,{name:"HMAC",hash:{name:"SHA-256"}},!1,["sign"]);var ee=d.from(
 await n.sign("HMAC",ye,A.encode(R)));i.message="SASLResponse",i.serverSignature=ee.toString("base64"),
 i.response=oe+",p="+We,this.connection.sendSCRAMClientFinalMessage(this.saslSession.response)}};a(kn,
 "NeonClient");var ut=kn;Fe();var bo=Se(Bt());function vl(r,e){if(e)return{callback:e,result:void 0};let t,n,i=a(function(o,u){o?t(o):n(u)},"cb"),
-s=new r(function(o,u){n=o,t=u});return{callback:i,result:s}}a(vl,"promisify");var Un=class Un extends go.Pool{constructor(){
+s=new r(function(o,u){n=o,t=u});return{callback:i,result:s}}a(vl,"promisify");var Un=class Un extends wo.Pool{constructor(){
 super(...arguments);E(this,"Client",ut);E(this,"hasFetchUnsupportedListeners",!1);E(this,"addListene\
 r",this.on)}on(t,n){return t!=="error"&&(this.hasFetchUnsupportedListeners=!0),super.on(t,n)}query(t,n,i){
 if(!ce.poolQueryViaFetch||this.hasFetchUnsupportedListeners||typeof t=="function")return super.query(
