@@ -1316,10 +1316,10 @@ void 0||m.env.PGHOST!==void 0,s=m.env.USER??m.env.USERNAME;if(!i&&this.host==="l
 s&&this.database===s&&this.password===null)throw new Error(`No database host or connection string wa\
 s set, and key parameters have default values (host: localhost, user: ${s}, db: ${s}, password: null\
 ). Is an environment variable missing? Alternatively, if you intended to connect with these paramete\
-rs, please set the host to 'localhost' explicitly.`);let o=super.connect(t),u=n.pipelineTLS&&this.ssl,
-c=n.pipelineConnect==="password";if(!u&&!n.pipelineConnect)return o;let l=this.connection;if(u&&l.on(
-"connect",()=>l.stream.emit("data","S")),c){l.removeAllListeners("authenticationCleartextPassword"),
-l.removeAllListeners("readyForQuery"),l.once("readyForQuery",()=>l.on("readyForQuery",this._handleReadyForQuery.
+rs, please set the host to 'localhost' explicitly.`);let o=t?super.connect(t):super.connect(),u=n.pipelineTLS&&
+this.ssl,c=n.pipelineConnect==="password";if(!u&&!n.pipelineConnect)return o;let l=this.connection;if(u&&
+l.on("connect",()=>l.stream.emit("data","S")),c){l.removeAllListeners("authenticationCleartextPasswo\
+rd"),l.removeAllListeners("readyForQuery"),l.once("readyForQuery",()=>l.on("readyForQuery",this._handleReadyForQuery.
 bind(this)));let f=this.ssl?"sslconnect":"connect";l.on(f,()=>{this.neonConfig.disableWarningInBrowsers||
 bt(),this._handleAuthCleartextPassword(),this._handleReadyForQuery()})}return o}async _handleAuthSASLContinue(t){
 if(typeof crypto>"u"||crypto.subtle===void 0||crypto.subtle.importKey===void 0)throw new Error("Cann\

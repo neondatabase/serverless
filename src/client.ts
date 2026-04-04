@@ -28,9 +28,9 @@ export class NeonClient extends Client {
     super(config);
   }
 
-  override connect(): Promise<void>;
-  override connect(callback: (err?: Error) => void): void;
-  override connect(callback?: (err?: Error) => void) {
+  override connect(): Promise<Client>;
+  override connect(callback: ((err: Error) => void) | ((err: null, c: Client) => void)): void;
+  override connect(callback?: ((err: Error) => void) | ((err: null, c: Client) => void)) {
     const { neonConfig } = this;
 
     // disable TLS if requested
@@ -63,7 +63,7 @@ export class NeonClient extends Client {
         `No database host or connection string was set, and key parameters have default values (host: localhost, user: ${defaultUser}, db: ${defaultUser}, password: null). Is an environment variable missing? Alternatively, if you intended to connect with these parameters, please set the host to 'localhost' explicitly.`,
       );
     // pipelining
-    const result = super.connect(callback as any) as void | Promise<void>;
+    const result = callback ? super.connect(callback) : super.connect();
 
     const pipelineTLS = neonConfig.pipelineTLS && this.ssl;
     const pipelineConnect = neonConfig.pipelineConnect === 'password';
