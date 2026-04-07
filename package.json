@@ -61,7 +61,7 @@
     "test:browser": "npm run build && playwright install --with-deps firefox chromium && vitest run --dir=tests/browser --browser --config=tests/browser/vite.config.mts"
   },
   "dependencies": {
-    "@types/node": "^22.15.30",
+    "@types/node": ">=22.15.30 <26",
     "@types/pg": "^8.8.0"
   },
   "devDependencies": {
