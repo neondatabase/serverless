@@ -1,3 +1,9 @@
+## 1.1.0 (2026-04-09)
+
+Type declarations are now fully inlined (some were previously re-exported from `@types/pg` and `@types/node`). The new types greatly reduce the size of the package with dependencies, and should be compatible in normal usage. The code that is actually run remains unchanged.
+
+A few advanced type-level patterns could be affected. Code that depends on exact type identity with the `@types/pg` exports, that relies on `declare module 'pg'` augmentation flowing through these exports, or that assumes `Buffer`-specific types in places now declared as `Uint8Array` may need updated types.
+
 ## 1.0.2 (2025-09-30)
 
 Update neon.tech references to neon.com domain.
