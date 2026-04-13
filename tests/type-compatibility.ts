@@ -560,9 +560,9 @@ type _SubmittableQueryReturnsInput = Assert<
 
 // negative checks to ensure invalid usage still fails
 
-// @ts-expect-error QueryArrayConfig rowMode must be "array"
 const _badRowMode: Shims.QueryArrayConfig = {
   text: 'select 1',
+  // @ts-expect-error QueryArrayConfig rowMode must be "array"
   rowMode: 'object',
 };
 // @ts-expect-error unknown PoolConfig property should not type-check
