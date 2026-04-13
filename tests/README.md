@@ -4,7 +4,7 @@
 
 - The reason the serverless driver exists is to enable connecting (and connecting speedily) from a variety of platforms. We therefore test on a variety of platforms. The subfolders here contains these tests.
 
-- There are also tests for the compatibility of our pg type shims, in `type-compatibility.ts`. 
+- There are also tests for the compatibility of our pg type shims, in `type-compatibility.ts`.
 
 ## Platforms
 
