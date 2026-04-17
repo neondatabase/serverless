@@ -1,39 +1,3 @@
-/// <reference types="node" />
-
-import { BindConfig } from 'pg';
-import { Client as Client_2 } from 'pg';
-import type { ClientBase as ClientBase_2 } from 'pg';
-import { ClientConfig } from 'pg';
-import { Connection } from 'pg';
-import { ConnectionConfig } from 'pg';
-import { CustomTypesConfig } from 'pg';
-import { DatabaseError } from 'pg';
-import { Defaults } from 'pg';
-import { defaults } from 'pg';
-import { escapeIdentifier } from 'pg';
-import { escapeLiteral } from 'pg';
-import { EventEmitter } from 'events';
-import { Events } from 'pg';
-import { ExecuteConfig } from 'pg';
-import { FieldDef } from 'pg';
-import { MessageConfig } from 'pg';
-import { Notification } from 'pg';
-import { Pool as Pool_2 } from 'pg';
-import type { PoolClient as PoolClient_2 } from 'pg';
-import { PoolConfig } from 'pg';
-import { Query } from 'pg';
-import { QueryArrayConfig } from 'pg';
-import { QueryArrayResult } from 'pg';
-import { QueryConfig } from 'pg';
-import type { QueryConfigValues } from 'pg';
-import { QueryParse } from 'pg';
-import { QueryResult } from 'pg';
-import { QueryResultBase } from 'pg';
-import { QueryResultRow } from 'pg';
-import { ResultBuilder } from 'pg';
-import { Submittable } from 'pg';
-import { types } from 'pg';
-
 declare const allKeyUsages: readonly ["digitalSignature", "nonRepudiation", "keyEncipherment", "dataEncipherment", "keyAgreement", "keyCertSign", "cRLSign", "encipherOnly", "decipherOnly"];
 
 declare class ASN1Bytes extends Bytes {
@@ -52,7 +16,13 @@ declare class ASN1Bytes extends Bytes {
     expectASN1Null(comment?: string): Promise<void>;
 }
 
-export { BindConfig }
+export declare interface BindConfig {
+    portal?: string | undefined;
+    statement?: string | undefined;
+    binary?: string | undefined;
+    values?: Array<Uint8Array | null | undefined | string> | undefined;
+    valueMapper?: ((param: any, index: number) => any) | undefined;
+}
 
 export declare const _bundleExt: 'js' | 'mjs';
 
@@ -231,19 +201,136 @@ export declare class Client extends Client_2 {
     _handleAuthSASLContinue(msg: any): Promise<void>;
 }
 
+declare class Client_2 extends ClientBase_2 {
+    user?: string | undefined;
+    database?: string | undefined;
+    port: number;
+    host: string;
+    password?: string | undefined;
+    ssl: boolean;
+    readonly connection: Connection;
+    constructor(config?: string | ClientConfig);
+    end(): Promise<void>;
+    end(callback: (err: Error) => void): void;
+}
+
 export declare interface ClientBase extends ClientBase_2 {
     neonConfig: NeonConfigGlobalAndClient;
 }
 
-export { ClientConfig }
+declare class ClientBase_2 extends EventEmitter {
+    constructor(config?: string | ClientConfig);
+    connect(): Promise<void>;
+    connect(callback: (err: Error) => void): void;
+    query<T extends Submittable>(queryStream: T): T;
+    query<R extends any[] = any[], I = any[]>(
+    queryConfig: QueryArrayConfig<I>,
+    values?: QueryConfigValues<I>,
+    ): Promise<QueryArrayResult<R>>;
+    query<R extends QueryResultRow = any, I = any>(
+    queryConfig: QueryConfig<I>,
+    ): Promise<QueryResult<R>>;
+    query<R extends QueryResultRow = any, I = any[]>(
+    queryTextOrConfig: string | QueryConfig<I>,
+    values?: QueryConfigValues<I>,
+    ): Promise<QueryResult<R>>;
+    query<R extends any[] = any[], I = any[]>(
+    queryConfig: QueryArrayConfig<I>,
+    callback: (err: Error, result: QueryArrayResult<R>) => void,
+    ): void;
+    query<R extends QueryResultRow = any, I = any[]>(
+    queryTextOrConfig: string | QueryConfig<I>,
+    callback: (err: Error, result: QueryResult<R>) => void,
+    ): void;
+    query<R extends QueryResultRow = any, I = any[]>(
+    queryText: string,
+    values: QueryConfigValues<I>,
+    callback: (err: Error, result: QueryResult<R>) => void,
+    ): void;
+    pauseDrain(): void;
+    resumeDrain(): void;
+    copyFrom(queryText: string): any;
+    copyTo(queryText: string): any;
+    escapeIdentifier(str: string): string;
+    escapeLiteral(str: string): string;
+    setTypeParser(id: PgTypeId, parseFn: (value: string) => any): void;
+    setTypeParser(
+    id: PgTypeId,
+    format: PgTypeFormat,
+    parseFn: (value: string) => any,
+    ): void;
+    getTypeParser(id: PgTypeId, format?: PgTypeFormat): any;
+    on(event: 'drain', listener: () => void): this;
+    on(event: 'error', listener: (err: Error) => void): this;
+    on(event: 'notice', listener: (notice: NoticeMessage) => void): this;
+    on(event: 'notification', listener: (message: Notification) => void): this;
+    on(event: 'end', listener: () => void): this;
+}
 
-export { Connection }
+export declare interface ClientConfig {
+    user?: string | undefined;
+    database?: string | undefined;
+    password?: string | (() => string | Promise<string>) | undefined;
+    port?: number | undefined;
+    host?: string | undefined;
+    connectionString?: string | undefined;
+    keepAlive?: boolean | undefined;
+    stream?: (() => any) | undefined;
+    statement_timeout?: false | number | undefined;
+    ssl?: boolean | object | undefined;
+    query_timeout?: number | undefined;
+    lock_timeout?: number | undefined;
+    keepAliveInitialDelayMillis?: number | undefined;
+    idle_in_transaction_session_timeout?: number | undefined;
+    application_name?: string | undefined;
+    fallback_application_name?: string | undefined;
+    connectionTimeoutMillis?: number | undefined;
+    types?: CustomTypesConfig | undefined;
+    options?: string | undefined;
+    client_encoding?: string | undefined;
+}
 
-export { ConnectionConfig }
+export declare class Connection extends EventEmitter {
+    readonly stream: any;
+    constructor(config?: ConnectionConfig);
+    bind(config: BindConfig | null, more: boolean): void;
+    execute(config: ExecuteConfig | null, more: boolean): void;
+    parse(query: QueryParse, more: boolean): void;
+    query(text: string): void;
+    describe(msg: MessageConfig, more: boolean): void;
+    close(msg: MessageConfig, more: boolean): void;
+    flush(): void;
+    sync(): void;
+    end(): void;
+}
 
-export { CustomTypesConfig }
+export declare type ConnectionConfig = ClientConfig;
 
-export { DatabaseError }
+export declare interface CustomTypesConfig {
+    getTypeParser: (id: PgTypeId, format?: PgTypeFormat) => any;
+}
+
+export declare class DatabaseError extends Error {
+    readonly length: number;
+    readonly name: string;
+    severity: string | undefined;
+    code: string | undefined;
+    detail: string | undefined;
+    hint: string | undefined;
+    position: string | undefined;
+    internalPosition: string | undefined;
+    internalQuery: string | undefined;
+    where: string | undefined;
+    schema: string | undefined;
+    table: string | undefined;
+    column: string | undefined;
+    dataType: string | undefined;
+    constraint: string | undefined;
+    file: string | undefined;
+    line: string | undefined;
+    routine: string | undefined;
+    constructor(message: string, length: number, name: string);
+}
 
 declare interface DataRequest {
     bytes: number;
@@ -251,25 +338,84 @@ declare interface DataRequest {
     readMode: ReadMode;
 }
 
-export { Defaults }
+export declare interface Defaults extends ClientConfig {
+    poolSize?: number | undefined;
+    poolIdleTimeout?: number | undefined;
+    reapIntervalMillis?: number | undefined;
+    binary?: boolean | undefined;
+    parseInt8?: boolean | undefined;
+    parseInputDatesAsUTC?: boolean | undefined;
+}
 
-export { defaults }
+export declare const defaults: Defaults & ClientConfig;
 
 declare type DistinguishedName = Record<string, string | string[]>;
 
-export { escapeIdentifier }
+export declare function escapeIdentifier(str: string): string;
 
-export { escapeLiteral }
+export declare function escapeLiteral(str: string): string;
 
-export { Events }
+declare class EventEmitter {
+    addListener(
+    eventName: string | symbol,
+    listener: (...args: any[]) => void,
+    ): this;
+    on(
+    eventName: string | symbol,
+    listener: (...args: any[]) => void,
+    ): this;
+    once(
+    eventName: string | symbol,
+    listener: (...args: any[]) => void,
+    ): this;
+    removeListener(
+    eventName: string | symbol,
+    listener: (...args: any[]) => void,
+    ): this;
+    off(
+    eventName: string | symbol,
+    listener: (...args: any[]) => void,
+    ): this;
+    removeAllListeners(event?: string | symbol): this;
+    setMaxListeners(n: number): this;
+    getMaxListeners(): number;
+    listeners(eventName: string | symbol): Function[];
+    rawListeners(eventName: string | symbol): Function[];
+    emit(eventName: string | symbol, ...args: any[]): boolean;
+    listenerCount(eventName: string | symbol): number;
+    prependListener(
+    eventName: string | symbol,
+    listener: (...args: any[]) => void,
+    ): this;
+    prependOnceListener(
+    eventName: string | symbol,
+    listener: (...args: any[]) => void,
+    ): this;
+    eventNames(): Array<string | symbol>;
+}
 
-export { ExecuteConfig }
+export declare class Events extends EventEmitter {
+    on(event: 'error', listener: (err: Error, client: Client_2) => void): this;
+}
+
+export declare interface ExecuteConfig {
+    portal?: string | undefined;
+    rows?: string | undefined;
+}
 
 export declare interface FetchEndpointOptions {
     jwtAuth?: boolean;
 }
 
-export { FieldDef }
+export declare interface FieldDef {
+    name: string;
+    tableID: number;
+    columnID: number;
+    dataTypeID: number;
+    dataTypeSize: number;
+    dataTypeModifier: number;
+    format: string;
+}
 
 export declare interface FullQueryResults<ArrayMode extends boolean> {
     fields: FieldDef[];
@@ -348,7 +494,10 @@ export declare interface HTTPTransactionOptions<ArrayMode extends boolean, FullR
     deferrable?: boolean;
 }
 
-export { MessageConfig }
+export declare interface MessageConfig {
+    type: string;
+    name?: string | undefined;
+}
 
 /**
  * Returns an async tagged-template function that runs a single SQL query (no
@@ -634,8 +783,8 @@ export declare class neonConfig extends EventEmitter {
     startTls(host: string): Promise<void>;
     tlsReadLoop(): Promise<void>;
     rawWrite(data: Uint8Array): void;
-    write(data: Buffer | string, encoding?: string, callback?: (err?: any) => void): boolean;
-    end(data?: Buffer | string, encoding?: string, callback?: () => void): this;
+    write(data: Uint8Array | string, encoding?: string, callback?: (err?: any) => void): boolean;
+    end(data?: Uint8Array | string, encoding?: string, callback?: () => void): this;
     destroy(): this;
 }
 
@@ -758,7 +907,33 @@ export declare class NeonQueryPromise<ArrayMode extends boolean, FullResults ext
     finally(finallyFn?: (() => void) | undefined | null): Promise<T>;
 }
 
-export { Notification }
+declare interface NoticeMessage {
+    readonly name: 'notice';
+    readonly length: number;
+    readonly message: string | undefined;
+    severity: string | undefined;
+    code: string | undefined;
+    detail: string | undefined;
+    hint: string | undefined;
+    position: string | undefined;
+    internalPosition: string | undefined;
+    internalQuery: string | undefined;
+    where: string | undefined;
+    schema: string | undefined;
+    table: string | undefined;
+    column: string | undefined;
+    dataType: string | undefined;
+    constraint: string | undefined;
+    file: string | undefined;
+    line: string | undefined;
+    routine: string | undefined;
+}
+
+export declare interface Notification {
+    processId: number;
+    channel: string;
+    payload?: string | undefined;
+}
 
 declare type OID = string;
 
@@ -766,6 +941,10 @@ export declare interface ParameterizedQuery {
     query: string;
     params: any[];
 }
+
+declare type PgTypeFormat = 'text' | 'binary';
+
+declare type PgTypeId = number;
 
 export declare interface Pool {
     Promise: typeof Promise;
@@ -791,11 +970,87 @@ export declare class Pool extends Pool_2 {
     query<R extends QueryResultRow = any, I = any[]>(queryText: string, values: QueryConfigValues<I>, callback: (err: Error, result: QueryResult<R>) => void): void;
 }
 
+declare class Pool_2 extends EventEmitter {
+    constructor(config?: PoolConfig);
+    options: PoolOptions;
+    readonly totalCount: number;
+    readonly idleCount: number;
+    readonly waitingCount: number;
+    readonly expiredCount: number;
+    readonly ending: boolean;
+    readonly ended: boolean;
+    connect(): Promise<PoolClient_2>;
+    connect(
+    callback: (
+    err: Error | undefined,
+    client: PoolClient_2 | undefined,
+    done: (release?: any) => void,
+    ) => void,
+    ): void;
+    end(): Promise<void>;
+    end(callback: () => void): void;
+    query<T extends Submittable>(queryStream: T): T;
+    query<R extends any[] = any[], I = any[]>(
+    queryConfig: QueryArrayConfig<I>,
+    values?: QueryConfigValues<I>,
+    ): Promise<QueryArrayResult<R>>;
+    query<R extends QueryResultRow = any, I = any[]>(
+    queryConfig: QueryConfig<I>,
+    ): Promise<QueryResult<R>>;
+    query<R extends QueryResultRow = any, I = any[]>(
+    queryTextOrConfig: string | QueryConfig<I>,
+    values?: QueryConfigValues<I>,
+    ): Promise<QueryResult<R>>;
+    query<R extends any[] = any[], I = any[]>(
+    queryConfig: QueryArrayConfig<I>,
+    callback: (err: Error, result: QueryArrayResult<R>) => void,
+    ): void;
+    query<R extends QueryResultRow = any, I = any[]>(
+    queryTextOrConfig: string | QueryConfig<I>,
+    callback: (err: Error, result: QueryResult<R>) => void,
+    ): void;
+    query<R extends QueryResultRow = any, I = any[]>(
+    queryText: string,
+    values: QueryConfigValues<I>,
+    callback: (err: Error, result: QueryResult<R>) => void,
+    ): void;
+    on(
+    event: 'release' | 'error',
+    listener: (err: Error, client: PoolClient_2) => void,
+    ): this;
+    on(
+    event: 'connect' | 'acquire' | 'remove',
+    listener: (client: PoolClient_2) => void,
+    ): this;
+}
+
 export declare interface PoolClient extends PoolClient_2 {
     neonConfig: NeonConfigGlobalAndClient;
 }
 
-export { PoolConfig }
+declare interface PoolClient_2 extends ClientBase_2 {
+    release(err?: Error | boolean): void;
+}
+
+export declare interface PoolConfig extends ClientConfig {
+    max?: number | undefined;
+    min?: number | undefined;
+    idleTimeoutMillis?: number | undefined | null;
+    log?: ((...messages: any[]) => void) | undefined;
+    Promise?: PromiseConstructorLike | undefined;
+    allowExitOnIdle?: boolean | undefined;
+    maxUses?: number | undefined;
+    maxLifetimeSeconds?: number | undefined;
+    Client?: (new () => any) | undefined;
+}
+
+declare interface PoolOptions extends PoolConfig {
+    max: number;
+    maxUses: number;
+    allowExitOnIdle: boolean;
+    maxLifetimeSeconds: number;
+    idleTimeoutMillis: number | null;
+}
 
 export declare interface ProcessQueryResultOptions {
     arrayMode: boolean;
@@ -803,21 +1058,62 @@ export declare interface ProcessQueryResultOptions {
     types?: CustomTypesConfig;
 }
 
-export { Query }
+export declare class Query<R extends QueryResultRow = any, I extends any[] = any>
+extends EventEmitter
+implements Submittable
+    {
+    constructor(
+    queryTextOrConfig?: string | QueryConfig<I>,
+    values?: QueryConfigValues<I>,
+    );
+    submit: (connection: Connection) => void;
+    on(
+    event: 'row',
+    listener: (row: R, result?: ResultBuilder<R>) => void,
+    ): this;
+    on(event: 'error', listener: (err: Error) => void): this;
+    on(event: 'end', listener: (result: ResultBuilder<R>) => void): this;
+}
 
-export { QueryArrayConfig }
+export declare interface QueryArrayConfig<I = any[]> extends QueryConfig<I> {
+    rowMode: 'array';
+}
 
-export { QueryArrayResult }
+export declare interface QueryArrayResult<R extends any[] = any[]>
+extends QueryResultBase {
+    rows: R[];
+}
 
-export { QueryConfig }
+export declare interface QueryConfig<I = any[]> {
+    name?: string | undefined;
+    text: string;
+    values?: QueryConfigValues<I>;
+    types?: CustomTypesConfig | undefined;
+}
 
-export { QueryParse }
+declare type QueryConfigValues<T> = T extends Array<infer U> ? T : never;
 
-export { QueryResult }
+export declare interface QueryParse {
+    name: string;
+    text: string;
+    types: string[];
+}
 
-export { QueryResultBase }
+export declare interface QueryResult<R extends QueryResultRow = any>
+extends QueryResultBase {
+    rows: R[];
+}
 
-export { QueryResultRow }
+export declare interface QueryResultBase {
+    command: string;
+    rowCount: number | null;
+    oid: number;
+    fields: FieldDef[];
+}
+
+export declare interface QueryResultRow {
+    [column: string]: any;
+}
 
 export declare type QueryRows<ArrayMode extends boolean> = ArrayMode extends true ? any[][] : Record<string, any>[];
 
@@ -837,7 +1133,10 @@ declare abstract class ReadQueue {
     read(bytes: number, readMode?: ReadMode): Promise<Uint8Array | undefined>;
 }
 
-export { ResultBuilder }
+export declare interface ResultBuilder<R extends QueryResultRow = any>
+extends QueryResult<R> {
+    addRow(row: R): void;
+}
 
 declare type RootCertsData = Uint8Array;
 
@@ -877,7 +1176,9 @@ export declare function startTls(host: string, rootCertsDatabase: RootCertsDatab
     readonly userCert: Cert;
 }>;
 
-export { Submittable }
+export declare interface Submittable {
+    submit: (connection: Connection) => void;
+}
 
 export declare interface subtls {
     startTls: typeof startTls;
@@ -890,7 +1191,17 @@ export declare class TrustedCert extends Cert {
     static findInDatabase(subjectOrSubjectKeyId: DistinguishedName | string, db: RootCertsDatabase): Promise<Cert | undefined>;
 }
 
-export { types }
+export declare const types: {
+    setTypeParser(id: number, parseFn: (value: string) => any): void;
+    setTypeParser(
+    id: number,
+    format: 'text' | 'binary',
+    parseFn: (value: string) => any,
+    ): void;
+    getTypeParser(id: number, format?: 'text' | 'binary'): any;
+    arrayParser(source: string, transform: (entry: any) => any): any[];
+    builtins: { [key: string]: number };
+};
 
 export declare class UnsafeRawSql {
     sql: string;

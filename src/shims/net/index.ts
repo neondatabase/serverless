@@ -684,7 +684,7 @@ export class Socket extends EventEmitter {
   }
 
   write(
-    data: Buffer | string,
+    data: Uint8Array | string,
     encoding = 'utf8',
     callback = (err?: any) => {},
   ) {
@@ -694,7 +694,7 @@ export class Socket extends EventEmitter {
     }
 
     if (typeof data === 'string')
-      data = Buffer.from(data, encoding as BufferEncoding) as unknown as Buffer;
+      data = Buffer.from(data, encoding as BufferEncoding);
 
     if (this.tlsState === TlsState.None) {
       debug && log('sending data direct:', data);
@@ -716,7 +716,7 @@ export class Socket extends EventEmitter {
   }
 
   end(
-    data: Buffer | string = Buffer.alloc(0) as unknown as Buffer,
+    data: Uint8Array | string = Buffer.alloc(0) as unknown as Uint8Array,
     encoding = 'utf8',
     callback = () => {},
   ) {

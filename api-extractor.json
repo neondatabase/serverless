@@ -2,7 +2,7 @@
   "mainEntryPointFilePath": "build/types/index.d.ts",
   "newlineKind": "lf",
   "enumMemberOrder": "preserve",
-  "bundledPackages": ["subtls"],
+  "bundledPackages": ["subtls", "pg", "events"],
   "dtsRollup": {
     "enabled": true,
     "untrimmedFilePath": "build/generated.d.ts"

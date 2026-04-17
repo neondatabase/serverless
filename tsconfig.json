@@ -6,6 +6,10 @@
     ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
     "module": "ES2022" /* Specify what module code is generated. */,
     "moduleResolution": "Node" /* Specify how TypeScript looks up a file from a given module specifier. */,
+    "paths": {
+      "pg": ["./src/shims/pg"],
+      "events": ["./src/shims/events"]
+    },
     "esModuleInterop": true,
     "resolveJsonModule": true /* Enable importing .json files */,
     "allowJs": true /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */,
