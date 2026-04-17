@@ -4,6 +4,23 @@
  *
  * esbuild ignores tsconfig paths, so the real `pg` module from node_modules
  * is still used for the runtime bundle.
+ *
+ * == Maintaining this shim ==
+ *
+ * The tests/type-compatibility.ts suite fails if @types/pg gains a property
+ * or signature this shim lacks. When that happens;
+ * - Check the failing assertion name (e.g. _ClientConfigInputCompat) -- the
+ *   tsc error should include the offending key: e.g. `type '"new_key"' does
+ *   not satisfy the constraint 'never'`
+ * - Either mirror the new key verbatim (i.e add it to this file) or widen it
+ *   (perhaps to avoid pulling in @types/node) and add a comment
+ *
+ * If you're adding a new shimmed module (not just editing pg/events), remember
+ * that tsconfig.json paths, api-extractor.json bundledPackages, and build.sh
+ * esbuild aliases must all reference it.
+ *
+ * The source of truth for signatures is node_modules/@types/pg/index.d.ts and
+   node_modules/pg-protocol/dist/messages.d.ts (NoticeMessage/DatabaseError).
  */
 
 import { EventEmitter } from 'events';

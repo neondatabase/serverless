@@ -24,4 +24,4 @@ npm install @neondatabase/serverless@github:neondatabase/serverless#BRANCH_OR_CO
 
 ## Publish on npm and JSR
 
-Tests must be passing locally, you must be on branch `main`, the repo must be clean, and `CHANGELOG.md` must include notes for the new version. Then simply run `npm version` with `patch`, `minor` or `major`.
+Tests must be passing locally, the repo must be clean, and `CHANGELOG.md` must include notes for the new version. Then run `npm version $BUMP --ignore-scripts=false` where `$BUMP` is `patch`, `minor` or `major`.
