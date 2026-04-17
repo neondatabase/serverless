@@ -79,7 +79,7 @@
     "buffer": "^6.0.3",
     "crypto": "file:src/shims/crypto",
     "dns": "file:src/shims/dns",
-    "drizzle-orm": "^0.44.2",
+    "drizzle-orm": "^0.45.2",
     "esbuild": "^0.25.0",
     "events": "^3.3.0",
     "fast-equals": "^5.0.1",
