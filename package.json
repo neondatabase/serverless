@@ -109,6 +109,7 @@
   },
   "overrides": {
     "pg-connection-string": "2.5.0",
-    "@neondatabase/serverless": "file:."
+    "@neondatabase/serverless": "file:.",
+    "postgres-bytea": "1.0.1"
   }
 }
