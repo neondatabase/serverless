@@ -708,8 +708,10 @@ export class Socket extends EventEmitter {
       });
     } else {
       debug && log('encrypting data:', data);
-      this.tlsWrite!(data);
-      callback();
+      this.tlsWrite!(data).then(
+        () => callback(),
+        (err) => callback(err),
+      );
     }
 
     return true;
