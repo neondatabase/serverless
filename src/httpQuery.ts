@@ -28,6 +28,7 @@ import type {
 } from './httpTypes';
 import { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
 import { warnIfBrowser } from './utils';
+import { PACKAGE_URL } from './packageInfo';
 
 import { Socket as neonConfig } from './shims/net';
 
@@ -351,6 +352,7 @@ export function neon<
       'Neon-Connection-String': connectionString,
       'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
+      'Neon-Client-Info': PACKAGE_URL,
     };
 
     // --- add auth token to headers ---
