@@ -193,9 +193,9 @@ export declare interface Client {
  * https://node-postgres.com/apis/client
  */
 export declare class Client extends Client_2 {
-    config?: string | ClientConfig | undefined;
+    config?: (string | ClientConfig) | undefined;
     get neonConfig(): neonConfig;
-    constructor(config?: string | ClientConfig | undefined);
+    constructor(config?: (string | ClientConfig) | undefined);
     connect(): Promise<void>;
     connect(callback: (err?: Error) => void): void;
     _handleAuthSASLContinue(msg: any): Promise<void>;
@@ -616,7 +616,7 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `false`.
      */
-    static get poolQueryViaFetch(): NeonConfig['poolQueryViaFetch'];
+    static get poolQueryViaFetch(): NeonConfig["poolQueryViaFetch"];
     static set poolQueryViaFetch(newValue: NeonConfig['poolQueryViaFetch']);
     /**
      * Set `fetchEndpoint` to set the server endpoint to be sent queries via http
@@ -629,7 +629,7 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: custom logic to connect to Neon endpoints.
      */
-    static get fetchEndpoint(): NeonConfig['fetchEndpoint'];
+    static get fetchEndpoint(): NeonConfig["fetchEndpoint"];
     static set fetchEndpoint(newValue: NeonConfig['fetchEndpoint']);
     /**
      * **DEPRECATED**. Previously, only when `fetchConnectionCache` was `true`
@@ -639,7 +639,7 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `true`.
      */
-    static get fetchConnectionCache(): NeonConfig['fetchConnectionCache'];
+    static get fetchConnectionCache(): NeonConfig["fetchConnectionCache"];
     static set fetchConnectionCache(newValue: NeonConfig['fetchConnectionCache']);
     /**
      * The `fetchFunction` option allows you to supply an alternative function
@@ -648,7 +648,7 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `undefined`.
      */
-    static get fetchFunction(): NeonConfig['fetchFunction'];
+    static get fetchFunction(): NeonConfig["fetchFunction"];
     static set fetchFunction(newValue: NeonConfig['fetchFunction']);
     /**
      * Only if no global `WebSocket` object is available, such as in older
@@ -658,9 +658,9 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `undefined`.
      */
-    static get webSocketConstructor(): NeonConfig['webSocketConstructor'];
+    static get webSocketConstructor(): NeonConfig["webSocketConstructor"];
     static set webSocketConstructor(newValue: NeonConfig['webSocketConstructor']);
-    get webSocketConstructor(): NeonConfig['webSocketConstructor'];
+    get webSocketConstructor(): NeonConfig["webSocketConstructor"];
     set webSocketConstructor(newValue: NeonConfig['webSocketConstructor']);
     /**
      * Set `wsProxy` to use your own WebSocket proxy server.
@@ -673,9 +673,9 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `host => host + '/v2'`
      */
-    static get wsProxy(): NeonConfig['wsProxy'];
+    static get wsProxy(): NeonConfig["wsProxy"];
     static set wsProxy(newValue: NeonConfig['wsProxy']);
-    get wsProxy(): NeonConfig['wsProxy'];
+    get wsProxy(): NeonConfig["wsProxy"];
     set wsProxy(newValue: NeonConfig['wsProxy']);
     /**
      * Batch multiple network writes per run-loop into a single outgoing
@@ -683,18 +683,18 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `true`.
      */
-    static get coalesceWrites(): NeonConfig['coalesceWrites'];
+    static get coalesceWrites(): NeonConfig["coalesceWrites"];
     static set coalesceWrites(newValue: NeonConfig['coalesceWrites']);
-    get coalesceWrites(): NeonConfig['coalesceWrites'];
+    get coalesceWrites(): NeonConfig["coalesceWrites"];
     set coalesceWrites(newValue: NeonConfig['coalesceWrites']);
     /**
      * Use a secure (`wss:`) connection to the WebSocket proxy.
      *
      * Default: `true`.
      */
-    static get useSecureWebSocket(): NeonConfig['useSecureWebSocket'];
+    static get useSecureWebSocket(): NeonConfig["useSecureWebSocket"];
     static set useSecureWebSocket(newValue: NeonConfig['useSecureWebSocket']);
-    get useSecureWebSocket(): NeonConfig['useSecureWebSocket'];
+    get useSecureWebSocket(): NeonConfig["useSecureWebSocket"];
     set useSecureWebSocket(newValue: NeonConfig['useSecureWebSocket']);
     /**
      * Disable TLS encryption in the Postgres protocol (as set via e.g.
@@ -703,9 +703,9 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `true`
      */
-    static get forceDisablePgSSL(): NeonConfig['forceDisablePgSSL'];
+    static get forceDisablePgSSL(): NeonConfig["forceDisablePgSSL"];
     static set forceDisablePgSSL(newValue: NeonConfig['forceDisablePgSSL']);
-    get forceDisablePgSSL(): NeonConfig['forceDisablePgSSL'];
+    get forceDisablePgSSL(): NeonConfig["forceDisablePgSSL"];
     set forceDisablePgSSL(newValue: NeonConfig['forceDisablePgSSL']);
     /**
      * When using subtls with `forceDisablePgSSL = false` and Postgres connection
@@ -718,9 +718,9 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `false`.
      */
-    static get disableSNI(): NeonConfig['disableSNI'];
+    static get disableSNI(): NeonConfig["disableSNI"];
     static set disableSNI(newValue: NeonConfig['disableSNI']);
-    get disableSNI(): NeonConfig['disableSNI'];
+    get disableSNI(): NeonConfig["disableSNI"];
     set disableSNI(newValue: NeonConfig['disableSNI']);
     /**
      * When `disableWarningInBrowsers` is set to `true`, it disables the warning about
@@ -728,9 +728,9 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `false`.
      */
-    static get disableWarningInBrowsers(): NeonConfig['disableWarningInBrowsers'];
+    static get disableWarningInBrowsers(): NeonConfig["disableWarningInBrowsers"];
     static set disableWarningInBrowsers(newValue: NeonConfig['disableWarningInBrowsers']);
-    get disableWarningInBrowsers(): NeonConfig['disableWarningInBrowsers'];
+    get disableWarningInBrowsers(): NeonConfig["disableWarningInBrowsers"];
     set disableWarningInBrowsers(newValue: NeonConfig['disableWarningInBrowsers']);
     /**
      * Pipelines the startup message, cleartext password message and first query
@@ -738,9 +738,9 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `"password"`.
      */
-    static get pipelineConnect(): NeonConfig['pipelineConnect'];
+    static get pipelineConnect(): NeonConfig["pipelineConnect"];
     static set pipelineConnect(newValue: NeonConfig['pipelineConnect']);
-    get pipelineConnect(): NeonConfig['pipelineConnect'];
+    get pipelineConnect(): NeonConfig["pipelineConnect"];
     set pipelineConnect(newValue: NeonConfig['pipelineConnect']);
     /**
      * If `forceDisablePgSSL` is `false` and the Postgres connection parameters
@@ -754,9 +754,9 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `undefined`.
      */
-    static get subtls(): NeonConfig['subtls'];
+    static get subtls(): NeonConfig["subtls"];
     static set subtls(newValue: NeonConfig['subtls']);
-    get subtls(): NeonConfig['subtls'];
+    get subtls(): NeonConfig["subtls"];
     set subtls(newValue: NeonConfig['subtls']);
     /**
      * Pipeline the pg SSL request and TLS handshake when `forceDisablePgSSL` is
@@ -765,9 +765,9 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `false`.
      */
-    static get pipelineTLS(): NeonConfig['pipelineTLS'];
+    static get pipelineTLS(): NeonConfig["pipelineTLS"];
     static set pipelineTLS(newValue: NeonConfig['pipelineTLS']);
-    get pipelineTLS(): NeonConfig['pipelineTLS'];
+    get pipelineTLS(): NeonConfig["pipelineTLS"];
     set pipelineTLS(newValue: NeonConfig['pipelineTLS']);
     /**
      * Set `rootCerts` to a string comprising one or more PEM files. These are
@@ -777,9 +777,9 @@ export declare class neonConfig extends EventEmitter {
      *
      * Default: `""`.
      */
-    static get rootCerts(): NeonConfig['rootCerts'];
+    static get rootCerts(): NeonConfig["rootCerts"];
     static set rootCerts(newValue: NeonConfig['rootCerts']);
-    get rootCerts(): NeonConfig['rootCerts'];
+    get rootCerts(): NeonConfig["rootCerts"];
     set rootCerts(newValue: NeonConfig['rootCerts']);
     wsProxyAddrForHost(host: string, port: number): string;
     connecting: boolean;
@@ -806,7 +806,7 @@ export declare type NeonConfigGlobalAndClient = Omit<NeonConfig, keyof NeonConfi
 export declare type NeonConfigGlobalOnly = Pick<NeonConfig, 'fetchEndpoint' | 'poolQueryViaFetch' | 'fetchConnectionCache' | 'fetchFunction'>;
 
 export declare class NeonDbError extends Error {
-    name: 'NeonDbError';
+    name: "NeonDbError";
     severity: string | undefined;
     code: string | undefined;
     detail: string | undefined;
@@ -975,7 +975,7 @@ export declare class Pool extends Pool_2 {
     Client: typeof Client;
     hasFetchUnsupportedListeners: boolean;
     on(event: 'error' | 'connect' | 'acquire' | 'release' | 'remove', listener: any): this;
-    addListener: (event: 'error' | 'connect' | 'acquire' | 'release' | 'remove', listener: any) => this;
+    addListener: (event: "error" | "connect" | "acquire" | "release" | "remove", listener: any) => this;
     query<T extends Submittable>(queryStream: T): T;
     query<R extends any[] = any[], I = any[]>(queryConfig: QueryArrayConfig<I>, values?: QueryConfigValues<I>): Promise<QueryArrayResult<R>>;
     query<R extends QueryResultRow = any, I = any[]>(queryConfig: QueryConfig<I>): Promise<QueryResult<R>>;
