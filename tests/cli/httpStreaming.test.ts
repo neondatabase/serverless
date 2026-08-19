@@ -28,7 +28,7 @@ const labelFields = [
   },
 ];
 
-const successMessages = [[1, ...fields], [0, '42'], [2, 'SELECT', 1], [3]];
+const successMessages = [[1, ...fields], [0, '42'], [2, 'SELECT', 1], {}];
 
 const batchMessages = [
   [1, ...fields],
@@ -39,7 +39,7 @@ const batchMessages = [
   [0, 'hello'],
   [0, 'world'],
   [2, 'SELECT', 2],
-  [3],
+  {},
 ];
 
 let previousFetchEndpoint: typeof neonConfig.fetchEndpoint;
@@ -69,10 +69,18 @@ function cborSequence(messages: unknown[]) {
   return result;
 }
 
-function mockResponse(body: BodyInit, expectedAccept: string) {
+function mockResponse(
+  body: BodyInit,
+  expectedAccept: string,
+  responseContentType = expectedAccept,
+  status = 200,
+) {
   const fetchFunction = vi.fn(async (_url, init) => {
     expect(init?.headers).toMatchObject({ Accept: expectedAccept });
-    return new Response(body, { status: 200 });
+    return new Response(body, {
+      status,
+      headers: { 'Content-Type': responseContentType },
+    });
   });
   neonConfig.fetchFunction = fetchFunction as any;
   return fetchFunction;
@@ -124,6 +132,70 @@ test.each([
 
 test.each([
   {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    contentType: 'application/vnd.neon.sql.v1+json; charset=utf-8',
+    body: successMessages.map((message) => JSON.stringify(message)).join('\n'),
+  },
+  {
+    responseFormat: 'jsonl' as const,
+    accept: 'application/vnd.neon.sql.v1+json',
+    contentType: 'application/vnd.neon.sql.v1+cbor',
+    body: cborSequence(successMessages),
+  },
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    contentType: 'application/json',
+    body: JSON.stringify({
+      fields,
+      rows: [['42']],
+      command: 'SELECT',
+      rowCount: 1,
+    }),
+  },
+])(
+  'decodes the returned $contentType instead of the requested $responseFormat',
+  async ({ responseFormat, accept, contentType, body }) => {
+    mockResponse(body, accept, contentType);
+
+    const sql = neon(connectionString, { responseFormat });
+    await expect(sql`SELECT 42 AS answer`).resolves.toStrictEqual([
+      { answer: 42 },
+    ]);
+  },
+);
+
+test('decodes JSON errors returned for CBOR requests', async () => {
+  mockResponse(
+    JSON.stringify({ message: 'invalid request', code: '08P01' }),
+    'application/vnd.neon.sql.v1+cbor',
+    'application/json; charset=utf-8',
+    400,
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'cbor-seq' });
+  await expect(sql`SELECT`).rejects.toMatchObject({
+    message: 'invalid request',
+    code: '08P01',
+  });
+});
+
+test('rejects successful responses with an unknown Content-Type', async () => {
+  mockResponse(
+    JSON.stringify({}),
+    'application/vnd.neon.sql.v1+cbor',
+    'text/plain',
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'cbor-seq' });
+  await expect(sql`SELECT`).rejects.toThrow(
+    'unexpected response Content-Type: text/plain',
+  );
+});
+
+test.each([
+  {
     responseFormat: 'jsonl' as const,
     accept: 'application/vnd.neon.sql.v1+json',
     encode: (messages: unknown[]) =>
@@ -145,7 +217,7 @@ test.each([
       [0, ['world']],
       [0, ''],
       [2, 'SELECT', 2],
-      [3],
+      {},
     ];
     mockResponse(encode(messages), accept);
 
@@ -162,11 +234,10 @@ test.each([
 );
 
 test.each([
-  [[], 'empty row message'],
   [[[null]], 'partial NULL'],
   [[['unfinished']], 'unfinished row'],
 ])('rejects invalid streamed row fragments: %s', async (row, _description) => {
-  const messages = [[1, fields], [0, ...row], [2, 'SELECT', 1], [3]];
+  const messages = [[1, ...fields], [0, ...row], [2, 'SELECT', 1], {}];
   mockResponse(
     messages.map((message) => JSON.stringify(message)).join('\n'),
     'application/vnd.neon.sql.v1+json',
@@ -176,6 +247,20 @@ test.each([
   await expect(sql`SELECT 42 AS answer`).rejects.toThrow(
     'unexpected streamed response message',
   );
+});
+
+test('decodes zero-column rows', async () => {
+  const messages = [[1], [0], [2, 'SELECT', 1], {}];
+  mockResponse(
+    messages.map((message) => JSON.stringify(message)).join('\n'),
+    'application/vnd.neon.sql.v1+json',
+  );
+
+  const sql = neon(connectionString, {
+    responseFormat: 'jsonl',
+    arrayMode: true,
+  });
+  await expect(sql`SELECT`).resolves.toStrictEqual([[]]);
 });
 
 test('allows a streaming format per query', async () => {
@@ -192,7 +277,7 @@ test('allows a streaming format per query', async () => {
 
 test('returns terminal streamed errors as database errors', async () => {
   mockResponse(
-    cborSequence([[4, { message: 'division by zero', code: '22012' }]]),
+    cborSequence([{ message: 'division by zero', code: '22012' }]),
     'application/vnd.neon.sql.v1+cbor',
   );
 
@@ -207,7 +292,7 @@ test('discards partial rows before returning terminal errors', async () => {
     cborSequence([
       [1, ...fields],
       [0, ['partial']],
-      [4, { message: 'division by zero', code: '22012' }],
+      { message: 'division by zero', code: '22012' },
     ]),
     'application/vnd.neon.sql.v1+cbor',
   );
@@ -238,6 +323,40 @@ test.each([
     const sql = neon(connectionString, { responseFormat });
     await expect(sql`SELECT 42 AS answer`).rejects.toThrow(
       'streamed response ended without a terminal message',
+    );
+  },
+);
+
+test.each([
+  [[3], 'streamed response ended without a terminal message'],
+  [{ code: '22012' }, 'unexpected streamed response status'],
+  [{ message: 42 }, 'unexpected streamed response status'],
+])('rejects invalid terminal messages: %j', async (terminal, expectedError) => {
+  const messages = [...successMessages.slice(0, -1), terminal];
+  mockResponse(
+    messages.map((message) => JSON.stringify(message)).join('\n'),
+    'application/vnd.neon.sql.v1+json',
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'jsonl' });
+  await expect(sql`SELECT 42 AS answer`).rejects.toThrow(expectedError);
+});
+
+test.each([
+  ['too few', 2, successMessages],
+  ['too many', 1, batchMessages],
+])(
+  'rejects transactions with %s streamed results',
+  async (_description, queryCount, messages) => {
+    mockResponse(
+      messages.map((message) => JSON.stringify(message)).join('\n'),
+      'application/vnd.neon.sql.v1+json',
+    );
+
+    const sql = neon(connectionString, { responseFormat: 'jsonl' });
+    const queries = Array.from({ length: queryCount }, () => sql`SELECT 42`);
+    await expect(sql.transaction(queries)).rejects.toThrow(
+      'incomplete streamed response',
     );
   },
 );

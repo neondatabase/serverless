@@ -104,6 +104,25 @@ const ROW_MESSAGE = 0;
 const COLUMNS_MESSAGE = 1;
 const QUERY_MESSAGE = 2;
 
+function getResponseFormat(response: Response): HTTPResponseFormat | undefined {
+  const contentType = response.headers
+    .get('Content-Type')
+    ?.split(';', 1)[0]
+    .trim()
+    .toLowerCase();
+
+  switch (contentType) {
+    case responseFormatContentTypes.json:
+      return 'json';
+    case responseFormatContentTypes.jsonl:
+      return 'jsonl';
+    case responseFormatContentTypes['cbor-seq']:
+      return 'cbor-seq';
+    default:
+      return undefined;
+  }
+}
+
 function dbError(error: any) {
   const result = new NeonDbError(error.message);
   for (const field of errorFields) result[field] = error[field] ?? undefined;
@@ -116,10 +135,10 @@ function unexpectedStreamingMessage(): never {
   );
 }
 
-async function readStreamingResult(
+async function readStreamingResults(
   response: Response,
   responseFormat: Exclude<HTTPResponseFormat, 'json'>,
-  batch: boolean,
+  batchQueryCount: number | undefined,
 ) {
   const messages =
     responseFormat === 'jsonl'
@@ -129,21 +148,21 @@ async function readStreamingResult(
           .map((line) => JSON.parse(line))
       : (decodeMultiple(new Uint8Array(await response.arrayBuffer())) as any[]);
 
-  const end = messages.at(-1);
-  if (!Array.isArray(end) || (end[0] !== 3 && end[0] !== 4)) {
+  const end = messages.pop();
+  if (end === null || typeof end !== 'object' || Array.isArray(end)) {
     throw new NeonDbError(
       'Neon internal error: streamed response ended without a terminal message',
     );
   }
-  if (
-    end[0] === 4 &&
-    end.length === 2 &&
-    end[1] !== null &&
-    typeof end[1] === 'object'
-  ) {
-    throw dbError(end[1]);
+  if ('message' in end) {
+    if (typeof end.message !== 'string') {
+      throw new NeonDbError(
+        'Neon internal error: unexpected streamed response status',
+      );
+    }
+    throw dbError(end);
   }
-  if (end[0] !== 3 || end.length !== 1) {
+  if (Object.keys(end).length !== 0) {
     throw new NeonDbError(
       'Neon internal error: unexpected streamed response status',
     );
@@ -158,7 +177,7 @@ async function readStreamingResult(
         partialText?: string[];
       }
     | undefined;
-  for (const message of messages.slice(0, -1)) {
+  for (const message of messages) {
     if (!Array.isArray(message)) {
       unexpectedStreamingMessage();
     }
@@ -171,8 +190,15 @@ async function readStreamingResult(
         current = { fields: payload, rows: [] };
         break;
       case ROW_MESSAGE:
-        if (current === undefined || payload.length === 0) {
+        if (
+          current === undefined ||
+          (payload.length === 0 && current.fields.length !== 0)
+        ) {
           unexpectedStreamingMessage();
+        }
+        if (payload.length === 0) {
+          current.rows.push([]);
+          break;
         }
         const row = (current.row ??= []);
         for (const [index, value] of payload.entries()) {
@@ -238,11 +264,11 @@ async function readStreamingResult(
     }
   }
 
-  if (current !== undefined || (!batch && results.length !== 1)) {
+  if (current !== undefined || results.length !== (batchQueryCount ?? 1)) {
     throw new NeonDbError('Neon internal error: incomplete streamed response');
   }
 
-  return batch ? { results } : results[0];
+  return batchQueryCount === undefined ? results[0] : { results };
 }
 
 function encodeBuffersAsBytea(value: unknown): unknown {
@@ -557,14 +583,20 @@ export function neon<
       throw connectErr;
     }
 
+    const responseFormat = getResponseFormat(response);
     if (response.ok) {
+      if (responseFormat === undefined) {
+        throw new NeonDbError(
+          `Neon internal error: unexpected response Content-Type: ${response.headers.get('Content-Type') ?? 'missing'}`,
+        );
+      }
       const rawResults =
-        resolvedResponseFormat === 'json'
+        responseFormat === 'json'
           ? ((await response.json()) as any)
-          : await readStreamingResult(
+          : await readStreamingResults(
               response,
-              resolvedResponseFormat,
-              isBatch,
+              responseFormat,
+              isBatch ? queryData.length : undefined,
             );
 
       if (isBatch) {
@@ -599,7 +631,7 @@ export function neon<
       }
     } else {
       const { status } = response;
-      if (status === 400) {
+      if (responseFormat === 'json') {
         const json = (await response.json()) as any;
         throw dbError(json);
       } else {
