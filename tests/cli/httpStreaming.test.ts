@@ -28,17 +28,22 @@ const labelFields = [
   },
 ];
 
-const successMessages = [[1, ...fields], [0, '42'], [2, 'SELECT', 1], {}];
+const successMessages = [
+  { fields },
+  '42',
+  { command: 'SELECT', rowCount: 1 },
+  {},
+];
 
 const batchMessages = [
-  [1, ...fields],
-  [0, '42'],
-  [0, '43'],
-  [2, 'SELECT', 2],
-  [1, ...labelFields],
-  [0, 'hello'],
-  [0, 'world'],
-  [2, 'SELECT', 2],
+  { fields },
+  '42',
+  '43',
+  { command: 'SELECT', rowCount: 2 },
+  { fields: labelFields },
+  'hello',
+  'world',
+  { command: 'SELECT', rowCount: 2 },
   {},
 ];
 
@@ -200,25 +205,37 @@ test.each([
     accept: 'application/vnd.neon.sql.v1+json',
     encode: (messages: unknown[]) =>
       messages.map((message) => JSON.stringify(message)).join('\n'),
+    messages: [
+      { fields: [fields[0], labelFields[0]] },
+      ['4'],
+      '2',
+      'hello',
+      '43',
+      ['world'],
+      '',
+      { command: 'SELECT', rowCount: 2 },
+      {},
+    ],
   },
   {
     responseFormat: 'cbor-seq' as const,
     accept: 'application/vnd.neon.sql.v1+cbor',
     encode: cborSequence,
+    messages: [
+      { fields: [fields[0], labelFields[0]] },
+      ['4'],
+      '2',
+      'hello',
+      '43',
+      ['world'],
+      '',
+      { command: 'SELECT', rowCount: 2 },
+      {},
+    ],
   },
 ])(
   'assembles partial rows from $responseFormat responses',
-  async ({ responseFormat, accept, encode }) => {
-    const messages = [
-      [1, fields[0], labelFields[0]],
-      [0, ['4']],
-      [0, '2', 'hello'],
-      [0, '43'],
-      [0, ['world']],
-      [0, ''],
-      [2, 'SELECT', 2],
-      {},
-    ];
+  async ({ responseFormat, accept, encode, messages }) => {
     mockResponse(encode(messages), accept);
 
     const sql = neon(connectionString, { responseFormat, fullResults: true });
@@ -234,23 +251,31 @@ test.each([
 );
 
 test.each([
-  [[[null]], 'partial NULL'],
-  [[['unfinished']], 'unfinished row'],
-])('rejects invalid streamed row fragments: %s', async (row, _description) => {
-  const messages = [[1, ...fields], [0, ...row], [2, 'SELECT', 1], {}];
-  mockResponse(
-    messages.map((message) => JSON.stringify(message)).join('\n'),
-    'application/vnd.neon.sql.v1+json',
-  );
+  [[null], 'partial NULL'],
+  [['unfinished'], 'unfinished row'],
+])(
+  'rejects invalid streamed row fragments: %s',
+  async (fragment, _description) => {
+    const messages = [
+      { fields },
+      fragment,
+      { command: 'SELECT', rowCount: 1 },
+      {},
+    ];
+    mockResponse(
+      messages.map((message) => JSON.stringify(message)).join('\n'),
+      'application/vnd.neon.sql.v1+json',
+    );
 
-  const sql = neon(connectionString, { responseFormat: 'jsonl' });
-  await expect(sql`SELECT 42 AS answer`).rejects.toThrow(
-    'unexpected streamed response message',
-  );
-});
+    const sql = neon(connectionString, { responseFormat: 'jsonl' });
+    await expect(sql`SELECT 42 AS answer`).rejects.toThrow(
+      'unexpected streamed response message',
+    );
+  },
+);
 
 test('decodes zero-column rows', async () => {
-  const messages = [[1], [0], [2, 'SELECT', 1], {}];
+  const messages = [{ fields: [] }, [], { command: 'SELECT', rowCount: 1 }, {}];
   mockResponse(
     messages.map((message) => JSON.stringify(message)).join('\n'),
     'application/vnd.neon.sql.v1+json',
@@ -261,6 +286,39 @@ test('decodes zero-column rows', async () => {
     arrayMode: true,
   });
   await expect(sql`SELECT`).resolves.toStrictEqual([[]]);
+});
+
+test('decodes multiple zero-column CBOR rows', async () => {
+  const messages = [
+    { fields: [] },
+    [],
+    [],
+    [],
+    { command: 'SELECT', rowCount: 3 },
+    {},
+  ];
+  mockResponse(cborSequence(messages), 'application/vnd.neon.sql.v1+cbor');
+
+  const sql = neon(connectionString, {
+    responseFormat: 'cbor-seq',
+    arrayMode: true,
+  });
+  await expect(sql`SELECT FROM generate_series(1, 3)`).resolves.toStrictEqual([
+    [],
+    [],
+    [],
+  ]);
+});
+
+test('does not confuse affected rows with zero-column CBOR rows', async () => {
+  const messages = [{ fields: [] }, { command: 'UPDATE', rowCount: 3 }, {}];
+  mockResponse(cborSequence(messages), 'application/vnd.neon.sql.v1+cbor');
+
+  const sql = neon(connectionString, {
+    responseFormat: 'cbor-seq',
+    arrayMode: true,
+  });
+  await expect(sql`UPDATE example SET value = 1`).resolves.toStrictEqual([]);
 });
 
 test('allows a streaming format per query', async () => {
@@ -290,8 +348,8 @@ test('returns terminal streamed errors as database errors', async () => {
 test('discards partial rows before returning terminal errors', async () => {
   mockResponse(
     cborSequence([
-      [1, ...fields],
-      [0, ['partial']],
+      { fields },
+      ['partial'],
       { message: 'division by zero', code: '22012' },
     ]),
     'application/vnd.neon.sql.v1+cbor',

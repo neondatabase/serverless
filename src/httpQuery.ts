@@ -100,10 +100,6 @@ const responseFormatContentTypes: Record<HTTPResponseFormat, string> = {
   'cbor-seq': 'application/vnd.neon.sql.v1+cbor',
 };
 
-const ROW_MESSAGE = 0;
-const COLUMNS_MESSAGE = 1;
-const QUERY_MESSAGE = 2;
-
 function getResponseFormat(response: Response): HTTPResponseFormat | undefined {
   const contentType = response.headers
     .get('Content-Type')
@@ -135,6 +131,115 @@ function unexpectedStreamingMessage(): never {
   );
 }
 
+function incompleteStreamingResponse(): never {
+  throw new NeonDbError('Neon internal error: incomplete streamed response');
+}
+
+function nextStreamingMessage(messages: Iterator<any>) {
+  const message = messages.next();
+  if (message.done) incompleteStreamingResponse();
+  return message.value;
+}
+
+function isQueryMessage(message: any) {
+  return (
+    message !== null &&
+    typeof message === 'object' &&
+    !Array.isArray(message) &&
+    typeof message.command === 'string' &&
+    'rowCount' in message
+  );
+}
+
+function readStreamingValue(firstMessage: any, messages: Iterator<any>) {
+  if (firstMessage === null || typeof firstMessage === 'string') {
+    return firstMessage;
+  }
+  if (
+    !Array.isArray(firstMessage) ||
+    firstMessage.length !== 1 ||
+    typeof firstMessage[0] !== 'string'
+  ) {
+    unexpectedStreamingMessage();
+  }
+
+  const chunks = [firstMessage[0]];
+  while (true) {
+    const message = nextStreamingMessage(messages);
+    if (typeof message === 'string') {
+      chunks.push(message);
+      return chunks.join('');
+    }
+    if (
+      !Array.isArray(message) ||
+      message.length !== 1 ||
+      typeof message[0] !== 'string'
+    ) {
+      unexpectedStreamingMessage();
+    }
+    chunks.push(message[0]);
+  }
+}
+
+function readStreamingQuery(firstMessage: any, messages: Iterator<any>) {
+  if (
+    firstMessage === null ||
+    typeof firstMessage !== 'object' ||
+    Array.isArray(firstMessage) ||
+    !Array.isArray(firstMessage.fields)
+  ) {
+    unexpectedStreamingMessage();
+  }
+
+  const fields = firstMessage.fields;
+  const rows = [];
+  while (true) {
+    const firstRowMessage = nextStreamingMessage(messages);
+    if (isQueryMessage(firstRowMessage)) {
+      return {
+        fields,
+        rows,
+        command: firstRowMessage.command,
+        rowCount: firstRowMessage.rowCount,
+      };
+    }
+
+    if (fields.length === 0) {
+      if (!Array.isArray(firstRowMessage) || firstRowMessage.length !== 0) {
+        unexpectedStreamingMessage();
+      }
+      rows.push([]);
+      continue;
+    }
+
+    const row = [];
+    for (let column = 0; column < fields.length; column++) {
+      const firstValueMessage =
+        column === 0 ? firstRowMessage : nextStreamingMessage(messages);
+      row.push(readStreamingValue(firstValueMessage, messages));
+    }
+    rows.push(row);
+  }
+}
+
+function* readStreamingQueries(messages: any[]) {
+  const iterator = messages[Symbol.iterator]();
+  for (const firstMessage of iterator) {
+    yield readStreamingQuery(firstMessage, iterator);
+  }
+}
+
+function assembleStreamingResults(
+  messages: any[],
+  batchQueryCount: number | undefined,
+) {
+  const results = [...readStreamingQueries(messages)];
+  if (results.length !== (batchQueryCount ?? 1)) {
+    incompleteStreamingResponse();
+  }
+  return batchQueryCount === undefined ? results[0] : { results };
+}
+
 async function readStreamingResults(
   response: Response,
   responseFormat: Exclude<HTTPResponseFormat, 'json'>,
@@ -149,7 +254,13 @@ async function readStreamingResults(
       : (decodeMultiple(new Uint8Array(await response.arrayBuffer())) as any[]);
 
   const end = messages.pop();
-  if (end === null || typeof end !== 'object' || Array.isArray(end)) {
+  if (
+    end === null ||
+    typeof end !== 'object' ||
+    Array.isArray(end) ||
+    'fields' in end ||
+    'command' in end
+  ) {
     throw new NeonDbError(
       'Neon internal error: streamed response ended without a terminal message',
     );
@@ -168,107 +279,7 @@ async function readStreamingResults(
     );
   }
 
-  const results = [];
-  let current:
-    | {
-        fields: any[];
-        rows: any[];
-        row?: any[];
-        partialText?: string[];
-      }
-    | undefined;
-  for (const message of messages) {
-    if (!Array.isArray(message)) {
-      unexpectedStreamingMessage();
-    }
-    const [type, ...payload] = message;
-    switch (type) {
-      case COLUMNS_MESSAGE:
-        if (current !== undefined) {
-          unexpectedStreamingMessage();
-        }
-        current = { fields: payload, rows: [] };
-        break;
-      case ROW_MESSAGE:
-        if (
-          current === undefined ||
-          (payload.length === 0 && current.fields.length !== 0)
-        ) {
-          unexpectedStreamingMessage();
-        }
-        if (payload.length === 0) {
-          current.rows.push([]);
-          break;
-        }
-        const row = (current.row ??= []);
-        for (const [index, value] of payload.entries()) {
-          if (
-            row.length >= current.fields.length ||
-            (Array.isArray(value) &&
-              (value.length !== 1 || typeof value[0] !== 'string')) ||
-            (!Array.isArray(value) &&
-              value !== null &&
-              typeof value !== 'string')
-          ) {
-            unexpectedStreamingMessage();
-          }
-
-          if (Array.isArray(value)) {
-            (current.partialText ??= []).push(value[0]);
-            continue;
-          }
-
-          if (value === null) {
-            if (current.partialText !== undefined) {
-              unexpectedStreamingMessage();
-            }
-            row.push(null);
-          } else {
-            if (current.partialText === undefined) {
-              row.push(value);
-            } else {
-              current.partialText.push(value);
-              row.push(current.partialText.join(''));
-            }
-            current.partialText = undefined;
-          }
-
-          if (row.length === current.fields.length) {
-            if (index !== payload.length - 1) {
-              unexpectedStreamingMessage();
-            }
-            current.rows.push(row);
-            current.row = undefined;
-          }
-        }
-        break;
-      case QUERY_MESSAGE:
-        if (
-          current === undefined ||
-          current.row !== undefined ||
-          current.partialText !== undefined ||
-          payload.length !== 2
-        ) {
-          unexpectedStreamingMessage();
-        }
-        results.push({
-          fields: current.fields,
-          rows: current.rows,
-          command: payload[0],
-          rowCount: payload[1],
-        });
-        current = undefined;
-        break;
-      default:
-        unexpectedStreamingMessage();
-    }
-  }
-
-  if (current !== undefined || results.length !== (batchQueryCount ?? 1)) {
-    throw new NeonDbError('Neon internal error: incomplete streamed response');
-  }
-
-  return batchQueryCount === undefined ? results[0] : { results };
+  return assembleStreamingResults(messages, batchQueryCount);
 }
 
 function encodeBuffersAsBytea(value: unknown): unknown {
