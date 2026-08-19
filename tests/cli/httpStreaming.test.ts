@@ -122,6 +122,62 @@ test.each([
   },
 );
 
+test.each([
+  {
+    responseFormat: 'jsonl' as const,
+    accept: 'application/vnd.neon.sql.v1+json',
+    encode: (messages: unknown[]) =>
+      messages.map((message) => JSON.stringify(message)).join('\n'),
+  },
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    encode: cborSequence,
+  },
+])(
+  'assembles partial rows from $responseFormat responses',
+  async ({ responseFormat, accept, encode }) => {
+    const messages = [
+      [1, fields[0], labelFields[0]],
+      [0, ['4']],
+      [0, '2', 'hello'],
+      [0, '43'],
+      [0, ['world']],
+      [0, ''],
+      [2, 'SELECT', 2],
+      [3],
+    ];
+    mockResponse(encode(messages), accept);
+
+    const sql = neon(connectionString, { responseFormat, fullResults: true });
+    await expect(sql`SELECT answer, label`).resolves.toMatchObject({
+      rows: [
+        { answer: 42, label: 'hello' },
+        { answer: 43, label: 'world' },
+      ],
+      command: 'SELECT',
+      rowCount: 2,
+    });
+  },
+);
+
+test.each([
+  [[], 'empty row message'],
+  [[[null]], 'partial NULL'],
+  [[['unfinished']], 'unfinished row'],
+])('rejects invalid streamed row fragments: %s', async (row, _description) => {
+  const messages = [[1, fields], [0, ...row], [2, 'SELECT', 1], [3]];
+  mockResponse(
+    messages.map((message) => JSON.stringify(message)).join('\n'),
+    'application/vnd.neon.sql.v1+json',
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'jsonl' });
+  await expect(sql`SELECT 42 AS answer`).rejects.toThrow(
+    'unexpected streamed response message',
+  );
+});
+
 test('allows a streaming format per query', async () => {
   mockResponse(
     successMessages.map((message) => JSON.stringify(message)).join('\n'),
@@ -144,6 +200,23 @@ test('returns terminal streamed errors as database errors', async () => {
   const error = await sql`SELECT 1 / 0`.catch((error) => error);
   expect(error).toBeInstanceOf(Error);
   expect(error).toMatchObject({ message: 'division by zero', code: '22012' });
+});
+
+test('discards partial rows before returning terminal errors', async () => {
+  mockResponse(
+    cborSequence([
+      [1, ...fields],
+      [0, ['partial']],
+      [4, { message: 'division by zero', code: '22012' }],
+    ]),
+    'application/vnd.neon.sql.v1+cbor',
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'cbor-seq' });
+  await expect(sql`SELECT 1 / 0`).rejects.toMatchObject({
+    message: 'division by zero',
+    code: '22012',
+  });
 });
 
 test.each([

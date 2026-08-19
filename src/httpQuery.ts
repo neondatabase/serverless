@@ -150,7 +150,14 @@ async function readStreamingResult(
   }
 
   const results = [];
-  let current: { fields: any[]; rows: any[] } | undefined;
+  let current:
+    | {
+        fields: any[];
+        rows: any[];
+        row?: any[];
+        partialText?: string[];
+      }
+    | undefined;
   for (const message of messages.slice(0, -1)) {
     if (!Array.isArray(message)) {
       unexpectedStreamingMessage();
@@ -164,13 +171,58 @@ async function readStreamingResult(
         current = { fields: payload, rows: [] };
         break;
       case ROW_MESSAGE:
-        if (current === undefined) {
+        if (current === undefined || payload.length === 0) {
           unexpectedStreamingMessage();
         }
-        current.rows.push(payload);
+        const row = (current.row ??= []);
+        for (const [index, value] of payload.entries()) {
+          if (
+            row.length >= current.fields.length ||
+            (Array.isArray(value) &&
+              (value.length !== 1 || typeof value[0] !== 'string')) ||
+            (!Array.isArray(value) &&
+              value !== null &&
+              typeof value !== 'string')
+          ) {
+            unexpectedStreamingMessage();
+          }
+
+          if (Array.isArray(value)) {
+            (current.partialText ??= []).push(value[0]);
+            continue;
+          }
+
+          if (value === null) {
+            if (current.partialText !== undefined) {
+              unexpectedStreamingMessage();
+            }
+            row.push(null);
+          } else {
+            if (current.partialText === undefined) {
+              row.push(value);
+            } else {
+              current.partialText.push(value);
+              row.push(current.partialText.join(''));
+            }
+            current.partialText = undefined;
+          }
+
+          if (row.length === current.fields.length) {
+            if (index !== payload.length - 1) {
+              unexpectedStreamingMessage();
+            }
+            current.rows.push(row);
+            current.row = undefined;
+          }
+        }
         break;
       case QUERY_MESSAGE:
-        if (current === undefined || payload.length !== 2) {
+        if (
+          current === undefined ||
+          current.row !== undefined ||
+          current.partialText !== undefined ||
+          payload.length !== 2
+        ) {
           unexpectedStreamingMessage();
         }
         results.push({
