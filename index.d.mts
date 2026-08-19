@@ -454,8 +454,6 @@ export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults
     /**
      * Wire format requested from the SQL-over-HTTP endpoint.
      *
-     * `jsonl` and `cbor-seq` are currently supported only for single queries.
-     *
      * Default: `json`
      */
     responseFormat?: HTTPResponseFormat;

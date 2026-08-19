@@ -109,6 +109,7 @@ function dbError(error: any) {
 async function readStreamingResult(
   response: Response,
   responseFormat: Exclude<HTTPResponseFormat, 'json'>,
+  batch: boolean,
 ) {
   const messages =
     responseFormat === 'jsonl'
@@ -131,19 +132,39 @@ async function readStreamingResult(
     );
   }
 
-  let fields;
-  let query;
-  const rows = [];
+  const results = [];
+  let current: { fields: any[]; rows: any[] } | undefined;
   for (const message of messages.slice(0, -1)) {
     switch (message.type) {
       case 'columns':
-        fields = message.columns;
+        if (current !== undefined || !Array.isArray(message.columns)) {
+          throw new NeonDbError(
+            'Neon internal error: unexpected streamed response message',
+          );
+        }
+        current = { fields: message.columns, rows: [] };
         break;
       case 'row':
-        rows.push(message.row);
+        if (current === undefined || !Array.isArray(message.row)) {
+          throw new NeonDbError(
+            'Neon internal error: unexpected streamed response message',
+          );
+        }
+        current.rows.push(message.row);
         break;
       case 'query':
-        query = message.query;
+        if (current === undefined || message.query === undefined) {
+          throw new NeonDbError(
+            'Neon internal error: unexpected streamed response message',
+          );
+        }
+        results.push({
+          fields: current.fields,
+          rows: current.rows,
+          command: message.query.command,
+          rowCount: message.query.rowCount,
+        });
+        current = undefined;
         break;
       default:
         throw new NeonDbError(
@@ -152,16 +173,11 @@ async function readStreamingResult(
     }
   }
 
-  if (!Array.isArray(fields) || query === undefined) {
+  if (current !== undefined || (!batch && results.length !== 1)) {
     throw new NeonDbError('Neon internal error: incomplete streamed response');
   }
 
-  return {
-    fields,
-    rows,
-    command: query.command,
-    rowCount: query.rowCount,
-  };
+  return batch ? { results } : results[0];
 }
 
 function encodeBuffersAsBytea(value: unknown): unknown {
@@ -361,8 +377,9 @@ export function neon<
     txnOpts?: HTTPTransactionOptions<ArrayMode, FullResults>,
   ) {
     const { fetchEndpoint, fetchFunction } = Socket;
+    const isBatch = Array.isArray(queryData);
 
-    const bodyData = Array.isArray(queryData)
+    const bodyData = isBatch
       ? { queries: queryData.map((queryDatum) => prepareQuery(queryDatum)) }
       : prepareQuery(queryData);
 
@@ -415,12 +432,6 @@ export function neon<
       resolvedResponseFormat = allSqlOpts.responseFormat;
     }
 
-    if (Array.isArray(queryData) && resolvedResponseFormat !== 'json') {
-      throw new Error(
-        '`jsonl` and `cbor-seq` response formats do not support transactions',
-      );
-    }
-
     // --- resolve auth token usage ---
     let resolvedAuthToken = authToken;
     if (!Array.isArray(allSqlOpts) && allSqlOpts?.authToken !== undefined) {
@@ -449,7 +460,7 @@ export function neon<
       headers['Authorization'] = `Bearer ${validAuthToken}`;
     }
 
-    if (Array.isArray(queryData)) {
+    if (isBatch) {
       // only send these headers for batch queries, where they matter
       if (resolvedIsolationLevel !== undefined)
         headers['Neon-Batch-Isolation-Level'] = resolvedIsolationLevel;
@@ -485,9 +496,13 @@ export function neon<
       const rawResults =
         resolvedResponseFormat === 'json'
           ? ((await response.json()) as any)
-          : await readStreamingResult(response, resolvedResponseFormat);
+          : await readStreamingResult(
+              response,
+              resolvedResponseFormat,
+              isBatch,
+            );
 
-      if (Array.isArray(queryData)) {
+      if (isBatch) {
         // batch query
         const resultArray = rawResults.results;
         if (!Array.isArray(resultArray))

@@ -16,10 +16,34 @@ const fields = [
   },
 ];
 
+const labelFields = [
+  {
+    name: 'label',
+    dataTypeID: 25,
+    tableID: 0,
+    columnID: 0,
+    dataTypeSize: -1,
+    dataTypeModifier: -1,
+    format: 'text',
+  },
+];
+
 const successMessages = [
   { type: 'columns', columns: fields },
   { type: 'row', row: ['42'] },
   { type: 'query', query: { command: 'SELECT', rowCount: 1 } },
+  { type: 'end', status: 'ok' },
+];
+
+const batchMessages = [
+  { type: 'columns', columns: fields },
+  { type: 'row', row: ['42'] },
+  { type: 'row', row: ['43'] },
+  { type: 'query', query: { command: 'SELECT', rowCount: 2 } },
+  { type: 'columns', columns: labelFields },
+  { type: 'row', row: ['hello'] },
+  { type: 'row', row: ['world'] },
+  { type: 'query', query: { command: 'SELECT', rowCount: 2 } },
   { type: 'end', status: 'ok' },
 ];
 
@@ -180,9 +204,28 @@ test.each([
   },
 );
 
-test('keeps transactions on the JSON protocol', async () => {
-  const sql = neon(connectionString, { responseFormat: 'jsonl' });
-  await expect(sql.transaction([sql`SELECT 1`])).rejects.toThrow(
-    'response formats do not support transactions',
-  );
-});
+test.each([
+  {
+    responseFormat: 'jsonl' as const,
+    accept: 'application/vnd.neon.sql.v1+json',
+    body: batchMessages.map((message) => JSON.stringify(message)).join('\n'),
+  },
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    body: cborSequence(batchMessages),
+  },
+])(
+  'decodes $responseFormat transactions',
+  async ({ responseFormat, accept, body }) => {
+    mockResponse(body, accept);
+
+    const sql = neon(connectionString, { responseFormat });
+    await expect(
+      sql.transaction([sql`SELECT 42 AS answer`, sql`SELECT 'hello' AS label`]),
+    ).resolves.toStrictEqual([
+      [{ answer: 42 }, { answer: 43 }],
+      [{ label: 'hello' }, { label: 'world' }],
+    ]);
+  },
+);
