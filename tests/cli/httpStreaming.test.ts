@@ -28,23 +28,18 @@ const labelFields = [
   },
 ];
 
-const successMessages = [
-  { type: 'columns', columns: fields },
-  { type: 'row', row: ['42'] },
-  { type: 'query', query: { command: 'SELECT', rowCount: 1 } },
-  { type: 'end', status: 'ok' },
-];
+const successMessages = [[1, ...fields], [0, '42'], [2, 'SELECT', 1], [3]];
 
 const batchMessages = [
-  { type: 'columns', columns: fields },
-  { type: 'row', row: ['42'] },
-  { type: 'row', row: ['43'] },
-  { type: 'query', query: { command: 'SELECT', rowCount: 2 } },
-  { type: 'columns', columns: labelFields },
-  { type: 'row', row: ['hello'] },
-  { type: 'row', row: ['world'] },
-  { type: 'query', query: { command: 'SELECT', rowCount: 2 } },
-  { type: 'end', status: 'ok' },
+  [1, ...fields],
+  [0, '42'],
+  [0, '43'],
+  [2, 'SELECT', 2],
+  [1, ...labelFields],
+  [0, 'hello'],
+  [0, 'world'],
+  [2, 'SELECT', 2],
+  [3],
 ];
 
 let previousFetchEndpoint: typeof neonConfig.fetchEndpoint;
@@ -141,13 +136,7 @@ test('allows a streaming format per query', async () => {
 
 test('returns terminal streamed errors as database errors', async () => {
   mockResponse(
-    cborSequence([
-      {
-        type: 'end',
-        status: 'error',
-        error: { message: 'division by zero', code: '22012' },
-      },
-    ]),
+    cborSequence([[4, { message: 'division by zero', code: '22012' }]]),
     'application/vnd.neon.sql.v1+cbor',
   );
 

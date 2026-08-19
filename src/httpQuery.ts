@@ -100,10 +100,20 @@ const responseFormatContentTypes: Record<HTTPResponseFormat, string> = {
   'cbor-seq': 'application/vnd.neon.sql.v1+cbor',
 };
 
+const ROW_MESSAGE = 0;
+const COLUMNS_MESSAGE = 1;
+const QUERY_MESSAGE = 2;
+
 function dbError(error: any) {
   const result = new NeonDbError(error.message);
   for (const field of errorFields) result[field] = error[field] ?? undefined;
   return result;
+}
+
+function unexpectedStreamingMessage(): never {
+  throw new NeonDbError(
+    'Neon internal error: unexpected streamed response message',
+  );
 }
 
 async function readStreamingResult(
@@ -120,13 +130,20 @@ async function readStreamingResult(
       : (decodeMultiple(new Uint8Array(await response.arrayBuffer())) as any[]);
 
   const end = messages.at(-1);
-  if (end?.type !== 'end') {
+  if (!Array.isArray(end) || (end[0] !== 3 && end[0] !== 4)) {
     throw new NeonDbError(
       'Neon internal error: streamed response ended without a terminal message',
     );
   }
-  if (end.status === 'error') throw dbError(end.error);
-  if (end.status !== 'ok') {
+  if (
+    end[0] === 4 &&
+    end.length === 2 &&
+    end[1] !== null &&
+    typeof end[1] === 'object'
+  ) {
+    throw dbError(end[1]);
+  }
+  if (end[0] !== 3 || end.length !== 1) {
     throw new NeonDbError(
       'Neon internal error: unexpected streamed response status',
     );
@@ -135,41 +152,37 @@ async function readStreamingResult(
   const results = [];
   let current: { fields: any[]; rows: any[] } | undefined;
   for (const message of messages.slice(0, -1)) {
-    switch (message.type) {
-      case 'columns':
-        if (current !== undefined || !Array.isArray(message.columns)) {
-          throw new NeonDbError(
-            'Neon internal error: unexpected streamed response message',
-          );
+    if (!Array.isArray(message)) {
+      unexpectedStreamingMessage();
+    }
+    const [type, ...payload] = message;
+    switch (type) {
+      case COLUMNS_MESSAGE:
+        if (current !== undefined) {
+          unexpectedStreamingMessage();
         }
-        current = { fields: message.columns, rows: [] };
+        current = { fields: payload, rows: [] };
         break;
-      case 'row':
-        if (current === undefined || !Array.isArray(message.row)) {
-          throw new NeonDbError(
-            'Neon internal error: unexpected streamed response message',
-          );
+      case ROW_MESSAGE:
+        if (current === undefined) {
+          unexpectedStreamingMessage();
         }
-        current.rows.push(message.row);
+        current.rows.push(payload);
         break;
-      case 'query':
-        if (current === undefined || message.query === undefined) {
-          throw new NeonDbError(
-            'Neon internal error: unexpected streamed response message',
-          );
+      case QUERY_MESSAGE:
+        if (current === undefined || payload.length !== 2) {
+          unexpectedStreamingMessage();
         }
         results.push({
           fields: current.fields,
           rows: current.rows,
-          command: message.query.command,
-          rowCount: message.query.rowCount,
+          command: payload[0],
+          rowCount: payload[1],
         });
         current = undefined;
         break;
       default:
-        throw new NeonDbError(
-          'Neon internal error: unexpected streamed response message',
-        );
+        unexpectedStreamingMessage();
     }
   }
 
