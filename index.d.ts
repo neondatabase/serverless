@@ -452,6 +452,14 @@ export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults
      */
     fetchOptions?: Record<string, any>;
     /**
+     * Wire format requested from the SQL-over-HTTP endpoint.
+     *
+     * `jsonl` and `cbor-seq` are currently supported only for single queries.
+     *
+     * Default: `json`
+     */
+    responseFormat?: HTTPResponseFormat;
+    /**
      * JWT auth token to be passed as the Bearer token in the Authorization header.
      * Can be string, or a function (sync or async) returning a string.
      *
@@ -470,6 +478,8 @@ export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults
      */
     disableWarningInBrowsers?: boolean;
 }
+
+export declare type HTTPResponseFormat = 'json' | 'jsonl' | 'cbor-seq';
 
 export declare interface HTTPTransactionOptions<ArrayMode extends boolean, FullResults extends boolean> extends HTTPQueryOptions<ArrayMode, FullResults> {
     /**
@@ -572,7 +582,7 @@ export declare interface MessageConfig {
  * pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
-export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, authToken, disableWarningInBrowsers, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
+export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, responseFormat: neonOptResponseFormat, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, authToken, disableWarningInBrowsers, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
 
 export declare interface NeonConfig {
     poolQueryViaFetch: boolean;

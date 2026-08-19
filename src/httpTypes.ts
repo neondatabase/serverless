@@ -20,6 +20,8 @@ export interface ParameterizedQuery {
   params: any[];
 }
 
+export type HTTPResponseFormat = 'json' | 'jsonl' | 'cbor-seq';
+
 export interface HTTPQueryOptions<
   ArrayMode extends boolean,
   FullResults extends boolean,
@@ -51,6 +53,15 @@ export interface HTTPQueryOptions<
    * options take precedence.
    */
   fetchOptions?: Record<string, any>;
+
+  /**
+   * Wire format requested from the SQL-over-HTTP endpoint.
+   *
+   * `jsonl` and `cbor-seq` are currently supported only for single queries.
+   *
+   * Default: `json`
+   */
+  responseFormat?: HTTPResponseFormat;
 
   /**
    * JWT auth token to be passed as the Bearer token in the Authorization header.

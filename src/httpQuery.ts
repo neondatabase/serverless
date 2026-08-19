@@ -19,8 +19,10 @@ That is:
 import { Socket } from './shims/net';
 import { parse } from './shims/url';
 import { toHex } from 'hextreme';
+import { decodeMultiple } from 'cbor-x';
 import type {
   HTTPQueryOptions,
+  HTTPResponseFormat,
   HTTPTransactionOptions,
   NeonQueryFunction,
   ProcessQueryResultOptions,
@@ -91,6 +93,76 @@ const errorFields = [
   'line',
   'routine',
 ] as const;
+
+const responseFormatContentTypes: Record<HTTPResponseFormat, string> = {
+  json: 'application/json',
+  jsonl: 'application/vnd.neon.sql.v1+json',
+  'cbor-seq': 'application/vnd.neon.sql.v1+cbor',
+};
+
+function dbError(error: any) {
+  const result = new NeonDbError(error.message);
+  for (const field of errorFields) result[field] = error[field] ?? undefined;
+  return result;
+}
+
+async function readStreamingResult(
+  response: Response,
+  responseFormat: Exclude<HTTPResponseFormat, 'json'>,
+) {
+  const messages =
+    responseFormat === 'jsonl'
+      ? (await response.text())
+          .split('\n')
+          .filter((line) => line.length !== 0)
+          .map((line) => JSON.parse(line))
+      : (decodeMultiple(new Uint8Array(await response.arrayBuffer())) as any[]);
+
+  const end = messages.at(-1);
+  if (end?.type !== 'end') {
+    throw new NeonDbError(
+      'Neon internal error: streamed response ended without a terminal message',
+    );
+  }
+  if (end.status === 'error') throw dbError(end.error);
+  if (end.status !== 'ok') {
+    throw new NeonDbError(
+      'Neon internal error: unexpected streamed response status',
+    );
+  }
+
+  let fields;
+  let query;
+  const rows = [];
+  for (const message of messages.slice(0, -1)) {
+    switch (message.type) {
+      case 'columns':
+        fields = message.columns;
+        break;
+      case 'row':
+        rows.push(message.row);
+        break;
+      case 'query':
+        query = message.query;
+        break;
+      default:
+        throw new NeonDbError(
+          'Neon internal error: unexpected streamed response message',
+        );
+    }
+  }
+
+  if (!Array.isArray(fields) || query === undefined) {
+    throw new NeonDbError('Neon internal error: incomplete streamed response');
+  }
+
+  return {
+    fields,
+    rows,
+    command: query.command,
+    rowCount: query.rowCount,
+  };
+}
 
 function encodeBuffersAsBytea(value: unknown): unknown {
   // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
@@ -191,6 +263,7 @@ export function neon<
     arrayMode: neonOptArrayMode,
     fullResults: neonOptFullResults,
     fetchOptions: neonOptFetchOptions,
+    responseFormat: neonOptResponseFormat,
     isolationLevel: neonOptIsolationLevel,
     readOnly: neonOptReadOnly,
     deferrable: neonOptDeferrable,
@@ -223,7 +296,7 @@ export function neon<
     !pathname
   ) {
     throw new Error(
-      'Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value',
+      'Database connection string format for `neon()` should be: postgresql://user@host.tld/dbname?option=value',
     );
   }
 
@@ -296,6 +369,7 @@ export function neon<
     // --- resolve options to transaction level ---
 
     let resolvedFetchOptions = neonOptFetchOptions ?? {};
+    let resolvedResponseFormat = neonOptResponseFormat ?? 'json';
     let resolvedArrayMode = neonOptArrayMode ?? false;
     let resolvedFullResults = neonOptFullResults ?? false;
     let resolvedIsolationLevel = neonOptIsolationLevel; // default is undefined
@@ -313,6 +387,8 @@ export function neon<
         resolvedArrayMode = txnOpts.arrayMode;
       if (txnOpts.fullResults !== undefined)
         resolvedFullResults = txnOpts.fullResults;
+      if (txnOpts.responseFormat !== undefined)
+        resolvedResponseFormat = txnOpts.responseFormat;
       if (txnOpts.isolationLevel !== undefined)
         resolvedIsolationLevel = txnOpts.isolationLevel;
       if (txnOpts.readOnly !== undefined) resolvedReadOnly = txnOpts.readOnly;
@@ -330,6 +406,19 @@ export function neon<
         ...resolvedFetchOptions,
         ...allSqlOpts.fetchOptions,
       };
+    }
+    if (
+      allSqlOpts !== undefined &&
+      !Array.isArray(allSqlOpts) &&
+      allSqlOpts.responseFormat !== undefined
+    ) {
+      resolvedResponseFormat = allSqlOpts.responseFormat;
+    }
+
+    if (Array.isArray(queryData) && resolvedResponseFormat !== 'json') {
+      throw new Error(
+        '`jsonl` and `cbor-seq` response formats do not support transactions',
+      );
     }
 
     // --- resolve auth token usage ---
@@ -351,6 +440,7 @@ export function neon<
       'Neon-Connection-String': connectionString,
       'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
+      Accept: responseFormatContentTypes[resolvedResponseFormat],
     };
 
     // --- add auth token to headers ---
@@ -392,7 +482,10 @@ export function neon<
     }
 
     if (response.ok) {
-      const rawResults = (await response.json()) as any;
+      const rawResults =
+        resolvedResponseFormat === 'json'
+          ? ((await response.json()) as any)
+          : await readStreamingResult(response, resolvedResponseFormat);
 
       if (Array.isArray(queryData)) {
         // batch query
@@ -428,10 +521,7 @@ export function neon<
       const { status } = response;
       if (status === 400) {
         const json = (await response.json()) as any;
-        const dbError = new NeonDbError(json.message);
-        for (const field of errorFields)
-          dbError[field] = json[field] ?? undefined;
-        throw dbError;
+        throw dbError(json);
       } else {
         const text = await response.text();
         throw new NeonDbError(`Server error (HTTP status ${status}): ${text}`);
