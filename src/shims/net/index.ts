@@ -642,7 +642,10 @@ export class Socket extends EventEmitter {
     this.authorized = true;
     this.emit('secureConnection', this);
 
-    this.tlsReadLoop(); // deliberately NOT awaited
+    this.tlsReadLoop().catch((err) => {
+      this.emit('error', err);
+      this.emit('close');
+    });
   }
 
   async tlsReadLoop() {

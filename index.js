@@ -414,20 +414,21 @@ ithub.com/neondatabase/serverless/blob/main/CONFIG.md for more information.");th
 subtls.TrustedCert.databaseFromPEM(this.rootCerts),i=new this.subtls.WebSocketReadQueue(this.ws),s=i.
 read.bind(i),o=this.rawWrite.bind(this),{read:u,write:c}=await this.subtls.startTls(t,n,s,o,{useSNI:!this.
 disableSNI,expectPreData:this.pipelineTLS?new Uint8Array([83]):void 0});this.tlsRead=u,this.tlsWrite=
-c,this.tlsState=2,this.encrypted=!0,this.authorized=!0,this.emit("secureConnection",this),this.tlsReadLoop()}async tlsReadLoop(){
-for(;;){let t=await this.tlsRead();if(t===void 0)break;{let n=d.from(t);this.emit("data",n)}}}rawWrite(t){
-if(!this.coalesceWrites){this.ws&&this.ws.send(t);return}if(this.writeBuffer===void 0)this.writeBuffer=
-t,setTimeout(()=>{this.ws&&this.ws.send(this.writeBuffer),this.writeBuffer=void 0},0);else{let n=new Uint8Array(
-this.writeBuffer.length+t.length);n.set(this.writeBuffer),n.set(t,this.writeBuffer.length),this.writeBuffer=
-n}}write(t,n="utf8",i=s=>{}){return t.length===0?(i(),!0):(typeof t=="string"&&(t=d.from(t,n)),this.
-tlsState===0?(this.rawWrite(t),i()):this.tlsState===1?this.once("secureConnection",()=>{this.write(t,
-n,i)}):(this.tlsWrite(t),i()),!0)}end(t=d.alloc(0),n="utf8",i=()=>{}){return this.write(t,n,()=>{this.
-ws.close(),i()}),this}destroy(){return this.destroyed=!0,this.end()}};a(S,"Socket"),E(S,"defaults",{
-poolQueryViaFetch:!1,fetchEndpoint:a((t,n,i)=>{let s;return i?.jwtAuth?s=t.replace(mi,"apiauth."):s=
-t.replace(mi,"api."),"https://"+s+"/sql"},"fetchEndpoint"),fetchConnectionCache:!0,fetchFunction:void 0,
-webSocketConstructor:void 0,wsProxy:a(t=>t+"/v2","wsProxy"),useSecureWebSocket:!0,forceDisablePgSSL:!0,
-coalesceWrites:!0,pipelineConnect:"password",subtls:void 0,rootCerts:"",pipelineTLS:!1,disableSNI:!1,
-disableWarningInBrowsers:!1}),E(S,"opts",{});se=S});var bi={};te(bi,{parse:()=>Zt});function Zt(r,e=!1){let{protocol:t}=new URL(r),n="http:"+r.substring(
+c,this.tlsState=2,this.encrypted=!0,this.authorized=!0,this.emit("secureConnection",this),this.tlsReadLoop().
+catch(l=>{this.emit("error",l),this.emit("close")})}async tlsReadLoop(){for(;;){let t=await this.tlsRead();
+if(t===void 0)break;{let n=d.from(t);this.emit("data",n)}}}rawWrite(t){if(!this.coalesceWrites){this.
+ws&&this.ws.send(t);return}if(this.writeBuffer===void 0)this.writeBuffer=t,setTimeout(()=>{this.ws&&
+this.ws.send(this.writeBuffer),this.writeBuffer=void 0},0);else{let n=new Uint8Array(this.writeBuffer.
+length+t.length);n.set(this.writeBuffer),n.set(t,this.writeBuffer.length),this.writeBuffer=n}}write(t,n="\
+utf8",i=s=>{}){return t.length===0?(i(),!0):(typeof t=="string"&&(t=d.from(t,n)),this.tlsState===0?(this.
+rawWrite(t),i()):this.tlsState===1?this.once("secureConnection",()=>{this.write(t,n,i)}):(this.tlsWrite(
+t),i()),!0)}end(t=d.alloc(0),n="utf8",i=()=>{}){return this.write(t,n,()=>{this.ws.close(),i()}),this}destroy(){
+return this.destroyed=!0,this.end()}};a(S,"Socket"),E(S,"defaults",{poolQueryViaFetch:!1,fetchEndpoint:a(
+(t,n,i)=>{let s;return i?.jwtAuth?s=t.replace(mi,"apiauth."):s=t.replace(mi,"api."),"https://"+s+"/s\
+ql"},"fetchEndpoint"),fetchConnectionCache:!0,fetchFunction:void 0,webSocketConstructor:void 0,wsProxy:a(
+t=>t+"/v2","wsProxy"),useSecureWebSocket:!0,forceDisablePgSSL:!0,coalesceWrites:!0,pipelineConnect:"\
+password",subtls:void 0,rootCerts:"",pipelineTLS:!1,disableSNI:!1,disableWarningInBrowsers:!1}),E(S,
+"opts",{});se=S});var bi={};te(bi,{parse:()=>Zt});function Zt(r,e=!1){let{protocol:t}=new URL(r),n="http:"+r.substring(
 t.length),{username:i,password:s,host:o,hostname:u,port:c,pathname:l,search:f,searchParams:y,hash:g}=new URL(
 n);s=decodeURIComponent(s),i=decodeURIComponent(i),l=decodeURIComponent(l);let A=i+":"+s,C=e?Object.
 fromEntries(y.entries()):f;return{href:r,protocol:t,auth:A,username:i,password:s,host:o,hostname:u,port:c,
