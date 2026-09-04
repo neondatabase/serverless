@@ -83,10 +83,7 @@ export interface HTTPTransactionOptions<
    * Note that `ReadUncommitted` actually gets you `ReadCommitted` in Postgres.
    * */
   isolationLevel?:
-    | 'ReadUncommitted'
-    | 'ReadCommitted'
-    | 'RepeatableRead'
-    | 'Serializable';
+    'ReadUncommitted' | 'ReadCommitted' | 'RepeatableRead' | 'Serializable';
 
   /**
    * When `readOnly` is `false`, which is the default, a `READ WRITE` Postgres

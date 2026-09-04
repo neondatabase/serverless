@@ -87,6 +87,8 @@ export type {
   Submittable,
 } from 'pg';
 
+export { parse as parseConnectionString } from 'pg-connection-string';
+
 export type NeonConfigGlobalOnly = Pick<
   SocketDefaults,
   | 'fetchEndpoint'

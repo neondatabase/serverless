@@ -1,5 +1,5 @@
 import { expect, test, assertType } from 'vitest';
-import { server } from '@vitest/browser/context';
+import { server } from 'vitest/browser';
 import {
   neon,
   neonConfig,
