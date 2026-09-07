@@ -11,6 +11,7 @@
       "pg-connection-string": ["./src/shims/pg-connection-string"],
       "events": ["./src/shims/events"]
     },
+    "types": ["events", "node", "pg", "ws"],
     "esModuleInterop": true,
     "resolveJsonModule": true /* Enable importing .json files */,
     "allowJs": true /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */,

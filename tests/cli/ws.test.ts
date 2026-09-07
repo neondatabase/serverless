@@ -11,7 +11,7 @@ import {
   SqlTemplate,
 } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
-function recursiveTransform(x: any, transform: (x: any) => any) {
+function recursiveTransform(x: any, transform: (x: any) => any): any {
   if (Array.isArray(x)) {
     return x.map((item) => recursiveTransform(item, transform));
   } else if (x !== null && typeof x === 'object') {
