@@ -3,6 +3,7 @@ import { Pool as PgPool, type QueryResult } from 'pg';
 import * as subtls from 'subtls';
 import { sampleQueries } from './sampleQueries';
 import { ISRGX1Cert } from './subtlsCert';
+import packageMetadata from '../../package.json';
 import {
   neon,
   neonConfig,
@@ -33,6 +34,19 @@ const DB_DIRECT_URL = process.env.VITE_NEON_DB_URL!;
 const DB_POOLER_URL = process.env.VITE_NEON_DB_POOLER_URL!;
 
 const pgPool = new PgPool({ connectionString: DB_DIRECT_URL });
+
+test('uses the package URL as the default application name', () => {
+  const expected = `pkg:npm/%40neondatabase/serverless@${packageMetadata.version}`;
+
+  const defaultClient = new WsClient('postgres://user@example.com/database');
+  expect(defaultClient.getStartupConf().application_name).toBe(expected);
+
+  const namedClient = new WsClient({
+    connectionString: 'postgres://user@example.com/database',
+    application_name: 'custom-client',
+  });
+  expect(namedClient.getStartupConf().application_name).toBe('custom-client');
+});
 
 describe.each([
   {
