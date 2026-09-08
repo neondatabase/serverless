@@ -19,8 +19,10 @@ That is:
 import { Socket } from './shims/net';
 import { parse } from './shims/url';
 import { toHex } from 'hextreme';
+import { decodeMultiple } from 'cbor-x';
 import type {
   HTTPQueryOptions,
+  HTTPResponseFormat,
   HTTPTransactionOptions,
   NeonQueryFunction,
   ProcessQueryResultOptions,
@@ -91,6 +93,194 @@ const errorFields = [
   'line',
   'routine',
 ] as const;
+
+const responseFormatContentTypes: Record<HTTPResponseFormat, string> = {
+  json: 'application/json',
+  jsonl: 'application/vnd.neon.sql.v1+json',
+  'cbor-seq': 'application/vnd.neon.sql.v1+cbor',
+};
+
+function getResponseFormat(response: Response): HTTPResponseFormat | undefined {
+  const contentType = response.headers
+    .get('Content-Type')
+    ?.split(';', 1)[0]
+    .trim()
+    .toLowerCase();
+
+  switch (contentType) {
+    case responseFormatContentTypes.json:
+      return 'json';
+    case responseFormatContentTypes.jsonl:
+      return 'jsonl';
+    case responseFormatContentTypes['cbor-seq']:
+      return 'cbor-seq';
+    default:
+      return undefined;
+  }
+}
+
+function dbError(error: any) {
+  const result = new NeonDbError(error.message);
+  for (const field of errorFields) result[field] = error[field] ?? undefined;
+  return result;
+}
+
+function unexpectedStreamingMessage(): never {
+  throw new NeonDbError(
+    'Neon internal error: unexpected streamed response message',
+  );
+}
+
+function incompleteStreamingResponse(): never {
+  throw new NeonDbError('Neon internal error: incomplete streamed response');
+}
+
+function nextStreamingMessage(messages: Iterator<any>) {
+  const message = messages.next();
+  if (message.done) incompleteStreamingResponse();
+  return message.value;
+}
+
+function isQueryMessage(message: any) {
+  return (
+    message !== null &&
+    typeof message === 'object' &&
+    !Array.isArray(message) &&
+    typeof message.command === 'string' &&
+    'rowCount' in message
+  );
+}
+
+function readStreamingValue(firstMessage: any, messages: Iterator<any>) {
+  if (firstMessage === null || typeof firstMessage === 'string') {
+    return firstMessage;
+  }
+  if (
+    !Array.isArray(firstMessage) ||
+    firstMessage.length !== 1 ||
+    typeof firstMessage[0] !== 'string'
+  ) {
+    unexpectedStreamingMessage();
+  }
+
+  const chunks = [firstMessage[0]];
+  while (true) {
+    const message = nextStreamingMessage(messages);
+    if (typeof message === 'string') {
+      chunks.push(message);
+      return chunks.join('');
+    }
+    if (
+      !Array.isArray(message) ||
+      message.length !== 1 ||
+      typeof message[0] !== 'string'
+    ) {
+      unexpectedStreamingMessage();
+    }
+    chunks.push(message[0]);
+  }
+}
+
+function readStreamingQuery(firstMessage: any, messages: Iterator<any>) {
+  if (
+    firstMessage === null ||
+    typeof firstMessage !== 'object' ||
+    Array.isArray(firstMessage) ||
+    !Array.isArray(firstMessage.fields)
+  ) {
+    unexpectedStreamingMessage();
+  }
+
+  const fields = firstMessage.fields;
+  const rows = [];
+  while (true) {
+    const firstRowMessage = nextStreamingMessage(messages);
+    if (isQueryMessage(firstRowMessage)) {
+      return {
+        fields,
+        rows,
+        command: firstRowMessage.command,
+        rowCount: firstRowMessage.rowCount,
+      };
+    }
+
+    if (fields.length === 0) {
+      if (!Array.isArray(firstRowMessage) || firstRowMessage.length !== 0) {
+        unexpectedStreamingMessage();
+      }
+      rows.push([]);
+      continue;
+    }
+
+    const row = [];
+    for (let column = 0; column < fields.length; column++) {
+      const firstValueMessage =
+        column === 0 ? firstRowMessage : nextStreamingMessage(messages);
+      row.push(readStreamingValue(firstValueMessage, messages));
+    }
+    rows.push(row);
+  }
+}
+
+function* readStreamingQueries(messages: any[]) {
+  const iterator = messages[Symbol.iterator]();
+  for (const firstMessage of iterator) {
+    yield readStreamingQuery(firstMessage, iterator);
+  }
+}
+
+function assembleStreamingResults(
+  messages: any[],
+  batchQueryCount: number | undefined,
+) {
+  const results = [...readStreamingQueries(messages)];
+  if (results.length !== (batchQueryCount ?? 1)) {
+    incompleteStreamingResponse();
+  }
+  return batchQueryCount === undefined ? results[0] : { results };
+}
+
+async function readStreamingResults(
+  response: Response,
+  responseFormat: Exclude<HTTPResponseFormat, 'json'>,
+  batchQueryCount: number | undefined,
+) {
+  const messages =
+    responseFormat === 'jsonl'
+      ? (await response.text())
+          .split('\n')
+          .filter((line) => line.length !== 0)
+          .map((line) => JSON.parse(line))
+      : (decodeMultiple(new Uint8Array(await response.arrayBuffer())) as any[]);
+
+  const end = messages.pop();
+  if (
+    end === null ||
+    typeof end !== 'object' ||
+    Array.isArray(end) ||
+    'fields' in end ||
+    'command' in end
+  ) {
+    throw new NeonDbError(
+      'Neon internal error: streamed response ended without a terminal message',
+    );
+  }
+  if ('message' in end) {
+    if (typeof end.message !== 'string') {
+      throw new NeonDbError(
+        'Neon internal error: unexpected streamed response status',
+      );
+    }
+    throw dbError(end);
+  }
+  if (Object.keys(end).length !== 0) {
+    throw new NeonDbError(
+      'Neon internal error: unexpected streamed response status',
+    );
+  }
+
+  return assembleStreamingResults(messages, batchQueryCount);
+}
 
 function encodeBuffersAsBytea(value: unknown): unknown {
   // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
@@ -191,6 +381,7 @@ export function neon<
     arrayMode: neonOptArrayMode,
     fullResults: neonOptFullResults,
     fetchOptions: neonOptFetchOptions,
+    responseFormat: neonOptResponseFormat,
     isolationLevel: neonOptIsolationLevel,
     readOnly: neonOptReadOnly,
     deferrable: neonOptDeferrable,
@@ -223,7 +414,7 @@ export function neon<
     !pathname
   ) {
     throw new Error(
-      'Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value',
+      'Database connection string format for `neon()` should be: postgresql://user@host.tld/dbname?option=value',
     );
   }
 
@@ -288,14 +479,16 @@ export function neon<
     txnOpts?: HTTPTransactionOptions<ArrayMode, FullResults>,
   ) {
     const { fetchEndpoint, fetchFunction } = Socket;
+    const isBatch = Array.isArray(queryData);
 
-    const bodyData = Array.isArray(queryData)
+    const bodyData = isBatch
       ? { queries: queryData.map((queryDatum) => prepareQuery(queryDatum)) }
       : prepareQuery(queryData);
 
     // --- resolve options to transaction level ---
 
     let resolvedFetchOptions = neonOptFetchOptions ?? {};
+    let resolvedResponseFormat = neonOptResponseFormat ?? 'json';
     let resolvedArrayMode = neonOptArrayMode ?? false;
     let resolvedFullResults = neonOptFullResults ?? false;
     let resolvedIsolationLevel = neonOptIsolationLevel; // default is undefined
@@ -313,6 +506,8 @@ export function neon<
         resolvedArrayMode = txnOpts.arrayMode;
       if (txnOpts.fullResults !== undefined)
         resolvedFullResults = txnOpts.fullResults;
+      if (txnOpts.responseFormat !== undefined)
+        resolvedResponseFormat = txnOpts.responseFormat;
       if (txnOpts.isolationLevel !== undefined)
         resolvedIsolationLevel = txnOpts.isolationLevel;
       if (txnOpts.readOnly !== undefined) resolvedReadOnly = txnOpts.readOnly;
@@ -330,6 +525,13 @@ export function neon<
         ...resolvedFetchOptions,
         ...allSqlOpts.fetchOptions,
       };
+    }
+    if (
+      allSqlOpts !== undefined &&
+      !Array.isArray(allSqlOpts) &&
+      allSqlOpts.responseFormat !== undefined
+    ) {
+      resolvedResponseFormat = allSqlOpts.responseFormat;
     }
 
     // --- resolve auth token usage ---
@@ -351,6 +553,7 @@ export function neon<
       'Neon-Connection-String': connectionString,
       'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
+      Accept: responseFormatContentTypes[resolvedResponseFormat],
     };
 
     // --- add auth token to headers ---
@@ -359,7 +562,7 @@ export function neon<
       headers['Authorization'] = `Bearer ${validAuthToken}`;
     }
 
-    if (Array.isArray(queryData)) {
+    if (isBatch) {
       // only send these headers for batch queries, where they matter
       if (resolvedIsolationLevel !== undefined)
         headers['Neon-Batch-Isolation-Level'] = resolvedIsolationLevel;
@@ -391,10 +594,23 @@ export function neon<
       throw connectErr;
     }
 
+    const responseFormat = getResponseFormat(response);
     if (response.ok) {
-      const rawResults = (await response.json()) as any;
+      if (responseFormat === undefined) {
+        throw new NeonDbError(
+          `Neon internal error: unexpected response Content-Type: ${response.headers.get('Content-Type') ?? 'missing'}`,
+        );
+      }
+      const rawResults =
+        responseFormat === 'json'
+          ? ((await response.json()) as any)
+          : await readStreamingResults(
+              response,
+              responseFormat,
+              isBatch ? queryData.length : undefined,
+            );
 
-      if (Array.isArray(queryData)) {
+      if (isBatch) {
         // batch query
         const resultArray = rawResults.results;
         if (!Array.isArray(resultArray))
@@ -426,12 +642,9 @@ export function neon<
       }
     } else {
       const { status } = response;
-      if (status === 400) {
+      if (responseFormat === 'json') {
         const json = (await response.json()) as any;
-        const dbError = new NeonDbError(json.message);
-        for (const field of errorFields)
-          dbError[field] = json[field] ?? undefined;
-        throw dbError;
+        throw dbError(json);
       } else {
         const text = await response.text();
         throw new NeonDbError(`Server error (HTTP status ${status}): ${text}`);

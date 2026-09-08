@@ -77,6 +77,7 @@
     "@vitest/browser": "^3.0.7",
     "assert": "file:src/shims/assert",
     "buffer": "^6.0.3",
+    "cbor-x": "^1.6.5",
     "crypto": "file:src/shims/crypto",
     "dns": "file:src/shims/dns",
     "drizzle-orm": "^0.44.2",

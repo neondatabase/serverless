@@ -119,6 +119,24 @@ const rows = await sql.query('SELECT * FROM posts WHERE id = $1', [postId], {
 clearTimeout(timeout);
 ```
 
+### `responseFormat: 'json' | 'jsonl' | 'cbor-seq'`
+
+The `responseFormat` option selects the wire format used by SQL-over-HTTP. The
+default, `json`, uses the existing `application/json` response. The experimental
+`jsonl` and `cbor-seq` formats request a sequence of independently encoded
+messages using the versioned `application/vnd.neon.sql.v1+json` and
+`application/vnd.neon.sql.v1+cbor` media types, and buffer the complete
+response before decoding it.
+
+```typescript
+const sql = neon(process.env.DATABASE_URL, {
+  responseFormat: 'cbor-seq',
+});
+```
+
+Streaming response formats support both single queries and `transaction()`
+batches.
+
 ### `types: CustomTypesConfig`
 
 The `types` option can be passed to `neon(...)` to override the default PostgreSQL type parsers provided by `PgTypes`. This is useful if you want to define custom parsing behavior for specific PostgreSQL data types, allowing you to control how data is converted when retrieved from the database. Learn more in the [PgTypes official documentation](https://github.com/brianc/node-pg-types).

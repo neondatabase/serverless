@@ -18,6 +18,7 @@ npx esbuild src/index.ts \
   --format=cjs \
   --bundle \
   --keep-names \
+  --alias:cbor-x=cbor-x/decode \
   --inject:src/shims/shims.js \
   --define:BUNDLE_EXT=\"js\" \
   --target=es2020 \
@@ -30,6 +31,7 @@ npx esbuild src/index.ts \
   --format=esm \
   --bundle \
   --keep-names \
+  --alias:cbor-x=cbor-x/decode \
   --inject:src/shims/shims.js \
   --define:BUNDLE_EXT=\"mjs\" \
   --target=es2020 \

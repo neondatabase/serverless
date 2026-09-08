@@ -1,0 +1,470 @@
+import { encode } from 'cbor-x';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { neon, neonConfig } from '@neondatabase/serverless';
+
+const connectionString = 'postgres://user@example.com/database';
+
+const fields = [
+  {
+    name: 'answer',
+    dataTypeID: 23,
+    tableID: 0,
+    columnID: 0,
+    dataTypeSize: 4,
+    dataTypeModifier: -1,
+    format: 'text',
+  },
+];
+
+const labelFields = [
+  {
+    name: 'label',
+    dataTypeID: 25,
+    tableID: 0,
+    columnID: 0,
+    dataTypeSize: -1,
+    dataTypeModifier: -1,
+    format: 'text',
+  },
+];
+
+const successMessages = [
+  { fields },
+  '42',
+  { command: 'SELECT', rowCount: 1 },
+  {},
+];
+
+const batchMessages = [
+  { fields },
+  '42',
+  '43',
+  { command: 'SELECT', rowCount: 2 },
+  { fields: labelFields },
+  'hello',
+  'world',
+  { command: 'SELECT', rowCount: 2 },
+  {},
+];
+
+let previousFetchEndpoint: typeof neonConfig.fetchEndpoint;
+let previousFetchFunction: typeof neonConfig.fetchFunction;
+
+beforeEach(() => {
+  previousFetchEndpoint = neonConfig.fetchEndpoint;
+  previousFetchFunction = neonConfig.fetchFunction;
+  neonConfig.fetchEndpoint = 'https://example.com/sql';
+});
+
+afterEach(() => {
+  neonConfig.fetchEndpoint = previousFetchEndpoint;
+  neonConfig.fetchFunction = previousFetchFunction;
+});
+
+function cborSequence(messages: unknown[]) {
+  const encoded = messages.map((message) => encode(message));
+  const result = new Uint8Array(
+    encoded.reduce((length, message) => length + message.byteLength, 0),
+  );
+  let offset = 0;
+  for (const message of encoded) {
+    result.set(message, offset);
+    offset += message.byteLength;
+  }
+  return result;
+}
+
+function mockResponse(
+  body: BodyInit,
+  expectedAccept: string,
+  responseContentType = expectedAccept,
+  status = 200,
+) {
+  const fetchFunction = vi.fn(async (_url, init) => {
+    expect(init?.headers).toMatchObject({ Accept: expectedAccept });
+    return new Response(body, {
+      status,
+      headers: { 'Content-Type': responseContentType },
+    });
+  });
+  neonConfig.fetchFunction = fetchFunction as any;
+  return fetchFunction;
+}
+
+test('uses the legacy JSON protocol by default', async () => {
+  const fetchFunction = mockResponse(
+    JSON.stringify({
+      fields,
+      rows: [['42']],
+      command: 'SELECT',
+      rowCount: 1,
+    }),
+    'application/json',
+  );
+
+  const sql = neon(connectionString);
+  await expect(sql`SELECT 42 AS answer`).resolves.toStrictEqual([
+    { answer: 42 },
+  ]);
+  expect(fetchFunction).toHaveBeenCalledOnce();
+});
+
+test.each([
+  {
+    responseFormat: 'jsonl' as const,
+    accept: 'application/vnd.neon.sql.v1+json',
+    body: successMessages.map((message) => JSON.stringify(message)).join('\n'),
+  },
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    body: cborSequence(successMessages),
+  },
+])(
+  'decodes $responseFormat responses',
+  async ({ responseFormat, accept, body }) => {
+    mockResponse(body, accept);
+
+    const sql = neon(connectionString, { responseFormat, fullResults: true });
+    await expect(sql`SELECT 42 AS answer`).resolves.toMatchObject({
+      fields,
+      rows: [{ answer: 42 }],
+      command: 'SELECT',
+      rowCount: 1,
+    });
+  },
+);
+
+test.each([
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    contentType: 'application/vnd.neon.sql.v1+json; charset=utf-8',
+    body: successMessages.map((message) => JSON.stringify(message)).join('\n'),
+  },
+  {
+    responseFormat: 'jsonl' as const,
+    accept: 'application/vnd.neon.sql.v1+json',
+    contentType: 'application/vnd.neon.sql.v1+cbor',
+    body: cborSequence(successMessages),
+  },
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    contentType: 'application/json',
+    body: JSON.stringify({
+      fields,
+      rows: [['42']],
+      command: 'SELECT',
+      rowCount: 1,
+    }),
+  },
+])(
+  'decodes the returned $contentType instead of the requested $responseFormat',
+  async ({ responseFormat, accept, contentType, body }) => {
+    mockResponse(body, accept, contentType);
+
+    const sql = neon(connectionString, { responseFormat });
+    await expect(sql`SELECT 42 AS answer`).resolves.toStrictEqual([
+      { answer: 42 },
+    ]);
+  },
+);
+
+test('decodes JSON errors returned for CBOR requests', async () => {
+  mockResponse(
+    JSON.stringify({ message: 'invalid request', code: '08P01' }),
+    'application/vnd.neon.sql.v1+cbor',
+    'application/json; charset=utf-8',
+    400,
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'cbor-seq' });
+  await expect(sql`SELECT`).rejects.toMatchObject({
+    message: 'invalid request',
+    code: '08P01',
+  });
+});
+
+test('rejects successful responses with an unknown Content-Type', async () => {
+  mockResponse(
+    JSON.stringify({}),
+    'application/vnd.neon.sql.v1+cbor',
+    'text/plain',
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'cbor-seq' });
+  await expect(sql`SELECT`).rejects.toThrow(
+    'unexpected response Content-Type: text/plain',
+  );
+});
+
+test.each([
+  {
+    responseFormat: 'jsonl' as const,
+    accept: 'application/vnd.neon.sql.v1+json',
+    encode: (messages: unknown[]) =>
+      messages.map((message) => JSON.stringify(message)).join('\n'),
+    messages: [
+      { fields: [fields[0], labelFields[0]] },
+      ['4'],
+      '2',
+      'hello',
+      '43',
+      ['world'],
+      '',
+      { command: 'SELECT', rowCount: 2 },
+      {},
+    ],
+  },
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    encode: cborSequence,
+    messages: [
+      { fields: [fields[0], labelFields[0]] },
+      ['4'],
+      '2',
+      'hello',
+      '43',
+      ['world'],
+      '',
+      { command: 'SELECT', rowCount: 2 },
+      {},
+    ],
+  },
+])(
+  'assembles partial rows from $responseFormat responses',
+  async ({ responseFormat, accept, encode, messages }) => {
+    mockResponse(encode(messages), accept);
+
+    const sql = neon(connectionString, { responseFormat, fullResults: true });
+    await expect(sql`SELECT answer, label`).resolves.toMatchObject({
+      rows: [
+        { answer: 42, label: 'hello' },
+        { answer: 43, label: 'world' },
+      ],
+      command: 'SELECT',
+      rowCount: 2,
+    });
+  },
+);
+
+test.each([
+  [[null], 'partial NULL'],
+  [['unfinished'], 'unfinished row'],
+])(
+  'rejects invalid streamed row fragments: %s',
+  async (fragment, _description) => {
+    const messages = [
+      { fields },
+      fragment,
+      { command: 'SELECT', rowCount: 1 },
+      {},
+    ];
+    mockResponse(
+      messages.map((message) => JSON.stringify(message)).join('\n'),
+      'application/vnd.neon.sql.v1+json',
+    );
+
+    const sql = neon(connectionString, { responseFormat: 'jsonl' });
+    await expect(sql`SELECT 42 AS answer`).rejects.toThrow(
+      'unexpected streamed response message',
+    );
+  },
+);
+
+test('decodes zero-column rows', async () => {
+  const messages = [{ fields: [] }, [], { command: 'SELECT', rowCount: 1 }, {}];
+  mockResponse(
+    messages.map((message) => JSON.stringify(message)).join('\n'),
+    'application/vnd.neon.sql.v1+json',
+  );
+
+  const sql = neon(connectionString, {
+    responseFormat: 'jsonl',
+    arrayMode: true,
+  });
+  await expect(sql`SELECT`).resolves.toStrictEqual([[]]);
+});
+
+test('decodes multiple zero-column CBOR rows', async () => {
+  const messages = [
+    { fields: [] },
+    [],
+    [],
+    [],
+    { command: 'SELECT', rowCount: 3 },
+    {},
+  ];
+  mockResponse(cborSequence(messages), 'application/vnd.neon.sql.v1+cbor');
+
+  const sql = neon(connectionString, {
+    responseFormat: 'cbor-seq',
+    arrayMode: true,
+  });
+  await expect(sql`SELECT FROM generate_series(1, 3)`).resolves.toStrictEqual([
+    [],
+    [],
+    [],
+  ]);
+});
+
+test('does not confuse affected rows with zero-column CBOR rows', async () => {
+  const messages = [{ fields: [] }, { command: 'UPDATE', rowCount: 3 }, {}];
+  mockResponse(cborSequence(messages), 'application/vnd.neon.sql.v1+cbor');
+
+  const sql = neon(connectionString, {
+    responseFormat: 'cbor-seq',
+    arrayMode: true,
+  });
+  await expect(sql`UPDATE example SET value = 1`).resolves.toStrictEqual([]);
+});
+
+test('allows a streaming format per query', async () => {
+  mockResponse(
+    successMessages.map((message) => JSON.stringify(message)).join('\n'),
+    'application/vnd.neon.sql.v1+json',
+  );
+
+  const sql = neon(connectionString);
+  await expect(
+    sql.query('SELECT 42 AS answer', [], { responseFormat: 'jsonl' }),
+  ).resolves.toStrictEqual([{ answer: 42 }]);
+});
+
+test('returns terminal streamed errors as database errors', async () => {
+  mockResponse(
+    cborSequence([{ message: 'division by zero', code: '22012' }]),
+    'application/vnd.neon.sql.v1+cbor',
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'cbor-seq' });
+  const error = await sql`SELECT 1 / 0`.catch((error) => error);
+  expect(error).toBeInstanceOf(Error);
+  expect(error).toMatchObject({ message: 'division by zero', code: '22012' });
+});
+
+test('discards partial rows before returning terminal errors', async () => {
+  mockResponse(
+    cborSequence([
+      { fields },
+      ['partial'],
+      { message: 'division by zero', code: '22012' },
+    ]),
+    'application/vnd.neon.sql.v1+cbor',
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'cbor-seq' });
+  await expect(sql`SELECT 1 / 0`).rejects.toMatchObject({
+    message: 'division by zero',
+    code: '22012',
+  });
+});
+
+test.each([
+  {
+    responseFormat: 'jsonl' as const,
+    accept: 'application/vnd.neon.sql.v1+json',
+    body: JSON.stringify(successMessages[0]),
+  },
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    body: cborSequence([successMessages[0]]),
+  },
+])(
+  'rejects $responseFormat responses without a terminal message',
+  async ({ responseFormat, accept, body }) => {
+    mockResponse(body, accept);
+
+    const sql = neon(connectionString, { responseFormat });
+    await expect(sql`SELECT 42 AS answer`).rejects.toThrow(
+      'streamed response ended without a terminal message',
+    );
+  },
+);
+
+test.each([
+  [[3], 'streamed response ended without a terminal message'],
+  [{ code: '22012' }, 'unexpected streamed response status'],
+  [{ message: 42 }, 'unexpected streamed response status'],
+])('rejects invalid terminal messages: %j', async (terminal, expectedError) => {
+  const messages = [...successMessages.slice(0, -1), terminal];
+  mockResponse(
+    messages.map((message) => JSON.stringify(message)).join('\n'),
+    'application/vnd.neon.sql.v1+json',
+  );
+
+  const sql = neon(connectionString, { responseFormat: 'jsonl' });
+  await expect(sql`SELECT 42 AS answer`).rejects.toThrow(expectedError);
+});
+
+test.each([
+  ['too few', 2, successMessages],
+  ['too many', 1, batchMessages],
+])(
+  'rejects transactions with %s streamed results',
+  async (_description, queryCount, messages) => {
+    mockResponse(
+      messages.map((message) => JSON.stringify(message)).join('\n'),
+      'application/vnd.neon.sql.v1+json',
+    );
+
+    const sql = neon(connectionString, { responseFormat: 'jsonl' });
+    const queries = Array.from({ length: queryCount }, () => sql`SELECT 42`);
+    await expect(sql.transaction(queries)).rejects.toThrow(
+      'incomplete streamed response',
+    );
+  },
+);
+
+test.each([
+  {
+    responseFormat: 'jsonl' as const,
+    accept: 'application/vnd.neon.sql.v1+json',
+    body: successMessages
+      .map((message) => JSON.stringify(message))
+      .join('\n')
+      .slice(0, -1),
+  },
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    body: cborSequence(successMessages).slice(0, -1),
+  },
+])(
+  'rejects torn $responseFormat messages',
+  async ({ responseFormat, accept, body }) => {
+    mockResponse(body, accept);
+
+    const sql = neon(connectionString, { responseFormat });
+    await expect(sql`SELECT 42 AS answer`).rejects.toThrow();
+  },
+);
+
+test.each([
+  {
+    responseFormat: 'jsonl' as const,
+    accept: 'application/vnd.neon.sql.v1+json',
+    body: batchMessages.map((message) => JSON.stringify(message)).join('\n'),
+  },
+  {
+    responseFormat: 'cbor-seq' as const,
+    accept: 'application/vnd.neon.sql.v1+cbor',
+    body: cborSequence(batchMessages),
+  },
+])(
+  'decodes $responseFormat transactions',
+  async ({ responseFormat, accept, body }) => {
+    mockResponse(body, accept);
+
+    const sql = neon(connectionString, { responseFormat });
+    await expect(
+      sql.transaction([sql`SELECT 42 AS answer`, sql`SELECT 'hello' AS label`]),
+    ).resolves.toStrictEqual([
+      [{ answer: 42 }, { answer: 43 }],
+      [{ label: 'hello' }, { label: 'world' }],
+    ]);
+  },
+);
