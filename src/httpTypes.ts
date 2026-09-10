@@ -1,6 +1,5 @@
 import type { FieldDef, CustomTypesConfig } from 'pg';
-import { types as defaultTypes } from '.';
-import type { NeonQueryPromise } from './httpQuery';
+import type { NeonQueryPromise } from './httpQueryPromise';
 import type { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
 
 export type QueryRows<ArrayMode extends boolean> = ArrayMode extends true

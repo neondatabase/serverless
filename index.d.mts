@@ -805,28 +805,6 @@ export declare type NeonConfigGlobalAndClient = Omit<NeonConfig, keyof NeonConfi
 
 export declare type NeonConfigGlobalOnly = Pick<NeonConfig, 'fetchEndpoint' | 'poolQueryViaFetch' | 'fetchConnectionCache' | 'fetchFunction'>;
 
-export declare class NeonDbError extends Error {
-    name: 'NeonDbError';
-    severity: string | undefined;
-    code: string | undefined;
-    detail: string | undefined;
-    hint: string | undefined;
-    position: string | undefined;
-    internalPosition: string | undefined;
-    internalQuery: string | undefined;
-    where: string | undefined;
-    schema: string | undefined;
-    table: string | undefined;
-    column: string | undefined;
-    dataType: string | undefined;
-    constraint: string | undefined;
-    file: string | undefined;
-    line: string | undefined;
-    routine: string | undefined;
-    sourceError: Error | undefined;
-    constructor(message: string);
-}
-
 export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
     (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
     /**
@@ -907,10 +885,10 @@ export declare interface NeonQueryInTransaction {
     queryData: SqlTemplate | ParameterizedQuery;
 }
 
-export declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
+declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
 }
 
-export declare class NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> {
+declare class NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> {
     execute: (queryData: SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[], opts?: HTTPQueryOptions<ArrayMode, FullResults> | HTTPQueryOptions<ArrayMode, FullResults>[]) => Promise<T>;
     queryData: SqlTemplate | ParameterizedQuery;
     opts?: HTTPQueryOptions<ArrayMode, FullResults> | undefined;

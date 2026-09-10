@@ -19,6 +19,7 @@ That is:
 import { Socket } from './shims/net';
 import { parse } from './shims/url';
 import { toHex } from 'hextreme';
+
 import type {
   HTTPQueryOptions,
   HTTPTransactionOptions,
@@ -26,9 +27,11 @@ import type {
   ProcessQueryResultOptions,
   ParameterizedQuery,
 } from './httpTypes';
+
 import { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
 import { warnIfBrowser } from './utils';
-
+import { NeonDbError, errorFields } from './httpError';
+import { NeonQueryPromise } from './httpQueryPromise';
 import { Socket as neonConfig } from './shims/net';
 
 // @ts-ignore -- this isn't officially exported by pg
@@ -36,61 +39,8 @@ import TypeOverrides from 'pg/lib/type-overrides';
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from 'pg/lib/utils';
 
-export class NeonDbError extends Error {
-  override name = 'NeonDbError' as const;
-
-  severity: string | undefined;
-  code: string | undefined;
-  detail: string | undefined;
-  hint: string | undefined;
-  position: string | undefined;
-  internalPosition: string | undefined;
-  internalQuery: string | undefined;
-  where: string | undefined;
-  schema: string | undefined;
-  table: string | undefined;
-  column: string | undefined;
-  dataType: string | undefined;
-  constraint: string | undefined;
-  file: string | undefined;
-  line: string | undefined;
-  routine: string | undefined;
-
-  sourceError: Error | undefined;
-
-  constructor(message: string) {
-    super(message);
-
-    if (
-      'captureStackTrace' in Error &&
-      typeof Error.captureStackTrace === 'function'
-    ) {
-      Error.captureStackTrace(this, NeonDbError);
-    }
-  }
-}
-
 const txnArgErrMsg =
   'transaction() expects an array of queries, or a function returning an array of queries';
-
-const errorFields = [
-  'severity',
-  'code',
-  'detail',
-  'hint',
-  'position',
-  'internalPosition',
-  'internalQuery',
-  'where',
-  'schema',
-  'table',
-  'column',
-  'dataType',
-  'constraint',
-  'file',
-  'line',
-  'routine',
-] as const;
 
 function encodeBuffersAsBytea(value: unknown): unknown {
   // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
@@ -227,6 +177,7 @@ export function neon<
     );
   }
 
+  // this function is what's returned, with other functions (e.g. `query`, `transaction`) hanging off it
   function templateFn(strings: TemplateStringsArray, ...params: any[]) {
     const calledAsTemplateFn =
       Array.isArray(strings) &&
@@ -438,48 +389,6 @@ export function neon<
   }
 
   return templateFn as any; // actual type is specified in function signature above
-}
-
-export interface NeonQueryPromise<
-  ArrayMode extends boolean,
-  FullResults extends boolean,
-  T = any,
-> extends Promise<T> {}
-
-export class NeonQueryPromise<
-  ArrayMode extends boolean,
-  FullResults extends boolean,
-  T = any,
-> {
-  constructor(
-    public execute: (
-      queryData:
-        SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[],
-      opts?:
-        | HTTPQueryOptions<ArrayMode, FullResults>
-        | HTTPQueryOptions<ArrayMode, FullResults>[],
-    ) => Promise<T>,
-    public queryData: SqlTemplate | ParameterizedQuery,
-    public opts?: HTTPQueryOptions<ArrayMode, FullResults>,
-  ) {}
-
-  then<TResult1 = T, TResult2 = never>(
-    resolve?:
-      ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-    reject?:
-      ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
-  ): Promise<TResult1 | TResult2> {
-    return this.execute(this.queryData, this.opts).then(resolve, reject);
-  }
-  catch<TResult = never>(
-    reject?:
-      ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-  ): Promise<T | TResult> {
-    return this.execute(this.queryData, this.opts).catch(reject);
-  }
-  finally(finallyFn?: (() => void) | undefined | null): Promise<T> {
-    return this.execute(this.queryData, this.opts).finally(finallyFn);
-  }
 }
 
 function processQueryResult(

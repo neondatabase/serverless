@@ -1,4 +1,4 @@
-import { NeonQueryPromise } from './httpQuery';
+import { NeonQueryPromise } from './httpQueryPromise';
 
 export class SqlTemplate {
   constructor(
