@@ -165,7 +165,7 @@ export function neon<
     );
   }
 
-  const { protocol, username, hostname, port, pathname } = db;
+  const { protocol, username, password, hostname, port, pathname, query } = db;
   if (
     (protocol !== 'postgres:' && protocol !== 'postgresql:') ||
     !username ||
