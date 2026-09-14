@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
         with:
-          node-version: 19
+          node-version: 22
 
       - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@279b1f629f43dd5bc658d8361ac4802a7ef8d2d5 # v4.9.1
@@ -47,7 +47,7 @@ jobs:
           jf npm clean-install
 
       # goal
-      - name: Run CLI-based tests in Node 19
+      - name: Run CLI-based tests in Node 22
         run: touch src && npm run test:node
 
   test-current:
