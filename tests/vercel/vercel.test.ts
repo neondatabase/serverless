@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 import fs from 'node:fs/promises';
 import { Vercel } from '@vercel/sdk';
+import { GetDeploymentResponseBody3 } from '@vercel/sdk/models/getdeploymentgitsourcerepoid';
 
 const projectName = 'neon-serverless-tests-project';
 const vercel = new Vercel({
@@ -16,7 +17,7 @@ test(
       await vercel.projects.createProject({
         requestBody: { name: projectName },
       });
-    } catch (e) {
+    } catch (e: any) {
       // http status 409 Conflict just means we created the project before, which is fine
       if (e.statusCode !== 409) throw e;
     }
@@ -89,10 +90,10 @@ test(
     let status, host;
     do {
       await new Promise((resolve) => setTimeout(resolve, 2000)); // wait 2 seconds between checks
-      const statusResponse = await vercel.deployments.getDeployment({
+      const statusResponse = (await vercel.deployments.getDeployment({
         idOrUrl: deploymentId,
-      });
-      status = statusResponse.status;
+      })) as GetDeploymentResponseBody3; // the return type for anonymous callers is missing URL, so we insist on a subtype
+      status = statusResponse.readyState;
       host = statusResponse.url;
     } while (
       status === 'QUEUED' ||

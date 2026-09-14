@@ -5,7 +5,11 @@ const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 const CLERK_USER = process.env.VITE_CLERK_USER!;
 const CLERK_SECRET_KEY = process.env.VITE_CLERK_SECRET_KEY!;
 
-async function clerkAPI(method: 'POST' | 'GET', endpoint: string, body?: any) {
+async function clerkAPI(
+  method: 'POST' | 'GET',
+  endpoint: string,
+  body?: any,
+): Promise<any> {
   const fetchFn = globalThis.fetch ?? (await import('node-fetch')).default;
   const response = await fetchFn(`https://api.clerk.com/v1/${endpoint}`, {
     method,

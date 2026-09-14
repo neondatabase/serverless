@@ -1,10 +1,11 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
+import { playwright } from '@vitest/browser-playwright';
 
 export default defineConfig({
   test: {
     fileParallelism: false,
     browser: {
-      provider: 'playwright',
+      provider: playwright(),
       headless: true,
       screenshotFailures: false,
       instances: [{ browser: 'firefox' }, { browser: 'chromium' }],
