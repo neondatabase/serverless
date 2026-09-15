@@ -16,8 +16,6 @@ That is:
 * `neon` options override defaults.
 */
 
-import { Socket } from './shims/net';
-import { parse } from './shims/url';
 import { toHex } from 'hextreme';
 
 import type {
@@ -26,13 +24,17 @@ import type {
   NeonQueryFunction,
   ProcessQueryResultOptions,
   ParameterizedQuery,
-} from './httpTypes';
+} from './types';
 
 import { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
-import { warnIfBrowser } from './utils';
-import { NeonDbError, errorFields } from './httpError';
-import { NeonQueryPromise } from './httpQueryPromise';
-import { Socket as neonConfig } from './shims/net';
+import {
+  warnIfBrowser,
+  URLFromPgConnectionString,
+  pgConnectionStringFromURL,
+} from './utils';
+import { NeonDbError, errorFields } from './error';
+import { NeonQueryPromise } from './queryPromise';
+import { Socket as neonConfig } from '../shims/net';
 
 // @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
@@ -155,27 +157,7 @@ export function neon<
       'No database connection string was provided to `neon()`. Perhaps an environment variable has not been set?',
     );
 
-  let db;
-  try {
-    db = parse(connectionString);
-  } catch {
-    throw new Error(
-      'Database connection string provided to `neon()` is not a valid URL. Connection string: ' +
-        String(connectionString),
-    );
-  }
-
-  const { protocol, username, password, hostname, port, pathname, query } = db;
-  if (
-    (protocol !== 'postgres:' && protocol !== 'postgresql:') ||
-    !username ||
-    !hostname ||
-    !pathname
-  ) {
-    throw new Error(
-      'Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value',
-    );
-  }
+  const dbURL = URLFromPgConnectionString(connectionString, true);
 
   // this function is what's returned, with other functions (e.g. `query`, `transaction`) hanging off it
   function templateFn(strings: TemplateStringsArray, ...params: any[]) {
@@ -236,7 +218,7 @@ export function neon<
       | HTTPQueryOptions<ArrayMode, FullResults>[],
     txnOpts?: HTTPTransactionOptions<ArrayMode, FullResults>,
   ) {
-    const { fetchEndpoint, fetchFunction } = Socket;
+    const { fetchEndpoint, fetchFunction } = neonConfig;
 
     const bodyData = Array.isArray(queryData)
       ? { queries: queryData.map((queryDatum) => prepareQuery(queryDatum)) }
@@ -290,7 +272,7 @@ export function neon<
     // --- set up the URL ---
     const url =
       typeof fetchEndpoint === 'function'
-        ? fetchEndpoint(hostname, port, {
+        ? fetchEndpoint(dbURL.hostname, dbURL.port, {
             jwtAuth: resolvedAuthToken !== undefined,
           })
         : fetchEndpoint;

@@ -1,4 +1,4 @@
-import type { HTTPQueryOptions, ParameterizedQuery } from './httpTypes';
+import type { HTTPQueryOptions, ParameterizedQuery } from './types';
 import type { SqlTemplate } from './sqlTemplate';
 
 export interface NeonQueryPromise<

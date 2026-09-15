@@ -1,6 +1,6 @@
 import { Client, Connection, type ClientConfig } from 'pg';
 import { Socket } from './shims/net';
-import { warnIfBrowser } from './utils';
+import { warnIfBrowser } from './http/utils';
 
 export declare interface NeonClient {
   connection: Connection & {

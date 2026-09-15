@@ -29,10 +29,10 @@ declare global {
   interface Document {}
 }
 
-export * from './httpQuery';
-export * from './sqlTemplate';
-export type * from './httpTypes';
-export * from './utils';
+export * from './http';
+export * from './http/sqlTemplate';
+export type * from './http/types';
+export * from './http/utils';
 
 export { NeonPool as Pool, type NeonPoolClient as PoolClient } from './pool';
 export { NeonClient as Client } from './client';

@@ -11,7 +11,7 @@ import type {
 } from 'pg';
 
 import { NeonClient } from './client';
-import { neon } from './httpQuery';
+import { neon } from './http';
 import { Socket } from './shims/net';
 import type { NeonConfigGlobalAndClient } from '.';
 

@@ -1,3 +1,5 @@
+import { URL as URL_2 } from 'node:url';
+
 declare const allKeyUsages: readonly ["digitalSignature", "nonRepudiation", "keyEncipherment", "dataEncipherment", "keyAgreement", "keyCertSign", "cRLSign", "encipherOnly", "decipherOnly"];
 
 declare class ASN1Bytes extends Bytes {
@@ -935,6 +937,16 @@ export declare interface ParameterizedQuery {
 
 export declare function parseConnectionString(connectionString: string): ConnectionOptions;
 
+/**
+ * Pre-2024 Firefox and Chrome parse unknown schemes as opaque paths, so we
+ * pretend connection strings are `http:`, necessitating helper functions.
+ *
+ * See also:
+ * * `URLFromPgConnectionString(connectionString)`
+ * @param url - An `http:` URL to serialize to a `postgres:` connection string
+ */
+export declare function pgConnectionStringFromURL(url: URL): string;
+
 declare type PgTypeFormat = 'text' | 'binary';
 
 declare type PgTypeId = number;
@@ -1200,6 +1212,18 @@ export declare class UnsafeRawSql {
     sql: string;
     constructor(sql: string);
 }
+
+/**
+ * Pre-2024 Firefox and Chrome parse unknown schemes as opaque paths, so we
+ * pretend connection strings are `http:`, necessitating helper functions.
+ *
+ * See also:
+ * * `pgConnectionStringFromURL(url)`
+ * * `url.parse` shim in shims/url (but we don't use that because we want a
+ *   real URL object we can serialize back into a string).
+ * @param s - A 'postgres:' connection string
+ */
+export declare function URLFromPgConnectionString(s: string, checkComplete: boolean): URL_2;
 
 /**
  * Detects if the code is running in a browser environment and displays a warning

@@ -49,6 +49,7 @@
     "version": "(grep $npm_package_version CHANGELOG.md || 'Update CHANGELOG.md') && git checkout -b release/v$npm_package_version && jq --arg v $npm_package_version '.version = $v' jsr.json > build/jsr.json && mv build/jsr.json jsr.json && git add jsr.json index.js index.d.ts index.mjs index.d.mts",
     "postversion": "git push --follow-tags origin release/v$npm_package_version && echo 'Release $npm_package_version created. Run `npm publish` and `npx jsr publish` once PR is merged into `main`.'",
     "format": "prettier -c .",
+    "format:diff": "fn () { prettier $1 | diff $1 -; }; fn",
     "format:fix": "prettier -w .",
     "test": "touch src && npm run test:type-shims && npm run test:node && npm run test:edge && npm run test:bun && npm run test:deno && npm run test:packages && npm run test:cloudflare && npm run test:vercel && npm run test:browser",
     "test:type-shims": "npm run build && tsc --ignoreConfig --noEmit --strict --moduleResolution bundler --module es2022 --target es2022 tests/type-compatibility.ts",
