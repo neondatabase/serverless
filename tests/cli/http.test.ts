@@ -14,6 +14,14 @@ const sql = neon(DATABASE_URL);
 const sqlFull = neon(DATABASE_URL, { fullResults: true });
 const pool = new Pool({ connectionString: DATABASE_URL });
 
+const BAD_PASSWORD_URL = DATABASE_URL.replace(/:[^:@]+@/, ':not_the_password@');
+
+const asyncPasswordFn = async () => {
+  const { password } = new URL(DATABASE_URL);
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  return password;
+};
+
 test(
   'http query results match WebSocket query results',
   { timeout: 60000 },
@@ -53,7 +61,7 @@ test(
 test('non-template usage is no longer allowed', () => {
   // @ts-expect-error
   const queryFunc = () => sql(`SELECT ${1}`);
-  expect(queryFunc).toThrowError(
+  expect(queryFunc).toThrow(
     'This function can now be called only as a tagged-template function',
   );
 });
@@ -99,9 +107,9 @@ test('composable SQL and unsafe raw SQL', async () => {
 test('uncomposable SQL', () => {
   // sql.query() queries have manually-numbered parameters and thus cannot safely be composed
   const q = sql`SELECT * FROM table ${sql.query('LIMIT $1', [1])}`;
-  expect(() =>
-    (q.queryData as SqlTemplate).toParameterizedQuery(),
-  ).toThrowError('This query is not composable');
+  expect(() => (q.queryData as SqlTemplate).toParameterizedQuery()).toThrow(
+    'This query is not composable',
+  );
 });
 
 interface FieldDef {
@@ -209,8 +217,8 @@ test('errors match WebSocket query errors', async () => {
   const q = 'SELECT 123 WHERE x';
 
   await Promise.all([
-    expect(sql.query(q)).rejects.toThrowError('column "x" does not exist'),
-    expect(pool.query(q)).rejects.toThrowError('column "x" does not exist'),
+    expect(sql.query(q)).rejects.toThrow('column "x" does not exist'),
+    expect(pool.query(q)).rejects.toThrow('column "x" does not exist'),
   ]);
 
   // now compare all other properties (`code`, `routine`, `severity`, etc.)
@@ -229,11 +237,11 @@ test('errors match WebSocket query errors', async () => {
 });
 
 test('http queries with too few or too many parameters', async () => {
-  await expect(sql.query('SELECT $1', [])).rejects.toThrowError(
+  await expect(sql.query('SELECT $1', [])).rejects.toThrow(
     'bind message supplies 0 parameters',
   );
 
-  await expect(sql.query('SELECT $1', [1, 2])).rejects.toThrowError(
+  await expect(sql.query('SELECT $1', [1, 2])).rejects.toThrow(
     'bind message supplies 2 parameters',
   );
 });
@@ -269,7 +277,7 @@ test('timeout not aborting an http query', { timeout: 5000 }, async () => {
 test('database URL with wrong user to `neon()`', async () => {
   const urlWithBadHost = DATABASE_URL.replace('//', '//x');
   const sqlBad = neon(urlWithBadHost);
-  await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
+  await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrow(
     'password authentication failed',
   );
 });
@@ -277,7 +285,7 @@ test('database URL with wrong user to `neon()`', async () => {
 test('database URL with wrong password to `neon()`', async () => {
   const urlWithBadPassword = DATABASE_URL.replace('@', 'x@');
   const sqlBad = neon(urlWithBadPassword);
-  await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
+  await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrow(
     'password authentication failed',
   );
 });
@@ -285,7 +293,7 @@ test('database URL with wrong password to `neon()`', async () => {
 test('database URL with wrong project to `neon()`', async () => {
   const urlWithBadHost = DATABASE_URL.replace('@', '@x');
   const sqlBad = neon(urlWithBadHost);
-  await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
+  await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrow(
     'password authentication failed',
   );
 });
@@ -296,26 +304,170 @@ test(
   async () => {
     const urlWithBadHost = DATABASE_URL.replace('.neon.tech', '.neon.techh');
     const sqlBad = neon(urlWithBadHost);
-    await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrowError(
+    await expect(sqlBad`SELECT ${1}::int AS one`).rejects.toThrow(
       /fetch failed|ENOTFOUND/, // accounts for both native fetch and node-fetch error messages
     );
   },
 );
 
 test('undefined database URL', async () => {
-  expect(() => neon(undefined as unknown as string)).toThrowError(
-    'No database connection string was provided',
+  const sql = neon(undefined as unknown as string);
+  await expect(sql`SELECT ${1}`).rejects.toThrow(
+    'Database connection string format for `neon()` should be',
   );
 });
 
 test('empty database URL to `neon()`', async () => {
-  expect(() => neon('')).toThrowError(
-    'No database connection string was provided',
+  const sql = neon('');
+  await expect(sql`SELECT ${1}`).rejects.toThrow(
+    'Database connection string provided',
   );
 });
 
 test('wrong-scheme database URL to `neon()`', async () => {
-  expect(() => neon(DATABASE_URL.replace(/^/, 'x'))).toThrowError(
+  const sql = neon(DATABASE_URL.replace(/^/, 'x'));
+  await expect(sql`SELECT ${1}`).rejects.toThrow(
     'Database connection string format for `neon()` should be',
   );
+});
+
+test('database URL to `neon()` has no credentials', async () => {
+  const sql = neon('postgresql://host/db');
+  await expect(sql`SELECT ${1}`).rejects.toThrow(
+    'Database connection string format for `neon()` should be',
+  );
+});
+
+test('database URL to `neon()` has no database name', async () => {
+  const sql = neon('postgresql://user@host');
+  await expect(sql`SELECT ${1}`).rejects.toThrow(
+    'Database connection string format for `neon()` should be',
+  );
+});
+
+test('database URL to `neon()` has no database name (but trailing slash)', async () => {
+  const sql = neon('postgresql://user@host/');
+  await expect(sql`SELECT ${1}`).rejects.toThrow(
+    'Database connection string format for `neon()` should be',
+  );
+});
+
+test('basic query with only connection parameters', async () => {
+  const { username, password, hostname, pathname } = new URL(DATABASE_URL);
+  const sql = neon({
+    username,
+    password,
+    hostname,
+    database: pathname.slice(1), // cut off leading slash (technically not necessary)
+  });
+  const result = await sql`SELECT 1 AS one`;
+  expect(result[0].one).toBe(1);
+});
+
+test('connectionString in parameters as string', async () => {
+  const sql = neon({ connectionString: DATABASE_URL });
+  const result = await sql`SELECT 1 AS one`;
+  expect(result[0].one).toBe(1);
+});
+
+test('connectionString in parameters as Promise<string>', async () => {
+  const connectionString = Promise.resolve(DATABASE_URL);
+  const sql = neon({ connectionString });
+  const result = await sql`SELECT 1 AS one`;
+  expect(result[0].one).toBe(1);
+});
+
+test('connectionString in parameters as function returning Promise<string>', async () => {
+  const connectionString = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    return DATABASE_URL;
+  };
+  const sql = neon({ connectionString });
+  const result = await sql`SELECT 1 AS one`;
+  expect(result[0].one).toBe(1);
+});
+
+test('connectionString in parameters overrides connection string as first argument', async () => {
+  const sql = neon('postgresql://user@host/xyz', {
+    connectionString: DATABASE_URL,
+  });
+  const result = await sql`SELECT 1 AS one`;
+  expect(result[0].one).toBe(1);
+});
+
+test('host in parameters overrides host in connection string', async () => {
+  const sql = neon(DATABASE_URL, { host: '__not_valid__' });
+  await expect(sql`SELECT ${1}`).rejects.toThrow(/fetch failed|ENOTFOUND/);
+});
+
+test('user name in parameters overrides user name in connection string', async () => {
+  const sql = neon(DATABASE_URL, { user: 'not_me' });
+  await expect(sql`SELECT ${1}`).rejects.toThrow(
+    'password authentication failed',
+  );
+});
+
+test('database name in parameters overrides database name in connection string', async () => {
+  const sql = neon(DATABASE_URL, { database: 'not_a_database' });
+  await expect(sql`SELECT ${1}`).rejects.toThrow('does not exist');
+});
+
+test('password in parameters overrides password in connection string', async () => {
+  const sql = neon(DATABASE_URL, { password: 'not_the_password' });
+  await expect(sql`SELECT ${1}`).rejects.toThrow(
+    'password authentication failed',
+  );
+});
+
+test('password function in parameters overrides correct password in connection string', async () => {
+  const sql = neon(DATABASE_URL, { password: () => 'not_the_password' });
+  await expect(sql`SELECT ${1}`).rejects.toThrow(
+    'password authentication failed',
+  );
+});
+
+test('password function in parameters overrides incorrect password in connection string', async () => {
+  const { password } = new URL(DATABASE_URL);
+  const sql = neon(BAD_PASSWORD_URL, {
+    password: () => password,
+  });
+  const result = await sql`SELECT 1 AS one`;
+  expect(result[0].one).toBe(1);
+});
+
+test('async password function in parameters overrides password in connection string', async () => {
+  const sql = neon(BAD_PASSWORD_URL, {
+    password: asyncPasswordFn,
+  });
+  const result = await sql`SELECT 1 AS one`;
+  expect(result[0].one).toBe(1);
+});
+
+test('Promise<password> in parameters overrides password in connection string', async () => {
+  const sql = neon(BAD_PASSWORD_URL, {
+    password: new Promise((resolve) =>
+      setTimeout(() => resolve(new URL(DATABASE_URL).password), 10),
+    ),
+  });
+  const result = await sql`SELECT 1 AS one`;
+  expect(result[0].one).toBe(1);
+});
+
+test('async password function in transaction options overrides password in connection string', async () => {
+  const sql = neon(BAD_PASSWORD_URL);
+  const result = await sql.transaction(
+    [sql`SELECT 1 AS one`, sql`SELECT 2 AS two`],
+    {
+      password: asyncPasswordFn,
+    },
+  );
+  expect(result[1][0].two).toBe(2);
+});
+
+test('async password function in query parameters overrides password in connection string', async () => {
+  const sql = neon(BAD_PASSWORD_URL);
+  const result = await sql.query('SELECT 1 AS one', [], {
+    password: asyncPasswordFn,
+  });
+  expect(result[0].one).toBe(1);
 });

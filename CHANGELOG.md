@@ -1,3 +1,11 @@
+## 1.x.x (2026-xx-xx)
+
+`neon(...)` HTTP-client creation function now supports individual connection parameters. This still works: `const sql = neon(DATABASE_URL)`. But now these work too:
+
+- `const sql = neon({ username, password, host, database })`
+- `const sql = neon(DB_URL_NO_PASSWORD, { password: () => getPasswordAsync() })`
+- `const sql = neon({ connectionString: () => getDBURLAsync() }`
+
 ## 1.1.0 (2026-04-09)
 
 Type declarations are now fully inlined (some were previously re-exported from `@types/pg` and `@types/node`). The new types greatly reduce the size of the package with dependencies, and should be compatible in normal usage. The code that is actually run remains unchanged.

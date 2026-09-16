@@ -1,5 +1,3 @@
-import { URL as URL_2 } from 'node:url';
-
 declare const allKeyUsages: readonly ["digitalSignature", "nonRepudiation", "keyEncipherment", "dataEncipherment", "keyAgreement", "keyCertSign", "cRLSign", "encipherOnly", "decipherOnly"];
 
 declare class ASN1Bytes extends Bytes {
@@ -321,6 +319,14 @@ declare interface ConnectionOptions {
     options?: string
 }
 
+declare type ConnectionParamKey = (typeof connectionParamKeys)[number];
+
+declare const connectionParamKeys: readonly ['connectionString', 'user', 'username', 'password', 'host', 'hostname', 'database'];
+
+declare type ConnectionParams = {
+    [k in ConnectionParamKey]?: StringLike;
+};
+
 export declare interface CustomTypesConfig {
     getTypeParser: (id: PgTypeId, format?: PgTypeFormat) => any;
 }
@@ -440,7 +446,7 @@ export declare interface FullQueryResults<ArrayMode extends boolean> {
     rowAsArray: ArrayMode;
 }
 
-export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends boolean> {
+export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends boolean> extends ConnectionParams {
     /**
      * When `arrayMode` is `false`, which is the default, result rows are
      * returned as objects whose keys represent column names, such as
@@ -587,7 +593,9 @@ export declare interface MessageConfig {
  * pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
-export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, authToken, disableWarningInBrowsers, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
+export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, neonOpts?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
+
+export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(neonOpts: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
 
 export declare interface NeonConfig {
     poolQueryViaFetch: boolean;
@@ -937,16 +945,6 @@ export declare interface ParameterizedQuery {
 
 export declare function parseConnectionString(connectionString: string): ConnectionOptions;
 
-/**
- * Pre-2024 Firefox and Chrome parse unknown schemes as opaque paths, so we
- * pretend connection strings are `http:`, necessitating helper functions.
- *
- * See also:
- * * `URLFromPgConnectionString(connectionString)`
- * @param url - An `http:` URL to serialize to a `postgres:` connection string
- */
-export declare function pgConnectionStringFromURL(url: URL): string;
-
 declare type PgTypeFormat = 'text' | 'binary';
 
 declare type PgTypeId = number;
@@ -1181,6 +1179,8 @@ export declare function startTls(host: string, rootCertsDatabase: RootCertsDatab
     readonly userCert: Cert;
 }>;
 
+declare type StringLike = string | Promise<string> | (() => string | Promise<string>);
+
 export declare interface Submittable {
     submit: (connection: Connection) => void;
 }
@@ -1212,18 +1212,6 @@ export declare class UnsafeRawSql {
     sql: string;
     constructor(sql: string);
 }
-
-/**
- * Pre-2024 Firefox and Chrome parse unknown schemes as opaque paths, so we
- * pretend connection strings are `http:`, necessitating helper functions.
- *
- * See also:
- * * `pgConnectionStringFromURL(url)`
- * * `url.parse` shim in shims/url (but we don't use that because we want a
- *   real URL object we can serialize back into a string).
- * @param s - A 'postgres:' connection string
- */
-export declare function URLFromPgConnectionString(s: string, checkComplete: boolean): URL_2;
 
 /**
  * Detects if the code is running in a browser environment and displays a warning

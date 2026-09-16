@@ -27,11 +27,8 @@ import type {
 } from './types';
 
 import { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
-import {
-  warnIfBrowser,
-  URLFromPgConnectionString,
-  pgConnectionStringFromURL,
-} from './utils';
+import { warnIfBrowser } from './utils';
+import { resolveConnectionParams } from './connection';
 import { NeonDbError, errorFields } from './error';
 import { NeonQueryPromise } from './queryPromise';
 import { Socket as neonConfig } from '../shims/net';
@@ -139,7 +136,30 @@ export function neon<
   FullResults extends boolean = false,
 >(
   connectionString: string,
-  {
+  neonOpts?: HTTPTransactionOptions<ArrayMode, FullResults>,
+): NeonQueryFunction<ArrayMode, FullResults>;
+
+export function neon<
+  ArrayMode extends boolean = false,
+  FullResults extends boolean = false,
+>(
+  neonOpts: HTTPTransactionOptions<ArrayMode, FullResults>,
+): NeonQueryFunction<ArrayMode, FullResults>;
+
+export function neon<
+  ArrayMode extends boolean = false,
+  FullResults extends boolean = false,
+>(
+  connectionString?: string | HTTPTransactionOptions<ArrayMode, FullResults>,
+  neonOpts: HTTPTransactionOptions<ArrayMode, FullResults> = {},
+): NeonQueryFunction<ArrayMode, FullResults> {
+  // shuffle options forward if connectionString not passed directly
+  if (typeof connectionString !== 'string') {
+    neonOpts = connectionString ?? {};
+    connectionString = undefined;
+  }
+
+  const {
     arrayMode: neonOptArrayMode,
     fullResults: neonOptFullResults,
     fetchOptions: neonOptFetchOptions,
@@ -148,16 +168,7 @@ export function neon<
     deferrable: neonOptDeferrable,
     authToken,
     disableWarningInBrowsers,
-  }: HTTPTransactionOptions<ArrayMode, FullResults> = {},
-): NeonQueryFunction<ArrayMode, FullResults> {
-  // check the connection string
-
-  if (!connectionString)
-    throw new Error(
-      'No database connection string was provided to `neon()`. Perhaps an environment variable has not been set?',
-    );
-
-  const dbURL = URLFromPgConnectionString(connectionString, true);
+  } = neonOpts as HTTPTransactionOptions<ArrayMode, FullResults>;
 
   // this function is what's returned, with other functions (e.g. `query`, `transaction`) hanging off it
   function templateFn(strings: TemplateStringsArray, ...params: any[]) {
@@ -225,7 +236,6 @@ export function neon<
       : prepareQuery(queryData);
 
     // --- resolve options to transaction level ---
-
     let resolvedFetchOptions = neonOptFetchOptions ?? {};
     let resolvedArrayMode = neonOptArrayMode ?? false;
     let resolvedFullResults = neonOptFullResults ?? false;
@@ -269,17 +279,29 @@ export function neon<
       resolvedAuthToken = allSqlOpts.authToken;
     }
 
-    // --- set up the URL ---
+    // -- resolve connection string ---
+    const connectionParams = {
+      ...neonOpts,
+      ...txnOpts,
+      ...(Array.isArray(allSqlOpts) ? {} : allSqlOpts),
+    };
+    const { resolvedConnectionString, resolvedURL } =
+      await resolveConnectionParams(
+        connectionString as string | undefined,
+        connectionParams,
+      );
+
+    // --- set up the fetch URL ---
     const url =
       typeof fetchEndpoint === 'function'
-        ? fetchEndpoint(dbURL.hostname, dbURL.port, {
+        ? fetchEndpoint(resolvedURL.hostname, resolvedURL.port, {
             jwtAuth: resolvedAuthToken !== undefined,
           })
         : fetchEndpoint;
 
     // --- set headers ---
     const headers: Record<string, string> = {
-      'Neon-Connection-String': connectionString,
+      'Neon-Connection-String': resolvedConnectionString,
       'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
     };
