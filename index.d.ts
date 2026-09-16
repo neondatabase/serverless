@@ -321,10 +321,10 @@ declare interface ConnectionOptions {
 
 declare type ConnectionParamKey = (typeof connectionParamKeys)[number];
 
-declare const connectionParamKeys: readonly ['connectionString', 'user', 'username', 'password', 'host', 'hostname', 'database'];
+declare const connectionParamKeys: readonly ['connectionString', 'user', 'username', 'password', 'host', 'hostname', 'database', 'port'];
 
 declare type ConnectionParams = {
-    [k in ConnectionParamKey]?: StringLike;
+    [k in ConnectionParamKey]?: k extends 'port' ? StringNumberLike : StringLike;
 };
 
 export declare interface CustomTypesConfig {
@@ -1179,7 +1179,9 @@ export declare function startTls(host: string, rootCertsDatabase: RootCertsDatab
     readonly userCert: Cert;
 }>;
 
-declare type StringLike = string | Promise<string> | (() => string | Promise<string>);
+declare type StringLike = ThingLike<string>;
+
+declare type StringNumberLike = ThingLike<string | number>;
 
 export declare interface Submittable {
     submit: (connection: Connection) => void;
@@ -1190,6 +1192,8 @@ export declare interface subtls {
     TrustedCert: typeof TrustedCert;
     WebSocketReadQueue: typeof WebSocketReadQueue;
 }
+
+declare type ThingLike<T> = T | Promise<T> | (() => T | Promise<T>);
 
 export declare class TrustedCert extends Cert {
     static databaseFromPEM(pem: string): Promise<RootCertsDatabase>;

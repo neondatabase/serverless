@@ -229,7 +229,7 @@ export function neon<
       | HTTPQueryOptions<ArrayMode, FullResults>[],
     txnOpts?: HTTPTransactionOptions<ArrayMode, FullResults>,
   ) {
-    const { fetchEndpoint, fetchFunction } = neonConfig;
+    let { fetchEndpoint, fetchFunction } = neonConfig;
 
     const bodyData = Array.isArray(queryData)
       ? { queries: queryData.map((queryDatum) => prepareQuery(queryDatum)) }

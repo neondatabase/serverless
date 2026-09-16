@@ -1,5 +1,9 @@
 import { NeonDbError } from './error';
 
+type ThingLike<T> = T | Promise<T> | (() => T | Promise<T>);
+type StringLike = ThingLike<string>;
+type StringNumberLike = ThingLike<string | number>;
+
 /**
  * Pre-2024 Firefox and Chrome parse unknown schemes as opaque paths, so we
  * pretend connection strings are `http:`, necessitating helper functions.
@@ -60,6 +64,7 @@ export const connectionParamKeys = [
   'host',
   'hostname', // alias for host
   'database',
+  'port',
 ] as const;
 
 const connectionParamsMap = {
@@ -70,22 +75,20 @@ const connectionParamsMap = {
 } as Record<string, string>;
 
 type ConnectionParamKey = (typeof connectionParamKeys)[number];
-type StringLike = string | Promise<string> | (() => string | Promise<string>);
-
 export type ConnectionParams = {
-  [k in ConnectionParamKey]?: StringLike;
+  [k in ConnectionParamKey]?: k extends 'port' ? StringNumberLike : StringLike;
 };
 
 /**
  * Take an optional connection string and optional connection parameters, and
- * resolve them into a new connection string, prioritising parameters.
+ * resolve them into a new connection string, prioritising the parameters.
  * @param connectionString - A `postgres:` connection string, or undefined
  * @param params - An object containing connection parameters, or undefined
  * @returns An object with `resolvedConnectionString` and `resolvedURL`,
  * expressing equivalent parameters.
  */
 export async function resolveConnectionParams(
-  connectionString: StringLike = 'postgres://-',
+  connectionString: StringLike = 'postgresql://-',
   params: ConnectionParams = {},
 ) {
   // connectionString in options overrides connectionString specified directly
@@ -95,10 +98,11 @@ export async function resolveConnectionParams(
   if (typeof connectionString === 'function') {
     connectionString = connectionString();
   }
+  ``;
   connectionString = await connectionString; // separate from function call in case we're directly passed a Promise
   if (typeof connectionString !== 'string') {
     throw new Error(
-      `Connection string must be: string | Promise<string> | (() => string | Promise<string>)`,
+      `Connection string must be a string, or a Promise or function resolving to one`,
     );
   }
 
@@ -109,18 +113,21 @@ export async function resolveConnectionParams(
       // already dealt with connectionString
       if (k === 'connectionString') return;
 
-      // normalise connection options
+      // normalise options: call, await, skip if undefined
       let v = params[k];
       if (typeof v === 'function') v = v();
-      v = await v; // separate from function call in case we're directly passed a Promise
+      v = await v; // separate from function call in case we're passed a Promise directly
       if (v === undefined) return;
-      if (typeof v !== 'string') {
+
+      // check type
+      if (typeof v !== 'string' && !(k === 'port' && typeof v === 'number')) {
+        const orNumber = k === 'port' ? ' or a number' : '';
         throw new NeonDbError(
-          `Connection parameter "${k}" must be: string | Promise<string> | (() => string | Promise<string>)`,
+          `Connection parameter "${k}" must be a string${orNumber}, or a Promise or function resolving to one`,
         );
       }
 
-      // options override values from connectionString
+      // override value from connectionString
       const urlPart = connectionParamsMap[k] ?? k;
       (url as any)[urlPart] = v;
     }),

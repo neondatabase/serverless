@@ -412,6 +412,25 @@ test('database name in parameters overrides database name in connection string',
   await expect(sql`SELECT ${1}`).rejects.toThrow('does not exist');
 });
 
+test('port in parameters overrides port in connection string', async () => {
+  // note: Neon proxy ignores the specified port, so query succeeds
+  const port = 12345;
+  let fetchArgs;
+  const realFetchFunction = neonConfig.fetchFunction;
+  neonConfig.fetchFunction = ((...args) => {
+    fetchArgs = args;
+    return fetch(...args);
+  }) as typeof fetch;
+  const sql = neon(DATABASE_URL, { port });
+  const result = await sql`SELECT 1 AS one`;
+  neonConfig.fetchFunction = realFetchFunction;
+  expect(result[0].one).toBe(1);
+  const resolvedConnectionString =
+    fetchArgs![1].headers['Neon-Connection-String'];
+  const resolvedPort = new URL(resolvedConnectionString).port;
+  expect(resolvedPort).toBe(String(port));
+});
+
 test('password in parameters overrides password in connection string', async () => {
   const sql = neon(DATABASE_URL, { password: 'not_the_password' });
   await expect(sql`SELECT ${1}`).rejects.toThrow(
