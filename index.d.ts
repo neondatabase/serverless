@@ -1193,7 +1193,7 @@ export declare interface subtls {
     WebSocketReadQueue: typeof WebSocketReadQueue;
 }
 
-declare type ThingLike<T> = T | Promise<T> | (() => T | Promise<T>);
+declare type ThingLike<T> = T | (() => T | Promise<T>);
 
 export declare class TrustedCert extends Cert {
     static databaseFromPEM(pem: string): Promise<RootCertsDatabase>;

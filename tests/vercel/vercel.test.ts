@@ -1,7 +1,6 @@
 import { expect, test } from 'vitest';
 import fs from 'node:fs/promises';
 import { Vercel } from '@vercel/sdk';
-import { GetDeploymentResponseBody3 } from '@vercel/sdk/models/getdeploymentgitsourcerepoid';
 
 const projectName = 'neon-serverless-tests-project';
 const vercel = new Vercel({
@@ -90,11 +89,11 @@ test(
     let status, host;
     do {
       await new Promise((resolve) => setTimeout(resolve, 2000)); // wait 2 seconds between checks
-      const statusResponse = (await vercel.deployments.getDeployment({
+      const statusResponse = await vercel.deployments.getDeployment({
         idOrUrl: deploymentId,
-      })) as GetDeploymentResponseBody3; // the return type for anonymous callers is missing URL, so we insist on a subtype
+      });
       status = statusResponse.readyState;
-      host = statusResponse.url;
+      host = (statusResponse as any).url; // the return type for anonymous callers is missing URL
     } while (
       status === 'QUEUED' ||
       status === 'BUILDING' ||

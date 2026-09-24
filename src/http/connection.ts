@@ -1,6 +1,6 @@
 import { NeonDbError } from './error';
 
-type ThingLike<T> = T | Promise<T> | (() => T | Promise<T>);
+type ThingLike<T> = T | (() => T | Promise<T>);
 type StringLike = ThingLike<string>;
 type StringNumberLike = ThingLike<string | number>;
 
@@ -22,8 +22,7 @@ export function URLFromPgConnectionString(s: string, checkComplete: boolean) {
     url = new URL('http:' + s.slice(protocol.length));
   } catch {
     throw new NeonDbError(
-      'Database connection string provided to `neon()` is not a valid URL. Connection string: ' +
-        String(s),
+      `Database connection string provided to neon() is not a valid URL (connection string: ${s})`,
     );
   }
   const { username, hostname, pathname } = url;
@@ -37,7 +36,7 @@ export function URLFromPgConnectionString(s: string, checkComplete: boolean) {
         pathname === '/'))
   ) {
     throw new NeonDbError(
-      'Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value',
+      `Wrong URL scheme or missing user, host or database in connection parameters`,
     );
   }
   return url;
@@ -80,6 +79,24 @@ export type ConnectionParams = {
 };
 
 /**
+ * Merges multiple sets of connection parameters. Later parameters override
+ * earlier parameters, and a connectionString parameter overrides everything to
+ * date.
+ * @param paramSets - Multiple sets of connection parameters
+ * @returns Merged connection parameters
+ */
+export function mergeConnectionParams(...paramSets: ConnectionParams[]) {
+  let outParams: ConnectionParams = {};
+  for (const params of paramSets) {
+    outParams =
+      params.connectionString !== undefined
+        ? params
+        : { ...outParams, ...params };
+  }
+  return outParams;
+}
+
+/**
  * Take an optional connection string and optional connection parameters, and
  * resolve them into a new connection string, prioritising the parameters.
  * @param connectionString - A `postgres:` connection string, or undefined
@@ -90,20 +107,25 @@ export type ConnectionParams = {
 export async function resolveConnectionParams(
   connectionString: StringLike = 'postgresql://-',
   params: ConnectionParams = {},
+  defaultOptions: Record<string, string> = {},
 ) {
   // connectionString in options overrides connectionString specified directly
   if (params.connectionString !== undefined) {
     connectionString = params.connectionString;
   }
   if (typeof connectionString === 'function') {
-    connectionString = connectionString();
+    connectionString = await connectionString();
   }
-  ``;
-  connectionString = await connectionString; // separate from function call in case we're directly passed a Promise
   if (typeof connectionString !== 'string') {
-    throw new Error(
-      `Connection string must be a string, or a Promise or function resolving to one`,
+    throw new NeonDbError(
+      `Connection string must be a string or a function resolving to one`,
     );
+  }
+  if (params.user !== undefined && params.username !== undefined) {
+    throw new NeonDbError(`Please specify one only of user and username`);
+  }
+  if (params.host !== undefined && params.hostname !== undefined) {
+    throw new NeonDbError(`Please specify one only of host and hostname`);
   }
 
   const url = URLFromPgConnectionString(connectionString, false);
@@ -115,15 +137,14 @@ export async function resolveConnectionParams(
 
       // normalise options: call, await, skip if undefined
       let v = params[k];
-      if (typeof v === 'function') v = v();
-      v = await v; // separate from function call in case we're passed a Promise directly
+      if (typeof v === 'function') v = await v();
       if (v === undefined) return;
 
       // check type
       if (typeof v !== 'string' && !(k === 'port' && typeof v === 'number')) {
         const orNumber = k === 'port' ? ' or a number' : '';
         throw new NeonDbError(
-          `Connection parameter "${k}" must be a string${orNumber}, or a Promise or function resolving to one`,
+          `Connection parameter "${k}" must be a string${orNumber} or a function resolving to one`,
         );
       }
 
@@ -132,6 +153,13 @@ export async function resolveConnectionParams(
       (url as any)[urlPart] = v;
     }),
   );
+
+  // apply default options where not already present in URL searchParams
+  const { searchParams } = url;
+  for (const k in defaultOptions) {
+    if (searchParams.has(k)) continue;
+    searchParams.append(k, defaultOptions[k]);
+  }
 
   const resolvedConnectionString = pgConnectionStringFromURL(url);
   const resolvedURL = URLFromPgConnectionString(resolvedConnectionString, true);
