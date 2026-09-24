@@ -1236,9 +1236,9 @@ r.buffer,r.byteOffset,s),c=new Uint32Array(o.buffer,o.byteOffset,i),l=e==="upper
 for(;f<s;)g=u[f++],c[m++]=l[g>>>8&255]<<16|l[g&255],c[m++]=l[g>>>24]<<16|l[g>>>16&255];else for(;f<s;)
 g=u[f++],c[m++]=l[g>>>24]<<16|l[g>>>16&255],c[m++]=l[g>>>8&255]<<16|l[g&255];for(f<<=2;f<n;)o[f]=l[r[f++]];
 return ba.decode(o.subarray(0,n))}a(va,"_toHex");function Sa(r,e={}){let t="",n=r.length,i=wa>>>1,s=Math.
-ceil(n/i),o=new Uint16Array(s>1?i:n);for(let u=0;u<s;u++){let c=u*i,l=c+i;t+=va(r.subarray(c,l),ga(ma(
-{},e),{scratchArr:o}))}return t}a(Sa,"_toHexChunked");function li(r,e={}){return e.alphabet!=="upper"&&
-typeof r.toHex=="function"?r.toHex():Sa(r,e)}a(li,"toHex");p();p();var Yt=class Yt{constructor(e,t,n){S(this,"execute",e);S(this,"queryData",t);S(this,"opts",n)}then(e,t){
+ceil(n/i),o=new Uint16Array(s>1?i:n),u=ga(ma({},e),{scratchArr:o});for(let c=0;c<s;c++){let l=c*i,f=l+
+i;t+=va(r.subarray(l,f),u)}return t}a(Sa,"_toHexChunked");function li(r,e={}){return e.alphabet!=="u\
+pper"&&typeof r.toHex=="function"?r.toHex():Sa(r,e)}a(li,"toHex");p();p();var Yt=class Yt{constructor(e,t,n){S(this,"execute",e);S(this,"queryData",t);S(this,"opts",n)}then(e,t){
 return this.execute(this.queryData,this.opts).then(e,t)}catch(e){return this.execute(this.queryData,
 this.opts).catch(e)}finally(e){return this.execute(this.queryData,this.opts).finally(e)}};a(Yt,"Neon\
 QueryPromise");var xe=Yt;var mt=class mt{constructor(e,t){S(this,"strings",e);S(this,"values",t)}toParameterizedQuery(e={query:"",
