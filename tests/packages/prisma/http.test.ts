@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { PrismaNeonHTTP } from '@prisma/adapter-neon';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './client/client';
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 

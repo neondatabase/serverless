@@ -279,9 +279,7 @@ export function neon<
   // execute query
   async function execute(
     queryData:
-      | SqlTemplate
-      | ParameterizedQuery
-      | (SqlTemplate | ParameterizedQuery)[],
+      SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[],
     allSqlOpts?:
       | HTTPQueryOptions<ArrayMode, FullResults>
       | HTTPQueryOptions<ArrayMode, FullResults>[],
@@ -456,9 +454,7 @@ export class NeonQueryPromise<
   constructor(
     public execute: (
       queryData:
-        | SqlTemplate
-        | ParameterizedQuery
-        | (SqlTemplate | ParameterizedQuery)[],
+        SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[],
       opts?:
         | HTTPQueryOptions<ArrayMode, FullResults>
         | HTTPQueryOptions<ArrayMode, FullResults>[],
@@ -469,21 +465,15 @@ export class NeonQueryPromise<
 
   then<TResult1 = T, TResult2 = never>(
     resolve?:
-      | ((value: T) => TResult1 | PromiseLike<TResult1>)
-      | undefined
-      | null,
+      ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
     reject?:
-      | ((reason: any) => TResult2 | PromiseLike<TResult2>)
-      | undefined
-      | null,
+      ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
   ): Promise<TResult1 | TResult2> {
     return this.execute(this.queryData, this.opts).then(resolve, reject);
   }
   catch<TResult = never>(
     reject?:
-      | ((reason: any) => TResult | PromiseLike<TResult>)
-      | undefined
-      | null,
+      ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
   ): Promise<T | TResult> {
     return this.execute(this.queryData, this.opts).catch(reject);
   }
