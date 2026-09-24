@@ -62,8 +62,8 @@ export const connectionParamKeys = [
   'password',
   'host',
   'hostname', // alias for host
-  'database',
   'port',
+  'database',
 ] as const;
 
 const connectionParamsMap = {

@@ -552,19 +552,24 @@ export declare interface MessageConfig {
  * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 2: composability
+ * // example 2: specify password as a function
+ * const sql = neon("postgres://user@host/db", { password: () => getPassword() });
+ * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
+ * // -> [ { greeting: "hello world" } ]
+ *
+ * // example 3: composability
  * const sql = neon("postgres://user:pass@host/db");
  * const helloWorld = sql`${h} || ' ' || ${w}`;
  * const rows = await sql`SELECT ${helloWorld} AS greeting`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 3: unsafe raw string interpolation
+ * // example 4: unsafe raw string interpolation
  * const sql = neon("postgres://user:pass@host/db");
  * const colName = 'greeting';
  * const rows = await sql`SELECT ${h} || ' ' || ${w} AS ${sql.unsafe(colName)}`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 4: `arrayMode` and `fullResults` options
+ * // example 5: `arrayMode` and `fullResults` options
  * const options = { arrayMode: true, fullResults: true };
  * const sql = neon("postgres://user:pass@host/db", options);
  * const result = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
@@ -576,7 +581,7 @@ export declare interface MessageConfig {
  * //      rows: [ [ "hello world" ] ]
  * //    }
  *
- * // example 5: `fetchOptions` option direct to `query()` function
+ * // example 6: `fetchOptions` option direct to `query()` function
  * const sql = neon("postgres://user:pass@host/db");
  * const rows = await sql.query(
  *   "SELECT $1 || ' ' || $2 AS greeting", [h, w],
@@ -586,15 +591,37 @@ export declare interface MessageConfig {
  * ```
  *
  * @param connectionString - has the format `postgresql://user:pass@host/db`
- * @param options - pass `arrayMode: true` to receive results as an array of
- * arrays, instead of the default array of objects; pass `fullResults: true`
+ * @param options -
+ * * Pass connection parameters (such as `password`) to override or supplement
+ * parameters specified in the connection string. Parameters that are functions
+ * (either sync or async) are resolved per query.
+ * * Pass `arrayMode: true` to receive results as an array of
+ * arrays, instead of the default array of objects.
+ * * Pass `fullResults: true`
  * to receive a complete result object similar to one returned by node-postgres
- * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`);
- * pass as `fetchOptions` an object which will be merged into the options
+ * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`).
+ * * Pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
 export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, neonOpts?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
 
+/**
+ * Returns an async tagged-template function that runs a single SQL query (no
+ * session or transactions) with low latency over https. Queries are
+ * composable: they can be embedded inside each other.
+ *
+ * @param options -
+ * * Pass connection parameters such as `username`, `password`, `host` and
+ * `database`. Parameters that are functions (either sync or async) are
+ * resolved per query.
+ * * Pass `arrayMode: true` to receive results as an array of
+ * arrays, instead of the default array of objects.
+ * * Pass `fullResults: true`
+ * to receive a complete result object similar to one returned by node-postgres
+ * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`).
+ * * Pass as `fetchOptions` an object which will be merged into the options
+ * passed to `fetch`.
+ */
 export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(neonOpts: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
 
 export declare interface NeonConfig {
