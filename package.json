@@ -106,7 +106,7 @@
     "url": "file:src/shims/url",
     "util": "file:src/shims/util",
     "vitest": "^4.1.11",
-    "wrangler": "^4.133.0",
+    "wrangler": "4.131.0",
     "ws": "^8.12.1"
   },
   "overrides": {

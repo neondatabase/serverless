@@ -16,7 +16,7 @@ In CI we run these tests:
 
 1. On current Node LTS (Node has top-level fetch from 18, crypto from 19, WebSocket from 22 onwards)
 2. On current Node LTS using vitest's `edge-runtime` environment
-3. On Node 19, using `ws` for WebSockets
+3. On Node 22
 
 Currently we run only a few simple tests with Bun, as it is [not supported by vitest](https://github.com/oven-sh/bun/issues/4145). The same goes for Deno, [for the same reason](https://github.com/denoland/deno/issues/23882).
 
