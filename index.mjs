@@ -1372,10 +1372,10 @@ this.options),u=encodeURIComponent,c=encodeURI,l=`postgresql://${u(o.user)}:${u(
 rowMode==="array"}).query(f,m,{types:t.types??this.options?.types}).then(w=>i(void 0,w)).catch(w=>i(
 w))}catch(o){i(o)}return s.result}};a(On,"NeonPool");var Un=On;Ge();var ct=we(ot()),Nl=we(Tr()),hd="mjs";var export_DatabaseError=ct.DatabaseError;var export_defaults=ct.defaults;var export_escapeIdentifier=ct.escapeIdentifier;
 var export_escapeLiteral=ct.escapeLiteral;var export_parseConnectionString=Nl.parse;var export_types=ct.types;
-export{ut as Client,export_DatabaseError as DatabaseError,Un as Pool,He as SqlTemplate,$e as UnsafeRawSql,
-hd as _bundleExt,export_defaults as defaults,export_escapeIdentifier as escapeIdentifier,export_escapeLiteral as escapeLiteral,
-ds as neon,de as neonConfig,export_parseConnectionString as parseConnectionString,export_types as types,
-gt as warnIfBrowser};
+export{ut as Client,export_DatabaseError as DatabaseError,N as NeonDbError,Un as Pool,He as SqlTemplate,
+$e as UnsafeRawSql,hd as _bundleExt,export_defaults as defaults,fi as errorFields,export_escapeIdentifier as escapeIdentifier,
+export_escapeLiteral as escapeLiteral,ds as neon,de as neonConfig,export_parseConnectionString as parseConnectionString,
+export_types as types};
 /*! Bundled license information:
 
 ieee754/index.js:

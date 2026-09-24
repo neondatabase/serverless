@@ -372,6 +372,8 @@ export declare const defaults: Defaults & ClientConfig;
 
 declare type DistinguishedName = Record<string, string | string[]>;
 
+export declare const errorFields: readonly ['severity', 'code', 'detail', 'hint', 'position', 'internalPosition', 'internalQuery', 'where', 'schema', 'table', 'column', 'dataType', 'constraint', 'file', 'line', 'routine'];
+
 export declare function escapeIdentifier(str: string): string;
 
 export declare function escapeLiteral(str: string): string;
@@ -842,6 +844,28 @@ export declare type NeonConfigGlobalAndClient = Omit<NeonConfig, keyof NeonConfi
 
 export declare type NeonConfigGlobalOnly = Pick<NeonConfig, 'fetchEndpoint' | 'poolQueryViaFetch' | 'fetchConnectionCache' | 'fetchFunction'>;
 
+export declare class NeonDbError extends Error {
+    name: 'NeonDbError';
+    severity: string | undefined;
+    code: string | undefined;
+    detail: string | undefined;
+    hint: string | undefined;
+    position: string | undefined;
+    internalPosition: string | undefined;
+    internalQuery: string | undefined;
+    where: string | undefined;
+    schema: string | undefined;
+    table: string | undefined;
+    column: string | undefined;
+    dataType: string | undefined;
+    constraint: string | undefined;
+    file: string | undefined;
+    line: string | undefined;
+    routine: string | undefined;
+    sourceError: Error | undefined;
+    constructor(message: string);
+}
+
 export declare interface NeonQueryFunction<ArrayMode extends boolean, FullResults extends boolean> {
     (strings: TemplateStringsArray, ...params: any[]): NeonQueryPromise<ArrayMode, FullResults, FullResults extends true ? FullQueryResults<ArrayMode> : QueryRows<ArrayMode>>;
     /**
@@ -1243,12 +1267,6 @@ export declare class UnsafeRawSql {
     sql: string;
     constructor(sql: string);
 }
-
-/**
- * Detects if the code is running in a browser environment and displays a warning
- * about the security implications of running SQL directly from the browser.
- */
-export declare function warnIfBrowser(): void;
 
 export declare interface WebSocketConstructor {
     new (...args: any[]): WebSocketLike;
