@@ -182,7 +182,7 @@ const sql = neon(process.env.DATABASE_URL, { password: () => getTokenAsync() });
 const result = sql`SELECT now()`;
 ```
 
-If all parameters are provided, the connectionm string may also be omitted:
+If all parameters are provided, the connection string may also be omitted:
 
 ```typescript
 import { neon } from '@neondatabase/serverless';
