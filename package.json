@@ -73,7 +73,7 @@
     "@types/pg": "8.15.5",
     "@types/ws": "^8.5.4",
     "@vercel/edge": "^1.2.1",
-    "@vercel/sdk": "^1.2.2",
+    "@vercel/sdk": "^1.28.34",
     "@vitest/browser-playwright": "^4.1.11",
     "assert": "file:src/shims/assert",
     "buffer": "^6.0.3",
