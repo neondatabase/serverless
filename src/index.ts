@@ -87,7 +87,7 @@ export type {
   Submittable,
 } from 'pg';
 
-export { parse as parseConnectionString } from 'pg-connection-string';
+export { parseIntoClientConfig } from './parse';
 
 export type NeonConfigGlobalOnly = Pick<
   SocketDefaults,

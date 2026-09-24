@@ -306,19 +306,6 @@ export declare class Connection extends EventEmitter {
 
 export declare type ConnectionConfig = ClientConfig;
 
-declare interface ConnectionOptions {
-    host: string | null
-    password?: string
-    user?: string
-    port?: string | null
-    database: string | null | undefined
-    client_encoding?: string
-    ssl?: boolean | string
-    application_name?: string
-    fallback_application_name?: string
-    options?: string
-}
-
 declare type ConnectionParamKey = (typeof connectionParamKeys)[number];
 
 declare const connectionParamKeys: readonly ['connectionString', 'user', 'username', 'password', 'host', 'hostname', 'port', 'database'];
@@ -994,7 +981,7 @@ export declare interface ParameterizedQuery {
     params: any[];
 }
 
-export declare function parseConnectionString(connectionString: string): ConnectionOptions;
+export declare function parseIntoClientConfig(str: string): ClientConfig;
 
 declare type PgTypeFormat = 'text' | 'binary';
 

@@ -94,14 +94,25 @@ export class NeonClient extends Client {
         con.on('readyForQuery', this._handleReadyForQuery.bind(this)),
       );
 
+      // if the password is a function, we must resolve it before calling
+      // _handleAuthCleartextPassword, otherwise the password message gets
+      // written to the wire *after* the query message
+      const password: any = this.password;
+      const passwordPromise = Promise.resolve(
+        typeof password === 'function' ? password() : password,
+      );
+
       const connectEvent = this.ssl ? 'sslconnect' : 'connect';
       con.on(connectEvent, () => {
         if (!this.neonConfig.disableWarningInBrowsers) {
           warnIfBrowser();
         }
 
-        this._handleAuthCleartextPassword();
-        this._handleReadyForQuery();
+        passwordPromise.then((resolvedPassword) => {
+          this.password = resolvedPassword;
+          this._handleAuthCleartextPassword();
+          this._handleReadyForQuery();
+        });
       });
     }
 

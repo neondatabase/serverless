@@ -1,10 +1,18 @@
 ## 1.x.x (2026-xx-xx)
 
-`neon(...)` HTTP-client creation function now supports individual connection parameters. This still works: `const sql = neon(DATABASE_URL)`. But now these work too:
+`Client` and `Pool` now support a sync or async function as the `password` connection parameter when `pipelineConnect` is enabled (this previously caused an error).
 
-- `const sql = neon({ username, password, host, database })`
-- `const sql = neon(DB_URL_NO_PASSWORD, { password: () => getPasswordAsync() })`
-- `const sql = neon({ connectionString: () => getDBURLAsync() }`
+Options to the `neon(...)` HTTP-client creation function, and the `transaction` and `query` functions, now support individual connection parameters. These can be strings or sync or async functions.
+
+This still works:
+
+- `const sql = neon(DATABASE_URL)`
+
+But these now work too:
+
+- `const sql = neon(DATABASE_URL_NO_PASSWORD, { password: () => getPasswordAsync() })`
+- `const sql = neon({ user, password, host, database })`
+- `const sql = neon({ connectionString: () => getConnectionString() }`
 
 ## 1.1.0 (2026-04-09)
 

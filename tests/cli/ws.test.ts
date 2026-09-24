@@ -9,6 +9,7 @@ import {
   Pool as WsPool,
   Client as WsClient,
   SqlTemplate,
+  parseIntoClientConfig,
 } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
 function recursiveTransform(x: any, transform: (x: any) => any): any {
@@ -141,6 +142,72 @@ describe.each([
           const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
           assertType<QueryResult<any>>(wsResult);
           await client.end();
+
+          expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
+          expect((wsResult as any).viaNeonFetch).toBeUndefined();
+        }
+      }
+    } finally {
+      neonConfig.pipelineConnect = pipelineConnect;
+      neonConfig.coalesceWrites = coalesceWrites;
+    }
+  });
+
+  test('client.query() using sync password function with pipelined connect (yes, no) x coalesced writes (yes, no)', async () => {
+    const { pipelineConnect, coalesceWrites } = neonConfig;
+    try {
+      for (const pc of ['password', false] as const) {
+        for (const cw of [true, false]) {
+          neonConfig.pipelineConnect = pc;
+          neonConfig.coalesceWrites = cw;
+
+          const connParams = parseIntoClientConfig(DB_URL);
+          const { password } = connParams;
+          delete connParams.password;
+          const syncPasswordFn = () => password as string;
+
+          const client = new WsClient({
+            ...connParams,
+            password: syncPasswordFn,
+          });
+          await client.connect();
+          const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
+          assertType<QueryResult<any>>(wsResult);
+          await client.end();
+
+          expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
+          expect((wsResult as any).viaNeonFetch).toBeUndefined();
+        }
+      }
+    } finally {
+      neonConfig.pipelineConnect = pipelineConnect;
+      neonConfig.coalesceWrites = coalesceWrites;
+    }
+  });
+
+  test('pool.query() using async password function with pipelined connect (yes, no) x coalesced writes (yes, no)', async () => {
+    const { pipelineConnect, coalesceWrites } = neonConfig;
+    try {
+      for (const pc of ['password', false] as const) {
+        for (const cw of [true, false]) {
+          neonConfig.pipelineConnect = pc;
+          neonConfig.coalesceWrites = cw;
+
+          const connParams = parseIntoClientConfig(DB_URL);
+          const { password } = connParams;
+          delete connParams.password;
+          const asyncPasswordFn: () => Promise<string> = () =>
+            new Promise((resolve) =>
+              setTimeout(() => resolve(password as string), 500),
+            );
+
+          const pool = new WsPool({
+            ...connParams,
+            password: asyncPasswordFn,
+          });
+          const wsResult = await pool.query('SELECT $1::int AS one', [1]);
+          assertType<QueryResult<any>>(wsResult);
+          await pool.end();
 
           expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
           expect((wsResult as any).viaNeonFetch).toBeUndefined();
