@@ -1,7 +1,20 @@
-export function parse(url: string, parseQueryString = false) {
+function parseUrl(url: string) {
   const { protocol } = new URL(url);
-  // we now swap the protocol to http: so that `new URL()` will parse it fully
+  // Use a special scheme so PostgreSQL connection strings parse hierarchically.
   const httpUrl = 'http:' + url.substring(protocol.length);
+  return { protocol, parsedUrl: new URL(httpUrl) };
+}
+
+export function setDefaultQueryParam(url: string, name: string, value: string) {
+  const { protocol, parsedUrl } = parseUrl(url);
+  if (!parsedUrl.searchParams.has(name)) {
+    parsedUrl.searchParams.set(name, value);
+  }
+  return protocol + parsedUrl.toString().substring(parsedUrl.protocol.length);
+}
+
+export function parse(url: string, parseQueryString = false) {
+  const { protocol, parsedUrl } = parseUrl(url);
   let {
     username,
     password,
@@ -12,7 +25,7 @@ export function parse(url: string, parseQueryString = false) {
     search,
     searchParams,
     hash,
-  } = new URL(httpUrl);
+  } = parsedUrl;
   password = decodeURIComponent(password);
   username = decodeURIComponent(username);
   pathname = decodeURIComponent(pathname);

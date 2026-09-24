@@ -17,7 +17,7 @@ That is:
 */
 
 import { Socket } from './shims/net';
-import { parse } from './shims/url';
+import { parse, setDefaultQueryParam } from './shims/url';
 import { toHex } from 'hextreme';
 import type {
   HTTPQueryOptions,
@@ -228,6 +228,12 @@ export function neon<
     );
   }
 
+  const connectionStringWithApplicationName = setDefaultQueryParam(
+    connectionString,
+    'application_name',
+    PACKAGE_URL,
+  );
+
   function templateFn(strings: TemplateStringsArray, ...params: any[]) {
     const calledAsTemplateFn =
       Array.isArray(strings) &&
@@ -347,10 +353,9 @@ export function neon<
 
     // --- set headers ---
     const headers: Record<string, string> = {
-      'Neon-Connection-String': connectionString,
+      'Neon-Connection-String': connectionStringWithApplicationName,
       'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
-      'Neon-Client-Info': PACKAGE_URL,
     };
 
     // --- add auth token to headers ---

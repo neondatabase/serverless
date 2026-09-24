@@ -206,7 +206,7 @@ test('custom fetch', async () => {
   }
 });
 
-test('sends the package URL with HTTP queries', async () => {
+test('uses the package URL as the default HTTP application name', async () => {
   const prevFetchFunction = neonConfig.fetchFunction;
   try {
     const fn = vi.fn(async () =>
@@ -223,9 +223,22 @@ test('sends the package URL with HTTP queries', async () => {
     await mockedSql`SELECT`;
 
     expect(fn).toHaveBeenCalledOnce();
-    expect(fn.mock.calls[0][1]?.headers).toMatchObject({
-      'Neon-Client-Info': `pkg:npm/%40neondatabase/serverless@${packageMetadata.version}`,
-    });
+    const headers = fn.mock.calls[0][1]?.headers as Record<string, string>;
+    const connectionUrl = new URL(headers['Neon-Connection-String']);
+    expect(connectionUrl.searchParams.get('application_name')).toBe(
+      `pkg:npm/%40neondatabase/serverless@${packageMetadata.version}`,
+    );
+
+    const namedSql = neon(
+      'postgres://user@example.com/database?application_name=custom-client',
+    );
+    await namedSql`SELECT`;
+
+    const namedHeaders = fn.mock.calls[1][1]?.headers as Record<string, string>;
+    const namedConnectionUrl = new URL(namedHeaders['Neon-Connection-String']);
+    expect(namedConnectionUrl.searchParams.get('application_name')).toBe(
+      'custom-client',
+    );
   } finally {
     neonConfig.fetchFunction = prevFetchFunction;
   }
