@@ -1,6 +1,7 @@
 import { Client, Connection, type ClientConfig } from 'pg';
 import { Socket } from './shims/net';
 import { warnIfBrowser } from './http/utils';
+import { PACKAGE_URL } from './packageInfo';
 
 export declare interface NeonClient {
   connection: Connection & {
@@ -25,7 +26,16 @@ export class NeonClient extends Client {
   }
 
   constructor(public config?: string | ClientConfig) {
-    super(config);
+    const resolved =
+      typeof config === 'string'
+        ? { connectionString: config }
+        : {
+            ...config,
+            ...(config && 'password' in config
+              ? { password: config.password }
+              : {}),
+          };
+    super({ fallback_application_name: PACKAGE_URL, ...resolved });
   }
 
   override connect(): Promise<void>;

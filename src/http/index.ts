@@ -32,6 +32,7 @@ import { mergeConnectionParams, resolveConnectionParams } from './connection';
 import { NeonDbError, errorFields } from './error';
 import { NeonQueryPromise } from './queryPromise';
 import { Socket as neonConfig } from '../shims/net';
+import { PACKAGE_URL } from '../packageInfo';
 
 // @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
@@ -316,6 +317,7 @@ export function neon<
       await resolveConnectionParams(
         connectionString as string | undefined,
         connectionParams,
+        { application_name: PACKAGE_URL },
       );
 
     // --- set up the fetch URL ---
