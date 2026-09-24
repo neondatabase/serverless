@@ -321,7 +321,7 @@ declare interface ConnectionOptions {
 
 declare type ConnectionParamKey = (typeof connectionParamKeys)[number];
 
-declare const connectionParamKeys: readonly ['connectionString', 'user', 'username', 'password', 'host', 'hostname', 'database', 'port'];
+declare const connectionParamKeys: readonly ['connectionString', 'user', 'username', 'password', 'host', 'hostname', 'port', 'database'];
 
 declare type ConnectionParams = {
     [k in ConnectionParamKey]?: k extends 'port' ? StringNumberLike : StringLike;

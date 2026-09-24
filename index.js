@@ -1276,8 +1276,8 @@ rnalQuery","where","schema","table","column","dataType","constraint","file","lin
 hostname:s,pathname:o}=n;if(t!=="postgres:"&&t!=="postgresql:"||e&&(!i||!s||s==="-"||!o||o==="/"))throw new N(
 "Wrong URL scheme or missing user, host or database in connection parameters");return n}a(pi,"URLFro\
 mPgConnectionString");function Aa(r){return"postgresql:"+r.href.slice(r.protocol.length)}a(Aa,"pgCon\
-nectionStringFromURL");var Ca=["connectionString","user","username","password","host","hostname","da\
-tabase","port"],_a={database:"pathname",user:"username",host:"hostname"};function di(...r){let e={};
+nectionStringFromURL");var Ca=["connectionString","user","username","password","host","hostname","po\
+rt","database"],_a={database:"pathname",user:"username",host:"hostname"};function di(...r){let e={};
 for(let t of r)e=t.connectionString!==void 0?t:{...e,...t};return e}a(di,"mergeConnectionParams");async function yi(r="\
 postgresql://-",e={},t={}){if(e.connectionString!==void 0&&(r=e.connectionString),typeof r=="functio\
 n"&&(r=await r()),typeof r!="string")throw new N("Connection string must be a string or a function r\
