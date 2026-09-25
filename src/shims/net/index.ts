@@ -722,7 +722,7 @@ export class Socket extends EventEmitter {
   ) {
     debug && log('ending socket');
     this.write(data, encoding, () => {
-      this.ws!.close();
+      if (this.ws) this.ws.close();
       callback();
     });
     return this;
