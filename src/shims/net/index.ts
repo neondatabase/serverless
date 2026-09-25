@@ -534,6 +534,7 @@ export class Socket extends EventEmitter {
 
       ws.addEventListener('close', () => {
         debug && log('websocket closed');
+        this.destroyed = true;
         this.emit('close');
       });
 
@@ -642,7 +643,13 @@ export class Socket extends EventEmitter {
     this.authorized = true;
     this.emit('secureConnection', this);
 
-    this.tlsReadLoop(); // deliberately NOT awaited
+    // deliberately NOT awaited
+    this.tlsReadLoop().catch((err) => {
+      if (this.destroyed) return;
+      this.destroyed = true;
+      this.emit('error', err);
+      this.ws?.close(); // will emit 'close' on closure
+    });
   }
 
   async tlsReadLoop() {
