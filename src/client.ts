@@ -1,6 +1,7 @@
 import { Client, Connection, type ClientConfig } from 'pg';
 import { Socket } from './shims/net';
-import { warnIfBrowser } from './utils';
+import { warnIfBrowser } from './http/utils';
+import { PACKAGE_URL } from './packageInfo';
 
 export declare interface NeonClient {
   connection: Connection & {
@@ -25,7 +26,16 @@ export class NeonClient extends Client {
   }
 
   constructor(public config?: string | ClientConfig) {
-    super(config);
+    const resolved =
+      typeof config === 'string'
+        ? { connectionString: config }
+        : {
+            ...config,
+            ...(config && 'password' in config
+              ? { password: config.password }
+              : {}),
+          };
+    super({ fallback_application_name: PACKAGE_URL, ...resolved });
   }
 
   override connect(): Promise<void>;
@@ -94,14 +104,25 @@ export class NeonClient extends Client {
         con.on('readyForQuery', this._handleReadyForQuery.bind(this)),
       );
 
+      // if the password is a function, we must resolve it before calling
+      // _handleAuthCleartextPassword, otherwise the password message gets
+      // written to the wire *after* the query message
+      const password: any = this.password;
+      const passwordPromise = Promise.resolve(
+        typeof password === 'function' ? password() : password,
+      );
+
       const connectEvent = this.ssl ? 'sslconnect' : 'connect';
       con.on(connectEvent, () => {
         if (!this.neonConfig.disableWarningInBrowsers) {
           warnIfBrowser();
         }
 
-        this._handleAuthCleartextPassword();
-        this._handleReadyForQuery();
+        passwordPromise.then((resolvedPassword) => {
+          this.password = resolvedPassword;
+          this._handleAuthCleartextPassword();
+          this._handleReadyForQuery();
+        });
       });
     }
 

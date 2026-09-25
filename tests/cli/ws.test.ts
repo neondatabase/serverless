@@ -3,12 +3,14 @@ import { Pool as PgPool, type QueryResult } from 'pg';
 import * as subtls from 'subtls';
 import { sampleQueries } from './sampleQueries';
 import { ISRGX1Cert } from './subtlsCert';
+import packageMetadata from '../../package.json';
 import {
   neon,
   neonConfig,
   Pool as WsPool,
   Client as WsClient,
   SqlTemplate,
+  parseIntoClientConfig,
 } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
 function recursiveTransform(x: any, transform: (x: any) => any): any {
@@ -33,6 +35,19 @@ const DB_DIRECT_URL = process.env.VITE_NEON_DB_URL!;
 const DB_POOLER_URL = process.env.VITE_NEON_DB_POOLER_URL!;
 
 const pgPool = new PgPool({ connectionString: DB_DIRECT_URL });
+
+test('uses the package URL as the default application name', () => {
+  const expected = `pkg:npm/%40neondatabase/serverless@${packageMetadata.version}`;
+
+  const defaultClient = new WsClient('postgres://user@example.com/database');
+  expect(defaultClient.getStartupConf().application_name).toBe(expected);
+
+  const namedClient = new WsClient({
+    connectionString: 'postgres://user@example.com/database',
+    application_name: 'custom-client',
+  });
+  expect(namedClient.getStartupConf().application_name).toBe('custom-client');
+});
 
 describe.each([
   {
@@ -141,6 +156,72 @@ describe.each([
           const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
           assertType<QueryResult<any>>(wsResult);
           await client.end();
+
+          expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
+          expect((wsResult as any).viaNeonFetch).toBeUndefined();
+        }
+      }
+    } finally {
+      neonConfig.pipelineConnect = pipelineConnect;
+      neonConfig.coalesceWrites = coalesceWrites;
+    }
+  });
+
+  test('client.query() using sync password function with pipelined connect (yes, no) x coalesced writes (yes, no)', async () => {
+    const { pipelineConnect, coalesceWrites } = neonConfig;
+    try {
+      for (const pc of ['password', false] as const) {
+        for (const cw of [true, false]) {
+          neonConfig.pipelineConnect = pc;
+          neonConfig.coalesceWrites = cw;
+
+          const connParams = parseIntoClientConfig(DB_URL);
+          const { password } = connParams;
+          delete connParams.password;
+          const syncPasswordFn = () => password as string;
+
+          const client = new WsClient({
+            ...connParams,
+            password: syncPasswordFn,
+          });
+          await client.connect();
+          const wsResult = await wsPool.query('SELECT $1::int AS one', [1]);
+          assertType<QueryResult<any>>(wsResult);
+          await client.end();
+
+          expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
+          expect((wsResult as any).viaNeonFetch).toBeUndefined();
+        }
+      }
+    } finally {
+      neonConfig.pipelineConnect = pipelineConnect;
+      neonConfig.coalesceWrites = coalesceWrites;
+    }
+  });
+
+  test('pool.query() using async password function with pipelined connect (yes, no) x coalesced writes (yes, no)', async () => {
+    const { pipelineConnect, coalesceWrites } = neonConfig;
+    try {
+      for (const pc of ['password', false] as const) {
+        for (const cw of [true, false]) {
+          neonConfig.pipelineConnect = pc;
+          neonConfig.coalesceWrites = cw;
+
+          const connParams = parseIntoClientConfig(DB_URL);
+          const { password } = connParams;
+          delete connParams.password;
+          const asyncPasswordFn: () => Promise<string> = () =>
+            new Promise((resolve) =>
+              setTimeout(() => resolve(password as string), 500),
+            );
+
+          const pool = new WsPool({
+            ...connParams,
+            password: asyncPasswordFn,
+          });
+          const wsResult = await pool.query('SELECT $1::int AS one', [1]);
+          assertType<QueryResult<any>>(wsResult);
+          await pool.end();
 
           expect(wsResult.rows).toStrictEqual([{ one: 1 }]);
           expect((wsResult as any).viaNeonFetch).toBeUndefined();

@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     fileParallelism: false,
     setupFiles: ['tests/setup.ts'],
-    testTimeout: 10000, // 10 seconds
+    testTimeout: 10000, // 10 seconds,
+    slowTestThreshold: 1000,
   },
 });

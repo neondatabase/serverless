@@ -27,5 +27,5 @@
     "noImplicitOverride": true,
     "skipLibCheck": false /* Skip type checking all .d.ts files. */
   },
-  "files": ["src/index.ts", "src/sqlTemplate.ts"]
+  "files": ["src/index.ts", "src/http/index.ts"]
 }

@@ -1,3 +1,19 @@
+## 1.x.x (2026-xx-xx)
+
+`Client` and `Pool` now support a sync or async function as the `password` connection parameter when `pipelineConnect` is enabled (this previously caused an error).
+
+Options to the `neon(...)` HTTP-client creation function, and the `transaction` and `query` functions, now support individual connection parameters. These can be strings or sync or async functions.
+
+This still works:
+
+- `const sql = neon(DATABASE_URL)`
+
+But these now work too:
+
+- `const sql = neon(DATABASE_URL_NO_PASSWORD, { password: () => getPasswordAsync() })`
+- `const sql = neon({ user, password, host, database })`
+- `const sql = neon({ connectionString: () => getConnectionString() }`
+
 ## 1.1.0 (2026-04-09)
 
 Type declarations are now fully inlined (some were previously re-exported from `@types/pg` and `@types/node`). The new types greatly reduce the size of the package with dependencies, and should be compatible in normal usage. The code that is actually run remains unchanged.

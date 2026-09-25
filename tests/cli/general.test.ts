@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { parseConnectionString } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
+import { parseIntoClientConfig } from '@neondatabase/serverless'; // see package.json: this points to 'file:.'
 
 test('log version', () => {
   if (typeof process !== 'undefined' && process.versions) {
@@ -7,13 +7,13 @@ test('log version', () => {
   }
 });
 
-test('parseConnectionString export', () => {
-  const { user, host, database, ssl } = parseConnectionString(
+test('parseIntoClientConfig export', () => {
+  const { user, host, database, ssl } = parseIntoClientConfig(
     'postgresql://u@h/d?sslmode=verify-full',
   );
 
   expect(user).toBe('u');
   expect(host).toBe('h');
   expect(database).toBe('d');
-  expect(ssl).toStrictEqual({});
+  expect(ssl).toStrictEqual(Object.create(null));
 });

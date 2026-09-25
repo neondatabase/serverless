@@ -1,7 +1,7 @@
 import type { FieldDef, CustomTypesConfig } from 'pg';
-import { types as defaultTypes } from '.';
-import type { NeonQueryPromise } from './httpQuery';
+import type { NeonQueryPromise } from './queryPromise';
 import type { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
+import { ConnectionParams } from './connection';
 
 export type QueryRows<ArrayMode extends boolean> = ArrayMode extends true
   ? any[][]
@@ -23,7 +23,7 @@ export interface ParameterizedQuery {
 export interface HTTPQueryOptions<
   ArrayMode extends boolean,
   FullResults extends boolean,
-> {
+> extends ConnectionParams {
   /**
    * When `arrayMode` is `false`, which is the default, result rows are
    * returned as objects whose keys represent column names, such as

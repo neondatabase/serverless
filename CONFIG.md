@@ -168,6 +168,29 @@ const sql = neon(process.env.DATABASE_URL, { authToken });
 const posts = await sql`SELECT * FROM posts`;
 ```
 
+### Connection parameters
+
+Connection parameters passed as options to the `neon(...)` function can supplement or override parameters from the connection string. Recognised parameters are `connectionString`, `user`, `password`, `host`, `port` and `database`.
+
+For example:
+
+```typescript
+import { neon } from '@neondatabase/serverless';
+import { getTokenAsync } from '@example/token';
+
+const sql = neon(process.env.DATABASE_URL, { password: () => getTokenAsync() });
+const result = sql`SELECT now()`;
+```
+
+If all parameters are provided, the connection string may also be omitted:
+
+```typescript
+import { neon } from '@neondatabase/serverless';
+
+const sql = neon({ user, password, host, database });
+const result = sql`SELECT now()`;
+```
+
 ## `transaction(...)` function
 
 The `transaction(queriesOrFn, options)` function is exposed as a property on the query function. It allows multiple queries to be executed within a single, non-interactive transaction.

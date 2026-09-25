@@ -1,11 +1,11 @@
 import { expect, test } from 'vitest';
-import { PrismaNeonHTTP } from '@prisma/adapter-neon';
+import { PrismaNeonHttp } from '@prisma/adapter-neon';
 import { PrismaClient } from './client/client';
 
 const DATABASE_URL = process.env.VITE_NEON_DB_URL!;
 
 test('basic query using Prisma with http', async () => {
-  const adapter = new PrismaNeonHTTP(DATABASE_URL, {});
+  const adapter = new PrismaNeonHttp(DATABASE_URL, {});
   const prisma = new PrismaClient({ adapter });
   const tzName = 'Europe/London';
   const result = await prisma.pg_timezone_names.findFirst({

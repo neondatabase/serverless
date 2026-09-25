@@ -306,18 +306,13 @@ export declare class Connection extends EventEmitter {
 
 export declare type ConnectionConfig = ClientConfig;
 
-declare interface ConnectionOptions {
-    host: string | null
-    password?: string
-    user?: string
-    port?: string | null
-    database: string | null | undefined
-    client_encoding?: string
-    ssl?: boolean | string
-    application_name?: string
-    fallback_application_name?: string
-    options?: string
-}
+declare type ConnectionParamKey = (typeof connectionParamKeys)[number];
+
+declare const connectionParamKeys: readonly ['connectionString', 'user', 'username', 'password', 'host', 'hostname', 'port', 'database'];
+
+declare type ConnectionParams = {
+    [k in ConnectionParamKey]?: k extends 'port' ? StringNumberLike : StringLike;
+};
 
 export declare interface CustomTypesConfig {
     getTypeParser: (id: PgTypeId, format?: PgTypeFormat) => any;
@@ -363,6 +358,8 @@ export declare interface Defaults extends ClientConfig {
 export declare const defaults: Defaults & ClientConfig;
 
 declare type DistinguishedName = Record<string, string | string[]>;
+
+export declare const errorFields: readonly ['severity', 'code', 'detail', 'hint', 'position', 'internalPosition', 'internalQuery', 'where', 'schema', 'table', 'column', 'dataType', 'constraint', 'file', 'line', 'routine'];
 
 export declare function escapeIdentifier(str: string): string;
 
@@ -438,7 +435,7 @@ export declare interface FullQueryResults<ArrayMode extends boolean> {
     rowAsArray: ArrayMode;
 }
 
-export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends boolean> {
+export declare interface HTTPQueryOptions<ArrayMode extends boolean, FullResults extends boolean> extends ConnectionParams {
     /**
      * When `arrayMode` is `false`, which is the default, result rows are
      * returned as objects whose keys represent column names, such as
@@ -544,19 +541,24 @@ export declare interface MessageConfig {
  * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 2: composability
+ * // example 2: specify password as a function
+ * const sql = neon("postgres://user@host/db", { password: () => getPassword() });
+ * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
+ * // -> [ { greeting: "hello world" } ]
+ *
+ * // example 3: composability
  * const sql = neon("postgres://user:pass@host/db");
  * const helloWorld = sql`${h} || ' ' || ${w}`;
  * const rows = await sql`SELECT ${helloWorld} AS greeting`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 3: unsafe raw string interpolation
+ * // example 4: unsafe raw string interpolation
  * const sql = neon("postgres://user:pass@host/db");
  * const colName = 'greeting';
  * const rows = await sql`SELECT ${h} || ' ' || ${w} AS ${sql.unsafe(colName)}`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 4: `arrayMode` and `fullResults` options
+ * // example 5: `arrayMode` and `fullResults` options
  * const options = { arrayMode: true, fullResults: true };
  * const sql = neon("postgres://user:pass@host/db", options);
  * const result = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
@@ -568,7 +570,7 @@ export declare interface MessageConfig {
  * //      rows: [ [ "hello world" ] ]
  * //    }
  *
- * // example 5: `fetchOptions` option direct to `query()` function
+ * // example 6: `fetchOptions` option direct to `query()` function
  * const sql = neon("postgres://user:pass@host/db");
  * const rows = await sql.query(
  *   "SELECT $1 || ' ' || $2 AS greeting", [h, w],
@@ -578,14 +580,38 @@ export declare interface MessageConfig {
  * ```
  *
  * @param connectionString - has the format `postgresql://user:pass@host/db`
- * @param options - pass `arrayMode: true` to receive results as an array of
- * arrays, instead of the default array of objects; pass `fullResults: true`
+ * @param options -
+ * * Pass connection parameters (such as `password`) to override or supplement
+ * parameters specified in the connection string. Parameters that are functions
+ * (either sync or async) are resolved per query.
+ * * Pass `arrayMode: true` to receive results as an array of
+ * arrays, instead of the default array of objects.
+ * * Pass `fullResults: true`
  * to receive a complete result object similar to one returned by node-postgres
- * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`);
- * pass as `fetchOptions` an object which will be merged into the options
+ * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`).
+ * * Pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
-export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, { arrayMode: neonOptArrayMode, fullResults: neonOptFullResults, fetchOptions: neonOptFetchOptions, isolationLevel: neonOptIsolationLevel, readOnly: neonOptReadOnly, deferrable: neonOptDeferrable, authToken, disableWarningInBrowsers, }?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
+export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(connectionString: string, neonOpts?: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
+
+/**
+ * Returns an async tagged-template function that runs a single SQL query (no
+ * session or transactions) with low latency over https. Queries are
+ * composable: they can be embedded inside each other.
+ *
+ * @param options -
+ * * Pass connection parameters such as `username`, `password`, `host` and
+ * `database`. Parameters that are functions (either sync or async) are
+ * resolved per query.
+ * * Pass `arrayMode: true` to receive results as an array of
+ * arrays, instead of the default array of objects.
+ * * Pass `fullResults: true`
+ * to receive a complete result object similar to one returned by node-postgres
+ * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`).
+ * * Pass as `fetchOptions` an object which will be merged into the options
+ * passed to `fetch`.
+ */
+export declare function neon<ArrayMode extends boolean = false, FullResults extends boolean = false>(neonOpts: HTTPTransactionOptions<ArrayMode, FullResults>): NeonQueryFunction<ArrayMode, FullResults>;
 
 export declare interface NeonConfig {
     poolQueryViaFetch: boolean;
@@ -907,10 +933,10 @@ export declare interface NeonQueryInTransaction {
     queryData: SqlTemplate | ParameterizedQuery;
 }
 
-export declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
+declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
 }
 
-export declare class NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> {
+declare class NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> {
     execute: (queryData: SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[], opts?: HTTPQueryOptions<ArrayMode, FullResults> | HTTPQueryOptions<ArrayMode, FullResults>[]) => Promise<T>;
     queryData: SqlTemplate | ParameterizedQuery;
     opts?: HTTPQueryOptions<ArrayMode, FullResults> | undefined;
@@ -955,7 +981,7 @@ export declare interface ParameterizedQuery {
     params: any[];
 }
 
-export declare function parseConnectionString(connectionString: string): ConnectionOptions;
+export declare function parseIntoClientConfig(str: string): ClientConfig;
 
 declare type PgTypeFormat = 'text' | 'binary';
 
@@ -1191,6 +1217,10 @@ export declare function startTls(host: string, rootCertsDatabase: RootCertsDatab
     readonly userCert: Cert;
 }>;
 
+declare type StringLike = ThingLike<string>;
+
+declare type StringNumberLike = ThingLike<string | number>;
+
 export declare interface Submittable {
     submit: (connection: Connection) => void;
 }
@@ -1200,6 +1230,8 @@ export declare interface subtls {
     TrustedCert: typeof TrustedCert;
     WebSocketReadQueue: typeof WebSocketReadQueue;
 }
+
+declare type ThingLike<T> = T | (() => T | Promise<T>);
 
 export declare class TrustedCert extends Cert {
     static databaseFromPEM(pem: string): Promise<RootCertsDatabase>;
@@ -1222,12 +1254,6 @@ export declare class UnsafeRawSql {
     sql: string;
     constructor(sql: string);
 }
-
-/**
- * Detects if the code is running in a browser environment and displays a warning
- * about the security implications of running SQL directly from the browser.
- */
-export declare function warnIfBrowser(): void;
 
 export declare interface WebSocketConstructor {
     new (...args: any[]): WebSocketLike;
