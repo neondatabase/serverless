@@ -26,11 +26,13 @@ export class NeonClient extends Client {
   }
 
   constructor(public config?: string | ClientConfig) {
+    // add fallback_application_name in call to super
     const resolved =
       typeof config === 'string'
         ? { connectionString: config }
         : {
             ...config,
+            // password is not enumerable, thus excluded from spread
             ...(config && 'password' in config
               ? { password: config.password }
               : {}),
