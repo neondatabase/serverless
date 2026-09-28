@@ -425,7 +425,7 @@ this.writeBuffer=void 0},0);else{let n=new Uint8Array(this.writeBuffer.length+t.
 n.set(t,this.writeBuffer.length),this.writeBuffer=n}}write(t,n="utf8",i=s=>{}){return t.length===0?(i(),
 !0):(typeof t=="string"&&(t=d.from(t,n)),this.tlsState===0?(this.rawWrite(t),i()):this.tlsState===1?
 this.once("secureConnection",()=>{this.write(t,n,i)}):(this.tlsWrite(t),i()),!0)}end(t=d.alloc(0),n="\
-utf8",i=()=>{}){return this.write(t,n,()=>{this.ws.close(),i()}),this}destroy(){return this.destroyed=
+utf8",i=()=>{}){return this.write(t,n,()=>{this.ws?.close(),i()}),this}destroy(){return this.destroyed=
 !0,this.end()}};a(A,"Socket"),E(A,"defaults",{poolQueryViaFetch:!1,fetchEndpoint:a((t,n,i)=>{let s;return i?.
 jwtAuth?s=t.replace(_i,"apiauth."):s=t.replace(_i,"api."),"https://"+s+"/sql"},"fetchEndpoint"),fetchConnectionCache:!0,
 fetchFunction:void 0,webSocketConstructor:void 0,wsProxy:a(t=>t+"/v2","wsProxy"),useSecureWebSocket:!0,
