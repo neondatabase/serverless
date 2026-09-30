@@ -29,10 +29,12 @@ declare global {
   interface Document {}
 }
 
-export * from './httpQuery';
-export * from './sqlTemplate';
-export type * from './httpTypes';
-export * from './utils';
+export * from './http';
+export * from './http/queryPromise';
+export * from './http/sqlTemplate';
+export * from './http/types';
+export * from './http/error';
+export * from './http/utils';
 
 export { NeonPool as Pool, type NeonPoolClient as PoolClient } from './pool';
 export { NeonClient as Client } from './client';
@@ -87,7 +89,7 @@ export type {
   Submittable,
 } from 'pg';
 
-export { parse as parseConnectionString } from 'pg-connection-string';
+export { parseIntoClientConfig } from './parse';
 
 export type NeonConfigGlobalOnly = Pick<
   SocketDefaults,

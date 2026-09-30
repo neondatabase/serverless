@@ -16,81 +16,31 @@ That is:
 * `neon` options override defaults.
 */
 
-import { Socket } from './shims/net';
-import { parse } from './shims/url';
 import { toHex } from 'hextreme';
+
 import type {
   HTTPQueryOptions,
   HTTPTransactionOptions,
   NeonQueryFunction,
   ProcessQueryResultOptions,
   ParameterizedQuery,
-} from './httpTypes';
+} from './types';
+
 import { SqlTemplate, UnsafeRawSql } from './sqlTemplate';
 import { warnIfBrowser } from './utils';
-
-import { Socket as neonConfig } from './shims/net';
+import { mergeConnectionParams, resolveConnectionParams } from './connection';
+import { NeonDbError, errorFields } from './error';
+import { NeonQueryPromise } from './queryPromise';
+import { Socket as neonConfig } from '../shims/net';
+import { PACKAGE_URL } from '../packageInfo';
 
 // @ts-ignore -- this isn't officially exported by pg
 import TypeOverrides from 'pg/lib/type-overrides';
 // @ts-ignore -- this isn't officially exported by pg
 import { prepareValue } from 'pg/lib/utils';
 
-export class NeonDbError extends Error {
-  override name = 'NeonDbError' as const;
-
-  severity: string | undefined;
-  code: string | undefined;
-  detail: string | undefined;
-  hint: string | undefined;
-  position: string | undefined;
-  internalPosition: string | undefined;
-  internalQuery: string | undefined;
-  where: string | undefined;
-  schema: string | undefined;
-  table: string | undefined;
-  column: string | undefined;
-  dataType: string | undefined;
-  constraint: string | undefined;
-  file: string | undefined;
-  line: string | undefined;
-  routine: string | undefined;
-
-  sourceError: Error | undefined;
-
-  constructor(message: string) {
-    super(message);
-
-    if (
-      'captureStackTrace' in Error &&
-      typeof Error.captureStackTrace === 'function'
-    ) {
-      Error.captureStackTrace(this, NeonDbError);
-    }
-  }
-}
-
 const txnArgErrMsg =
   'transaction() expects an array of queries, or a function returning an array of queries';
-
-const errorFields = [
-  'severity',
-  'code',
-  'detail',
-  'hint',
-  'position',
-  'internalPosition',
-  'internalQuery',
-  'where',
-  'schema',
-  'table',
-  'column',
-  'dataType',
-  'constraint',
-  'file',
-  'line',
-  'routine',
-] as const;
 
 function encodeBuffersAsBytea(value: unknown): unknown {
   // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
@@ -141,19 +91,24 @@ function prepareQuery(queryDatum: SqlTemplate | ParameterizedQuery) {
  * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 2: composability
+ * // example 2: specify password as a function
+ * const sql = neon("postgres://user@host/db", { password: () => getPassword() });
+ * const rows = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
+ * // -> [ { greeting: "hello world" } ]
+ *
+ * // example 3: composability
  * const sql = neon("postgres://user:pass@host/db");
  * const helloWorld = sql`${h} || ' ' || ${w}`;
  * const rows = await sql`SELECT ${helloWorld} AS greeting`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 3: unsafe raw string interpolation
+ * // example 4: unsafe raw string interpolation
  * const sql = neon("postgres://user:pass@host/db");
  * const colName = 'greeting';
  * const rows = await sql`SELECT ${h} || ' ' || ${w} AS ${sql.unsafe(colName)}`;
  * // -> [ { greeting: "hello world" } ]
  *
- * // example 4: `arrayMode` and `fullResults` options
+ * // example 5: `arrayMode` and `fullResults` options
  * const options = { arrayMode: true, fullResults: true };
  * const sql = neon("postgres://user:pass@host/db", options);
  * const result = await sql`SELECT ${h} || ' ' || ${w} AS greeting`;
@@ -165,7 +120,7 @@ function prepareQuery(queryDatum: SqlTemplate | ParameterizedQuery) {
  * //      rows: [ [ "hello world" ] ]
  * //    }
  *
- * // example 5: `fetchOptions` option direct to `query()` function
+ * // example 6: `fetchOptions` option direct to `query()` function
  * const sql = neon("postgres://user:pass@host/db");
  * const rows = await sql.query(
  *   "SELECT $1 || ' ' || $2 AS greeting", [h, w],
@@ -175,11 +130,16 @@ function prepareQuery(queryDatum: SqlTemplate | ParameterizedQuery) {
  * ```
  *
  * @param connectionString - has the format `postgresql://user:pass@host/db`
- * @param options - pass `arrayMode: true` to receive results as an array of
- * arrays, instead of the default array of objects; pass `fullResults: true`
+ * @param options -
+ * * Pass connection parameters (such as `password`) to override or supplement
+ * parameters specified in the connection string. Parameters that are functions
+ * (either sync or async) are resolved per query.
+ * * Pass `arrayMode: true` to receive results as an array of
+ * arrays, instead of the default array of objects.
+ * * Pass `fullResults: true`
  * to receive a complete result object similar to one returned by node-postgres
- * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`);
- * pass as `fetchOptions` an object which will be merged into the options
+ * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`).
+ * * Pass as `fetchOptions` an object which will be merged into the options
  * passed to `fetch`.
  */
 export function neon<
@@ -187,7 +147,47 @@ export function neon<
   FullResults extends boolean = false,
 >(
   connectionString: string,
-  {
+  neonOpts?: HTTPTransactionOptions<ArrayMode, FullResults>,
+): NeonQueryFunction<ArrayMode, FullResults>;
+
+/**
+ * Returns an async tagged-template function that runs a single SQL query (no
+ * session or transactions) with low latency over https. Queries are
+ * composable: they can be embedded inside each other.
+ *
+ * @param options -
+ * * Pass connection parameters such as `username`, `password`, `host` and
+ * `database`. Parameters that are functions (either sync or async) are
+ * resolved per query.
+ * * Pass `arrayMode: true` to receive results as an array of
+ * arrays, instead of the default array of objects.
+ * * Pass `fullResults: true`
+ * to receive a complete result object similar to one returned by node-postgres
+ * (with properties `rows`, `fields`, `command`, `rowCount`, `rowAsArray`).
+ * * Pass as `fetchOptions` an object which will be merged into the options
+ * passed to `fetch`.
+ */
+export function neon<
+  ArrayMode extends boolean = false,
+  FullResults extends boolean = false,
+>(
+  neonOpts: HTTPTransactionOptions<ArrayMode, FullResults>,
+): NeonQueryFunction<ArrayMode, FullResults>;
+
+export function neon<
+  ArrayMode extends boolean = false,
+  FullResults extends boolean = false,
+>(
+  connectionString?: string | HTTPTransactionOptions<ArrayMode, FullResults>,
+  neonOpts: HTTPTransactionOptions<ArrayMode, FullResults> = {},
+): NeonQueryFunction<ArrayMode, FullResults> {
+  // shuffle options forward if connectionString not passed directly
+  if (typeof connectionString !== 'string') {
+    neonOpts = connectionString ?? {};
+    connectionString = undefined;
+  }
+
+  const {
     arrayMode: neonOptArrayMode,
     fullResults: neonOptFullResults,
     fetchOptions: neonOptFetchOptions,
@@ -196,37 +196,9 @@ export function neon<
     deferrable: neonOptDeferrable,
     authToken,
     disableWarningInBrowsers,
-  }: HTTPTransactionOptions<ArrayMode, FullResults> = {},
-): NeonQueryFunction<ArrayMode, FullResults> {
-  // check the connection string
+  } = neonOpts as HTTPTransactionOptions<ArrayMode, FullResults>;
 
-  if (!connectionString)
-    throw new Error(
-      'No database connection string was provided to `neon()`. Perhaps an environment variable has not been set?',
-    );
-
-  let db;
-  try {
-    db = parse(connectionString);
-  } catch {
-    throw new Error(
-      'Database connection string provided to `neon()` is not a valid URL. Connection string: ' +
-        String(connectionString),
-    );
-  }
-
-  const { protocol, username, hostname, port, pathname } = db;
-  if (
-    (protocol !== 'postgres:' && protocol !== 'postgresql:') ||
-    !username ||
-    !hostname ||
-    !pathname
-  ) {
-    throw new Error(
-      'Database connection string format for `neon()` should be: postgresql://user:password@host.tld/dbname?option=value',
-    );
-  }
-
+  // this function is what's returned, with other functions (e.g. `query`, `transaction`) hanging off it
   function templateFn(strings: TemplateStringsArray, ...params: any[]) {
     const calledAsTemplateFn =
       Array.isArray(strings) &&
@@ -285,14 +257,13 @@ export function neon<
       | HTTPQueryOptions<ArrayMode, FullResults>[],
     txnOpts?: HTTPTransactionOptions<ArrayMode, FullResults>,
   ) {
-    const { fetchEndpoint, fetchFunction } = Socket;
+    let { fetchEndpoint, fetchFunction } = neonConfig;
 
     const bodyData = Array.isArray(queryData)
       ? { queries: queryData.map((queryDatum) => prepareQuery(queryDatum)) }
       : prepareQuery(queryData);
 
     // --- resolve options to transaction level ---
-
     let resolvedFetchOptions = neonOptFetchOptions ?? {};
     let resolvedArrayMode = neonOptArrayMode ?? false;
     let resolvedFullResults = neonOptFullResults ?? false;
@@ -336,17 +307,30 @@ export function neon<
       resolvedAuthToken = allSqlOpts.authToken;
     }
 
-    // --- set up the URL ---
+    // -- resolve connection string ---
+    const connectionParams = mergeConnectionParams(
+      neonOpts,
+      txnOpts ?? {},
+      Array.isArray(allSqlOpts) || !allSqlOpts ? {} : allSqlOpts,
+    );
+    const { resolvedConnectionString, resolvedURL } =
+      await resolveConnectionParams(
+        connectionString as string | undefined,
+        connectionParams,
+        { application_name: PACKAGE_URL },
+      );
+
+    // --- set up the fetch URL ---
     const url =
       typeof fetchEndpoint === 'function'
-        ? fetchEndpoint(hostname, port, {
+        ? fetchEndpoint(resolvedURL.hostname, resolvedURL.port, {
             jwtAuth: resolvedAuthToken !== undefined,
           })
         : fetchEndpoint;
 
     // --- set headers ---
     const headers: Record<string, string> = {
-      'Neon-Connection-String': connectionString,
+      'Neon-Connection-String': resolvedConnectionString,
       'Neon-Raw-Text-Output': 'true', // because we do our own parsing with node-postgres
       'Neon-Array-Mode': 'true', // this saves data and post-processing even if we return objects, not arrays
     };
@@ -438,48 +422,6 @@ export function neon<
   }
 
   return templateFn as any; // actual type is specified in function signature above
-}
-
-export interface NeonQueryPromise<
-  ArrayMode extends boolean,
-  FullResults extends boolean,
-  T = any,
-> extends Promise<T> {}
-
-export class NeonQueryPromise<
-  ArrayMode extends boolean,
-  FullResults extends boolean,
-  T = any,
-> {
-  constructor(
-    public execute: (
-      queryData:
-        SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[],
-      opts?:
-        | HTTPQueryOptions<ArrayMode, FullResults>
-        | HTTPQueryOptions<ArrayMode, FullResults>[],
-    ) => Promise<T>,
-    public queryData: SqlTemplate | ParameterizedQuery,
-    public opts?: HTTPQueryOptions<ArrayMode, FullResults>,
-  ) {}
-
-  then<TResult1 = T, TResult2 = never>(
-    resolve?:
-      ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-    reject?:
-      ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
-  ): Promise<TResult1 | TResult2> {
-    return this.execute(this.queryData, this.opts).then(resolve, reject);
-  }
-  catch<TResult = never>(
-    reject?:
-      ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-  ): Promise<T | TResult> {
-    return this.execute(this.queryData, this.opts).catch(reject);
-  }
-  finally(finallyFn?: (() => void) | undefined | null): Promise<T> {
-    return this.execute(this.queryData, this.opts).finally(finallyFn);
-  }
 }
 
 function processQueryResult(

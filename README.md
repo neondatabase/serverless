@@ -150,6 +150,21 @@ These points are demonstrated in the examples below.
 
 - There are a few [additional configuration options](CONFIG.md) that apply to `Pool` and `Client` here.
 
+### Using a function as the `password` connection parameter
+
+As in node-postgres, `Pool` and `Client` accept a function (sync or async) for the `password` connection parameter. This can be useful when connecting to services using short-lived auth tokens.
+
+A `password` function can be combined with a connection string by making use of the `parseIntoClientConfig` function (a top-level export here, based on the implementation in `pg-connection-string`):
+
+```javascript
+import { Pool, parseIntoClientConfig } from '@neondatabase/serverless';
+
+const pool = new Pool({
+  ...parseIntoClientConfig(process.env.DATABASE_URL),
+  password: () => getDatabaseAuthToken('argument'),
+});
+```
+
 ## Example: Node.js with `Pool.connect()`
 
 In Node.js, it takes two lines to configure WebSocket support. For example:

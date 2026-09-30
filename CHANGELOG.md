@@ -1,3 +1,32 @@
+## 1.2.0 (2026-09-30)
+
+- Options to the `neon(...)` HTTP-client creation function, and to the `transaction` and `query` functions, now support individual connection parameters: `user` (or `username`), `password`, `host` (or `hostname`), `port`, `database` and `connectionString`.
+
+  These can be strings (or number, for `port`) or sync or async functions to be resolved on every query. They can supplement, override parts of, or fully replace the first-argument connection string.
+
+  So this still works:
+
+  - `const sql = neon(DATABASE_URL)`
+
+  But, for example, these now work too:
+
+  - `const sql = neon(DATABASE_URL_NO_PASSWORD, { password: () => getPasswordAsync() })`
+  - `const sql = neon({ user, password, host, database })`
+  - `const sql = neon({ connectionString: () => getConnectionString() })`
+
+- `Client` and `Pool` now support a sync or async function as the `password` connection parameter when `pipelineConnect` is enabled (this previously caused an error). And `parseIntoClientConfig` from `pg-connection-string` is exported at top-level to make it easy to use a `password` function alongside a connection string:
+
+  ```js
+  import { Pool, parseIntoClientConfig } from '@neondatabase/serverless';
+
+  const pool = new Pool({
+    ...parseIntoClientConfig(process.env.DATABASE_URL),
+    password: () => getDatabaseAuthToken('argument'),
+  });
+  ```
+
+- A few other minor fixes.
+
 ## 1.1.0 (2026-04-09)
 
 Type declarations are now fully inlined (some were previously re-exported from `@types/pg` and `@types/node`). The new types greatly reduce the size of the package with dependencies, and should be compatible in normal usage. The code that is actually run remains unchanged.

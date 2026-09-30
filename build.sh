@@ -1,6 +1,8 @@
 #!/usr/bin/env bash 
 set -e
 
+PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
 # if nothing modified, stop (`touch src` to force build)
 find src -newer index.js | read || exit 0
 
@@ -20,6 +22,7 @@ npx esbuild src/index.ts \
   --keep-names \
   --inject:src/shims/shims.js \
   --define:BUNDLE_EXT=\"js\" \
+  --define:PACKAGE_VERSION=\"$PACKAGE_VERSION\" \
   --target=es2020 \
   --outfile=index.js \
   $DEBUG_ARG $MINIFY_ARG
@@ -32,6 +35,7 @@ npx esbuild src/index.ts \
   --keep-names \
   --inject:src/shims/shims.js \
   --define:BUNDLE_EXT=\"mjs\" \
+  --define:PACKAGE_VERSION=\"$PACKAGE_VERSION\" \
   --target=es2020 \
   --banner:js='/* @ts-self-types="./index.d.mts" */' \
   --outfile=index.mjs \
