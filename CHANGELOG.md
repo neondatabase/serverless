@@ -1,4 +1,4 @@
-## 1.2.0 (2026-xx-xx)
+## 1.2.0 (2026-09-30)
 
 - Options to the `neon(...)` HTTP-client creation function, and to the `transaction` and `query` functions, now support individual connection parameters: `user` (or `username`), `password`, `host` (or `hostname`), `port`, `database` and `connectionString`.
 
@@ -14,7 +14,16 @@
   - `const sql = neon({ user, password, host, database })`
   - `const sql = neon({ connectionString: () => getConnectionString() })`
 
-- `Client` and `Pool` now support a sync or async function as the `password` connection parameter when `pipelineConnect` is enabled (this previously caused an error).
+- `Client` and `Pool` now support a sync or async function as the `password` connection parameter when `pipelineConnect` is enabled (this previously caused an error). And `parseIntoClientConfig` from `pg-connection-string` is exported at top-level to make it easy to use a `password` function alongside a connection string:
+
+  ```js
+  import { Pool, parseIntoClientConfig } from '@neondatabase/serverless';
+
+  const pool = new Pool({
+    ...parseIntoClientConfig(process.env.DATABASE_URL),
+    password: () => getDatabaseAuthToken('argument'),
+  });
+  ```
 
 - A few other minor fixes.
 
