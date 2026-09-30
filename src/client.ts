@@ -120,11 +120,13 @@ export class NeonClient extends Client {
           warnIfBrowser();
         }
 
-        passwordPromise.then((resolvedPassword) => {
-          this.password = resolvedPassword;
-          this._handleAuthCleartextPassword();
-          this._handleReadyForQuery();
-        });
+        passwordPromise
+          .then((resolvedPassword) => {
+            this.password = resolvedPassword;
+            this._handleAuthCleartextPassword();
+            this._handleReadyForQuery();
+          })
+          .catch((reason) => con.emit('error', reason));
       });
     }
 

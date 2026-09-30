@@ -12,7 +12,7 @@
 
   - `const sql = neon(DATABASE_URL_NO_PASSWORD, { password: () => getPasswordAsync() })`
   - `const sql = neon({ user, password, host, database })`
-  - `const sql = neon({ connectionString: () => getConnectionString() }`
+  - `const sql = neon({ connectionString: () => getConnectionString() })`
 
 - `Client` and `Pool` now support a sync or async function as the `password` connection parameter when `pipelineConnect` is enabled (this previously caused an error).
 

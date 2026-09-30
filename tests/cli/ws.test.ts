@@ -233,6 +233,31 @@ describe.each([
     }
   });
 
+  test('pool.query() using password function that throws with pipelined connect (yes, no)', async () => {
+    const { pipelineConnect } = neonConfig;
+    try {
+      for (const pc of ['password', false] as const) {
+        neonConfig.pipelineConnect = pc;
+
+        const connParams = parseIntoClientConfig(DB_URL);
+        delete connParams.password;
+        const asyncThrowingFn: () => Promise<string> = () =>
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Yikes')), 500),
+          );
+
+        const pool = new WsPool({
+          ...connParams,
+          password: asyncThrowingFn,
+        });
+        const wsResult = pool.query('SELECT $1::int AS one', [1]);
+        await expect(wsResult).rejects.toThrow('Yikes');
+      }
+    } finally {
+      neonConfig.pipelineConnect = pipelineConnect;
+    }
+  });
+
   if (
     typeof process !== 'undefined' &&
     process.versions !== undefined &&

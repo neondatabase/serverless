@@ -933,10 +933,10 @@ export declare interface NeonQueryInTransaction {
     queryData: SqlTemplate | ParameterizedQuery;
 }
 
-declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
+export declare interface NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> extends Promise<T> {
 }
 
-declare class NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> {
+export declare class NeonQueryPromise<ArrayMode extends boolean, FullResults extends boolean, T = any> {
     execute: (queryData: SqlTemplate | ParameterizedQuery | (SqlTemplate | ParameterizedQuery)[], opts?: HTTPQueryOptions<ArrayMode, FullResults> | HTTPQueryOptions<ArrayMode, FullResults>[]) => Promise<T>;
     queryData: SqlTemplate | ParameterizedQuery;
     opts?: HTTPQueryOptions<ArrayMode, FullResults> | undefined;
@@ -1254,6 +1254,12 @@ export declare class UnsafeRawSql {
     sql: string;
     constructor(sql: string);
 }
+
+/**
+ * Detects if the code is running in a browser environment and displays a warning
+ * about the security implications of running SQL directly from the browser.
+ */
+export declare function warnIfBrowser(): void;
 
 export declare interface WebSocketConstructor {
     new (...args: any[]): WebSocketLike;

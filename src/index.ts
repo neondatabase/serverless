@@ -30,9 +30,11 @@ declare global {
 }
 
 export * from './http';
+export * from './http/queryPromise';
 export * from './http/sqlTemplate';
-export type * from './http/types';
+export * from './http/types';
 export * from './http/error';
+export * from './http/utils';
 
 export { NeonPool as Pool, type NeonPoolClient as PoolClient } from './pool';
 export { NeonClient as Client } from './client';
