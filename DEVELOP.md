@@ -22,6 +22,17 @@ To run tests:
 npm install @neondatabase/serverless@github:neondatabase/serverless#BRANCH_OR_COMMIT
 ```
 
-## Publish on npm and JSR
+## Publish on npm
 
-Tests must be passing locally, the repo must be clean, and `CHANGELOG.md` must include notes for the new version. Then run `npm version $BUMP --ignore-scripts=false` where `$BUMP` is `patch`, `minor` or `major`.
+On a development branch:
+
+1. Bump the version in `package.json`
+2. `npm install` so that the `package-lock.json` version agrees
+3. Ensure `CHANGELOG.md` has a heading for the new version
+4. `npm run build` so the new version is baked into `index.js` / `index.mjs`
+5. (Optional) `npm run format` and `npm run test` to catch early any issues that will surface in CI
+6. Merge into `main` following review and approval, and wait for CI to complete
+
+Then from a clean `main` matching `origin/main`, run `npm run tag-release`. This checks that the version is not yet published on npm, that the CHANGELOG heading exists, that a fresh `npm run build` leaves the working tree unchanged, and that the Lint and Test workflows triggered by the push to `main` succeeded for the current commit. Then it creates and pushes an annotated `vX.Y.Z` tag.
+
+After the tag exists, trigger the publish workflow for that tag in the separate release repo.

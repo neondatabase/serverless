@@ -1,4 +1,3 @@
-/* @ts-self-types="./index.d.mts" */
 var Po=Object.create;var Ie=Object.defineProperty;var Ro=Object.getOwnPropertyDescriptor;var Lo=Object.getOwnPropertyNames;var Bo=Object.getPrototypeOf,Fo=Object.prototype.hasOwnProperty;var Mo=(r,e,t)=>e in r?Ie(r,e,{enumerable:!0,configurable:!0,writable:!0,value:t}):r[e]=t;var a=(r,e)=>Ie(r,"name",{value:e,configurable:!0});var V=(r,e,t)=>()=>{if(t)throw t[0];try{return r&&(e=r(r=0)),e}catch(n){throw t=[n],n}};var T=(r,e)=>()=>{try{return e||r((e={exports:{}}).exports,e),e.exports}catch(t){throw e=0,t}},se=(r,e)=>{
 for(var t in e)Ie(r,t,{get:e[t],enumerable:!0})},Dn=(r,e,t,n)=>{if(e&&typeof e=="object"||typeof e==
 "function")for(let i of Lo(e))!Fo.call(r,i)&&i!==t&&Ie(r,i,{get:()=>e[i],enumerable:!(n=Ro(e,i))||n.
@@ -1287,7 +1286,7 @@ let c=e[u];if(typeof c=="function"&&(c=await c()),c===void 0)return;if(typeof c!
 rt"&&typeof c=="number")){let f=u==="port"?" or a number":"";throw new N(`Connection parameter "${u}\
 " must be a string${f} or a function resolving to one`)}let l=Ta[u]??u;n[l]=c}));let{searchParams:i}=n;
 for(let u in t)i.has(u)||i.append(u,t[u]);let s=Ca(n),o=di(s,!0);return{resolvedConnectionString:s,resolvedURL:o}}
-a(yi,"resolveConnectionParams");Ge();h();var vt="pkg:npm/%40neondatabase/serverless@1.1.0";var ds=we(_t()),ps=we(rt());var ls="transaction() expects an array of queries, or a function returning an array of queries";function Nu(r){
+a(yi,"resolveConnectionParams");Ge();h();var vt="pkg:npm/%40neondatabase/serverless@1.2.0";var ds=we(_t()),ps=we(rt());var ls="transaction() expects an array of queries, or a function returning an array of queries";function Nu(r){
 return r instanceof p?"\\x"+fi(r):r}a(Nu,"encodeBuffersAsBytea");function fs(r){let{query:e,params:t}=r instanceof
 He?r.toParameterizedQuery():r;return{query:e,params:t.map(n=>Nu((0,ps.prepareValue)(n)))}}a(fs,"prep\
 areQuery");function ys(r,e={}){typeof r!="string"&&(e=r??{},r=void 0);let{arrayMode:t,fullResults:n,
