@@ -10,28 +10,22 @@
 
 ### Install it
 
-Install it with your preferred JavaScript package manager. It's named `@neondatabase/serverless` on npm and `@neon/serverless` on JSR. So, for example:
+Install it with your preferred JavaScript package manager. It's published as `@neondatabase/serverless` on npm. So, for example:
 
 ```bash
 npm install @neondatabase/serverless
 ```
 
-or
-
-```bash
-bunx jsr add @neon/serverless
-```
-
-Using TypeScript? No worries: types are included either way.
+Using TypeScript? No worries: types are included.
 
 Note: to install with npm for use by another package that declares a dependency on `pg` (node-postgres), use an alias plus an override, which will look something like this in your `package.json`:
 
 ```json
   "dependencies": {
-    "pg": "npm:@neondatabase/serverless@^1.0.0"
+    "pg": "npm:@neondatabase/serverless@^1.2.0"
   },
   "overrides": {
-    "pg": "npm:@neondatabase/serverless@^1.0.0"
+    "pg": "npm:@neondatabase/serverless@^1.2.0"
   }
 ```
 

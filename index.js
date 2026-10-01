@@ -1289,7 +1289,7 @@ let c=e[u];if(typeof c=="function"&&(c=await c()),c===void 0)return;if(typeof c!
 rt"&&typeof c=="number")){let f=u==="port"?" or a number":"";throw new q(`Connection parameter "${u}\
 " must be a string${f} or a function resolving to one`)}let l=Ia[u]??u;n[l]=c}));let{searchParams:i}=n;
 for(let u in t)i.has(u)||i.append(u,t[u]);let s=_a(n),o=pi(s,!0);return{resolvedConnectionString:s,resolvedURL:o}}
-a(mi,"resolveConnectionParams");Ke();h();var vt="pkg:npm/%40neondatabase/serverless@1.1.0";var ps=xe(_t()),ys=xe(st());var fs="transaction() expects an array of queries, or a function returning an array of queries";function Wu(r){
+a(mi,"resolveConnectionParams");Ke();h();var vt="pkg:npm/%40neondatabase/serverless@1.2.0";var ps=xe(_t()),ys=xe(st());var fs="transaction() expects an array of queries, or a function returning an array of queries";function Wu(r){
 return r instanceof p?"\\x"+di(r):r}a(Wu,"encodeBuffersAsBytea");function hs(r){let{query:e,params:t}=r instanceof
 Me?r.toParameterizedQuery():r;return{query:e,params:t.map(n=>Wu((0,ys.prepareValue)(n)))}}a(hs,"prep\
 areQuery");function mr(r,e={}){typeof r!="string"&&(e=r??{},r=void 0);let{arrayMode:t,fullResults:n,

@@ -1,4 +1,4 @@
-## 1.2.0 (2026-09-30)
+## 1.2.0 (2026-10-01)
 
 - Options to the `neon(...)` HTTP-client creation function, and to the `transaction` and `query` functions, now support individual connection parameters: `user` (or `username`), `password`, `host` (or `hostname`), `port`, `database` and `connectionString`.
 
@@ -26,6 +26,8 @@
   ```
 
 - A few other minor fixes.
+
+- The package is no longer published to JSR. Please update any `jsr` references to `npm:@neondatabase/serverless`.
 
 ## 1.1.0 (2026-04-09)
 
