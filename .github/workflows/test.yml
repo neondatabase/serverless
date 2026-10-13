@@ -23,8 +23,8 @@ env:
 jobs:
   test-old:
     runs-on:
-      group: neondatabase-protected-runner-group
-      labels: linux-ubuntu-latest
+      group: databricks-ghec-public-repos-runner-group-small
+      labels: linux-ubuntu-latest-public-2core-8gb
     steps:
       # setup
       - name: Harden the runner (Audit all outbound calls)
@@ -55,8 +55,8 @@ jobs:
 
   test-current:
     runs-on:
-      group: neondatabase-protected-runner-group
-      labels: linux-ubuntu-latest
+      group: databricks-ghec-public-repos-runner-group-small
+      labels: linux-ubuntu-latest-public-2core-8gb
     steps:
       # setup
       - name: Harden the runner (Audit all outbound calls)
