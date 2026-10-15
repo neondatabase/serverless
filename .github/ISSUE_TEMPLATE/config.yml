@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Neon Documentation
+    url: https://neon.tech/docs
+    about: Check out the official Neon documentation for guides and API references
+  - name: Neon Discord Community
+    url: https://discord.gg/neon
+    about: Join the Neon community on Discord for questions and discussions
+  - name: Neon Support
+    url: https://neon.tech/support
+    about: Contact Neon support for account or billing issues
