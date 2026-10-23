@@ -23,6 +23,15 @@ interface ConnectionParameters {
   password: string;
   host: string;
   database: string;
+  application_name?: string;
+  fallback_application_name?: string;
+  options?: string;
+  statement_timeout?: number | false;
+  lock_timeout?: number | false;
+  idle_in_transaction_session_timeout?: number | false;
+  query_timeout?: number | false;
+  client_encoding?: string;
+  replication?: string | boolean;
 }
 
 // copied from pg to support NeonPool.query
@@ -63,6 +72,7 @@ export declare interface NeonPool {
 export class NeonPool extends Pool {
   Client = NeonClient;
   hasFetchUnsupportedListeners = false;
+  private hasWarnedAboutFetchConnectionOptions = false;
 
   override on(
     event: 'error' | 'connect' | 'acquire' | 'release' | 'remove',
@@ -120,6 +130,28 @@ export class NeonPool extends Pool {
 
     try {
       const cp = new ConnectionParameters(this.options) as ConnectionParameters;
+      const ignoredOptions = (
+        [
+          'application_name',
+          'fallback_application_name',
+          'options',
+          'statement_timeout',
+          'lock_timeout',
+          'idle_in_transaction_session_timeout',
+          'query_timeout',
+          'client_encoding',
+          'replication',
+        ] as const
+      ).filter((name) => cp[name]);
+      if (
+        ignoredOptions.length > 0 &&
+        !this.hasWarnedAboutFetchConnectionOptions
+      ) {
+        this.hasWarnedAboutFetchConnectionOptions = true;
+        console.warn(
+          `Pool.query() over HTTP ignores these connection options: ${ignoredOptions.join(', ')}. See https://github.com/neondatabase/serverless/blob/main/CONFIG.md#poolqueryviafetch-boolean for limitations.`,
+        );
+      }
       const euc = encodeURIComponent;
       const eu = encodeURI;
       const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;

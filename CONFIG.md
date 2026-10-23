@@ -240,6 +240,24 @@ If `true`, this option ensures that a `READ ONLY` transaction is used to execute
 
 If `true` (and if `readOnly` is also `true`, and `isolationMode` is `'Serializable'`), this option ensures that a `DEFERRABLE` transaction is used to execute the queries passed.
 
+### Statement timeouts
+
+To enforce a server-side timeout over HTTP, set `statement_timeout` locally in an explicit transaction before running the query:
+
+```javascript
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.DATABASE_URL);
+
+await sql.transaction([
+  sql`SELECT set_config('statement_timeout', ${'1s'}, true)`,
+  sql`SELECT pg_sleep(5)`,
+]);
+```
+
+The second statement exceeds the one-second limit, so PostgreSQL cancels it and the transaction rejects with error code `57014`. The `true` argument limits the setting to this transaction. It resets when the transaction commits or rolls back.
+
+This approach requires an explicit transaction. Commands such as `VACUUM` cannot run inside one. It does not make `Pool` timeout options apply to HTTP queries.
+
 ## `neonConfig` configuration
 
 In most cases, there are two ways to set configuration options:
@@ -282,6 +300,12 @@ If you're using `@neondatabase/serverless` to connect to a Neon database, you us
 #### `poolQueryViaFetch: boolean`
 
 **Experimentally**, when `poolQueryViaFetch` is `true` and no listeners for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP `fetch` request.
+
+HTTP pool queries use only the resolved user, password, host and database. Other connection-string query parameters are not forwarded. In particular, `application_name`, `fallback_application_name`, `options`, `statement_timeout`, `lock_timeout`, `idle_in_transaction_session_timeout`, `query_timeout`, `client_encoding` and `replication` are not applied. The pool warns once about ignored settings from its options, connection string or supported node-postgres environment variables. Empty, `false` and numeric `0` values do not trigger a warning. Queries still use HTTP.
+
+Do not rely on a pool's timeout settings to limit an HTTP query. The warning does not make those settings take effect. Disabling `poolQueryViaFetch` restores the normal WebSocket path, but startup-setting support also depends on the server and its connection pooler. See [Neon's connection pooling limitations](https://neon.com/docs/connect/connection-pooling#connection-pooling-in-transaction-mode).
+
+For an explicit HTTP transaction, use a [transaction-local statement timeout](#statement-timeouts).
 
 Default: currently `false` (but may be `true` in future).
 

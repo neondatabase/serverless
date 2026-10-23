@@ -141,3 +141,56 @@ test('invalid queries passed to `transaction()` in array', async () => {
     'transaction() expects an array of queries, or a function returning an array of queries',
   );
 });
+
+for (const [endpoint, connectionString] of [
+  ['direct', process.env.VITE_NEON_DB_URL],
+  ['pooled', process.env.VITE_NEON_DB_POOLER_URL],
+] as const) {
+  test.skipIf(!connectionString)(
+    `cancels a statement with a transaction-local timeout on the ${endpoint} endpoint and permits another query`,
+    async () => {
+      const timeoutSQL = neon(connectionString!);
+      const [before] = await timeoutSQL`
+        SELECT current_setting('statement_timeout') AS timeout
+      `;
+
+      await expect(
+        timeoutSQL.transaction([
+          timeoutSQL`SELECT set_config('statement_timeout', ${'100ms'}, true)`,
+          timeoutSQL`SELECT pg_sleep(1)`,
+        ]),
+      ).rejects.toMatchObject({
+        code: '57014',
+        message: expect.stringContaining('statement timeout'),
+      });
+
+      const [after] = await timeoutSQL`
+        SELECT 1::int AS value, current_setting('statement_timeout') AS timeout
+      `;
+      expect(after).toEqual({ value: 1, timeout: before.timeout });
+    },
+  );
+
+  test.skipIf(!connectionString)(
+    `applies a timeout within a successful transaction on the ${endpoint} endpoint`,
+    async () => {
+      const timeoutSQL = neon(connectionString!);
+      const [before] = await timeoutSQL`
+        SELECT current_setting('statement_timeout') AS timeout
+      `;
+      const [, [result]] = await timeoutSQL.transaction([
+        timeoutSQL`SELECT set_config('statement_timeout', ${'1s'}, true)`,
+        timeoutSQL`
+          SELECT ${42}::int AS value,
+            current_setting('statement_timeout') AS timeout
+        `,
+      ]);
+      expect(result).toEqual({ value: 42, timeout: '1s' });
+
+      const [after] = await timeoutSQL`
+        SELECT current_setting('statement_timeout') AS timeout
+      `;
+      expect(after.timeout).toBe(before.timeout);
+    },
+  );
+}
