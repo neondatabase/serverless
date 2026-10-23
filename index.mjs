@@ -1324,22 +1324,23 @@ rocessQueryResult");async function Wu(r){if(typeof r=="string")return r;if(typeo
 return await Promise.resolve(r())}catch(e){let t=new N("Error getting auth token.");throw e instanceof
 Error&&(t=new N(`Error getting auth token: ${e.message}`)),t}}a(Wu,"getAuthToken");h();h();var Co=we(ot());h();var Ao=we(ot());var On=class On extends Ao.Client{constructor(t){let n=typeof t=="string"?{connectionString:t}:{...t,
 ...t&&"password"in t?{password:t.password}:{}};super({fallback_application_name:vt,...n});E(this,"co\
-nfig",t)}get neonConfig(){return this.connection.stream}connect(t){let{neonConfig:n}=this;n.forceDisablePgSSL&&
-(this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&console.warn("SSL is enabled for b\
-oth Postgres (e.g. ?sslmode=require in the connection string + forceDisablePgSSL = false) and the We\
-bSocket tunnel (useSecureWebSocket = true). Double encryption will increase latency and CPU usage. I\
-t may be appropriate to disable SSL in the Postgres connection parameters or set forceDisablePgSSL =\
- true.");let i=typeof this.config!="string"&&this.config?.host!==void 0||typeof this.config!="string"&&
-this.config?.connectionString!==void 0||y.env.PGHOST!==void 0,s=y.env.USER??y.env.USERNAME;if(!i&&this.
-host==="localhost"&&this.user===s&&this.database===s&&this.password===null)throw new Error(`No datab\
-ase host or connection string was set, and key parameters have default values (host: localhost, user\
-: ${s}, db: ${s}, password: null). Is an environment variable missing? Alternatively, if you intende\
-d to connect with these parameters, please set the host to 'localhost' explicitly.`);let o=super.connect(
-t),u=n.pipelineTLS&&this.ssl,c=n.pipelineConnect==="password";if(!u&&!n.pipelineConnect)return o;let l=this.
-connection;if(u&&l.on("connect",()=>l.stream.emit("data","S")),c){l.removeAllListeners("authenticati\
-onCleartextPassword"),l.removeAllListeners("readyForQuery"),l.once("readyForQuery",()=>l.on("readyFo\
-rQuery",this._handleReadyForQuery.bind(this)));let f=this.password,m=Promise.resolve(typeof f=="func\
-tion"?f():f),g=this.ssl?"sslconnect":"connect";l.on(g,()=>{this.neonConfig.disableWarningInBrowsers||
+nfig",t);E(this,"_ended",!1);this.connection.once("end",()=>this._ended=!0)}get neonConfig(){return this.
+connection.stream}end(t){return this._ended?t?t():Promise.resolve():super.end(t)}connect(t){let{neonConfig:n}=this;
+n.forceDisablePgSSL&&(this.ssl=this.connection.ssl=!1),this.ssl&&n.useSecureWebSocket&&console.warn(
+"SSL is enabled for both Postgres (e.g. ?sslmode=require in the connection string + forceDisablePgSS\
+L = false) and the WebSocket tunnel (useSecureWebSocket = true). Double encryption will increase lat\
+ency and CPU usage. It may be appropriate to disable SSL in the Postgres connection parameters or se\
+t forceDisablePgSSL = true.");let i=typeof this.config!="string"&&this.config?.host!==void 0||typeof this.
+config!="string"&&this.config?.connectionString!==void 0||y.env.PGHOST!==void 0,s=y.env.USER??y.env.
+USERNAME;if(!i&&this.host==="localhost"&&this.user===s&&this.database===s&&this.password===null)throw new Error(
+`No database host or connection string was set, and key parameters have default values (host: localh\
+ost, user: ${s}, db: ${s}, password: null). Is an environment variable missing? Alternatively, if yo\
+u intended to connect with these parameters, please set the host to 'localhost' explicitly.`);let o=super.
+connect(t),u=n.pipelineTLS&&this.ssl,c=n.pipelineConnect==="password";if(!u&&!n.pipelineConnect)return o;
+let l=this.connection;if(u&&l.on("connect",()=>l.stream.emit("data","S")),c){l.removeAllListeners("a\
+uthenticationCleartextPassword"),l.removeAllListeners("readyForQuery"),l.once("readyForQuery",()=>l.
+on("readyForQuery",this._handleReadyForQuery.bind(this)));let f=this.password,m=Promise.resolve(typeof f==
+"function"?f():f),g=this.ssl?"sslconnect":"connect";l.on(g,()=>{this.neonConfig.disableWarningInBrowsers||
 gt(),m.then(w=>{this.password=w,this._handleAuthCleartextPassword(),this._handleReadyForQuery()}).catch(
 w=>l.emit("error",w))})}return o}async _handleAuthSASLContinue(t){if(typeof crypto>"u"||crypto.subtle===
 void 0||crypto.subtle.importKey===void 0)throw new Error("Cannot use SASL auth when `crypto.subtle` \

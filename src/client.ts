@@ -38,6 +38,20 @@ export class NeonClient extends Client {
               : {}),
           };
     super({ fallback_application_name: PACKAGE_URL, ...resolved });
+    this.connection.once('end', () => (this._ended = true));
+  }
+
+  // Backports brianc/node-postgres#2717 to the bundled pg 8.8: `end()` on a
+  // connection that has already ended otherwise waits for an 'end' event that
+  // has already fired, and pg-pool only serves its queue once that callback runs
+  private _ended = false;
+
+  override end(): Promise<void>;
+  override end(callback: () => void): void;
+  override end(callback?: () => void) {
+    if (!this._ended) return super.end(callback as any) as void | Promise<void>;
+    if (callback) return callback();
+    return Promise.resolve();
   }
 
   override connect(): Promise<void>;
