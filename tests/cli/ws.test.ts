@@ -281,3 +281,33 @@ describe.each([
     });
   }
 });
+
+test('Pool keeps serving queued queries after connection drops (issue #230)', async () => {
+  const wsPool = new WsPool({ connectionString: DB_POOLER_URL, max: 1 });
+
+  // use `ws` for its `terminate` method
+  const { webSocketConstructor } = neonConfig;
+  neonConfig.webSocketConstructor = (await import('ws')).WebSocket;
+
+  const client = await wsPool.connect();
+  client.on('error', () => {});
+
+  const slow = client.query('SELECT pg_sleep(5)').catch(() => {});
+  const queued = wsPool.query('SELECT 1 AS one'); // waits for the only pool slot
+  await new Promise((r) => setTimeout(r, 250));
+
+  /* @ts-expect-error */
+  client.connection.stream.ws.terminate(); // simulate a dropped connection (no close frame)
+  console.log('slow query:', await slow); // Connection terminated unexpectedly
+  client.release(new Error('connection dropped'));
+
+  const result = await Promise.race<string>([
+    queued.then(() => 'queued query served'),
+    new Promise((r) => setTimeout(() => r('queued query waiting'), 2000)),
+  ]);
+
+  expect(result).toEqual('queued query served');
+
+  // restore native/previous WebSocket
+  neonConfig.webSocketConstructor = webSocketConstructor;
+});

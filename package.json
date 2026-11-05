@@ -1,6 +1,6 @@
 {
   "name": "@neondatabase/serverless",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "Neon",
   "description": "node-postgres for serverless environments from neon.com",
   "exports": {
@@ -108,6 +108,7 @@
   },
   "overrides": {
     "pg-connection-string": "2.5.0",
+    "pg-pool": "3.10.0",
     "pgpass": "1.0.5",
     "@neondatabase/serverless": "file:."
   }

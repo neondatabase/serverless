@@ -1,3 +1,7 @@
+## 1.2.1 (2026-11-05)
+
+Fix an issue where a Pool would stop serving queued queries after a dropped connection.
+
 ## 1.2.0 (2026-10-01)
 
 - Options to the `neon(...)` HTTP-client creation function, and to the `transaction` and `query` functions, now support individual connection parameters: `user` (or `username`), `password`, `host` (or `hostname`), `port`, `database` and `connectionString`.
