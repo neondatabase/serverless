@@ -19,8 +19,8 @@ const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [
     "views"
   ],
-  "clientVersion": "7.10.0",
-  "engineVersion": "0edf323efd1d98336f3f0a68684b56f689b900d3",
+  "clientVersion": "7.10.1",
+  "engineVersion": "d1b3f377ca835d73fd50954a5e22128b9ebdd6b8",
   "activeProvider": "postgresql",
   "inlineSchema": "// for tests\n\ndatasource db {\n  provider = \"postgresql\"\n  schemas  = [\"pg_catalog\"]\n}\n\ngenerator client {\n  provider        = \"prisma-client\"\n  output          = \"./client\"\n  previewFeatures = [\"views\"]\n}\n\nview pg_timezone_names {\n  name   String  @unique\n  abbrev String\n  is_dst Boolean\n\n  @@schema(\"pg_catalog\")\n}\n",
   "runtimeDataModel": {
