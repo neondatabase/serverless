@@ -144,6 +144,8 @@ These points are demonstrated in the examples below.
 
 - There are a few [additional configuration options](CONFIG.md) that apply to `Pool` and `Client` here.
 
+- **Connection strings**: as in node-postgres, `Client` accepts a connection string directly (`new Client(process.env.DATABASE_URL)`) or as `{ connectionString }`, while `Pool` accepts only `{ connectionString }`.
+
 ### Using a function as the `password` connection parameter
 
 As in node-postgres, `Pool` and `Client` accept a function (sync or async) for the `password` connection parameter. This can be useful when connecting to services using short-lived auth tokens.
@@ -286,6 +288,43 @@ export default async (req: Request, ctx: any) => {
 export const config = {
   runtime: 'edge',
   regions: ['iad1'],  // specify the region nearest your Neon DB
+};
+```
+
+## Example: Cloudflare Workers with `Pool`
+
+The Vercel Edge Function `Pool` example above, adapted for Cloudflare Workers using module syntax. The connection string comes from the Worker's `env` rather than `process.env`:
+
+```javascript
+import { Pool } from '@neondatabase/serverless';
+
+// *don't* create a `Pool` or `Client` here, outside the request handler
+
+export default {
+  fetch: async (req: Request, env: any, ctx: any) => {
+    // create a `Pool` inside the request handler
+    const pool = new Pool({ connectionString: env.DATABASE_URL });
+
+    try {
+      // get and validate the `postId` query parameter
+      const postId = parseInt(new URL(req.url).searchParams.get('postId'), 10);
+      if (isNaN(postId)) return new Response('Bad request', { status: 400 });
+
+      // query and validate the post
+      const { rows: [post] } = await pool.query('SELECT * FROM posts WHERE id = $1', [postId]);
+      if (!post) return new Response('Not found', { status: 404 });
+
+      // return the post as JSON
+      return new Response(JSON.stringify(post), {
+        headers: { 'content-type': 'application/json' }
+      });
+
+    } finally {
+      // end the `Pool` inside the same request handler
+      // (unlike `await`, `ctx.waitUntil` won't hold up the response)
+      ctx.waitUntil(pool.end());
+    }
+  }
 };
 ```
 
