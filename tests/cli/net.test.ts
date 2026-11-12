@@ -45,6 +45,19 @@ describe('Socket TLS', () => {
     expect(socket.destroyed).toBe(true);
   });
 
+  test('emits close directly when TLS read fails with no WebSocket', async () => {
+    const readError = new Error('TLS read failed without ws');
+    const socket = socketWithMockTls(() => Promise.reject(readError));
+    (socket as any).ws = undefined;
+    const errors: unknown[] = [];
+    const closed = new Promise<void>((resolve) => socket.on('close', resolve));
+    socket.on('error', (err) => errors.push(err));
+    await socket.startTls('example.com');
+    await closed;
+    expect(errors).toEqual([readError]);
+    expect(socket.destroyed).toBe(true);
+  });
+
   test('does not emit error if the socket is already destroyed', async () => {
     const socket = socketWithMockTls(() =>
       Promise.reject(new Error('late read')),
