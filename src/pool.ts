@@ -15,15 +15,7 @@ import { neon } from './http';
 import { Socket } from './shims/net';
 import type { NeonConfigGlobalAndClient } from '.';
 
-// @ts-ignore -- this isn't officially exported by pg
-import ConnectionParameters from '../node_modules/pg/lib/connection-parameters';
-
-interface ConnectionParameters {
-  user: string;
-  password: string;
-  host: string;
-  database: string;
-}
+import { connectionStringFromPoolOptions } from './pool-connection-string';
 
 // copied from pg to support NeonPool.query
 function promisify(Promise: any, callback: any) {
@@ -119,10 +111,7 @@ export class NeonPool extends Pool {
     cb = response.callback;
 
     try {
-      const cp = new ConnectionParameters(this.options) as ConnectionParameters;
-      const euc = encodeURIComponent;
-      const eu = encodeURI;
-      const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
+      const connectionString = connectionStringFromPoolOptions(this.options);
 
       const queryText = typeof config === 'string' ? config : config.text;
       const queryValues = values ?? config.values ?? [];
