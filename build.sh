@@ -3,8 +3,27 @@ set -e
 
 PACKAGE_VERSION=$(node -p "require('./package.json').version")
 
+# Backport brianc/node-postgres#2717 into the pinned pg 8.8.0 Client so
+# pg-pool >= 3.10.1 can pulse the queue after removing a client whose
+# connection already ended (neondatabase/serverless#230).
+apply_pg_ended_patch() {
+  local client="node_modules/pg/lib/client.js"
+  local patch="patches/pg-8.8.0-client-ended.patch"
+  if [ ! -f "$client" ]; then
+    echo "error: $client missing; run npm install first" >&2
+    exit 1
+  fi
+  if grep -q 'this._ended = false' "$client"; then
+    return 0
+  fi
+  (cd node_modules/pg && patch -p1 < "../../$patch")
+}
+
+apply_pg_ended_patch
+
 # if nothing modified, stop (`touch src` to force build)
-find src -newer index.js | read || exit 0
+# Also rebuild when the pg Client patch changes.
+find src patches/pg-8.8.0-client-ended.patch -newer index.js 2>/dev/null | read || exit 0
 
 # handle "debug" argument
 if [ "$1" = "debug" ]; then

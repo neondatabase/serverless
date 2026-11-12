@@ -45,6 +45,7 @@
   },
   "scripts": {
     "build": "./build.sh",
+    "postinstall": "node scripts/apply-pg-ended-patch.js",
     "tag-release": "./tag-release.sh",
     "format": "prettier -c .",
     "format:diff": "fn () { prettier $1 | diff $1 -; }; fn",

@@ -990,27 +990,27 @@ new El(e),this.user=this.connectionParameters.user,this.database=this.connection
 this.port=this.connectionParameters.port,this.host=this.connectionParameters.host,Object.defineProperty(
 this,"password",{configurable:!0,enumerable:!1,writable:!0,value:this.connectionParameters.password}),
 this.replication=this.connectionParameters.replication;var t=e||{};this._Promise=t.Promise||b.Promise,
-this._types=new Sl(t.types),this._ending=!1,this._connecting=!1,this._connected=!1,this._connectionError=
-!1,this._queryable=!0,this.connection=t.connection||new Cl({stream:t.stream,ssl:this.connectionParameters.
-ssl,keepAlive:t.keepAlive||!1,keepAliveInitialDelayMillis:t.keepAliveInitialDelayMillis||0,encoding:this.
-connectionParameters.client_encoding||"utf8"}),this.queryQueue=[],this.binary=t.binary||Al.binary,this.
-processID=null,this.secretKey=null,this.ssl=this.connectionParameters.ssl||!1,this.ssl&&this.ssl.key&&
-Object.defineProperty(this.ssl,"key",{enumerable:!1}),this._connectionTimeoutMillis=t.connectionTimeoutMillis||
-0}_errorAllQueries(e){let t=a(n=>{y.nextTick(()=>{n.handleError(e,this.connection)})},"enqueueError");
-this.activeQuery&&(t(this.activeQuery),this.activeQuery=null),this.queryQueue.forEach(t),this.queryQueue.
-length=0}_connect(e){var t=this,n=this.connection;if(this._connectionCallback=e,this._connecting||this.
-_connected){let i=new Error("Client has already been connected. You cannot reuse a client.");y.nextTick(
-()=>{e(i)});return}this._connecting=!0,this.connectionTimeoutHandle,this._connectionTimeoutMillis>0&&
-(this.connectionTimeoutHandle=setTimeout(()=>{n._ending=!0,n.stream.destroy(new Error("timeout expir\
-ed"))},this._connectionTimeoutMillis)),this.host&&this.host.indexOf("/")===0?n.connect(this.host+"/.\
-s.PGSQL."+this.port):n.connect(this.port,this.host),n.on("connect",function(){t.ssl?n.requestSsl():n.
-startup(t.getStartupConf())}),n.on("sslconnect",function(){n.startup(t.getStartupConf())}),this._attachListeners(
+this._types=new Sl(t.types),this._ending=!1,this._ended=!1,this._connecting=!1,this._connected=!1,this.
+_connectionError=!1,this._queryable=!0,this.connection=t.connection||new Cl({stream:t.stream,ssl:this.
+connectionParameters.ssl,keepAlive:t.keepAlive||!1,keepAliveInitialDelayMillis:t.keepAliveInitialDelayMillis||
+0,encoding:this.connectionParameters.client_encoding||"utf8"}),this.queryQueue=[],this.binary=t.binary||
+Al.binary,this.processID=null,this.secretKey=null,this.ssl=this.connectionParameters.ssl||!1,this.ssl&&
+this.ssl.key&&Object.defineProperty(this.ssl,"key",{enumerable:!1}),this._connectionTimeoutMillis=t.
+connectionTimeoutMillis||0}_errorAllQueries(e){let t=a(n=>{y.nextTick(()=>{n.handleError(e,this.connection)})},
+"enqueueError");this.activeQuery&&(t(this.activeQuery),this.activeQuery=null),this.queryQueue.forEach(
+t),this.queryQueue.length=0}_connect(e){var t=this,n=this.connection;if(this._connectionCallback=e,this.
+_connecting||this._connected){let i=new Error("Client has already been connected. You cannot reuse a\
+ client.");y.nextTick(()=>{e(i)});return}this._connecting=!0,this.connectionTimeoutHandle,this._connectionTimeoutMillis>
+0&&(this.connectionTimeoutHandle=setTimeout(()=>{n._ending=!0,n.stream.destroy(new Error("timeout ex\
+pired"))},this._connectionTimeoutMillis)),this.host&&this.host.indexOf("/")===0?n.connect(this.host+
+"/.s.PGSQL."+this.port):n.connect(this.port,this.host),n.on("connect",function(){t.ssl?n.requestSsl():
+n.startup(t.getStartupConf())}),n.on("sslconnect",function(){n.startup(t.getStartupConf())}),this._attachListeners(
 n),n.once("end",()=>{let i=this._ending?new Error("Connection terminated"):new Error("Connection ter\
-minated unexpectedly");clearTimeout(this.connectionTimeoutHandle),this._errorAllQueries(i),this._ending||
-(this._connecting&&!this._connectionError?this._connectionCallback?this._connectionCallback(i):this.
-_handleErrorEvent(i):this._connectionError||this._handleErrorEvent(i)),y.nextTick(()=>{this.emit("en\
-d")})})}connect(e){if(e){this._connect(e);return}return new this._Promise((t,n)=>{this._connect(i=>{
-i?n(i):t()})})}_attachListeners(e){e.on("authenticationCleartextPassword",this._handleAuthCleartextPassword.
+minated unexpectedly");clearTimeout(this.connectionTimeoutHandle),this._errorAllQueries(i),this._ended=
+!0,this._ending||(this._connecting&&!this._connectionError?this._connectionCallback?this._connectionCallback(
+i):this._handleErrorEvent(i):this._connectionError||this._handleErrorEvent(i)),y.nextTick(()=>{this.
+emit("end")})})}connect(e){if(e){this._connect(e);return}return new this._Promise((t,n)=>{this._connect(
+i=>{i?n(i):t()})})}_attachListeners(e){e.on("authenticationCleartextPassword",this._handleAuthCleartextPassword.
 bind(this)),e.on("authenticationMD5Password",this._handleAuthMD5Password.bind(this)),e.on("authentic\
 ationSASL",this._handleAuthSASL.bind(this)),e.on("authenticationSASLContinue",this._handleAuthSASLContinue.
 bind(this)),e.on("authenticationSASLFinal",this._handleAuthSASLFinal.bind(this)),e.on("backendKeyDat\
@@ -1074,8 +1074,8 @@ _queryable?this._ending?(y.nextTick(()=>{i.handleError(new Error("Client was clo
 able"),this.connection)}),s):(this.queryQueue.push(i),this._pulseQueryQueue(),s):(y.nextTick(()=>{i.
 handleError(new Error("Client has encountered a connection error and is not queryable"),this.connection)}),
 s)}ref(){this.connection.ref()}unref(){this.connection.unref()}end(e){if(this._ending=!0,!this.connection.
-_connecting)if(e)e();else return this._Promise.resolve();if(this.activeQuery||!this._queryable?this.
-connection.stream.destroy():this.connection.end(),e)this.connection.once("end",e);else return new this.
+_connecting||this._ended)if(e)e();else return this._Promise.resolve();if(this.activeQuery||!this._queryable?
+this.connection.stream.destroy():this.connection.end(),e)this.connection.once("end",e);else return new this.
 _Promise(t=>{this.connection.once("end",t)})}};a(Pn,"Client");var Ut=Pn;Ut.Query=oo;ao.exports=Ut});var fo=T((zd,lo)=>{"use strict";h();var _l=Se().EventEmitter,Rn=a(function(){},"NOOP"),co=a((r,e)=>{
 let t=r.findIndex(e);return t===-1?void 0:r.splice(t,1)[0]},"removeWhere"),Fn=class Fn{constructor(e,t,n){
 this.client=e,this.idleListener=t,this.timeoutId=n}};a(Fn,"IdleItem");var Ln=Fn,Mn=class Mn{constructor(e){
