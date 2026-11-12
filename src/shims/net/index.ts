@@ -729,7 +729,8 @@ export class Socket extends EventEmitter {
   ) {
     debug && log('ending socket');
     this.write(data, encoding, () => {
-      this.ws?.close();
+      // note: `this.ws` is null if end() is called before the WebSocket is assigned: https://github.com/neondatabase/serverless/issues/216
+      if (this.ws) this.ws.close();
       callback();
     });
     return this;

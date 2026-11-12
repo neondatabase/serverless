@@ -32,6 +32,13 @@ function socketWithMockTls(read: () => Promise<Uint8Array | undefined>) {
   return socket;
 }
 
+describe('Socket end', () => {
+  test('does not throw when called before the WebSocket is assigned', () => {
+    const socket = new Socket();
+    expect(() => socket.end()).not.toThrow();
+  });
+});
+
 describe('Socket TLS', () => {
   test('emits error and close when the TLS read loop rejects', async () => {
     const readError = new Error('TLS read failed');
