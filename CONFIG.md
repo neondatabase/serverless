@@ -283,6 +283,8 @@ If you're using `@neondatabase/serverless` to connect to a Neon database, you us
 
 **Experimentally**, when `poolQueryViaFetch` is `true` and no listeners for the `"connect"`, `"acquire"`, `"release"` or `"remove"` events are set on the `Pool`, queries via `Pool.query()` will be sent by low-latency HTTP `fetch` request.
 
+Connection options that node-postgres would send in the StartupMessage are forwarded on this path as connection-string query parameters, including `application_name`, `options`, `statement_timeout`, `lock_timeout`, `idle_in_transaction_session_timeout`, and `client_encoding` (whether set on the `Pool` config object or parsed from `connectionString`).
+
 Default: currently `false` (but may be `true` in future).
 
 Note: this option can only be set globally, **not** on an individual `Client` instance.
