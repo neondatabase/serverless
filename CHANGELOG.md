@@ -1,6 +1,6 @@
-## 1.2.1 (2026-11-05)
+## 1.2.1 (2026-11-13)
 
-Fix an issue where a Pool would stop serving queued queries after a dropped connection.
+Fix an issue where a Pool would stop serving queued queries after a dropped connection (pg-pool is pinned to 3.10.0, which means `onConnect` is no longer available).
 
 ## 1.2.0 (2026-10-01)
 

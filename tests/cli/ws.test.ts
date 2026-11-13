@@ -129,7 +129,7 @@ describe.each([
       expect(fn).toHaveBeenCalledOnce();
     } finally {
       neonConfig.poolQueryViaFetch = false;
-      customPool.end();
+      await customPool.end();
     }
   });
 
@@ -282,32 +282,38 @@ describe.each([
   }
 });
 
-test('Pool keeps serving queued queries after connection drops (issue #230)', async () => {
-  const wsPool = new WsPool({ connectionString: DB_POOLER_URL, max: 1 });
+for (const releaseValue of [new Error('connection dropped'), undefined]) {
+  test(`Pool keeps serving queued queries after connection drops (issue #230), release with ${releaseValue}`, async () => {
+    const wsPool = new WsPool({ connectionString: DB_POOLER_URL, max: 1 });
 
-  // use `ws` for its `terminate` method
-  const { webSocketConstructor } = neonConfig;
-  neonConfig.webSocketConstructor = (await import('ws')).WebSocket;
+    // use `ws` for its `terminate` method
+    const { webSocketConstructor } = neonConfig;
+    neonConfig.webSocketConstructor = (await import('ws')).WebSocket;
 
-  const client = await wsPool.connect();
-  client.on('error', () => {});
+    try {
+      const client = await wsPool.connect();
+      client.on('error', () => {});
 
-  const slow = client.query('SELECT pg_sleep(5)').catch(() => {});
-  const queued = wsPool.query('SELECT 1 AS one'); // waits for the only pool slot
-  await new Promise((r) => setTimeout(r, 250));
+      const slow = client.query('SELECT pg_sleep(10)');
+      const queued = wsPool.query('SELECT 1 AS one'); // waits for the only pool slot
+      await new Promise((r) => setTimeout(r, 250));
 
-  /* @ts-expect-error */
-  client.connection.stream.ws.terminate(); // simulate a dropped connection (no close frame)
-  console.log('slow query:', await slow); // Connection terminated unexpectedly
-  client.release(new Error('connection dropped'));
+      /* @ts-expect-error */
+      client.connection.stream.ws.terminate(); // simulate a dropped connection (no close frame)
+      await expect(slow).rejects.toThrow('Connection terminated unexpectedly');
+      client.release(releaseValue);
 
-  const result = await Promise.race<string>([
-    queued.then(() => 'queued query served'),
-    new Promise((r) => setTimeout(() => r('queued query waiting'), 2000)),
-  ]);
+      const result = await Promise.race<string>([
+        queued.then(() => 'queued query served'),
+        new Promise((r) => setTimeout(() => r('queued query waiting'), 5000)),
+      ]);
 
-  expect(result).toEqual('queued query served');
+      expect(result).toEqual('queued query served');
+    } finally {
+      // restore native/previous WebSocket
+      neonConfig.webSocketConstructor = webSocketConstructor;
 
-  // restore native/previous WebSocket
-  neonConfig.webSocketConstructor = webSocketConstructor;
-});
+      await wsPool.end();
+    }
+  });
+}

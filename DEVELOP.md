@@ -4,6 +4,8 @@ The code is at https://github.com/neondatabase/serverless.
 
 To ensure code passes format checks and build output is up to date before commit, please copy `pre-commit` to `.git/hooks`.
 
+The version overrides in `package.json` are necessary to support the pinned `pg` version. As and when we pin to a new `pg` version these should be re-evaluated.
+
 ## Test
 
 To run tests:
