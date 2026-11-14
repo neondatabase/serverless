@@ -417,7 +417,7 @@ subtls.WebSocketReadQueue(this.ws),s=i.read.bind(i),o=this.rawWrite.bind(this),{
 subtls.startTls(t,n,s,o,{useSNI:!this.disableSNI,expectPreData:this.pipelineTLS?new Uint8Array([83]):
 void 0});this.tlsRead=u,this.tlsWrite=c,this.tlsState=2,this.encrypted=!0,this.authorized=!0,this.emit(
 "secureConnection",this),this.tlsReadLoop().catch(l=>{this.destroyed||(this.destroyed=!0,this.emit("\
-error",l),this.ws?.close())})}async tlsReadLoop(){for(;;){let t=await this.tlsRead();if(t===void 0)break;
+error",l),this.ws?this.ws.close():this.emit("close"))})}async tlsReadLoop(){for(;;){let t=await this.tlsRead();if(t===void 0)break;
 {let n=p.from(t);this.emit("data",n)}}}rawWrite(t){if(!this.coalesceWrites){this.ws&&this.ws.send(t);
 return}if(this.writeBuffer===void 0)this.writeBuffer=t,setTimeout(()=>{this.ws&&this.ws.send(this.writeBuffer),
 this.writeBuffer=void 0},0);else{let n=new Uint8Array(this.writeBuffer.length+t.length);n.set(this.writeBuffer),

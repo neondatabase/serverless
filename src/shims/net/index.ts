@@ -643,12 +643,19 @@ export class Socket extends EventEmitter {
     this.authorized = true;
     this.emit('secureConnection', this);
 
-    // deliberately NOT awaited
+    // deliberately NOT awaited — must .catch() so TLS read failures surface
+    // via error/close instead of hanging the pg client forever (#217)
     this.tlsReadLoop().catch((err) => {
       if (this.destroyed) return;
       this.destroyed = true;
       this.emit('error', err);
-      this.ws?.close(); // will emit 'close' on closure
+      // Prefer closing the WebSocket (its 'close' listener emits 'close').
+      // If no socket remains, emit 'close' directly so callers don't hang.
+      if (this.ws) {
+        this.ws.close();
+      } else {
+        this.emit('close');
+      }
     });
   }
 
