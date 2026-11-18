@@ -1,0 +1,32 @@
+diff --git a/node_modules/pg/lib/query.js b/node_modules/pg/lib/query.js
+index 6655a0e..499b89d 100644
+--- a/node_modules/pg/lib/query.js
++++ b/node_modules/pg/lib/query.js
+@@ -216,7 +216,11 @@ class Query extends EventEmitter {
+         valueMapper: utils.prepareValue,
+       })
+     } catch (err) {
+-      this.handleError(err, connection)
++      // Send Sync so the server leaves the extended query and ReadyForQuery
++      // arrives; otherwise a throw during bind leaves the connection hung.
++      // Defer the error until ReadyForQuery so a callback is not called twice.
++      connection.sync()
++      this._canceledDueToError = err
+       return
+     }
+ 
+diff --git a/node_modules/pg/lib/utils.js b/node_modules/pg/lib/utils.js
+index d63fe68..6695fa5 100644
+--- a/node_modules/pg/lib/utils.js
++++ b/node_modules/pg/lib/utils.js
+@@ -23,8 +23,8 @@ function arrayString(val) {
+       result = result + 'NULL'
+     } else if (Array.isArray(val[i])) {
+       result = result + arrayString(val[i])
+-    } else if (val[i] instanceof Buffer) {
+-      result += '\\\\x' + val[i].toString('hex')
++    } else if (ArrayBuffer.isView(val[i])) {
++      result += '\\\\x' + prepareValue(val[i]).toString('hex')
+     } else {
+       result += escapeElement(prepareValue(val[i]))
+     }
