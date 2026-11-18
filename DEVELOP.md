@@ -6,6 +6,8 @@ To ensure code passes format checks and build output is up to date before commit
 
 The version overrides in `package.json` are necessary to support the pinned `pg` version. As and when we pin to a new `pg` version these should be re-evaluated.
 
+Bugfixes that land in newer `pg` but are needed on the pinned version live in `patches/` and are applied by `patch-package` on `postinstall` (then baked into `index.js` / `index.mjs` by `npm run build`).
+
 ## Test
 
 To run tests:
