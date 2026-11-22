@@ -42,6 +42,26 @@ import { prepareValue } from 'pg/lib/utils';
 const txnArgErrMsg =
   'transaction() expects an array of queries, or a function returning an array of queries';
 
+const stringToWellFormed = (
+  String.prototype as unknown as {
+    toWellFormed?: () => string;
+  }
+).toWellFormed;
+
+function toWellFormedString(str: string): string {
+  if (stringToWellFormed) return stringToWellFormed.call(str);
+  return str.replace(
+    /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g,
+    '\uFFFD',
+  );
+}
+
+function sanitizeForHttpJson(value: unknown): unknown {
+  if (typeof value === 'string') return toWellFormedString(value);
+  if (Array.isArray(value)) return value.map(sanitizeForHttpJson);
+  return value;
+}
+
 function encodeBuffersAsBytea(value: unknown): unknown {
   // convert Buffer to bytea hex format: https://www.postgresql.org/docs/current/datatype-binary.html#DATATYPE-BINARY-BYTEA-HEX-FORMAT
   if (value instanceof Buffer) return '\\x' + toHex(value);
@@ -54,8 +74,10 @@ function prepareQuery(queryDatum: SqlTemplate | ParameterizedQuery) {
       ? queryDatum.toParameterizedQuery()
       : queryDatum;
   return {
-    query,
-    params: params.map((param) => encodeBuffersAsBytea(prepareValue(param))),
+    query: toWellFormedString(query),
+    params: params.map((param) =>
+      sanitizeForHttpJson(encodeBuffersAsBytea(prepareValue(param))),
+    ),
   };
 }
 
