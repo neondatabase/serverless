@@ -48,14 +48,27 @@ function encodeBuffersAsBytea(value: unknown): unknown {
   return value;
 }
 
+function stringToWellFormed(s: any) {
+  if (typeof s !== 'string') return s;
+  /* @ts-expect-error: we currently target a JS version without toWellFormed */
+  if (String.prototype.toWellFormed) return s.toWellFormed();
+  // on old platforms, use a RegExp fallback
+  return s.replace(
+    /[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF]|[\uDC00-\uDFFF]/g,
+    (m) => (m.length === 2 ? m : '\uFFFD'),
+  );
+}
+
 function prepareQuery(queryDatum: SqlTemplate | ParameterizedQuery) {
   const { query, params } =
     queryDatum instanceof SqlTemplate
       ? queryDatum.toParameterizedQuery()
       : queryDatum;
   return {
-    query,
-    params: params.map((param) => encodeBuffersAsBytea(prepareValue(param))),
+    query: stringToWellFormed(query),
+    params: params.map((param) =>
+      encodeBuffersAsBytea(stringToWellFormed(prepareValue(param))),
+    ),
   };
 }
 

@@ -795,3 +795,48 @@ describe('Pool.query() via fetch (poolQueryViaFetch)', () => {
     expect(new URL(connectionString).password).toBeUndefined;
   });
 });
+
+describe('Pool.query() with invalid (lone surrogate) string parameters', () => {
+  // A lone surrogate is not valid Unicode. Over WebSockets, pg encodes it as
+  // UTF-8, which silently replaces it with U+FFFD. Over HTTP the parameter is
+  // serialized with JSON.stringify, which emits a lone `\ud800` escape that the
+  // server rejects -- so the two transports behave inconsistently.
+  const loneSurrogates = {
+    'high surrogate': 'a\ud800b',
+    'low surrogate': 'a\udc00b',
+    'trailing high surrogate': 'ab\ud800',
+    'reversed pair': 'a\udc00\ud800b',
+  };
+
+  describe.each(Object.entries(loneSurrogates))(
+    '%s',
+    (_name, invalidString) => {
+      const expected = invalidString.replace(
+        /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/g,
+        '\ufffd',
+      );
+
+      test('over WebSockets (ordinary Pool.query)', async () => {
+        const result = await pool.query('SELECT $1::text AS s', [
+          invalidString,
+        ]);
+        expect(result.rows).toStrictEqual([{ s: expected }]);
+        expect((result as any).viaNeonFetch).toBeUndefined();
+      });
+
+      test('with poolQueryViaFetch', async () => {
+        const realPoolQueryViaFetch = neonConfig.poolQueryViaFetch;
+        neonConfig.poolQueryViaFetch = true;
+        try {
+          const result = await pool.query('SELECT $1::text AS s', [
+            invalidString,
+          ]);
+          expect((result as any).viaNeonFetch).toBe(true);
+          expect(result.rows).toStrictEqual([{ s: expected }]);
+        } finally {
+          neonConfig.poolQueryViaFetch = realPoolQueryViaFetch;
+        }
+      });
+    },
+  );
+});
