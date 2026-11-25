@@ -18,6 +18,8 @@ To run tests:
 
 - `npm test`
 
+If you're running in an environment with TLS inspection and re-encryption you may need `NODE_OPTIONS=--use-system-ca` in front of the test command.
+
 ## `npm install` a specific branch or commit
 
 ```bash

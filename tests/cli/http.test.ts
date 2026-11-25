@@ -1,4 +1,4 @@
-import { expect, test, vi, assertType } from 'vitest';
+import { expect, test, vi, assertType, describe } from 'vitest';
 import nodeFetch from 'node-fetch';
 import {
   neon,
@@ -732,4 +732,66 @@ test('per-query connection parameters are ignored in a transaction', async () =>
   await expect(sql.transaction([query])).rejects.toThrow(
     'password authentication failed',
   );
+});
+
+// https://github.com/neondatabase/serverless/issues/243
+describe('Pool.query() via fetch (poolQueryViaFetch)', () => {
+  const connectionParameters = {
+    host: 'ep-example-123456.example.com',
+    user: 'app_user',
+    database: 'app_db',
+  };
+
+  async function poolQueryConnectionString(password?: unknown) {
+    const realPoolQueryViaFetch = neonConfig.poolQueryViaFetch;
+    neonConfig.poolQueryViaFetch = true;
+    try {
+      const pool = new Pool({ ...connectionParameters, password } as any);
+      return await captureConnectionString(() => pool.query('SELECT 1'));
+    } finally {
+      neonConfig.poolQueryViaFetch = realPoolQueryViaFetch;
+    }
+  }
+
+  test('sends a string password', async () => {
+    const connectionString = await poolQueryConnectionString('s3cret/@?#');
+    const url = new URL(connectionString);
+    expect(decodeURIComponent(url.password)).toBe('s3cret/@?#');
+  });
+
+  test('resolves a password function', async () => {
+    const connectionString = await poolQueryConnectionString(
+      () => 'secret-from-function',
+    );
+    expect(new URL(connectionString).password).toBe('secret-from-function');
+  });
+
+  test('resolves an async password function', async () => {
+    const connectionString = await poolQueryConnectionString(
+      async () => 'secret-from-async-function',
+    );
+    expect(new URL(connectionString).password).toBe(
+      'secret-from-async-function',
+    );
+  });
+
+  test('calls the password function for every query', async () => {
+    const password = vi.fn(async () => 'secret-from-function');
+    const realPoolQueryViaFetch = neonConfig.poolQueryViaFetch;
+    neonConfig.poolQueryViaFetch = true;
+    try {
+      const pool = new Pool({ ...connectionParameters, password });
+      await captureConnectionString(() => pool.query('SELECT 1'));
+      expect(password).toHaveBeenCalledTimes(1);
+      await captureConnectionString(() => pool.query('SELECT 2'));
+      expect(password).toHaveBeenCalledTimes(2);
+    } finally {
+      neonConfig.poolQueryViaFetch = realPoolQueryViaFetch;
+    }
+  });
+
+  test('sends no password (not the text "null") when no password is given', async () => {
+    const connectionString = await poolQueryConnectionString(undefined);
+    expect(new URL(connectionString).password).toBeUndefined;
+  });
 });

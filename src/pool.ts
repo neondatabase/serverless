@@ -122,12 +122,13 @@ export class NeonPool extends Pool {
       const cp = new ConnectionParameters(this.options) as ConnectionParameters;
       const euc = encodeURIComponent;
       const eu = encodeURI;
-      const connectionString = `postgresql://${euc(cp.user)}:${euc(cp.password)}@${euc(cp.host)}/${eu(cp.database)}`;
+      const connectionString = `postgresql://${euc(cp.user)}@${euc(cp.host)}/${eu(cp.database)}`;
 
       const queryText = typeof config === 'string' ? config : config.text;
       const queryValues = values ?? config.values ?? [];
 
       const sql = neon(connectionString, {
+        password: cp.password ?? undefined, // don't send text 'null' when null
         fullResults: true,
         arrayMode: config.rowMode === 'array',
       });

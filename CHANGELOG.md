@@ -1,3 +1,7 @@
+## 1.2.2 (2026-11-25)
+
+Fix `Pool.query()` over HTTP (`poolQueryViaFetch`) sending a password function's source text instead of its resolved value (#243).
+
 ## 1.2.1 (2026-11-13)
 
 Fix an issue where a Pool would stop serving queued queries after a dropped connection (pg-pool is pinned to 3.10.0, which means `onConnect` is no longer available).

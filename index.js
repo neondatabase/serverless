@@ -1283,7 +1283,7 @@ let c=e[u];if(typeof c=="function"&&(c=await c()),c===void 0)return;if(typeof c!
 rt"&&typeof c=="number")){let f=u==="port"?" or a number":"";throw new q(`Connection parameter "${u}\
 " must be a string${f} or a function resolving to one`)}let l=Ia[u]??u;n[l]=c}));let{searchParams:i}=n;
 for(let u in t)i.has(u)||i.append(u,t[u]);let s=_a(n),o=di(s,!0);return{resolvedConnectionString:s,resolvedURL:o}}
-a(yi,"resolveConnectionParams");Ke();h();var vt="pkg:npm/%40neondatabase/serverless@1.2.1";var ds=xe(_t()),ps=xe(st());var ls="transaction() expects an array of queries, or a function returning an array of queries";function Wu(r){
+a(yi,"resolveConnectionParams");Ke();h();var vt="pkg:npm/%40neondatabase/serverless@1.2.2";var ds=xe(_t()),ps=xe(st());var ls="transaction() expects an array of queries, or a function returning an array of queries";function Wu(r){
 return r instanceof p?"\\x"+hi(r):r}a(Wu,"encodeBuffersAsBytea");function fs(r){let{query:e,params:t}=r instanceof
 Me?r.toParameterizedQuery():r;return{query:e,params:t.map(n=>Wu((0,ps.prepareValue)(n)))}}a(fs,"prep\
 areQuery");function mr(r,e={}){typeof r!="string"&&(e=r??{},r=void 0);let{arrayMode:t,fullResults:n,
@@ -1367,8 +1367,8 @@ super(...arguments);E(this,"Client",$e);E(this,"hasFetchUnsupportedListeners",!1
 r",this.on)}on(t,n){return t!=="error"&&(this.hasFetchUnsupportedListeners=!0),super.on(t,n)}query(t,n,i){
 if(!he.poolQueryViaFetch||this.hasFetchUnsupportedListeners||typeof t=="function")return super.query(
 t,n,i);typeof n=="function"&&(i=n,n=void 0);let s=jl(this.Promise,i);i=s.callback;try{let o=new _o.default(
-this.options),u=encodeURIComponent,c=encodeURI,l=`postgresql://${u(o.user)}:${u(o.password)}@${u(o.host)}\
-/${c(o.database)}`,f=typeof t=="string"?t:t.text,y=n??t.values??[];mr(l,{fullResults:!0,arrayMode:t.
+this.options),u=encodeURIComponent,c=encodeURI,l=`postgresql://${u(o.user)}@${u(o.host)}/${c(o.database)}`,
+f=typeof t=="string"?t:t.text,y=n??t.values??[];mr(l,{password:o.password??void 0,fullResults:!0,arrayMode:t.
 rowMode==="array"}).query(f,y,{types:t.types??this.options?.types}).then(w=>i(void 0,w)).catch(w=>i(
 w))}catch(o){i(o)}return s.result}};a(Dn,"NeonPool");var Dt=Dn;Ke();var de=xe(ct());h();var To=xe(Lr());function Hl(r){return Object.entries(r).reduce((t,[n,i])=>(i!=null&&(t[n]=i),t),Object.create(null))}
 a(Hl,"toConnectionOptions");function $l(r){return Object.entries(r).reduce((t,[n,i])=>{if(n==="ssl"){
