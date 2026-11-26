@@ -1,4 +1,12 @@
-import { expect, test, vi, assertType } from 'vitest';
+import {
+  expect,
+  test,
+  vi,
+  assertType,
+  describe,
+  beforeEach,
+  afterEach,
+} from 'vitest';
 import nodeFetch from 'node-fetch';
 import {
   neon,
@@ -731,5 +739,427 @@ test('per-query connection parameters are ignored in a transaction', async () =>
   });
   await expect(sql.transaction([query])).rejects.toThrow(
     'password authentication failed',
+  );
+});
+
+// https://github.com/neondatabase/serverless/issues/243
+describe('Pool.query() via fetch (poolQueryViaFetch)', () => {
+  const connectionParameters = {
+    host: 'ep-example-123456.example.com',
+    user: 'app_user',
+    database: 'app_db',
+  };
+
+  async function poolQueryConnectionString(password?: unknown) {
+    const realPoolQueryViaFetch = neonConfig.poolQueryViaFetch;
+    neonConfig.poolQueryViaFetch = true;
+    try {
+      const pool = new Pool({ ...connectionParameters, password } as any);
+      return await captureConnectionString(() => pool.query('SELECT 1'));
+    } finally {
+      neonConfig.poolQueryViaFetch = realPoolQueryViaFetch;
+    }
+  }
+
+  test('sends a string password', async () => {
+    const connectionString = await poolQueryConnectionString('s3cret/@?#');
+    const url = new URL(connectionString);
+    expect(decodeURIComponent(url.password)).toBe('s3cret/@?#');
+  });
+
+  test('resolves a password function', async () => {
+    const connectionString = await poolQueryConnectionString(
+      () => 'secret-from-function',
+    );
+    expect(new URL(connectionString).password).toBe('secret-from-function');
+  });
+
+  test('resolves an async password function', async () => {
+    const connectionString = await poolQueryConnectionString(
+      async () => 'secret-from-async-function',
+    );
+    expect(new URL(connectionString).password).toBe(
+      'secret-from-async-function',
+    );
+  });
+
+  test('calls the password function for every query', async () => {
+    const password = vi.fn(async () => 'secret-from-function');
+    const realPoolQueryViaFetch = neonConfig.poolQueryViaFetch;
+    neonConfig.poolQueryViaFetch = true;
+    try {
+      const pool = new Pool({ ...connectionParameters, password });
+      await captureConnectionString(() => pool.query('SELECT 1'));
+      expect(password).toHaveBeenCalledTimes(1);
+      await captureConnectionString(() => pool.query('SELECT 2'));
+      expect(password).toHaveBeenCalledTimes(2);
+    } finally {
+      neonConfig.poolQueryViaFetch = realPoolQueryViaFetch;
+    }
+  });
+
+  test('sends no password (not the text "null") when no password is given', async () => {
+    const connectionString = await poolQueryConnectionString(undefined);
+    expect(new URL(connectionString).password).toBeUndefined;
+  });
+});
+
+// https://github.com/neondatabase/serverless/issues/223
+//
+// Over HTTP the proxy ignores startup parameters (`options`, `application_name`,
+// `statement_timeout`, ...), but over WebSockets it applies them. So
+// `Pool.query()` must not take the fetch path when any of them is set.
+describe('Pool.query() via fetch (poolQueryViaFetch): fallback to WebSockets', () => {
+  const connectionString =
+    'postgresql://' + 'user:pass@ep-example-123456.example.com/app_db';
+  const webSocketMarker = 'took the WebSocket path';
+
+  let realPoolQueryViaFetch: typeof neonConfig.poolQueryViaFetch;
+  let realFetchFunction: typeof neonConfig.fetchFunction;
+  let fetchFn: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    realPoolQueryViaFetch = neonConfig.poolQueryViaFetch;
+    realFetchFunction = neonConfig.fetchFunction;
+    neonConfig.poolQueryViaFetch = true;
+    fetchFn = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        fields: [{ name: 'one', dataTypeID: 23 }],
+        rows: [['1']],
+        command: 'SELECT',
+        rowCount: 1,
+      }),
+    }));
+    neonConfig.fetchFunction = fetchFn;
+  });
+
+  afterEach(() => {
+    neonConfig.poolQueryViaFetch = realPoolQueryViaFetch;
+    neonConfig.fetchFunction = realFetchFunction;
+    vi.unstubAllEnvs();
+  });
+
+  // A Pool whose WebSocket path fails with a recognisable error, so that we
+  // can tell which path a query took without needing a database.
+  function poolWithFailingWebSocket(config: Record<string, unknown> = {}) {
+    const pool = new Pool({ connectionString, ...config } as any);
+    const connect = vi
+      .spyOn(pool, 'connect')
+      .mockImplementation(((cb: any) => cb(new Error(webSocketMarker))) as any);
+    return { pool, connect };
+  }
+
+  async function expectWebSocketPath(
+    config: Record<string, unknown> = {},
+  ): Promise<void> {
+    const { pool, connect } = poolWithFailingWebSocket(config);
+    await expect(pool.query('SELECT 1')).rejects.toThrow(webSocketMarker);
+    expect(connect).toHaveBeenCalledOnce();
+    expect(fetchFn).not.toHaveBeenCalled();
+  }
+
+  async function expectFetchPath(config: Record<string, unknown> = {}) {
+    const { pool, connect } = poolWithFailingWebSocket(config);
+    const result = await pool.query('SELECT 1 AS one');
+    expect((result as any).viaNeonFetch).toBe(true);
+    expect(fetchFn).toHaveBeenCalledOnce();
+    expect(connect).not.toHaveBeenCalled();
+  }
+
+  test.each<[string, Record<string, unknown>]>([
+    ['options', { options: '-c statement_timeout=500' }],
+    ['application_name', { application_name: 'custom' }],
+    ['fallback_application_name', { fallback_application_name: 'custom' }],
+    ['replication', { replication: 'database' }],
+    ['statement_timeout', { statement_timeout: 500 }],
+    ['lock_timeout', { lock_timeout: 500 }],
+    [
+      'idle_in_transaction_session_timeout',
+      { idle_in_transaction_session_timeout: 500 },
+    ],
+    ['query_timeout', { query_timeout: 500 }],
+  ])('falls back to WebSockets for the Pool option %s', async (_, config) => {
+    await expectWebSocketPath(config);
+  });
+
+  test.each([
+    'options=-c%20statement_timeout%3D500',
+    'application_name=custom',
+    'fallback_application_name=custom',
+    'replication=database',
+    'statement_timeout=500',
+    'lock_timeout=500',
+    'idle_in_transaction_session_timeout=500',
+    'query_timeout=500',
+  ])(
+    'falls back to WebSockets for the connection string parameter %s',
+    async (param) => {
+      await expectWebSocketPath({
+        connectionString: `${connectionString}?${param}`,
+      });
+    },
+  );
+
+  test.each([
+    ['PGOPTIONS', '-c statement_timeout=500'],
+    ['PGAPPNAME', 'custom'],
+  ])(
+    'falls back to WebSockets for the %s environment variable',
+    async (name, value) => {
+      vi.stubEnv(name, value);
+      await expectWebSocketPath();
+    },
+  );
+
+  test('uses fetch when the Pool has no startup settings', async () => {
+    await expectFetchPath();
+  });
+
+  test.each<[string, Record<string, unknown>]>([
+    ['max', { max: 3 }],
+    ['idleTimeoutMillis', { idleTimeoutMillis: 1000 }],
+    ['connectionTimeoutMillis', { connectionTimeoutMillis: 1000 }],
+    ['application_name set to undefined', { application_name: undefined }],
+  ])('still uses fetch with the Pool option %s', async (_, config) => {
+    await expectFetchPath(config);
+  });
+
+  test('uses WebSockets, never fetch, when poolQueryViaFetch is off', async () => {
+    neonConfig.poolQueryViaFetch = false;
+    await expectWebSocketPath();
+  });
+
+  test('reports a connection string that node-postgres rejects, rather than swallowing it', async () => {
+    const pool = new Pool({
+      connectionString:
+        'postgresql://' +
+        'user:pass@ep-example-123456.example.com:notaport/app_db',
+    });
+    // `Promise.resolve().then` copes with the error being thrown or rejected
+    await expect(
+      Promise.resolve().then(() => pool.query('SELECT 1')),
+    ).rejects.toThrow();
+    expect(fetchFn).not.toHaveBeenCalled();
+  });
+
+  test('falling back passes callback-style arguments to node-postgres unchanged', async () => {
+    const pool = new Pool({ connectionString, application_name: 'custom' });
+    const client = {
+      once: vi.fn(),
+      removeListener: vi.fn(),
+      release: vi.fn(),
+      query: vi.fn((_text: unknown, _values: unknown, done: any) =>
+        done(undefined, { rows: [] }),
+      ),
+    };
+    vi.spyOn(pool, 'connect').mockImplementation(((cb: any) =>
+      cb(undefined, client)) as any);
+
+    const config = { text: 'SELECT $1::int AS one', values: [1] };
+    const cb = vi.fn();
+    pool.query(config, cb);
+    await vi.waitFor(() => expect(cb).toHaveBeenCalled());
+
+    // `values` must not be replaced (e.g. with `[]`) when only a callback is given
+    expect(client.query).toHaveBeenCalledWith(
+      config,
+      undefined,
+      expect.any(Function),
+    );
+    expect(config.values).toStrictEqual([1]);
+  });
+
+  test('leaves a function given as the first argument to node-postgres to reject', async () => {
+    const pool = new Pool({ connectionString });
+    const cb = vi.fn();
+    pool.query(cb as any);
+    await vi.waitFor(() => expect(cb).toHaveBeenCalled());
+    expect(cb).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining('function as the first parameter'),
+      }),
+    );
+    expect(fetchFn).not.toHaveBeenCalled();
+  });
+});
+
+// https://github.com/neondatabase/serverless/issues/223
+describe('Pool.query() via fetch (poolQueryViaFetch): promise and callback styles', () => {
+  const connectionString =
+    'postgresql://' + 'user:pass@ep-example-123456.example.com/app_db';
+
+  let realPoolQueryViaFetch: typeof neonConfig.poolQueryViaFetch;
+  let realFetchFunction: typeof neonConfig.fetchFunction;
+  let fetchFn: ReturnType<typeof vi.fn>;
+
+  const okResponse = {
+    ok: true,
+    json: async () => ({
+      fields: [{ name: 'one', dataTypeID: 23 }],
+      rows: [['1']],
+      command: 'SELECT',
+      rowCount: 1,
+    }),
+  };
+  const dbErrorResponse = {
+    ok: false,
+    status: 400,
+    json: async () => ({ message: 'boom', code: '42P01' }),
+  };
+
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 20));
+
+  function sentParams() {
+    expect(fetchFn).toHaveBeenCalledOnce();
+    const [, init] = fetchFn.mock.calls[0] as [string, { body: string }];
+    return JSON.parse(init.body).params;
+  }
+
+  beforeEach(() => {
+    realPoolQueryViaFetch = neonConfig.poolQueryViaFetch;
+    realFetchFunction = neonConfig.fetchFunction;
+    neonConfig.poolQueryViaFetch = true;
+    fetchFn = vi.fn(async () => okResponse);
+    neonConfig.fetchFunction = fetchFn;
+  });
+
+  afterEach(() => {
+    neonConfig.poolQueryViaFetch = realPoolQueryViaFetch;
+    neonConfig.fetchFunction = realFetchFunction;
+  });
+
+  test('promise style resolves with full results', async () => {
+    const pool = new Pool({ connectionString });
+    const result = await pool.query('SELECT 1 AS one');
+    expect(result.rows).toStrictEqual([{ one: 1 }]);
+    expect((result as any).viaNeonFetch).toBe(true);
+    expect(sentParams()).toStrictEqual([]);
+  });
+
+  test('promise style sends the values of a query config object', async () => {
+    const pool = new Pool({ connectionString });
+    await pool.query({ text: 'SELECT $1::int AS one', values: [1] });
+    expect(sentParams()).toStrictEqual(['1']);
+  });
+
+  test('promise style prefers explicit values over those in a query config object', async () => {
+    const pool = new Pool({ connectionString });
+    await pool.query({ text: 'SELECT $1::int AS one', values: [1] }, [2]);
+    expect(sentParams()).toStrictEqual(['2']);
+  });
+
+  test('promise style honours a custom Promise implementation', async () => {
+    class CustomPromise<T> extends Promise<T> {}
+    const pool = new Pool({ connectionString, Promise: CustomPromise } as any);
+    const promise = pool.query('SELECT 1 AS one');
+    expect(promise).toBeInstanceOf(CustomPromise);
+    await promise;
+  });
+
+  test.each<
+    [string, (pool: InstanceType<typeof Pool>, cb: any) => unknown, unknown[]]
+  >([
+    ['text, callback', (pool, cb) => pool.query('SELECT 1 AS one', cb), []],
+    [
+      'text, values, callback',
+      (pool, cb) => pool.query('SELECT $1::int AS one', [1], cb),
+      ['1'],
+    ],
+    [
+      'config with values, callback',
+      (pool, cb) =>
+        pool.query({ text: 'SELECT $1::int AS one', values: [1] }, cb),
+      ['1'],
+    ],
+  ])(
+    'callback style (%s) calls back once and returns nothing',
+    async (_, run, expectedParams) => {
+      const pool = new Pool({ connectionString });
+      const cb = vi.fn();
+      const returned = run(pool, cb);
+      await vi.waitFor(() => expect(cb).toHaveBeenCalled());
+      await settle(); // give a (wrongly) repeated callback the chance to happen
+
+      expect(returned).toBeUndefined();
+      expect(cb).toHaveBeenCalledOnce();
+      expect(cb).toHaveBeenCalledWith(
+        undefined,
+        expect.objectContaining({ rows: [{ one: 1 }], viaNeonFetch: true }),
+      );
+      expect(sentParams()).toStrictEqual(expectedParams);
+    },
+  );
+
+  test('promise style rejects with the database error', async () => {
+    fetchFn.mockResolvedValue(dbErrorResponse);
+    const pool = new Pool({ connectionString });
+    await expect(pool.query('SELECT 1')).rejects.toThrow('boom');
+  });
+
+  test('callback style passes the database error to the callback once', async () => {
+    fetchFn.mockResolvedValue(dbErrorResponse);
+    const pool = new Pool({ connectionString });
+    const cb = vi.fn();
+    pool.query('SELECT 1', cb);
+    await vi.waitFor(() => expect(cb).toHaveBeenCalled());
+    await settle();
+
+    expect(cb).toHaveBeenCalledOnce();
+    expect(cb).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'boom' }),
+    );
+  });
+
+  test('promise style rejects, rather than throwing, when fetch itself fails', async () => {
+    fetchFn.mockRejectedValue(new Error('network down'));
+    const pool = new Pool({ connectionString });
+    const promise = pool.query('SELECT 1'); // must not throw synchronously
+    await expect(promise).rejects.toThrow('Error connecting to database');
+  });
+});
+
+describe('Pool.query() with invalid (lone surrogate) string parameters', () => {
+  // A lone surrogate is not valid Unicode. Over WebSockets, pg encodes it as
+  // UTF-8, which silently replaces it with U+FFFD. Over HTTP the parameter is
+  // serialized with JSON.stringify, which emits a lone `\ud800` escape that the
+  // server rejects -- so the two transports behave inconsistently.
+  const loneSurrogates = {
+    'high surrogate': 'a\ud800b',
+    'low surrogate': 'a\udc00b',
+    'trailing high surrogate': 'ab\ud800',
+    'reversed pair': 'a\udc00\ud800b',
+  };
+
+  describe.each(Object.entries(loneSurrogates))(
+    '%s',
+    (_name, invalidString) => {
+      const expected = invalidString.replace(
+        /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/g,
+        '\ufffd',
+      );
+
+      test('over WebSockets (ordinary Pool.query)', async () => {
+        const result = await pool.query('SELECT $1::text AS s', [
+          invalidString,
+        ]);
+        expect(result.rows).toStrictEqual([{ s: expected }]);
+        expect((result as any).viaNeonFetch).toBeUndefined();
+      });
+
+      test('with poolQueryViaFetch', async () => {
+        const realPoolQueryViaFetch = neonConfig.poolQueryViaFetch;
+        neonConfig.poolQueryViaFetch = true;
+        try {
+          const result = await pool.query('SELECT $1::text AS s', [
+            invalidString,
+          ]);
+          expect((result as any).viaNeonFetch).toBe(true);
+          expect(result.rows).toStrictEqual([{ s: expected }]);
+        } finally {
+          neonConfig.poolQueryViaFetch = realPoolQueryViaFetch;
+        }
+      });
+    },
   );
 });

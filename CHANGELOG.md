@@ -1,3 +1,11 @@
+## 1.2.2 (2026-11-27)
+
+Fix `Pool.query()` over HTTP (`poolQueryViaFetch`) sending a password function's source text instead of its resolved value (#243).
+
+Make query and params well-formed (no invalid surrogates) over HTTP, so behaviour matches WebSockets and `Pool.query()` behaviour does not vary by `poolQueryViaFetch` (#241).
+
+Prevent a `Pool.query()` going over HTTP (even with `poolQueryViaFetch`) if any startup keys are set that would be honoured over WebSockets but not http, such as `statement_timeout` (#223).
+
 ## 1.2.1 (2026-11-13)
 
 Fix an issue where a Pool would stop serving queued queries after a dropped connection (pg-pool is pinned to 3.10.0, which means `onConnect` is no longer available).
