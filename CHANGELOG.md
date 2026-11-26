@@ -1,8 +1,10 @@
-## 1.2.2 (2026-11-25)
+## 1.2.2 (2026-11-27)
 
 Fix `Pool.query()` over HTTP (`poolQueryViaFetch`) sending a password function's source text instead of its resolved value (#243).
 
-Make query and params well-formed (no invalid surrogates) over HTTP, so behaviour matches WebSockets and `Pool.query()` behaviour does not depend on `poolQueryViaFetch` (#241).
+Make query and params well-formed (no invalid surrogates) over HTTP, so behaviour matches WebSockets and `Pool.query()` behaviour does not vary by `poolQueryViaFetch` (#241).
+
+Prevent a `Pool.query()` going over HTTP (even with `poolQueryViaFetch`) if any startup keys are set that would be honoured over WebSockets but not http, such as `statement_timeout`.
 
 ## 1.2.1 (2026-11-13)
 
