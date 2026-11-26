@@ -4,7 +4,7 @@ Fix `Pool.query()` over HTTP (`poolQueryViaFetch`) sending a password function's
 
 Make query and params well-formed (no invalid surrogates) over HTTP, so behaviour matches WebSockets and `Pool.query()` behaviour does not vary by `poolQueryViaFetch` (#241).
 
-Prevent a `Pool.query()` going over HTTP (even with `poolQueryViaFetch`) if any startup keys are set that would be honoured over WebSockets but not http, such as `statement_timeout`.
+Prevent a `Pool.query()` going over HTTP (even with `poolQueryViaFetch`) if any startup keys are set that would be honoured over WebSockets but not http, such as `statement_timeout` (#223).
 
 ## 1.2.1 (2026-11-13)
 
